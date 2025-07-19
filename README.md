@@ -116,6 +116,21 @@ Please follow the [community guidelines](https://druid.apache.org/community/) fo
 
 For instructions on setting up IntelliJ [dev/intellij-setup.md](dev/intellij-setup.md)
 
+### 🔬 Testing PR Tool
+
+**This is a test section added by Scout AI to test the GitHub PR functionality. Please remove this section after testing is complete.**
+
+- ✅ Testing automated pull request creation
+- ✅ Demonstrating Scout's integration with GitHub
+- ✅ Verifying file editing capabilities
+
+This test modification includes:
+- Added a new section with emojis and formatting
+- Maintained proper markdown structure
+- Clear indication that this is test content
+
+*Test completed on: $(date)*
+
 ### License
 
 [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
