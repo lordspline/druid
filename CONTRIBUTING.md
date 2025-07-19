@@ -19,6 +19,8 @@
 
 # How to Contribute
 
+<!-- Test comment added to demonstrate PR functionality -->
+
 When submitting a pull request (PR), please use the following guidelines:
 
 - A description of style conventions can be found at [`dev/style-conventions.md`](dev/style-conventions.md) 
