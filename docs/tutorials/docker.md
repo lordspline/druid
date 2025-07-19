@@ -135,3 +135,30 @@ Where `<id>` is the container id found with `docker ps`. Druid is installed in `
 
 Run `docker compose down` to shut down the cluster. Your data is persisted as a set of [Docker volumes](https://docs.docker.com/storage/volumes/) and will be available when you restart your Druid cluster.
 
+## Troubleshooting
+
+### Common Issues
+
+**Container exits with code 137**
+- This typically indicates insufficient memory allocated to Docker
+- Increase Docker's memory allocation to at least 6 GiB
+- On Docker Desktop, adjust this in Settings > Resources > Memory
+
+**Port 8888 already in use**
+- Change the router port mapping in `docker-compose.yml`:
+  ```yaml
+  ports:
+    - "9999:8888"
+  ```
+- Access the console at [http://localhost:9999](http://localhost:9999) instead
+
+**Services not starting properly**
+- Check container logs: `docker compose logs <service_name>`
+- Ensure all required files (`docker-compose.yml` and `environment`) are present
+- Wait a few minutes for all services to fully initialize
+
+**Data loading issues**
+- Verify the cluster is healthy in the web console
+- Check task logs in the "Tasks" view for detailed error messages
+- Ensure your data format matches the ingestion spec
+
