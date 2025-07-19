@@ -19,6 +19,10 @@
 
 # How to Contribute
 
+We welcome contributions to Apache Druid! This document outlines the process for contributing code, documentation, and bug reports.
+
+## Pull Request Guidelines
+
 When submitting a pull request (PR), please use the following guidelines:
 
 - A description of style conventions can be found at [`dev/style-conventions.md`](dev/style-conventions.md) 
