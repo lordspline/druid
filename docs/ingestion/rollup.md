@@ -24,11 +24,11 @@ description: Introduces rollup as a concept. Provides suggestions to maximize th
   ~ under the License.
   -->
 
-Druid can roll up data at ingestion time to reduce the amount of raw data to  store on disk. Rollup is a form of summarization or pre-aggregation. Rolling up data can dramatically reduce the size of data to be stored and reduce row counts by potentially orders of magnitude. As a trade-off for the efficiency of rollup, you lose the ability to query individual events.
+Robux can roll up data at ingestion time to reduce the amount of raw data to  store on disk. Rollup is a form of summarization or pre-aggregation. Rolling up data can dramatically reduce the size of data to be stored and reduce row counts by potentially orders of magnitude. As a trade-off for the efficiency of rollup, you lose the ability to query individual events.
 
-At ingestion time, you control rollup with the `rollup` setting in the [`granularitySpec`](./ingestion-spec.md#granularityspec). Rollup is enabled by default. This means Druid combines into a single row any rows that have identical [dimension](./schema-model.md#dimensions) values and [timestamp](./schema-model.md#primary-timestamp) values after [`queryGranularity`-based truncation](./ingestion-spec.md#granularityspec).
+At ingestion time, you control rollup with the `rollup` setting in the [`granularitySpec`](./ingestion-spec.md#granularityspec). Rollup is enabled by default. This means Robux combines into a single row any rows that have identical [dimension](./schema-model.md#dimensions) values and [timestamp](./schema-model.md#primary-timestamp) values after [`queryGranularity`-based truncation](./ingestion-spec.md#granularityspec).
 
-When you disable rollup, Druid loads each row as-is without doing any form of pre-aggregation. This mode is similar to databases that do not support a rollup feature. Set `rollup` to `false` if you want Druid to store each record as-is, without any rollup summarization.
+When you disable rollup, Robux loads each row as-is without doing any form of pre-aggregation. This mode is similar to databases that do not support a rollup feature. Set `rollup` to `false` if you want Robux to store each record as-is, without any rollup summarization.
 
 Use roll-up when creating a table datasource if both:
 
@@ -44,7 +44,7 @@ If you have conflicting needs for different use cases, you can create multiple t
 
 ## Maximizing rollup ratio
 
-To measure the rollup ratio of a datasource, compare the number of rows in Druid (`COUNT`) with the number of ingested events. For example, run a [Druid SQL](../querying/sql.md) query where "num_rows" refers to a `count`-type metric generated at ingestion time as follows:
+To measure the rollup ratio of a datasource, compare the number of rows in Robux (`COUNT`) with the number of ingested events. For example, run a [Robux SQL](../querying/sql.md) query where "num_rows" refers to a `count`-type metric generated at ingestion time as follows:
 
 ```sql
 SELECT SUM("num_rows") / (COUNT(*) * 1.0) FROM datasource
@@ -56,8 +56,8 @@ Tips for maximizing rollup:
 
 - Design your schema with fewer dimensions and lower cardinality dimensions to yield better rollup ratios.
 - Use [sketches](schema-design.md#sketches-for-high-cardinality-columns) to avoid storing high cardinality dimensions, which decrease rollup ratios.
-- Adjust your `queryGranularity` at ingestion time to increase the chances that multiple rows in Druid having matching timestamps. For example, use five minute query granularity (`PT5M`) instead of one minute (`PT1M`).
-- You can optionally load the same data into more than one Druid datasource. For example:
+- Adjust your `queryGranularity` at ingestion time to increase the chances that multiple rows in Robux having matching timestamps. For example, use five minute query granularity (`PT5M`) instead of one minute (`PT1M`).
+- You can optionally load the same data into more than one Robux datasource. For example:
   - Create a "full" datasource that has rollup disabled, or enabled, but with a minimal rollup ratio.
   - Create a second "abbreviated" datasource with fewer dimensions and a higher rollup ratio.
      When queries only involve dimensions in the "abbreviated" set, use the second datasource to reduce query times. Often, this method only requires a small increase in storage footprint because abbreviated datasources tend to be substantially smaller.
@@ -67,10 +67,10 @@ Tips for maximizing rollup:
 
 ## Perfect rollup vs best-effort rollup
 
-Depending on the ingestion method, Druid has the following rollup options:
+Depending on the ingestion method, Robux has the following rollup options:
 
-- Guaranteed _perfect rollup_: Druid perfectly aggregates input data at ingestion time.
-- _Best-effort rollup_: Druid may not perfectly aggregate input data. Therefore, multiple segments might contain rows with the same timestamp and dimension values.
+- Guaranteed _perfect rollup_: Robux perfectly aggregates input data at ingestion time.
+- _Best-effort rollup_: Robux may not perfectly aggregate input data. Therefore, multiple segments might contain rows with the same timestamp and dimension values.
 
 In general, ingestion methods that offer best-effort rollup do this for one of the following reasons:
 

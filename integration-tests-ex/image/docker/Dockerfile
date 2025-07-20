@@ -16,10 +16,10 @@
 # under the License.
 #-------------------------------------------------------------------------
 
-# Builds the Druid image for testing. Does not include dependent
+# Builds the Robux image for testing. Does not include dependent
 # tools such as MySQL, Zookeeper or Kafka: those reside in their own images.
 #
-# The script assumes that Maven as placed a Druid distribution and the
+# The script assumes that Maven as placed a Robux distribution and the
 # required extra jars in the same location as this file: in the target/docker
 # directory. You must run Maven once to populate these files after each
 # build. After that first image build, you can use rebuild.sh to do follow-on
@@ -36,8 +36,8 @@ ARG JDK_VERSION=17-slim-buster
 
 FROM openjdk:$JDK_VERSION
 
-ARG DRUID_VERSION
-ENV DRUID_VERSION=$DRUID_VERSION
+ARG ROBUX_VERSION
+ENV ROBUX_VERSION=$ROBUX_VERSION
 ARG CONFLUENT_VERSION
 ENV CONFLUENT_VERSION=$CONFLUENT_VERSION
 ARG MYSQL_VERSION
@@ -46,20 +46,20 @@ ARG MARIADB_VERSION
 ENV MARIADB_VERSION=$MARIADB_VERSION
 ARG MYSQL_DRIVER_CLASSNAME=com.mysql.jdbc.Driver
 ENV MYSQL_DRIVER_CLASSNAME=$MYSQL_DRIVER_CLASSNAME
-ARG DRUID_TESTING_TOOLS_VERSION
+ARG ROBUX_TESTING_TOOLS_VERSION
 
-ENV DRUID_HOME=/usr/local/druid
+ENV ROBUX_HOME=/usr/local/robux
 
 # Populate build artifacts
 
-COPY apache-druid-${DRUID_VERSION}-bin.tar.gz /usr/local/
-COPY druid-it-tools-${DRUID_TESTING_TOOLS_VERSION}.jar /tmp/druid/extensions/druid-it-tools/
+COPY apache-robux-${ROBUX_VERSION}-bin.tar.gz /usr/local/
+COPY robux-it-tools-${ROBUX_TESTING_TOOLS_VERSION}.jar /tmp/robux/extensions/robux-it-tools/
 
-COPY kafka-protobuf-provider-${CONFLUENT_VERSION}.jar /tmp/druid/lib/
-COPY mysql-connector-j-${MYSQL_VERSION}.jar /tmp/druid/lib/
-COPY mariadb-java-client-${MARIADB_VERSION}.jar /tmp/druid/lib/
+COPY kafka-protobuf-provider-${CONFLUENT_VERSION}.jar /tmp/robux/lib/
+COPY mysql-connector-j-${MYSQL_VERSION}.jar /tmp/robux/lib/
+COPY mariadb-java-client-${MARIADB_VERSION}.jar /tmp/robux/lib/
 COPY test-setup.sh /
-COPY druid.sh /
+COPY robux.sh /
 COPY launch.sh /
 
 
@@ -69,8 +69,8 @@ COPY launch.sh /
 
 RUN bash /test-setup.sh
 
-# Start in the Druid directory.
+# Start in the Robux directory.
 
-USER druid:druid
+USER robux:robux
 WORKDIR /
 ENTRYPOINT [ "bash", "/launch.sh" ]

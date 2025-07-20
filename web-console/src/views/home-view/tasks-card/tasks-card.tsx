@@ -20,12 +20,12 @@ import type { CancelToken } from 'axios';
 import React from 'react';
 
 import { PluralPairIfNeeded } from '../../../components';
-import type { CapacityInfo } from '../../../druid-models';
-import { getConsoleViewIcon } from '../../../druid-models';
+import type { CapacityInfo } from '../../../robux-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import type { Capabilities } from '../../../helpers';
 import { getClusterCapacity } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
-import { getApiArray, groupByAsMap, lookupBy, pluralIfNeeded, queryDruidSql } from '../../../utils';
+import { getApiArray, groupByAsMap, lookupBy, pluralIfNeeded, queryRobuxSql } from '../../../utils';
 import { HomeViewCard } from '../home-view-card/home-view-card';
 
 function getTaskStatus(d: any) {
@@ -45,7 +45,7 @@ async function getTaskCounts(
   cancelToken: CancelToken,
 ): Promise<TaskCounts> {
   if (capabilities.hasSql()) {
-    const taskCountsFromQuery = await queryDruidSql<{ status: string; count: number }>(
+    const taskCountsFromQuery = await queryRobuxSql<{ status: string; count: number }>(
       {
         query: `SELECT
   CASE WHEN "status" = 'RUNNING' THEN "runner_status" ELSE "status" END AS "status",
@@ -61,7 +61,7 @@ GROUP BY 1`,
       x => x.count,
     );
   } else if (capabilities.hasOverlordAccess()) {
-    const tasks: any[] = await getApiArray('/druid/indexer/v1/tasks', cancelToken);
+    const tasks: any[] = await getApiArray('/robux/indexer/v1/tasks', cancelToken);
     return groupByAsMap(
       tasks,
       d => getTaskStatus(d).toLowerCase(),

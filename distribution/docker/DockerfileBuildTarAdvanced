@@ -18,7 +18,7 @@
 #
 
 # Using For IT on K8s
-ARG BASE_IMAGE=apache/druid
+ARG BASE_IMAGE=apache/robux
 FROM $BASE_IMAGE
 
 USER 0
@@ -26,4 +26,4 @@ RUN mkdir -p /shared/wikiticker-it
 COPY examples/quickstart/tutorial/wikiticker-2015-09-12-sampled.json.gz /shared/wikiticker-it/wikiticker-2015-09-12-sampled.json.gz
 COPY integration-tests/docker/wiki-simple-lookup.json /shared/wikiticker-it/wiki-simple-lookup.json
 
-USER druid
+USER robux

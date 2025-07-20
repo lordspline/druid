@@ -26,8 +26,8 @@ import TabItem from '@theme/TabItem';
   -->
 
 :::info
- This page describes SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md)
- extension, new in Druid 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
+ This page describes SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md)
+ extension, new in Robux 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
  ingestion method is right for you.
 :::
 
@@ -35,8 +35,8 @@ The **Query** view in the web console provides a friendly experience for the mul
 
 When using the API for the MSQ task engine, the action you want to take determines the endpoint you use:
 
-- `/druid/v2/sql/task`: Submit a query for ingestion.
-- `/druid/indexer/v1/task`: Interact with a query, including getting its status or details, or canceling the query. This page describes a few of the Overlord Task APIs that you can use with the MSQ task engine. For information about Druid APIs, see the [API reference for Druid](../ingestion/tasks.md).
+- `/robux/v2/sql/task`: Submit a query for ingestion.
+- `/robux/indexer/v1/task`: Interact with a query, including getting its status or details, or canceling the query. This page describes a few of the Overlord Task APIs that you can use with the MSQ task engine. For information about Robux APIs, see the [API reference for Robux](../ingestion/tasks.md).
 
 In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router service address and port. Replace it with the information for your deployment. For example, use `http://localhost:8888` for quickstart deployments.
 
@@ -44,7 +44,7 @@ In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router s
 
 Submits queries to the MSQ task engine.
 
-The `/druid/v2/sql/task` endpoint accepts the following:
+The `/robux/v2/sql/task` endpoint accepts the following:
 
 - [SQL requests in the JSON-over-HTTP form](sql-api.md#request-body) using the
 `query`, `context`, and `parameters` fields. The endpoint ignores the `resultFormat`, `header`, `typesHeader`, and `sqlTypesHeader` fields.
@@ -53,7 +53,7 @@ The `/druid/v2/sql/task` endpoint accepts the following:
 
 ### URL
 
-`POST` `/druid/v2/sql/task`
+`POST` `/robux/v2/sql/task`
 
 ### Responses
 
@@ -104,7 +104,7 @@ The following example shows a query that fetches data from an external JSON sour
 The example specifies two query context parameters:
 
 - `maxNumTasks=3`: Limits the maximum number of parallel tasks to 3.
-- `finalizeAggregations=false`: Ensures that Druid saves the aggregation's intermediate type during ingestion. For more information, see [Rollup](../multi-stage-query/concepts.md#rollup).
+- `finalizeAggregations=false`: Ensures that Robux saves the aggregation's intermediate type during ingestion. For more information, see [Rollup](../multi-stage-query/concepts.md#rollup).
 
 
 <Tabs>
@@ -112,12 +112,12 @@ The example specifies two query context parameters:
 <TabItem value="4" label="HTTP">
 
 ```HTTP
-POST /druid/v2/sql/task HTTP/1.1
+POST /robux/v2/sql/task HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 
 {
-  "query": "SET maxNumTasks=3;\nSET finalizeAggregations=false;\nINSERT INTO wikipedia\nSELECT\n  TIME_PARSE(\"timestamp\") AS __time,\n  *\nFROM TABLE(\n  EXTERN(\n    '{\"type\": \"http\", \"uris\": [\"https://druid.apache.org/data/wikipedia.json.gz\"]}',\n    '{\"type\": \"json\"}',\n    '[{\"name\": \"added\", \"type\": \"long\"}, {\"name\": \"channel\", \"type\": \"string\"}, {\"name\": \"cityName\", \"type\": \"string\"}, {\"name\": \"comment\", \"type\": \"string\"}, {\"name\": \"commentLength\", \"type\": \"long\"}, {\"name\": \"countryIsoCode\", \"type\": \"string\"}, {\"name\": \"countryName\", \"type\": \"string\"}, {\"name\": \"deleted\", \"type\": \"long\"}, {\"name\": \"delta\", \"type\": \"long\"}, {\"name\": \"deltaBucket\", \"type\": \"string\"}, {\"name\": \"diffUrl\", \"type\": \"string\"}, {\"name\": \"flags\", \"type\": \"string\"}, {\"name\": \"isAnonymous\", \"type\": \"string\"}, {\"name\": \"isMinor\", \"type\": \"string\"}, {\"name\": \"isNew\", \"type\": \"string\"}, {\"name\": \"isRobot\", \"type\": \"string\"}, {\"name\": \"isUnpatrolled\", \"type\": \"string\"}, {\"name\": \"metroCode\", \"type\": \"string\"}, {\"name\": \"namespace\", \"type\": \"string\"}, {\"name\": \"page\", \"type\": \"string\"}, {\"name\": \"regionIsoCode\", \"type\": \"string\"}, {\"name\": \"regionName\", \"type\": \"string\"}, {\"name\": \"timestamp\", \"type\": \"string\"}, {\"name\": \"user\", \"type\": \"string\"}]'\n  )\n)\nPARTITIONED BY DAY"
+  "query": "SET maxNumTasks=3;\nSET finalizeAggregations=false;\nINSERT INTO wikipedia\nSELECT\n  TIME_PARSE(\"timestamp\") AS __time,\n  *\nFROM TABLE(\n  EXTERN(\n    '{\"type\": \"http\", \"uris\": [\"https://robux.apache.org/data/wikipedia.json.gz\"]}',\n    '{\"type\": \"json\"}',\n    '[{\"name\": \"added\", \"type\": \"long\"}, {\"name\": \"channel\", \"type\": \"string\"}, {\"name\": \"cityName\", \"type\": \"string\"}, {\"name\": \"comment\", \"type\": \"string\"}, {\"name\": \"commentLength\", \"type\": \"long\"}, {\"name\": \"countryIsoCode\", \"type\": \"string\"}, {\"name\": \"countryName\", \"type\": \"string\"}, {\"name\": \"deleted\", \"type\": \"long\"}, {\"name\": \"delta\", \"type\": \"long\"}, {\"name\": \"deltaBucket\", \"type\": \"string\"}, {\"name\": \"diffUrl\", \"type\": \"string\"}, {\"name\": \"flags\", \"type\": \"string\"}, {\"name\": \"isAnonymous\", \"type\": \"string\"}, {\"name\": \"isMinor\", \"type\": \"string\"}, {\"name\": \"isNew\", \"type\": \"string\"}, {\"name\": \"isRobot\", \"type\": \"string\"}, {\"name\": \"isUnpatrolled\", \"type\": \"string\"}, {\"name\": \"metroCode\", \"type\": \"string\"}, {\"name\": \"namespace\", \"type\": \"string\"}, {\"name\": \"page\", \"type\": \"string\"}, {\"name\": \"regionIsoCode\", \"type\": \"string\"}, {\"name\": \"regionName\", \"type\": \"string\"}, {\"name\": \"timestamp\", \"type\": \"string\"}, {\"name\": \"user\", \"type\": \"string\"}]'\n  )\n)\nPARTITIONED BY DAY"
 }
 ```
 
@@ -127,10 +127,10 @@ Content-Type: application/json
 
 
 ```shell
-curl --location --request POST 'http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/task' \
+curl --location --request POST 'http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/task' \
   --header 'Content-Type: application/json' \
   --data '{
-  "query": "SET maxNumTasks=3;\nSET finalizeAggregations=false;\nINSERT INTO wikipedia\nSELECT\n  TIME_PARSE(\"timestamp\") AS __time,\n  *\nFROM TABLE(\n  EXTERN(\n    '\''{\"type\": \"http\", \"uris\": [\"https://druid.apache.org/data/wikipedia.json.gz\"]}'\'',\n    '\''{\"type\": \"json\"}'\'',\n    '\''[{\"name\": \"added\", \"type\": \"long\"}, {\"name\": \"channel\", \"type\": \"string\"}, {\"name\": \"cityName\", \"type\": \"string\"}, {\"name\": \"comment\", \"type\": \"string\"}, {\"name\": \"commentLength\", \"type\": \"long\"}, {\"name\": \"countryIsoCode\", \"type\": \"string\"}, {\"name\": \"countryName\", \"type\": \"string\"}, {\"name\": \"deleted\", \"type\": \"long\"}, {\"name\": \"delta\", \"type\": \"long\"}, {\"name\": \"deltaBucket\", \"type\": \"string\"}, {\"name\": \"diffUrl\", \"type\": \"string\"}, {\"name\": \"flags\", \"type\": \"string\"}, {\"name\": \"isAnonymous\", \"type\": \"string\"}, {\"name\": \"isMinor\", \"type\": \"string\"}, {\"name\": \"isNew\", \"type\": \"string\"}, {\"name\": \"isRobot\", \"type\": \"string\"}, {\"name\": \"isUnpatrolled\", \"type\": \"string\"}, {\"name\": \"metroCode\", \"type\": \"string\"}, {\"name\": \"namespace\", \"type\": \"string\"}, {\"name\": \"page\", \"type\": \"string\"}, {\"name\": \"regionIsoCode\", \"type\": \"string\"}, {\"name\": \"regionName\", \"type\": \"string\"}, {\"name\": \"timestamp\", \"type\": \"string\"}, {\"name\": \"user\", \"type\": \"string\"}]'\''\n  )\n)\nPARTITIONED BY DAY"
+  "query": "SET maxNumTasks=3;\nSET finalizeAggregations=false;\nINSERT INTO wikipedia\nSELECT\n  TIME_PARSE(\"timestamp\") AS __time,\n  *\nFROM TABLE(\n  EXTERN(\n    '\''{\"type\": \"http\", \"uris\": [\"https://robux.apache.org/data/wikipedia.json.gz\"]}'\'',\n    '\''{\"type\": \"json\"}'\'',\n    '\''[{\"name\": \"added\", \"type\": \"long\"}, {\"name\": \"channel\", \"type\": \"string\"}, {\"name\": \"cityName\", \"type\": \"string\"}, {\"name\": \"comment\", \"type\": \"string\"}, {\"name\": \"commentLength\", \"type\": \"long\"}, {\"name\": \"countryIsoCode\", \"type\": \"string\"}, {\"name\": \"countryName\", \"type\": \"string\"}, {\"name\": \"deleted\", \"type\": \"long\"}, {\"name\": \"delta\", \"type\": \"long\"}, {\"name\": \"deltaBucket\", \"type\": \"string\"}, {\"name\": \"diffUrl\", \"type\": \"string\"}, {\"name\": \"flags\", \"type\": \"string\"}, {\"name\": \"isAnonymous\", \"type\": \"string\"}, {\"name\": \"isMinor\", \"type\": \"string\"}, {\"name\": \"isNew\", \"type\": \"string\"}, {\"name\": \"isRobot\", \"type\": \"string\"}, {\"name\": \"isUnpatrolled\", \"type\": \"string\"}, {\"name\": \"metroCode\", \"type\": \"string\"}, {\"name\": \"namespace\", \"type\": \"string\"}, {\"name\": \"page\", \"type\": \"string\"}, {\"name\": \"regionIsoCode\", \"type\": \"string\"}, {\"name\": \"regionName\", \"type\": \"string\"}, {\"name\": \"timestamp\", \"type\": \"string\"}, {\"name\": \"user\", \"type\": \"string\"}]'\''\n  )\n)\nPARTITIONED BY DAY"
 }'
 ```
 
@@ -143,10 +143,10 @@ curl --location --request POST 'http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/task' 
 import json
 import requests
 
-url = "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/task"
+url = "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/task"
 
 payload = json.dumps({
-  "query": "SET maxNumTasks=3;\nSET finalizeAggregations=false;\nINSERT INTO wikipedia\nSELECT\n  TIME_PARSE(\"timestamp\") AS __time,\n  *\nFROM TABLE(\n  EXTERN(\n    '{\"type\": \"http\", \"uris\": [\"https://druid.apache.org/data/wikipedia.json.gz\"]}',\n    '{\"type\": \"json\"}',\n    '[{\"name\": \"added\", \"type\": \"long\"}, {\"name\": \"channel\", \"type\": \"string\"}, {\"name\": \"cityName\", \"type\": \"string\"}, {\"name\": \"comment\", \"type\": \"string\"}, {\"name\": \"commentLength\", \"type\": \"long\"}, {\"name\": \"countryIsoCode\", \"type\": \"string\"}, {\"name\": \"countryName\", \"type\": \"string\"}, {\"name\": \"deleted\", \"type\": \"long\"}, {\"name\": \"delta\", \"type\": \"long\"}, {\"name\": \"deltaBucket\", \"type\": \"string\"}, {\"name\": \"diffUrl\", \"type\": \"string\"}, {\"name\": \"flags\", \"type\": \"string\"}, {\"name\": \"isAnonymous\", \"type\": \"string\"}, {\"name\": \"isMinor\", \"type\": \"string\"}, {\"name\": \"isNew\", \"type\": \"string\"}, {\"name\": \"isRobot\", \"type\": \"string\"}, {\"name\": \"isUnpatrolled\", \"type\": \"string\"}, {\"name\": \"metroCode\", \"type\": \"string\"}, {\"name\": \"namespace\", \"type\": \"string\"}, {\"name\": \"page\", \"type\": \"string\"}, {\"name\": \"regionIsoCode\", \"type\": \"string\"}, {\"name\": \"regionName\", \"type\": \"string\"}, {\"name\": \"timestamp\", \"type\": \"string\"}, {\"name\": \"user\", \"type\": \"string\"}]'\n  )\n)\nPARTITIONED BY DAY"
+  "query": "SET maxNumTasks=3;\nSET finalizeAggregations=false;\nINSERT INTO wikipedia\nSELECT\n  TIME_PARSE(\"timestamp\") AS __time,\n  *\nFROM TABLE(\n  EXTERN(\n    '{\"type\": \"http\", \"uris\": [\"https://robux.apache.org/data/wikipedia.json.gz\"]}',\n    '{\"type\": \"json\"}',\n    '[{\"name\": \"added\", \"type\": \"long\"}, {\"name\": \"channel\", \"type\": \"string\"}, {\"name\": \"cityName\", \"type\": \"string\"}, {\"name\": \"comment\", \"type\": \"string\"}, {\"name\": \"commentLength\", \"type\": \"long\"}, {\"name\": \"countryIsoCode\", \"type\": \"string\"}, {\"name\": \"countryName\", \"type\": \"string\"}, {\"name\": \"deleted\", \"type\": \"long\"}, {\"name\": \"delta\", \"type\": \"long\"}, {\"name\": \"deltaBucket\", \"type\": \"string\"}, {\"name\": \"diffUrl\", \"type\": \"string\"}, {\"name\": \"flags\", \"type\": \"string\"}, {\"name\": \"isAnonymous\", \"type\": \"string\"}, {\"name\": \"isMinor\", \"type\": \"string\"}, {\"name\": \"isNew\", \"type\": \"string\"}, {\"name\": \"isRobot\", \"type\": \"string\"}, {\"name\": \"isUnpatrolled\", \"type\": \"string\"}, {\"name\": \"metroCode\", \"type\": \"string\"}, {\"name\": \"namespace\", \"type\": \"string\"}, {\"name\": \"page\", \"type\": \"string\"}, {\"name\": \"regionIsoCode\", \"type\": \"string\"}, {\"name\": \"regionName\", \"type\": \"string\"}, {\"name\": \"timestamp\", \"type\": \"string\"}, {\"name\": \"user\", \"type\": \"string\"}]'\n  )\n)\nPARTITIONED BY DAY"
 })
 headers = {
   'Content-Type': 'application/json'
@@ -179,7 +179,7 @@ print(response.text)
 
 | Field | Description |
 |---|---|
-| `taskId` | Controller task ID. You can use Druid's standard [Tasks API](./tasks-api.md) to interact with this controller task. |
+| `taskId` | Controller task ID. You can use Robux's standard [Tasks API](./tasks-api.md) to interact with this controller task. |
 | `state` | Initial state for the query. |
 
 ## Get the status for a query task
@@ -188,7 +188,7 @@ Retrieves the status of a query task. It returns a JSON object with the task's s
 
 ### URL
 
-`GET` `/druid/indexer/v1/task/{taskId}/status`
+`GET` `/robux/indexer/v1/task/{taskId}/status`
 
 ### Responses
 
@@ -223,7 +223,7 @@ The following example shows how to retrieve the status of a task with the ID `qu
 <TabItem value="9" label="HTTP">
 
 ```HTTP
-GET /druid/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/status HTTP/1.1
+GET /robux/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/status HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -233,7 +233,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 
 ```shell
-curl --location --request GET 'http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/status'
+curl --location --request GET 'http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/status'
 ```
 
 </TabItem>
@@ -244,7 +244,7 @@ curl --location --request GET 'http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/tas
 ```python
 import requests
 
-url = "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/status"
+url = "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/status"
 
 payload={}
 headers = {}
@@ -308,7 +308,7 @@ For an explanation of the fields in a report, see [Report response fields](#repo
 ### URL
 
 
-`GET` `/druid/indexer/v1/task/{taskId}/reports`
+`GET` `/robux/indexer/v1/task/{taskId}/reports`
 
 ### Responses
 
@@ -335,7 +335,7 @@ The following example shows how to retrieve the report for a query with the task
 <TabItem value="13" label="HTTP">
 
 ```HTTP
-GET /druid/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/reports HTTP/1.1
+GET /robux/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/reports HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -345,7 +345,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 
 ```shell
-curl --location --request GET 'http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/reports'
+curl --location --request GET 'http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/reports'
 ```
 
 </TabItem>
@@ -356,7 +356,7 @@ curl --location --request GET 'http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/tas
 ```python
 import requests
 
-url = "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/reports"
+url = "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-3dc0c45d-34d7-4b15-86c9-cdb2d3ebfc4e/reports"
 
 headers = {}
 
@@ -707,7 +707,7 @@ The response shows an example report for a query.
 
 <a name="report-response-fields"></a>
 
-The following table describes the response fields when you retrieve a report for a MSQ task engine using the `/druid/indexer/v1/task/{taskId}/reports` endpoint:
+The following table describes the response fields when you retrieve a report for a MSQ task engine using the `/robux/indexer/v1/task/{taskId}/reports` endpoint:
 
 | Field | Description |
 |---|---|
@@ -767,7 +767,7 @@ Returns a JSON object with the ID of the task that was canceled successfully.
 
 ### URL
 
-`POST` `/druid/indexer/v1/task/{taskId}/shutdown`
+`POST` `/robux/indexer/v1/task/{taskId}/shutdown`
 
 ### Responses
 
@@ -803,7 +803,7 @@ The following example shows how to cancel a query task with the ID `query-655efe
 
 
 ```HTTP
-POST /druid/indexer/v1/task/query-655efe33-781a-4c50-ae84-c2911b42d63c/shutdown HTTP/1.1
+POST /robux/indexer/v1/task/query-655efe33-781a-4c50-ae84-c2911b42d63c/shutdown HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -813,7 +813,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 
 ```shell
-curl --location --request POST 'http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-655efe33-781a-4c50-ae84-c2911b42d63c/shutdown'
+curl --location --request POST 'http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-655efe33-781a-4c50-ae84-c2911b42d63c/shutdown'
 ```
 
 </TabItem>
@@ -824,7 +824,7 @@ curl --location --request POST 'http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/ta
 ```python
 import requests
 
-url = "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-655efe33-781a-4c50-ae84-c2911b42d63c/shutdown"
+url = "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-655efe33-781a-4c50-ae84-c2911b42d63c/shutdown"
 
 payload = {}
 headers = {}

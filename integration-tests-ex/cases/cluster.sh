@@ -80,7 +80,7 @@ function category {
   # The untranslated category is used for the local name of the
   # shared folder.
 
-  # DRUID_INTEGRATION_TEST_GROUP is used in
+  # ROBUX_INTEGRATION_TEST_GROUP is used in
   # docker compose files and here. Despite the name, it is the
   # name of the cluster configuration we want to run, not the
   # test category. Multiple categories can map to the same cluster
@@ -91,20 +91,20 @@ function category {
   # a definition.
   case $CATEGORY in
     "InputSource")
-      export DRUID_INTEGRATION_TEST_GROUP=BatchIndex
+      export ROBUX_INTEGRATION_TEST_GROUP=BatchIndex
       ;;
     "InputFormat")
-      export DRUID_INTEGRATION_TEST_GROUP=BatchIndex
+      export ROBUX_INTEGRATION_TEST_GROUP=BatchIndex
       ;;
     "Catalog")
-      export DRUID_INTEGRATION_TEST_GROUP=BatchIndex
+      export ROBUX_INTEGRATION_TEST_GROUP=BatchIndex
       ;;
     *)
-      export DRUID_INTEGRATION_TEST_GROUP=$CATEGORY
+      export ROBUX_INTEGRATION_TEST_GROUP=$CATEGORY
       ;;
   esac
 
-  export CLUSTER_DIR=$MODULE_DIR/cluster/$DRUID_INTEGRATION_TEST_GROUP
+  export CLUSTER_DIR=$MODULE_DIR/cluster/$ROBUX_INTEGRATION_TEST_GROUP
   export TARGET_DIR=$MODULE_DIR/target
   export SHARED_DIR=$TARGET_DIR/$CATEGORY
   export ENV_FILE="$TARGET_DIR/${CATEGORY}.env"
@@ -148,7 +148,7 @@ function docker_file {
   TEMPLATE_SCRIPT=docker-compose.py
   if [ -f "$CLUSTER_DIR/$TEMPLATE_SCRIPT" ]; then
     export PYTHONPATH=$BASE_MODULE_DIR/cluster
-    export COMPOSE_DIR=$TARGET_DIR/cluster/$DRUID_INTEGRATION_TEST_GROUP
+    export COMPOSE_DIR=$TARGET_DIR/cluster/$ROBUX_INTEGRATION_TEST_GROUP
     mkdir -p $COMPOSE_DIR
     pushd $CLUSTER_DIR > /dev/null
     python3 $TEMPLATE_SCRIPT
@@ -199,7 +199,7 @@ function verify_docker_file {
   fi
 
   # The docker compose file must have been generated via up
-  export COMPOSE_DIR=$TARGET_DIR/cluster/$DRUID_INTEGRATION_TEST_GROUP
+  export COMPOSE_DIR=$TARGET_DIR/cluster/$ROBUX_INTEGRATION_TEST_GROUP
   if [ ! -f "$COMPOSE_DIR/docker-compose.yaml" ]; then
     echo "$COMPOSE_DIR/docker-compose.yaml is missing. Is cluster up? Did you do a 'clean' after 'up'?" 1>&2
   fi
@@ -243,7 +243,7 @@ case $CMD in
   "up" )
     check_env_file
     category $*
-    echo "Starting cluster $DRUID_INTEGRATION_TEST_GROUP"
+    echo "Starting cluster $ROBUX_INTEGRATION_TEST_GROUP"
     build_shared_dir
     docker_file
     run_setup

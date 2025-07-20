@@ -19,8 +19,8 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import React, { useEffect, useState } from 'react';
 
-import type { DestinationInfo, IngestQueryPattern } from '../../../druid-models';
-import { getDestinationInfo } from '../../../druid-models';
+import type { DestinationInfo, IngestQueryPattern } from '../../../robux-models';
+import { getDestinationInfo } from '../../../robux-models';
 import { DestinationForm } from '../destination-form/destination-form';
 
 import './destination-dialog.scss';

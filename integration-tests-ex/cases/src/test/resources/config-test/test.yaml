@@ -20,7 +20,7 @@ include:
   - /cluster/Common/zk-metastore.yaml
   - /cluster/Common/kafka.yaml
 
-druid:
+robux:
   overlord:
     instances:
       - port: 8090
@@ -46,19 +46,19 @@ druid:
       - port: 8888
 
 properties:
-    druid.test.config.dockerIp: localhost
-    druid.test.config.cloudRegion: myRegion
+    robux.test.config.dockerIp: localhost
+    robux.test.config.cloudRegion: myRegion
     my.test.property: howdy
 
 settings:
     cloudBucket: myBucket
     cloud_path: myPath
     cloud_region: hidden
-    druid_s3_accessKey: secret
+    robux_s3_accessKey: secret
 
 metastoreInit:
   - sql: |
-      REPLACE INTO druid_segments (
+      REPLACE INTO robux_segments (
         id, dataSource, created_date, start, end, partitioned, version, used, payload
       )
       VALUES (
@@ -75,7 +75,7 @@ metastoreInit:
           "version": "2013-01-02T04:13:41.980Z_v9",
           "loadSpec": {
             "type": "s3_zip",
-            "bucket": "static.druid.io",
+            "bucket": "static.robux.io",
             "key": "data/segments/twitterstream/2013-01-01T00:00:00.000Z_2013-01-02T00:00:00.000Z/2013-01-02T04:13:41.980Z_v9/0/index.zip"
           },
           "dimensions": "has_links,first_hashtag,user_time_zone,user_location,has_mention,user_lang,rt_name,user_name,

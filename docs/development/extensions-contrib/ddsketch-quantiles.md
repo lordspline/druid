@@ -25,10 +25,10 @@ title: "DDSketches for Approximate Quantiles module"
 
 This module provides aggregators for approximate quantile queries using the [DDSketch](https://github.com/datadog/sketches-java) library. The DDSketch library provides a fast, and fully-mergeable quantile sketch with relative error. If the true quantile is 100, a sketch with relative error of 1% guarantees a quantile value between 101 and 99. This is important and highly valuable behavior for long tail distributions. The best use case for these sketches is for accurately describing the upper quantiles of long tailed distributions such as network latencies.
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) in the extensions load list.
 
 ```
-druid.extensions.loadList=["druid-ddsketch", ...]
+robux.extensions.loadList=["robux-ddsketch", ...]
 ```
 
 ### Aggregator

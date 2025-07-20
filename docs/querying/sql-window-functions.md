@@ -25,14 +25,14 @@ description: Reference for window functions
 
 :::info
 
-Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
 This document describes the SQL language.
 
 :::
 
-Window functions in Apache Druid produce values based upon the relationship of one row within a window of rows to the other rows within the same window. A window is a group of related rows within a result set. For example, rows with the same value for a specific dimension.
+Window functions in Apache Robux produce values based upon the relationship of one row within a window of rows to the other rows within the same window. A window is a group of related rows within a result set. For example, rows with the same value for a specific dimension.
 
-Window functions in Druid require a GROUP BY statement. Druid performs the row-level aggregations for the GROUP BY before performing the window function calculations.
+Window functions in Robux require a GROUP BY statement. Robux performs the row-level aggregations for the GROUP BY before performing the window function calculations.
 
 The following example organizes results with the same `channel` value into windows. For each window, the query returns the rank of each row in ascending order based upon its `changed` value.
 
@@ -78,13 +78,13 @@ WINDOW w AS (PARTITION BY channel ORDER BY ABS(delta) ASC)
 
 Window functions are similar to [aggregation functions](./aggregations.md).  
 
-You can use the OVER clause to treat other Druid aggregation functions as window functions. For example, the sum of a value for rows within a window.
+You can use the OVER clause to treat other Robux aggregation functions as window functions. For example, the sum of a value for rows within a window.
 
 Window functions support aliasing.
 
 ## Window function syntax
 
-You can write a window function in Druid using either syntax below.
+You can write a window function in Robux using either syntax below.
 The second syntax shows a window alias to reference a window that you can reuse.
 
 
@@ -130,11 +130,11 @@ ROWS and RANGE accept the following values for `range start` and `range end`:
 
 See [Example with window frames](#example-with-window-frames) for more detail.
  
-Druid applies the GROUP BY dimensions before calculating all non-window aggregation functions. Then it applies the window function over the aggregated results.
+Robux applies the GROUP BY dimensions before calculating all non-window aggregation functions. Then it applies the window function over the aggregated results.
 
 :::note
 
-Sometimes windows are called partitions. However, the partitioning for window functions are a shuffle (partition) of the result set created at query time and is not to be confused with Druid's segment partitioning feature which partitions data at ingest time.
+Sometimes windows are called partitions. However, the partitioning for window functions are a shuffle (partition) of the result set created at query time and is not to be confused with Robux's segment partitioning feature which partitions data at ingest time.
 
 :::
 
@@ -183,7 +183,7 @@ ORDER BY 5
 
 ### PARTITION BY windows
 
-When a window only specifies PARTITION BY partition expression, Druid calculates the aggregate window function over all the rows that share a value within the selected dataset.
+When a window only specifies PARTITION BY partition expression, Robux calculates the aggregate window function over all the rows that share a value within the selected dataset.
 
 The following example demonstrates a query that uses two different windows—`PARTITION BY channel` and `PARTITION BY user`—to calculate the total activity in the channel and total activity by the user so that they can be compared to individual hourly activity:
 
@@ -235,7 +235,7 @@ This type of result helps you analyze the impact of an individual user's hourly 
 
 #### Window frame guardrails
 
-Druid has guardrail logic to prevent you from executing window function queries with window frame expressions that might return unexpected results.
+Robux has guardrail logic to prevent you from executing window function queries with window frame expressions that might return unexpected results.
 
 For example:
 - You cannot set expressions as bounds for window frames.

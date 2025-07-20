@@ -19,12 +19,12 @@
 echo "Waiting for hadoop namenode to be up"
 MAX_ITERATIONS=15
 i=1
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /druid"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /robux"
 while [ $? -ne 0 ] && [ $i -lt $MAX_ITERATIONS ]
 do
    sleep 2
    i=$((i+1))
-   docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /druid"
+   docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /robux"
 done
 
 if [ $i -lt $MAX_ITERATIONS ]; then
@@ -36,25 +36,25 @@ fi
 
 set -e
 if [ -n "${HADOOP_VERSION}" ] && [ "${HADOOP_VERSION:0:1}" == "3" ]; then
-  docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /user/root"
-  docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -put /usr/local/hadoop/etc/hadoop/ input"
+  docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /user/root"
+  docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -put /usr/local/hadoop/etc/hadoop/ input"
 fi
 
-# Setup hadoop druid dirs
-echo "Setting up druid hadoop dirs"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /druid"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /druid/segments"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /quickstart"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod 777 /druid"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod 777 /druid/segments"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod 777 /quickstart"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod -R 777 /tmp"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod -R 777 /user"
+# Setup hadoop robux dirs
+echo "Setting up robux hadoop dirs"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /robux"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /robux/segments"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -mkdir -p /quickstart"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod 777 /robux"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod 777 /robux/segments"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod 777 /quickstart"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod -R 777 /tmp"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -chmod -R 777 /user"
 # Copy data files to Hadoop container
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -put -f /shared/wikiticker-it/wikiticker-2015-09-12-sampled.json.gz /quickstart/wikiticker-2015-09-12-sampled.json.gz"
-docker exec -t druid-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -put /resources/data/batch_index /batch_index"
-echo "Finished setting up druid hadoop dirs"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -put -f /shared/wikiticker-it/wikiticker-2015-09-12-sampled.json.gz /quickstart/wikiticker-2015-09-12-sampled.json.gz"
+docker exec -t robux-it-hadoop sh -c "./usr/local/hadoop/bin/hdfs dfs -put /resources/data/batch_index /batch_index"
+echo "Finished setting up robux hadoop dirs"
 
 echo "Copying Hadoop XML files to shared"
-docker exec -t druid-it-hadoop sh -c "cp /usr/local/hadoop/etc/hadoop/*.xml /shared/hadoop_xml"
+docker exec -t robux-it-hadoop sh -c "cp /usr/local/hadoop/etc/hadoop/*.xml /shared/hadoop_xml"
 echo "Copied Hadoop XML files to shared"

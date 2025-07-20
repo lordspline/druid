@@ -46,7 +46,7 @@ def add_basic_auth_header(args, req):
 # Keep trying until timeout_at, maybe die then. Returns bytes.
 def post_task(args, task_json, timeout_at):
   try:
-    url = args.url.rstrip("/") + "/druid/indexer/v1/task"
+    url = args.url.rstrip("/") + "/robux/indexer/v1/task"
     req = urllib.request.Request(url, task_json, {'Content-Type' : 'application/json'})
     add_basic_auth_header(args, req)
     timeleft = timeout_at - time.time()
@@ -82,7 +82,7 @@ def post_task(args, task_json, timeout_at):
 # Keep trying until timeout_at, maybe die then
 def await_task_completion(args, task_id, timeout_at):
   while True:
-    url = args.url.rstrip("/") + "/druid/indexer/v1/task/{0}/status".format(task_id)
+    url = args.url.rstrip("/") + "/robux/indexer/v1/task/{0}/status".format(task_id)
     req = urllib.request.Request(url)
     add_basic_auth_header(args, req)
     timeleft = timeout_at - time.time()
@@ -112,7 +112,7 @@ def raise_friendly_error(e):
 
 def await_load_completion(args, datasource, timeout_at):
   while True:
-    url = args.coordinator_url.rstrip("/") + "/druid/coordinator/v1/loadstatus"
+    url = args.coordinator_url.rstrip("/") + "/robux/coordinator/v1/loadstatus"
     req = urllib.request.Request(url)
     add_basic_auth_header(args, req)
     timeleft = timeout_at - time.time()
@@ -133,9 +133,9 @@ def await_load_completion(args, datasource, timeout_at):
         raise Exception("{0} was not loaded in time!".format(datasource))
 
 def main():
-  parser = argparse.ArgumentParser(description='Post Druid indexing tasks.')
-  parser.add_argument('--url', '-u', metavar='url', type=str, default='http://localhost:8090/', help='Druid Overlord url')
-  parser.add_argument('--coordinator-url', type=str, default='http://localhost:8081/', help='Druid Coordinator url')
+  parser = argparse.ArgumentParser(description='Post Robux indexing tasks.')
+  parser.add_argument('--url', '-u', metavar='url', type=str, default='http://localhost:8090/', help='Robux Overlord url')
+  parser.add_argument('--coordinator-url', type=str, default='http://localhost:8081/', help='Robux Coordinator url')
   parser.add_argument('--file', '-f', type=str, required=True, help='Query JSON file')
   parser.add_argument('--submit-timeout', type=int, default=120, help='Timeout (in seconds) for submitting tasks')
   parser.add_argument('--complete-timeout', type=int, default=14400, help='Timeout (in seconds) for completing tasks')
@@ -159,8 +159,8 @@ def main():
   task_id = json.loads(post_task(args, task_contents.encode(), submit_timeout_at).decode('utf-8'))["task"]
 
   sys.stderr.write('\033[1m' + "Task started: " + '\033[0m' + "{0}\n".format(task_id))
-  sys.stderr.write('\033[1m' + "Task log:     " + '\033[0m' + "{0}/druid/indexer/v1/task/{1}/log\n".format(args.url.rstrip("/"),task_id))
-  sys.stderr.write('\033[1m' + "Task status:  " + '\033[0m' + "{0}/druid/indexer/v1/task/{1}/status\n".format(args.url.rstrip("/"),task_id))
+  sys.stderr.write('\033[1m' + "Task log:     " + '\033[0m' + "{0}/robux/indexer/v1/task/{1}/log\n".format(args.url.rstrip("/"),task_id))
+  sys.stderr.write('\033[1m' + "Task status:  " + '\033[0m' + "{0}/robux/indexer/v1/task/{1}/status\n".format(args.url.rstrip("/"),task_id))
 
   task_status = await_task_completion(args, task_id, complete_timeout_at)
   sys.stderr.write("Task finished with status: {0}\n".format(task_status))

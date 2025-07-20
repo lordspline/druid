@@ -23,7 +23,7 @@ title: "Using query caching"
   -->
 
 
-This topic covers how to configure services to populate and use the Druid query caches. For a conceptual overview and use cases, see [Query caching](./caching.md). For information on how to configure the caching mechanism, see [Cache configuration](../configuration/index.md#cache-configuration).
+This topic covers how to configure services to populate and use the Robux query caches. For a conceptual overview and use cases, see [Query caching](./caching.md). For information on how to configure the caching mechanism, see [Cache configuration](../configuration/index.md#cache-configuration).
 
 All query caches have a pair of parameters that control the way individual queries interact with the cache:
 
@@ -38,8 +38,8 @@ To use caching, it must be enabled in the settings for the service to perform ca
 ## Enabling query caching on Historicals
 Historicals only support **segment-level** caching, which is enabled by default. To control caching on the Historical, set the `useCache` and `populateCache` runtime properties. For example, to set the Historical to both use and populate the segment cache for queries:
  ```
- druid.historical.cache.useCache=true
- druid.historical.cache.populateCache=true
+ robux.historical.cache.useCache=true
+ robux.historical.cache.populateCache=true
  ```
 See [Historical caching](../configuration/index.md#historical-caching) for a description of all available Historical cache configurations.
  
@@ -47,8 +47,8 @@ See [Historical caching](../configuration/index.md#historical-caching) for a des
 Task executor services, the Peon or the Indexer, only support **segment-level** caching. To control caching on a task executor service, set the `useCache` and `populateCache` runtime properties. For example, to set the Peon to both use and populate the segment cache for queries:
 
 ```
-druid.realtime.cache.useCache=true
-druid.realtime.cache.populateCache=true
+robux.realtime.cache.useCache=true
+robux.realtime.cache.populateCache=true
 ```
 
 See [Peon caching](../configuration/index.md#peon-caching) and [Indexer caching](../configuration/index.md#indexer-caching) for a description of all available task executor service caching options.
@@ -58,21 +58,21 @@ Brokers support both segment-level and whole-query result level caching.
 
 To control **segment caching** on the Broker, set the `useCache` and `populateCache`runtime properties. For example, to set the Broker to use and populate the segment cache for queries:
 ```
-druid.broker.cache.useCache=true
-druid.broker.cache.populateCache=true
+robux.broker.cache.useCache=true
+robux.broker.cache.populateCache=true
 ```
 
 To control **whole-query caching** on the Broker, set the `useResultLevelCache` and `populateResultLevelCache` runtime properties. For example, to set the Broker to use and populate the whole-query cache for queries:
 
 ```
-druid.broker.cache.useResultLevelCache=true
-druid.broker.cache.populateResultLevelCache=true
+robux.broker.cache.useResultLevelCache=true
+robux.broker.cache.populateResultLevelCache=true
 ```
 
 See [Broker caching](../configuration/index.md#broker-caching) for a description of all available Broker cache configurations.
  
 ## Enabling caching in the query context
-As long as the service is set to populate the cache, you can set cache options for individual queries in the query [context](./query-context.md). For example, you can `POST` a Druid SQL request to the HTTP POST API and include the context as a JSON object:
+As long as the service is set to populate the cache, you can set cache options for individual queries in the query [context](./query-context.md). For example, you can `POST` a Robux SQL request to the HTTP POST API and include the context as a JSON object:
 
 ```
 {
@@ -84,7 +84,7 @@ As long as the service is set to populate the cache, you can set cache options f
 }
 ```
 
-In this example the user has set `populateCache` to `false` to avoid filling the result cache with results for segments that are over a year old. For more information, see [Druid SQL client APIs](../api-reference/sql-api.md).
+In this example the user has set `populateCache` to `false` to avoid filling the result cache with results for segments that are over a year old. For more information, see [Robux SQL client APIs](../api-reference/sql-api.md).
 
 You can also use the SET command to specify cache options directly within your SQL query string. For more information, see [SET](../querying/sql.md#set). 
 

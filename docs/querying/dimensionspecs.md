@@ -24,7 +24,7 @@ sidebar_label: "Dimensions"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the native
  language. For information about functions available in SQL, refer to the
  [SQL documentation](sql-scalar.md).
@@ -73,9 +73,9 @@ Please refer to the [Output Types](#output-types) section for more details.
 
 ### Filtered DimensionSpecs
 
-A filtered `DimensionSpec` is only useful for multi-value dimensions. Say you have a row in Apache Druid that has a multi-value dimension with values ["v1", "v2", "v3"] and you send a groupBy/topN query grouping by that dimension with a [query filter](filters.md) for a value of "v1". In the response you will get 3 rows containing "v1", "v2" and "v3". This behavior might be unintuitive for some use cases.
+A filtered `DimensionSpec` is only useful for multi-value dimensions. Say you have a row in Apache Robux that has a multi-value dimension with values ["v1", "v2", "v3"] and you send a groupBy/topN query grouping by that dimension with a [query filter](filters.md) for a value of "v1". In the response you will get 3 rows containing "v1", "v2" and "v3". This behavior might be unintuitive for some use cases.
 
-This happens because Druid uses the "query filter" internally on bitmaps to match the row to include in query result processing. With multi-value dimensions, "query filter" behaves like a contains check, which matches the row with dimension value ["v1", "v2", "v3"]. 
+This happens because Robux uses the "query filter" internally on bitmaps to match the row to include in query result processing. With multi-value dimensions, "query filter" behaves like a contains check, which matches the row with dimension value ["v1", "v2", "v3"]. 
 
 See the section on "Multi-value columns" in [segment](../design/segments.md) for more details.
 
@@ -296,7 +296,7 @@ which works on time value directly as opposed to string values.
 
 If "joda" is true, time formats are described in the [Joda DateTimeFormat documentation](http://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html).
 If "joda" is false (or unspecified) then formats are described in the [SimpleDateFormat documentation](http://icu-project.org/apiref/icu4j/com/ibm/icu/text/SimpleDateFormat.html).
-In general, we recommend setting "joda" to true since Joda format strings are more common in Druid APIs and since Joda handles certain edge cases (like weeks and weekyears near
+In general, we recommend setting "joda" to true since Joda format strings are more common in Robux APIs and since Joda handles certain edge cases (like weeks and weekyears near
 the start and end of calendar years) in a more ISO8601 compliant way.
 
 If a value cannot be parsed using the provided timeFormat, it will be returned as-is.
@@ -347,12 +347,12 @@ Example for the `__time` dimension:
 ```
 
 :::info
- JavaScript-based functionality is disabled by default. Please refer to the Druid [JavaScript programming guide](../development/javascript.md) for guidelines about using Druid's JavaScript functionality, including instructions on how to enable it.
+ JavaScript-based functionality is disabled by default. Please refer to the Robux [JavaScript programming guide](../development/javascript.md) for guidelines about using Robux's JavaScript functionality, including instructions on how to enable it.
 :::
 
 ### Registered lookup extraction function
 
-Lookups are a concept in Druid where dimension values are (optionally) replaced with new values.
+Lookups are a concept in Robux where dimension values are (optionally) replaced with new values.
 For more documentation on using lookups, please see [Lookups](../querying/lookups.md).
 The "registeredLookup" extraction function lets you refer to a lookup that has been registered in the cluster-wide
 configuration.
@@ -376,7 +376,7 @@ be treated as missing.
 It is illegal to set `retainMissingValue = true` and also specify a `replaceMissingValueWith`.
 
 A property of `injective` can override the lookup's own sense of whether or not it is
-[injective](lookups.md#injective-lookups). If left unspecified, Druid will use the registered cluster-wide lookup
+[injective](lookups.md#injective-lookups). If left unspecified, Robux will use the registered cluster-wide lookup
 configuration.
 
 A property `optimize` can be supplied to allow optimization of lookup based extraction filter (by default `optimize = true`).
@@ -432,7 +432,7 @@ Omitting the empty string key will cause the missing value to take over. For exa
 
 ### Inline lookup extraction function
 
-Lookups are a concept in Druid where dimension values are (optionally) replaced with new values.
+Lookups are a concept in Robux where dimension values are (optionally) replaced with new values.
 For more documentation on using lookups, please see [Lookups](../querying/lookups.md).
 The "lookup" extraction function lets you specify an inline lookup map without registering one in the cluster-wide
 configuration.
@@ -500,7 +500,7 @@ Example for chaining [regular expression extraction function](#regular-expressio
 ```
 
 It will transform dimension values with specified extraction functions in the order named.
-For example, `'/druid/prod/historical'` is transformed to `'the dru'` as regular expression extraction function first transforms it to `'druid'` and then, JavaScript extraction function transforms it to `'the druid'`, and lastly, substring extraction function transforms it to `'the dru'`.
+For example, `'/robux/prod/historical'` is transformed to `'the dru'` as regular expression extraction function first transforms it to `'robux'` and then, JavaScript extraction function transforms it to `'the robux'`, and lastly, substring extraction function transforms it to `'the dru'`.
 
 ### String Format Extraction Function
 

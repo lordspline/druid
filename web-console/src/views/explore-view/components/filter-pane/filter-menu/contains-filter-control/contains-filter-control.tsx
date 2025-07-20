@@ -19,8 +19,8 @@
 import { FormGroup, InputGroup, Menu, MenuItem } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import type { CancelToken } from 'axios';
-import type { ContainsFilterPattern, QueryResult, SqlQuery } from 'druid-query-toolkit';
-import { C, F, filterPatternToExpression, SqlExpression } from 'druid-query-toolkit';
+import type { ContainsFilterPattern, QueryResult, SqlQuery } from 'robux-query-toolkit';
+import { C, F, filterPatternToExpression, SqlExpression } from 'robux-query-toolkit';
 import React, { useMemo } from 'react';
 
 import { useQueryManager } from '../../../../../../hooks';

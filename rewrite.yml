@@ -14,9 +14,9 @@
 # limitations under the License.
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.apache.druid.RewriteRules
+name: org.apache.robux.RewriteRules
 recipeList:
-  - org.apache.druid.UpgradeCalciteTestsToJunit5
+  - org.apache.robux.UpgradeCalciteTestsToJunit5
   - org.openrewrite.java.testing.junit5.RemoveObsoleteRunners:
       obsoleteRunners:
         - org.junit.experimental.runners.Enclosed
@@ -24,17 +24,17 @@ recipeList:
   - org.openrewrite.java.jackson.CodehausToFasterXML
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.apache.druid.UpgradeCalciteTestsToJunit5
+name: org.apache.robux.UpgradeCalciteTestsToJunit5
 preconditions:
   - org.openrewrite.java.search.FindImplementations:
-       typeName: org.apache.druid.sql.calcite.util.CalciteTestBase
+       typeName: org.apache.robux.sql.calcite.util.CalciteTestBase
 recipeList:
-  - org.apache.druid.JUnit4to5Migration
+  - org.apache.robux.JUnit4to5Migration
   - org.openrewrite.staticanalysis.UnnecessaryThrows
   #- org.openrewrite.java.testing.junit5.StaticImports
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.apache.druid.EasyMockRunnerToEasyMockExtension
+name: org.apache.robux.EasyMockRunnerToEasyMockExtension
 displayName: Replace EasyMock `@RunWith` with `@ExtendWith` usage
 recipeList:
   - org.openrewrite.java.testing.junit5.RunnerToExtension:
@@ -45,7 +45,7 @@ recipeList:
 # Customized version of org.openrewrite.java.testing.junit5.JUnit4to5Migration
 # commented lines are recipes which were disabled
 type: specs.openrewrite.org/v1beta/recipe
-name: org.apache.druid.JUnit4to5Migration
+name: org.apache.robux.JUnit4to5Migration
 displayName: Custom JUnit Jupiter migration from JUnit 4.x
 description: Migrates JUnit 4.x tests to JUnit Jupiter.
 tags:
@@ -81,7 +81,7 @@ recipeList:
   - org.openrewrite.java.testing.junit5.AddMissingTestBeforeAfterAnnotations
   - org.openrewrite.java.testing.junit5.ParameterizedRunnerToParameterized
   - org.openrewrite.java.testing.junit5.JUnitParamsRunnerToParameterized
-  - org.apache.druid.EasyMockRunnerToEasyMockExtension
+  - org.apache.robux.EasyMockRunnerToEasyMockExtension
   - org.openrewrite.java.testing.junit5.ExpectedExceptionToAssertThrows
   - org.openrewrite.java.testing.junit5.UpdateMockWebServer
   - org.openrewrite.java.testing.junit5.VertxUnitToVertxJunit5

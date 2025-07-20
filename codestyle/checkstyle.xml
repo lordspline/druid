@@ -128,7 +128,7 @@
     <module name="Regexp">
       <property name="format" value="com\.google\.common\.io\.Closer"/>
       <property name="illegalPattern" value="true"/>
-      <property name="message" value="Use org.apache.druid.java.util.common.io.Closer instead of Guava's Closer"/>
+      <property name="message" value="Use org.apache.robux.java.util.common.io.Closer instead of Guava's Closer"/>
     </module>
     <module name="Regexp">
       <property name="format" value="^// {2}"/>
@@ -178,7 +178,7 @@
     <module name="Regexp">
       <property name="format" value="com\.metamx\.common\.logger"/>
       <property name="illegalPattern" value="true"/>
-      <property name="message" value="Use org.apache.druid.java.util.common.logger.Logger instead"/>
+      <property name="message" value="Use org.apache.robux.java.util.common.logger.Logger instead"/>
     </module>
 
     <module name="Regexp">
@@ -203,7 +203,7 @@
     <module name="Regexp">
       <property name="format" value='@Produces\(\"text/plain\"\)'/>
       <property name="illegalPattern" value="true"/>
-      <property name="message" value="Use org.apache.druid.server.http.HttpMediaType#TEXT_PLAIN_UTF8 instead"/>
+      <property name="message" value="Use org.apache.robux.server.http.HttpMediaType#TEXT_PLAIN_UTF8 instead"/>
     </module>
 
     <module name="Regexp">
@@ -213,7 +213,7 @@
     </module>
 
     <module name="PackageName">
-      <property name="format" value="^org.apache.druid.*$"/>
+      <property name="format" value="^org.apache.robux.*$"/>
     </module>
     <module name="PackageDeclaration"/>
 
@@ -242,7 +242,7 @@
       />
       <property name="illegalPattern" value="true"/>
       <property name="message" value="&#10;
-According to the Druid code style, if a method or constructor declaration or a call&#10;
+According to the Robux code style, if a method or constructor declaration or a call&#10;
 doesn't fit a single line, each parameter or argument should be on it's own, e. g:&#10;
 &#10;
     MyReturnType myMethodWithAVeryLongName(&#10;
@@ -283,7 +283,7 @@ arguments, e. g:&#10;
         myMethodWithAVeryLongName(myArgA, myArgB);&#10;
 &#10;
 Also note that this checkstyle rule (the one that caused this message to be printed)&#10;
-doesn't spot all violations of the corresponding Druid code style rule. If you see&#10;
+doesn't spot all violations of the corresponding Robux code style rule. If you see&#10;
 a place where method or constructor parameters or call arguments are not properly&#10;
 located each on it's own line, but this checkstyle rule is silent, if doesn't mean&#10;
 that the code is formatted correctly. Fix it anyway.&#10;

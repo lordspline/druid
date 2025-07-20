@@ -24,8 +24,8 @@ import type { CancelToken } from 'axios';
 import type { Timezone } from 'chronoshift';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
-import type { Column, QueryResult, SqlExpression } from 'druid-query-toolkit';
-import { QueryRunner, SqlLiteral, SqlQuery } from 'druid-query-toolkit';
+import type { Column, QueryResult, SqlExpression } from 'robux-query-toolkit';
+import { QueryRunner, SqlLiteral, SqlQuery } from 'robux-query-toolkit';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Loader, SplitterLayout } from '../../components';
@@ -33,7 +33,7 @@ import { ShowValueDialog } from '../../dialogs/show-value-dialog/show-value-dial
 import type { Capabilities } from '../../helpers';
 import { useHashAndLocalStorageHybridState, useQueryManager } from '../../hooks';
 import { Api, AppToaster } from '../../singletons';
-import { DruidError, LocalStorageKeys, queryDruidSql } from '../../utils';
+import { RobuxError, LocalStorageKeys, queryRobuxSql } from '../../utils';
 
 import {
   DroppableContainer,
@@ -62,7 +62,7 @@ const queryRunner = new QueryRunner({
   executor: async (sqlQueryPayload, isSql, cancelToken) => {
     if (!isSql) throw new Error('should never get here');
     QUERY_LOG.addQuery(sqlQueryPayload.query);
-    return Api.instance.post('/druid/v2/sql', sqlQueryPayload, { cancelToken });
+    return Api.instance.post('/robux/v2/sql', sqlQueryPayload, { cancelToken });
   },
 });
 
@@ -81,7 +81,7 @@ async function runSqlQuery(
       cancelToken,
     });
   } catch (e) {
-    throw new DruidError(e);
+    throw new RobuxError(e);
   }
 }
 
@@ -128,7 +128,7 @@ export const ExploreView = React.memo(function ExploreView({ capabilities }: Exp
   // -------------------------------------------------------
   // If no table selected, change to first table if possible
   async function initializeWithFirstTable() {
-    const tables = await queryDruidSql<{ TABLE_NAME: string }>({
+    const tables = await queryRobuxSql<{ TABLE_NAME: string }>({
       query: `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'TABLE' LIMIT 1`,
     });
 

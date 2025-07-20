@@ -18,7 +18,7 @@
 
 import React from 'react';
 
-import type { InputSource } from '../../../druid-models';
+import type { InputSource } from '../../../robux-models';
 
 export interface InputSourceInfoProps {
   inputSource: Partial<InputSource>;
@@ -34,7 +34,7 @@ export const InputSourceInfo = React.memo(function InputSourceInfo(props: InputS
           <p>Load data accessible through HTTP(s).</p>
           <p>
             Data must be in text, orc, or parquet format and the HTTP(s) endpoint must be reachable
-            by every Druid process in the cluster.
+            by every Robux process in the cluster.
           </p>
         </>
       );
@@ -47,7 +47,7 @@ export const InputSourceInfo = React.memo(function InputSourceInfo(props: InputS
           </p>
           <p>Load data directly from a local file.</p>
           <p>
-            Files must be in text, orc, or parquet format and must be accessible to all the Druid
+            Files must be in text, orc, or parquet format and must be accessible to all the Robux
             processes in the cluster.
           </p>
         </>

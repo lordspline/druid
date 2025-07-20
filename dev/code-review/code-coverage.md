@@ -17,19 +17,19 @@
   ~ under the License.
   -->
 
-# Druid's Code Coverage Enforcement
+# Robux's Code Coverage Enforcement
 
-Druid code repository has an automated way of checking if new code has enough code coverage. 
-Druid CI checks are configured to enforce code coverage using JaCoCo. The CI checks will prevent a PR from being merged 
+Robux code repository has an automated way of checking if new code has enough code coverage. 
+Robux CI checks are configured to enforce code coverage using JaCoCo. The CI checks will prevent a PR from being merged 
 if test coverage of new added code is below the set threshold. The CI checks filters test coverage based on a diff from
-your PR and make sure that the thresholds are met. Druid currently enforce branch and line code coverage.
+your PR and make sure that the thresholds are met. Robux currently enforce branch and line code coverage.
 
 However, do note that our current code coverage checks are merely smoke tests. They only verify that a line or branch 
 of code has been called during the test, but not that the functionality has been tested sufficiently. 
 Reviewers should still verify that all the different branches are sufficiently tested by reviewing the tests. 
 
 ## Running code coverage locally
-Code coverage should be run locally to make sure the PR will pass Druid CI checks. 
+Code coverage should be run locally to make sure the PR will pass Robux CI checks. 
 1. Code coverage on the codebase can be generated directly in [Intellij](../intellij-setup.md#Set-Code-Coverage-Runner). 
 2. Code coverage on just the diff of your PR can be generated in your terminal. First, you will have to install
 diff-test-coverage by running `npm install @connectis/diff-test-coverage`. Next, run the unit tests

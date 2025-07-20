@@ -21,8 +21,8 @@
 # Example of override config file to provide.
 # Please replace <OVERRIDE_THIS> with your cloud configs/credentials
 #
-druid_storage_type=azure
-druid_azure_account=<OVERRIDE_THIS>
-druid_azure_key=<OVERRIDE_THIS>
-druid_azure_container=<OVERRIDE_THIS>
-druid_extensions_loadList=["druid-azure-extensions"]
+robux_storage_type=azure
+robux_azure_account=<OVERRIDE_THIS>
+robux_azure_key=<OVERRIDE_THIS>
+robux_azure_container=<OVERRIDE_THIS>
+robux_extensions_loadList=["robux-azure-extensions"]

@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import type { QueryResult } from 'druid-query-toolkit';
-import { QueryRunner, T } from 'druid-query-toolkit';
+import type { QueryResult } from 'robux-query-toolkit';
+import { QueryRunner, T } from 'robux-query-toolkit';
 import React from 'react';
 
 import { Loader, RecordTablePane } from '../../../components';
 import { useQueryManager } from '../../../hooks';
-import { DruidError } from '../../../utils';
+import { RobuxError } from '../../../utils';
 
 import './datasource-preview-pane.scss';
 
@@ -48,7 +48,7 @@ export const DatasourcePreviewPane = React.memo(function DatasourcePreviewPane(
           cancelToken,
         });
       } catch (e) {
-        throw new DruidError(e);
+        throw new RobuxError(e);
       }
       return result;
     },

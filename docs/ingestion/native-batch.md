@@ -24,10 +24,10 @@ sidebar_label: JSON-based batch
   -->
 
 :::info
- This page describes JSON-based batch ingestion using [ingestion specs](ingestion-spec.md). For SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md) extension, see [SQL-based ingestion](../multi-stage-query/index.md). Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which ingestion method is right for you.
+ This page describes JSON-based batch ingestion using [ingestion specs](ingestion-spec.md). For SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md) extension, see [SQL-based ingestion](../multi-stage-query/index.md). Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which ingestion method is right for you.
 :::
 
-Apache Druid supports the following types of JSON-based batch indexing tasks:
+Apache Robux supports the following types of JSON-based batch indexing tasks:
 
 - Parallel task indexing (`index_parallel`) that can run multiple indexing tasks concurrently. Parallel task works well for production ingestion tasks.
 - Simple task indexing (`index`) that run a single indexing task at a time. Simple task indexing is suitable for development and test environments.
@@ -46,16 +46,16 @@ For related information on batch indexing, see:
 To run either kind of JSON-based batch indexing task, you can:
 
 - Use the **Load Data** UI in the web console to define and submit an ingestion spec.
-- Define an ingestion spec in JSON based upon the [examples](#parallel-indexing-example) and reference topics for batch indexing. Then POST the ingestion spec to the [Tasks API endpoint](../api-reference/tasks-api.md), `/druid/indexer/v1/task`, the Overlord service. Alternatively, you can use the indexing script included with Druid at `bin/post-index-task`.
+- Define an ingestion spec in JSON based upon the [examples](#parallel-indexing-example) and reference topics for batch indexing. Then POST the ingestion spec to the [Tasks API endpoint](../api-reference/tasks-api.md), `/robux/indexer/v1/task`, the Overlord service. Alternatively, you can use the indexing script included with Robux at `bin/post-index-task`.
 
 ## Parallel task indexing
 
-The parallel task type `index_parallel` is a task for multi-threaded batch indexing. Parallel task indexing only relies on Druid resources. It doesn't depend on other external systems like Hadoop.
+The parallel task type `index_parallel` is a task for multi-threaded batch indexing. Parallel task indexing only relies on Robux resources. It doesn't depend on other external systems like Hadoop.
 
 The `index_parallel` task is a supervisor task that orchestrates
 the whole indexing process. The supervisor task splits the input data and creates worker tasks to process the individual portions of data.
 
-Druid issues the worker tasks to the Overlord. The Overlord schedules and runs the workers on Middle Managers or Indexers. After a worker task successfully processes the assigned input portion, it reports the resulting segment list to the Supervisor task.
+Robux issues the worker tasks to the Overlord. The Overlord schedules and runs the workers on Middle Managers or Indexers. After a worker task successfully processes the assigned input portion, it reports the resulting segment list to the Supervisor task.
 
 The Supervisor task periodically checks the status of worker tasks. If a task fails, the Supervisor retries the task until the number of retries reaches the configured limit. If all worker tasks succeed, it publishes the reported segments at once and finalizes ingestion.
 
@@ -109,7 +109,7 @@ You can set `dropExisting` flag in the `ioConfig` to true if you want the ingest
 
 The following examples demonstrate when to set the `dropExisting` property to true in the `ioConfig`:
 
-Consider an existing segment with an interval of 2020-01-01 to 2021-01-01 and `YEAR` `segmentGranularity`. You want to overwrite the whole interval of 2020-01-01 to 2021-01-01 with new data using the finer segmentGranularity of `MONTH`. If the replacement data does not have a record within every months from 2020-01-01 to 2021-01-01 Druid cannot drop the original `YEAR` segment even if it does include all the replacement data. Set `dropExisting` to true in this case to replace the original segment at `YEAR` `segmentGranularity` since you no longer need it.
+Consider an existing segment with an interval of 2020-01-01 to 2021-01-01 and `YEAR` `segmentGranularity`. You want to overwrite the whole interval of 2020-01-01 to 2021-01-01 with new data using the finer segmentGranularity of `MONTH`. If the replacement data does not have a record within every months from 2020-01-01 to 2021-01-01 Robux cannot drop the original `YEAR` segment even if it does include all the replacement data. Set `dropExisting` to true in this case to replace the original segment at `YEAR` `segmentGranularity` since you no longer need it.
 
 Imagine you want to re-ingest or overwrite a datasource and the new data does not contain some time intervals that exist in the datasource. For example, a datasource contains the following data at `MONTH` `segmentGranularity`:
 
@@ -225,17 +225,17 @@ The following table defines the primary sections of the input spec:
 |Property|Description|Required|
 |--------|-----------|--------|
 |`type`|The task type. For parallel task indexing, set the value to `index_parallel`.|yes|
-|`id`|The task ID. If omitted, Druid generates the task ID using the task type, data source name, interval, and date-time stamp.|no|
+|`id`|The task ID. If omitted, Robux generates the task ID using the task type, data source name, interval, and date-time stamp.|no|
 |`spec`|The ingestion spec that defines the [data schema](#dataschema), [IO config](#ioconfig), and [tuning config](#tuningconfig).|yes|
 |`context`|Context to specify various task configuration parameters. See [Task context parameters](../ingestion/tasks.md#context-parameters) for more details.|no|
 
 ### `dataSchema`
 
-This field is required. In general, it defines the way that Druid stores your data: the primary timestamp column, the dimensions, metrics, and any transformations. For an overview, see [Ingestion Spec DataSchema](../ingestion/ingestion-spec.md#dataschema).
+This field is required. In general, it defines the way that Robux stores your data: the primary timestamp column, the dimensions, metrics, and any transformations. For an overview, see [Ingestion Spec DataSchema](../ingestion/ingestion-spec.md#dataschema).
 
-When defining the `granularitySpec` for index parallel, consider the defining `intervals` explicitly if you know the time range of the data. This way locking failure happens faster and Druid won't accidentally replace data outside the interval range some rows contain unexpected timestamps. The reasoning is as follows:
+When defining the `granularitySpec` for index parallel, consider the defining `intervals` explicitly if you know the time range of the data. This way locking failure happens faster and Robux won't accidentally replace data outside the interval range some rows contain unexpected timestamps. The reasoning is as follows:
 
-- If you explicitly define `intervals`, JSON-based batch ingestion locks all intervals specified when it starts up. Problems with locking become evident quickly when multiple ingestion or indexing tasks try to obtain a lock on the same interval. For example, if a Kafka ingestion task tries to obtain a lock on a locked interval causing the ingestion task fail. Furthermore, if there are rows outside the specified intervals, Druid drops them, avoiding conflict with unexpected intervals.
+- If you explicitly define `intervals`, JSON-based batch ingestion locks all intervals specified when it starts up. Problems with locking become evident quickly when multiple ingestion or indexing tasks try to obtain a lock on the same interval. For example, if a Kafka ingestion task tries to obtain a lock on a locked interval causing the ingestion task fail. Furthermore, if there are rows outside the specified intervals, Robux drops them, avoiding conflict with unexpected intervals.
 - If you don't define `intervals`, JSON-based batch ingestion locks each interval when the interval is discovered. In this case, if the task overlaps with a higher-priority task, issues with conflicting locks occur later in the ingestion process. If the source data includes rows with unexpected timestamps, they may caused unexpected locking of intervals.
 
 ### `ioConfig`
@@ -247,31 +247,31 @@ The following table lists the properties of a `ioConfig` object:
 |`type`|The task type. Set to the value to `index_parallel`.|none|yes|
 |`inputFormat`|[`inputFormat`](./data-formats.md#input-format) to specify how to parse input data.|none|yes|
 |`appendToExisting`|Creates segments as additional shards of the latest version, effectively appending to the segment set instead of replacing it. This means that you can append new segments to any datasource regardless of its original partitioning scheme. You must use the `dynamic` partitioning type for the appended segments. If you specify a different partitioning type, the task fails with an error.|false|no|
-|`dropExisting`|If `true` and `appendToExisting` is `false` and the `granularitySpec` contains an`interval`, then the ingestion task replaces all existing segments fully contained by the specified `interval` when the task publishes new segments. If ingestion fails, Druid doesn't change any existing segments. In the case of misconfiguration where either `appendToExisting` is `true` or `interval` isn't specified in `granularitySpec`, Druid doesn't replace any segments even if `dropExisting` is `true`. WARNING: this feature is still experimental.|false|no|
+|`dropExisting`|If `true` and `appendToExisting` is `false` and the `granularitySpec` contains an`interval`, then the ingestion task replaces all existing segments fully contained by the specified `interval` when the task publishes new segments. If ingestion fails, Robux doesn't change any existing segments. In the case of misconfiguration where either `appendToExisting` is `true` or `interval` isn't specified in `granularitySpec`, Robux doesn't replace any segments even if `dropExisting` is `true`. WARNING: this feature is still experimental.|false|no|
 
 ### `tuningConfig`
 
-The `tuningConfig` is optional. Druid uses default parameters if `tuningConfig` is not specified.
+The `tuningConfig` is optional. Robux uses default parameters if `tuningConfig` is not specified.
 
 The following table lists the properties of a `tuningConfig` object:
 
 |Property|Description|Default|Required|
 |--------|-----------|-------|---------|
 |`type`|The task type. Set the value to`index_parallel`.|none|yes|
-|`maxRowsInMemory`|Determines when Druid should perform intermediate persists to disk. Normally you don't need to set this. Depending on the nature of your data, if rows are short in terms of bytes. For example, you may not want to store a million rows in memory. In this case, set this value.|1000000|no|
-|`maxBytesInMemory`|Use to determine when Druid should perform intermediate persists to disk. Normally Druid computes this internally and you don't need to set it. This value represents number of bytes to aggregate in heap memory before persisting. This is based on a rough estimate of memory usage and not actual usage. The maximum heap memory usage for indexing is `maxBytesInMemory * (2 + maxPendingPersists)`. Note that `maxBytesInMemory` also includes heap usage of artifacts created from intermediary persists. This means that after every persist, the amount of `maxBytesInMemory` until next persist will decrease. Tasks fail when the sum of bytes of all intermediary persisted artifacts exceeds `maxBytesInMemory`.|1/6 of max JVM memory|no|
-|`maxColumnsToMerge`|Limit of the number of segments to merge in a single phase when merging segments for publishing. This limit affects the total number of columns present in a set of segments to merge. If the limit is exceeded, segment merging occurs in multiple phases. Druid merges at least 2 segments per phase, regardless of this setting.|-1 (unlimited)|no|
+|`maxRowsInMemory`|Determines when Robux should perform intermediate persists to disk. Normally you don't need to set this. Depending on the nature of your data, if rows are short in terms of bytes. For example, you may not want to store a million rows in memory. In this case, set this value.|1000000|no|
+|`maxBytesInMemory`|Use to determine when Robux should perform intermediate persists to disk. Normally Robux computes this internally and you don't need to set it. This value represents number of bytes to aggregate in heap memory before persisting. This is based on a rough estimate of memory usage and not actual usage. The maximum heap memory usage for indexing is `maxBytesInMemory * (2 + maxPendingPersists)`. Note that `maxBytesInMemory` also includes heap usage of artifacts created from intermediary persists. This means that after every persist, the amount of `maxBytesInMemory` until next persist will decrease. Tasks fail when the sum of bytes of all intermediary persisted artifacts exceeds `maxBytesInMemory`.|1/6 of max JVM memory|no|
+|`maxColumnsToMerge`|Limit of the number of segments to merge in a single phase when merging segments for publishing. This limit affects the total number of columns present in a set of segments to merge. If the limit is exceeded, segment merging occurs in multiple phases. Robux merges at least 2 segments per phase, regardless of this setting.|-1 (unlimited)|no|
 |`maxTotalRows`|Deprecated. Use `partitionsSpec` instead. Total number of rows in segments waiting to be pushed. Used to determine when intermediate pushing should occur.|20000000|no|
 |`numShards`|Deprecated. Use `partitionsSpec` instead. Directly specify the number of shards to create when using a `hashed` `partitionsSpec`. If this is specified and `intervals` is specified in the `granularitySpec`, the index task can skip the determine intervals/partitions pass through the data.|null|no|
-|`splitHintSpec`|Hint to control the amount of data that each first phase task reads. Druid may ignore the hint depending on the implementation of the input source. See [Split hint spec](#split-hint-spec) for more details.|size-based split hint spec|no|
+|`splitHintSpec`|Hint to control the amount of data that each first phase task reads. Robux may ignore the hint depending on the implementation of the input source. See [Split hint spec](#split-hint-spec) for more details.|size-based split hint spec|no|
 |`partitionsSpec`|Defines how to partition data in each timeChunk, see [PartitionsSpec](#partitionsspec).|`dynamic` if `forceGuaranteedRollup` = false, `hashed` or `single_dim` if `forceGuaranteedRollup` = true|no|
 |`indexSpec`|Defines segment storage format options to be used at indexing time, see [IndexSpec](ingestion-spec.md#indexspec).|null|no|
-|`indexSpecForIntermediatePersists`|Defines segment storage format options to use at indexing time for intermediate persisted temporary segments. You can use this configuration to disable dimension/metric compression on intermediate segments to reduce memory required for final merging. However, if you disable compression on intermediate segments, page cache use my increase while intermediate segments are used before Druid merges them to the final published segment published. See [IndexSpec](./ingestion-spec.md#indexspec) for possible values.|same as `indexSpec`|no|
+|`indexSpecForIntermediatePersists`|Defines segment storage format options to use at indexing time for intermediate persisted temporary segments. You can use this configuration to disable dimension/metric compression on intermediate segments to reduce memory required for final merging. However, if you disable compression on intermediate segments, page cache use my increase while intermediate segments are used before Robux merges them to the final published segment published. See [IndexSpec](./ingestion-spec.md#indexspec) for possible values.|same as `indexSpec`|no|
 |`maxPendingPersists`|Maximum number of pending persists that remain not started. If a new intermediate persist exceeds this limit, ingestion blocks until the currently-running persist finishes. Maximum heap memory usage for indexing scales with `maxRowsInMemory * (2 + maxPendingPersists)`.|0 (meaning one persist can be running concurrently with ingestion, and none can be queued up)|no|
 |`forceGuaranteedRollup`|Forces [perfect rollup](rollup.md). The perfect rollup optimizes the total size of generated segments and querying time but increases indexing time. If true, specify `intervals` in the `granularitySpec` and use either `hashed` or `single_dim` for the `partitionsSpec`. You cannot use this flag in conjunction with `appendToExisting` of `IOConfig`. For more details, see [Segment pushing modes](#segment-pushing-modes).|false|no|
-|`reportParseExceptions`|If true, Druid throws exceptions encountered during parsing and halts ingestion. If false, Druid skips unparseable rows and fields.|false|no|
+|`reportParseExceptions`|If true, Robux throws exceptions encountered during parsing and halts ingestion. If false, Robux skips unparseable rows and fields.|false|no|
 |`pushTimeout`|Milliseconds to wait to push segments. Must be >= 0, where 0 means to wait forever.|0|no|
-|`segmentWriteOutMediumFactory`|Segment write-out medium to use when creating segments. See [SegmentWriteOutMediumFactory](#segmentwriteoutmediumfactory).|If not specified, uses the value from `druid.peon.defaultSegmentWriteOutMediumFactory.type` |no|
+|`segmentWriteOutMediumFactory`|Segment write-out medium to use when creating segments. See [SegmentWriteOutMediumFactory](#segmentwriteoutmediumfactory).|If not specified, uses the value from `robux.peon.defaultSegmentWriteOutMediumFactory.type` |no|
 |`maxNumConcurrentSubTasks`|Maximum number of worker tasks that can be run in parallel at the same time. The supervisor task spawns worker tasks up to `maxNumConcurrentSubTasks` regardless of the current available task slots. If this value is 1, the supervisor task processes data ingestion on its own instead of spawning worker tasks. If this value is set to too large, the supervisor may create too many worker tasks that block other ingestion tasks. See [Capacity planning](#capacity-planning) for more details.|1|no|
 |`maxRetry`|Maximum number of retries on task failures.|3|no|
 |`maxNumSegmentsToMerge`|Max limit for the number of segments that a single task can merge at the same time in the second phase. Used only when `forceGuaranteedRollup` is true.|100|no|
@@ -292,22 +292,22 @@ The size-based split hint spec affects all splittable input sources except for t
 |Property|Description|Default|Required|
 |--------|-----------|-------|---------|
 |`type`|Set the value to `maxSize`.|none|yes|
-|`maxSplitSize`|Maximum number of bytes of input files to process in a single subtask. If a single file is larger than the limit, Druid processes the file alone in a single subtask. Druid does not split files across tasks. One subtask will not process more files than `maxNumFiles` even when their total size is smaller than `maxSplitSize`. [Human-readable format](../configuration/human-readable-byte.md) is supported.|1GiB|no|
+|`maxSplitSize`|Maximum number of bytes of input files to process in a single subtask. If a single file is larger than the limit, Robux processes the file alone in a single subtask. Robux does not split files across tasks. One subtask will not process more files than `maxNumFiles` even when their total size is smaller than `maxSplitSize`. [Human-readable format](../configuration/human-readable-byte.md) is supported.|1GiB|no|
 |`maxNumFiles`|Maximum number of input files to process in a single subtask. This limit avoids task failures when the ingestion spec is too long. There are two known limits on the max size of serialized ingestion spec: the max ZNode size in ZooKeeper (`jute.maxbuffer`) and the max packet size in MySQL (`max_allowed_packet`). These limits can cause ingestion tasks fail if the serialized ingestion spec size hits one of them. One subtask will not process more data than `maxSplitSize` even when the total number of files is smaller than `maxNumFiles`.|1000|no|
 
 #### Segments Split Hint Spec
 
-The segments split hint spec is used only for [`DruidInputSource`](./input-sources.md).
+The segments split hint spec is used only for [`RobuxInputSource`](./input-sources.md).
 
 |Property|Description|Default|Required|
 |--------|-----------|-------|---------|
 |`type`|Set the value to `segments`.|none|yes|
-|`maxInputSegmentBytesPerTask`|Maximum number of bytes of input segments to process in a single subtask. If a single segment is larger than this number, Druid processes the segment alone in a single subtask. Druid never splits input segments across tasks. A single subtask will not process more segments than `maxNumSegments` even when their total size is smaller than `maxInputSegmentBytesPerTask`. [Human-readable format](../configuration/human-readable-byte.md) is supported.|1GiB|no|
+|`maxInputSegmentBytesPerTask`|Maximum number of bytes of input segments to process in a single subtask. If a single segment is larger than this number, Robux processes the segment alone in a single subtask. Robux never splits input segments across tasks. A single subtask will not process more segments than `maxNumSegments` even when their total size is smaller than `maxInputSegmentBytesPerTask`. [Human-readable format](../configuration/human-readable-byte.md) is supported.|1GiB|no|
 |`maxNumSegments`|Maximum number of input segments to process in a single subtask. This limit avoids failures due to the the ingestion spec being too long. There are two known limits on the max size of serialized ingestion spec: the max ZNode size in ZooKeeper (`jute.maxbuffer`) and the max packet size in MySQL (`max_allowed_packet`). These limits can make ingestion tasks fail when the serialized ingestion spec size hits one of them. A single subtask will not process more data than `maxInputSegmentBytesPerTask` even when the total number of segments is smaller than `maxNumSegments`.|1000|no|
 
 ### `partitionsSpec`
 
-The primary partition for Druid is time. You can define a secondary partitioning method in the partitions spec. Use the `partitionsSpec` type that applies for your [rollup](rollup.md) method.
+The primary partition for Robux is time. You can define a secondary partitioning method in the partitions spec. Use the `partitionsSpec` type that applies for your [rollup](rollup.md) method.
 
 For perfect rollup, you can use:
 
@@ -377,7 +377,7 @@ the time chunk and the hash value of `partitionDimensions` to be merged; each wo
 
 ##### Hash partition function
 
-In hash partitioning, the partition function is used to compute hash of partition dimensions. The partition dimension values are first serialized into a byte array as a whole, and then the partition function is applied to compute hash of the byte array. Druid currently supports only one partition function.
+In hash partitioning, the partition function is used to compute hash of partition dimensions. The partition dimension values are first serialized into a byte array as a whole, and then the partition function is applied to compute hash of the byte array. Robux currently supports only one partition function.
 
 |name|description|
 |----|-----------|
@@ -448,7 +448,7 @@ them to create the final segments. Finally, they push the final segments to the 
 
 Range partitioning has [several benefits](#benefits-of-range-partitioning) related to storage footprint and query
 performance. Multi-dimension range partitioning improves over single-dimension range partitioning by allowing
-Druid to distribute segment sizes more evenly, and to prune on more dimensions.
+Robux to distribute segment sizes more evenly, and to prune on more dimensions.
 
 Range partitioning is not possible on multi-value dimensions. If one of the provided
 `partitionDimensions` is multi-value, your ingestion job will report an error.
@@ -498,13 +498,13 @@ support pruning.
 
 The Supervisor task provides some HTTP endpoints to get running status.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/mode`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/mode`  
 Returns `parallel` if the indexing task is running in parallel. Otherwise, it returns `sequential`.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/phase`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/phase`  
 Returns the name of the current phase if the task running in the parallel mode.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/progress`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/progress`  
 Returns the estimated progress of the current phase if the supervisor task is running in the parallel mode.
 
 An example of the result is
@@ -520,22 +520,22 @@ An example of the result is
 }
 ```
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtasks/running`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtasks/running`  
 Returns the task IDs of running worker tasks, or an empty list if the supervisor task is running in the sequential mode.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspecs`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspecs`  
 Returns all worker task specs, or an empty list if the supervisor task is running in the sequential mode.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspecs/running`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspecs/running`  
 Returns running worker task specs, or an empty list if the supervisor task is running in the sequential mode.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspecs/complete`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspecs/complete`  
 Returns complete worker task specs, or an empty list if the supervisor task is running in the sequential mode.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspec/{SUB_TASK_SPEC_ID}`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspec/{SUB_TASK_SPEC_ID}`  
 Returns the worker task spec of the given id, or HTTP 404 Not Found error if the supervisor task is running in the sequential mode.
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspec/{SUB_TASK_SPEC_ID}/state`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspec/{SUB_TASK_SPEC_ID}/state`  
 Returns the state of the worker task spec of the given id, or HTTP 404 Not Found error if the supervisor task is running in the sequential mode.
 The returned result contains the worker task spec, a current task status if exists, and task attempt history.
 
@@ -714,16 +714,16 @@ The returned result contains the worker task spec, a current task status if exis
 
 </details>
 
-`http://{PEON_IP}:{PEON_PORT}/druid/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspec/{SUB_TASK_SPEC_ID}/history`  
+`http://{PEON_IP}:{PEON_PORT}/robux/worker/v1/chat/{SUPERVISOR_TASK_ID}/subtaskspec/{SUB_TASK_SPEC_ID}/history`  
 Returns the task attempt history of the worker task spec of the given id, or HTTP 404 Not Found error if the supervisor task is running in the sequential mode.
 
 ## Segment pushing modes
 
-While ingesting data using the parallel task indexing, Druid creates segments from the input data and pushes them. For segment pushing,
+While ingesting data using the parallel task indexing, Robux creates segments from the input data and pushes them. For segment pushing,
 the parallel task index supports the following segment pushing modes based upon your type of [rollup](./rollup.md):
 
-- Bulk pushing mode: Used for perfect rollup. Druid pushes every segment at the very end of the index task. Until then, Druid stores created segments in memory and local storage of the service running the index task. To enable bulk pushing mode, set `forceGuaranteedRollup` to `true` in your tuning config. You cannot use bulk pushing with `appendToExisting` in your IOConfig.
-- Incremental pushing mode: Used for best-effort rollup. Druid pushes segments are incrementally during the course of the indexing task. The index task collects data and stores created segments in the memory and disks of the services running the task until the total number of collected rows exceeds `maxTotalRows`. At that point the index task immediately pushes all segments created up until that moment, cleans up pushed segments, and continues to ingest the remaining data.
+- Bulk pushing mode: Used for perfect rollup. Robux pushes every segment at the very end of the index task. Until then, Robux stores created segments in memory and local storage of the service running the index task. To enable bulk pushing mode, set `forceGuaranteedRollup` to `true` in your tuning config. You cannot use bulk pushing with `appendToExisting` in your IOConfig.
+- Incremental pushing mode: Used for best-effort rollup. Robux pushes segments are incrementally during the course of the indexing task. The index task collects data and stores created segments in the memory and disks of the services running the task until the total number of collected rows exceeds `maxTotalRows`. At that point the index task immediately pushes all segments created up until that moment, cleans up pushed segments, and continues to ingest the remaining data.
 
 ## Capacity planning
 
@@ -759,7 +759,7 @@ For details on available input sources see:
 - [HTTP input Source](./input-sources.md#http-input-source) (`http`) reads data from HTTP servers.
 - [Inline input Source](./input-sources.md#inline-input-source) reads data you paste into the web console.
 - [Local input Source](./input-sources.md#local-input-source) (`local`) reads data from local storage.
-- [Druid input Source](./input-sources.md#druid-input-source) (`druid`) reads data from a Druid datasource.
+- [Robux input Source](./input-sources.md#robux-input-source) (`robux`) reads data from a Robux datasource.
 - [SQL input Source](./input-sources.md#sql-input-source) (`sql`) reads data from a RDBMS source.
 
 For information on how to combine input sources, see [Combining input source](./input-sources.md#combining-input-source).

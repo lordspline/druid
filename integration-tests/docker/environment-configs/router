@@ -17,16 +17,16 @@
 # under the License.
 #
 
-DRUID_SERVICE=router
-DRUID_LOG_PATH=/shared/logs/router.log
+ROBUX_SERVICE=router
+ROBUX_LOG_PATH=/shared/logs/router.log
 
 # JAVA OPTS
-SERVICE_DRUID_JAVA_OPTS=-server -Xmx128m -Xms64m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5004
+SERVICE_ROBUX_JAVA_OPTS=-server -Xmx128m -Xms64m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5004
 
-# Druid configs
-druid_host=druid-router
-druid_auth_basic_common_cacheDirectory=/tmp/authCache/router
-druid_sql_avatica_enable=true
-druid_server_https_crlPath=/tls/revocations.crl
-druid_router_managementProxy_enabled=true
+# Robux configs
+robux_host=robux-router
+robux_auth_basic_common_cacheDirectory=/tmp/authCache/router
+robux_sql_avatica_enable=true
+robux_server_https_crlPath=/tls/revocations.crl
+robux_router_managementProxy_enabled=true
 

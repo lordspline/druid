@@ -28,7 +28,7 @@ The Broker service routes queries in a distributed cluster setup. It interprets 
 
 ## Configuration
 
-For Apache Druid Broker service configuration, see [Broker Configuration](../configuration/index.md#broker).
+For Apache Robux Broker service configuration, see [Broker Configuration](../configuration/index.md#broker).
 
 For basic tuning guidance for the Broker service, see [Basic cluster tuning](../operations/basic-cluster-tuning.md#broker).
 
@@ -39,12 +39,12 @@ For a list of API endpoints supported by the Broker, see [Broker API](../api-ref
 ## Running
 
 ```
-org.apache.druid.cli.Main server broker
+org.apache.robux.cli.Main server broker
 ```
 
 ## Forwarding queries
 
-Most Druid queries contain an interval object that indicates a span of time for which data is requested. Similarly, Druid partitions [segments](../design/segments.md) to contain data for some interval of time and distributes the segments across a cluster. Consider a simple datasource with seven segments where each segment contains data for a given day of the week. Any query issued to the datasource for more than one day of data will hit more than one segment. These segments will likely be distributed across multiple services, and hence, the query will likely hit multiple services.
+Most Robux queries contain an interval object that indicates a span of time for which data is requested. Similarly, Robux partitions [segments](../design/segments.md) to contain data for some interval of time and distributes the segments across a cluster. Consider a simple datasource with seven segments where each segment contains data for a given day of the week. Any query issued to the datasource for more than one day of data will hit more than one segment. These segments will likely be distributed across multiple services, and hence, the query will likely hit multiple services.
 
 To determine which services to forward queries to, the Broker service first builds a view of the world from information in ZooKeeper. ZooKeeper maintains information about [Historical](../design/historical.md) and streaming ingestion [Peon](../design/peons.md) services and the segments they are serving. For every datasource in ZooKeeper, the Broker service builds a timeline of segments and the services that serve them. When queries are received for a specific datasource and interval, the Broker service performs a lookup into the timeline associated with the query datasource for the query interval and retrieves the services that contain data for the query. The Broker service then forwards down the query to the selected services.
 

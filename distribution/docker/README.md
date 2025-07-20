@@ -22,24 +22,24 @@
 From the root of the repo, run following command:
 
 ```bash
-DOCKER_BUILDKIT=1 docker build -t apache/druid:tag -f distribution/docker/Dockerfile .
+DOCKER_BUILDKIT=1 docker build -t apache/robux:tag -f distribution/docker/Dockerfile .
 ```
 
 ### Building images on Apple M1/M2
 To build images on Apple M1/M2, you need to follow the instructions in this section.
 
-1. build Druid distribution from the root of the repo
+1. build Robux distribution from the root of the repo
    ```bash
    mvn clean package -DskipTests -Pdist
    ```
 2. build target image
    ```
-   DOCKER_BUILDKIT=1 docker build -t apache/druid:tag -f distribution/docker/Dockerfile --build-arg BUILD_FROM_SOURCE=false .
+   DOCKER_BUILDKIT=1 docker build -t apache/robux:tag -f distribution/docker/Dockerfile --build-arg BUILD_FROM_SOURCE=false .
    ```
 
 ## Run
 
-1. Edit `distribution/docker/docker-compose.yml` file to change the tag of Druid's images to the tag that's used in the 'Build' phase above.
+1. Edit `distribution/docker/docker-compose.yml` file to change the tag of Robux's images to the tag that's used in the 'Build' phase above.
 2. Edit `environment` file to suite if necessary.
 3. Run:
     ```bash
@@ -53,7 +53,7 @@ need the mysql metadata storage connector, you can use Dockerfile.mysql to add
 it to the base image above.
 
 ```bash
-docker build -t apache/druid:tag-mysql --build-arg DRUID_RELEASE=apache/druid:tag -f distribution/docker/Dockerfile.mysql .
+docker build -t apache/robux:tag-mysql --build-arg ROBUX_RELEASE=apache/robux:tag -f distribution/docker/Dockerfile.mysql .
 ```
 
-where `druid:tag` is the version of Druid image to use as the base.
+where `robux:tag` is the version of Robux image to use as the base.

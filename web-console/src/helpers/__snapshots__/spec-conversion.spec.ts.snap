@@ -39,7 +39,7 @@ SET groupByEnableMultiValueUnnesting = FALSE;
 REPLACE INTO "wikipedia_rollup" OVERWRITE ALL
 WITH "source" AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}'
   )
 ) EXTEND ("timestamp" VARCHAR, "isRobot" VARCHAR, "channel" VARCHAR, "flags" VARCHAR, "isUnpatrolled" VARCHAR, "comment" VARCHAR, "isNew" VARCHAR, "isMinor" VARCHAR, "isAnonymous" VARCHAR, "user" VARCHAR, "namespace" VARCHAR, "cityName" VARCHAR, "countryName" VARCHAR, "regionIsoCode" VARCHAR, "metroCode" VARCHAR, "countryIsoCode" VARCHAR, "regionName" VARCHAR, "added" BIGINT, "commentLength" BIGINT, "delta" BIGINT, "deltaBucket" BIGINT, "deleted" BIGINT, "page" VARCHAR))
@@ -84,7 +84,7 @@ SET groupByEnableMultiValueUnnesting = FALSE;
 REPLACE INTO "wikipedia" OVERWRITE ALL
 WITH "source" AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}'
   )
 ) EXTEND ("timestamp" VARCHAR, "isRobot" VARCHAR, "channel" VARCHAR, "flags" VARCHAR, "isUnpatrolled" VARCHAR, "page" VARCHAR, "diffUrl" VARCHAR, "added" BIGINT, "comment" VARCHAR, "commentLength" BIGINT, "isNew" VARCHAR, "isMinor" VARCHAR, "delta" BIGINT, "isAnonymous" VARCHAR, "user" VARCHAR, "deltaBucket" BIGINT, "deleted" BIGINT, "namespace" VARCHAR, "cityName" VARCHAR, "countryName" VARCHAR, "regionIsoCode" VARCHAR, "metroCode" VARCHAR, "countryIsoCode" VARCHAR, "regionName" VARCHAR, "event" TYPE('COMPLEX<json>')))
@@ -130,7 +130,7 @@ SET groupByEnableMultiValueUnnesting = FALSE;
 REPLACE INTO "wikipedia" OVERWRITE ALL
 WITH "source" AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}'
   )
 ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "flags" VARCHAR, "isUnpatrolled" VARCHAR, "page" VARCHAR, "diffUrl" VARCHAR, "added" BIGINT, "comment" VARCHAR, "commentLength" BIGINT, "isNew" VARCHAR, "isMinor" VARCHAR, "delta" BIGINT, "isAnonymous" VARCHAR, "user" VARCHAR, "deltaBucket" BIGINT, "deleted" BIGINT, "namespace" VARCHAR, "cityName" VARCHAR, "countryName" VARCHAR, "regionIsoCode" VARCHAR, "metroCode" VARCHAR, "countryIsoCode" VARCHAR, "regionName" VARCHAR))
@@ -175,7 +175,7 @@ SET groupByEnableMultiValueUnnesting = FALSE;
 REPLACE INTO "wikipedia" OVERWRITE ALL
 WITH "source" AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}'
   )
 ) EXTEND ("timestamp" VARCHAR, "isRobot" VARCHAR, "channel" VARCHAR, "flags" VARCHAR, "isUnpatrolled" VARCHAR, "page" VARCHAR, "diffUrl" VARCHAR, "added" BIGINT, "comment" VARCHAR, "commentLength" BIGINT, "isNew" VARCHAR, "isMinor" VARCHAR, "delta" BIGINT, "isAnonymous" VARCHAR, "user" VARCHAR, "deltaBucket" BIGINT, "deleted" BIGINT, "namespace" VARCHAR, "cityName" VARCHAR, "countryName" VARCHAR, "regionIsoCode" VARCHAR, "metroCode" VARCHAR, "countryIsoCode" VARCHAR, "regionName" VARCHAR))
@@ -221,7 +221,7 @@ SET groupByEnableMultiValueUnnesting = FALSE;
 REPLACE INTO "wikipedia" OVERWRITE ALL
 WITH "source" AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}'
   )
 ) EXTEND ("__time" BIGINT, "isRobot" VARCHAR, "channel" VARCHAR, "flags" VARCHAR))

@@ -24,11 +24,11 @@ sidebar_label: "JavaScript functionality"
   -->
 
 
-This page discusses how to use JavaScript to extend Apache Druid.
+This page discusses how to use JavaScript to extend Apache Robux.
 
 ## Examples
 
-JavaScript can be used to extend Druid in a variety of ways:
+JavaScript can be used to extend Robux in a variety of ways:
 
 - [Aggregators](../querying/aggregations.md#javascript-aggregator)
 - [Extraction functions](../querying/dimensionspecs.md#javascript-extraction-function)
@@ -39,27 +39,27 @@ JavaScript can be used to extend Druid in a variety of ways:
 - [Worker select strategy](../configuration/index.md#javascript-1)
 
 JavaScript can be injected dynamically at runtime, making it convenient to rapidly prototype new functionality
-without needing to write and deploy Druid extensions.
+without needing to write and deploy Robux extensions.
 
-Druid uses the Mozilla Rhino engine at optimization level 9 to compile and execute JavaScript.
+Robux uses the Mozilla Rhino engine at optimization level 9 to compile and execute JavaScript.
 
 ## Security
 
-Druid does not execute JavaScript functions in a sandbox, so they have full access to the machine. So JavaScript
-functions allow users to execute arbitrary code inside druid process. So, by default, JavaScript is disabled.
+Robux does not execute JavaScript functions in a sandbox, so they have full access to the machine. So JavaScript
+functions allow users to execute arbitrary code inside robux process. So, by default, JavaScript is disabled.
 However, on dev/staging environments or secured production environments you can enable those by setting
 the [configuration property](../configuration/index.md#javascript)
-`druid.javascript.enabled = true`.
+`robux.javascript.enabled = true`.
 
 ## Global variables
 
-Avoid using global variables. Druid may share the global scope between multiple threads, which can lead to
+Avoid using global variables. Robux may share the global scope between multiple threads, which can lead to
 unpredictable results if global variables are used.
 
 ## Performance
 
 Simple JavaScript functions typically have a slight performance penalty to native speed. More complex JavaScript
-functions can have steeper performance penalties. Druid compiles JavaScript functions once on each data process per query.
+functions can have steeper performance penalties. Robux compiles JavaScript functions once on each data process per query.
 
 You may need to pay special attention to garbage collection when making heavy use of JavaScript functions, especially
 garbage collection of the compiled classes themselves. Be sure to use a garbage collector configuration that supports
@@ -69,7 +69,7 @@ timely collection of unused classes (this is generally easier on JDK8 with the M
 
 Generally we recommend using JavaScript when security is not an issue, and when speed of development is more important
 than performance or memory use. If security is an issue, or if performance and memory use are of the utmost importance,
-we recommend developing a native Druid extension.
+we recommend developing a native Robux extension.
 
-In addition, native Druid extensions are more flexible than JavaScript functions. There are some kinds of extensions
-(like sketches) that must be written as native Druid extensions due to their need for custom data formats.
+In addition, native Robux extensions are more flexible than JavaScript functions. There are some kinds of extensions
+(like sketches) that must be written as native Robux extensions due to their need for custom data formats.

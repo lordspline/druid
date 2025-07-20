@@ -1,6 +1,6 @@
 ---
 id: sql-functions
-title: "All Druid SQL functions"
+title: "All Robux SQL functions"
 sidebar_label: "All functions"
 ---
 
@@ -24,11 +24,11 @@ sidebar_label: "All functions"
   -->
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
-This page provides a reference of Apache Druid&circledR; SQL functions in alphabetical order. For more details on a function, refer to the following:
+This page provides a reference of Apache Robux&circledR; SQL functions in alphabetical order. For more details on a function, refer to the following:
 * [Aggregation functions](sql-aggregations.md)
 * [Array functions](sql-array-functions.md)
 * [JSON functions](sql-json-functions.md)
@@ -40,12 +40,12 @@ This page provides a reference of Apache Druid&circledR; SQL functions in alphab
 
 The examples on this page use the following example datasources:
 * `array-example` created with [SQL-based ingestion](../multi-stage-query/index.md)
-* `flight-carriers` using `FlightCarrierOnTime (1 month)` included with Druid
-* `kttm` using `KoalasToTheMax one day` included with Druid
+* `flight-carriers` using `FlightCarrierOnTime (1 month)` included with Robux
+* `kttm` using `KoalasToTheMax one day` included with Robux
 * `mvd-example` using [SQL-based ingestion](multi-value-dimensions.md#sql-based-ingestion)
-* `taxi-trips` using `NYC Taxi cabs (3 files)` included with Druid
+* `taxi-trips` using `NYC Taxi cabs (3 files)` included with Robux
 
-To load a datasource included with Druid,
+To load a datasource included with Robux,
 access the [web console](../operations/web-console.md)
 and go to **Load data > Batch - SQL > Example data**.
 Select **Connect data**, and parse using the default settings.
@@ -230,7 +230,7 @@ Returns the following:
 
 ## APPROX_COUNT_DISTINCT_BUILTIN
 
-Counts distinct values of a string, numeric, or `hyperUnique` column using Druid's built-in `cardinality` or `hyperUnique` aggregators.
+Counts distinct values of a string, numeric, or `hyperUnique` column using Robux's built-in `cardinality` or `hyperUnique` aggregators.
 Consider using `APPROX_COUNT_DISTINCT_DS_HLL` instead, which offers better accuracy in many cases.
 
 * **Syntax**: `APPROX_COUNT_DISTINCT_BUILTIN(expr)`
@@ -1903,13 +1903,13 @@ You can use the function to ingest data when a column contains an encoded data s
 The function supports `hyperUnique` and `serializablePairLongString` data types by default.
 To enable support for a complex data type, load the [corresponding extension](../configuration/extensions.md):
 
-- `druid-bloom-filter`: `bloom`
-- `druid-datasketches`: `arrayOfDoublesSketch`, `HLLSketch`, `KllDoublesSketch`, `KllFloatsSketch`, `quantilesDoublesSketch`, `thetaSketch`
-- `druid-histogram`: `approximateHistogram`, `fixedBucketsHistogram`
-- `druid-stats`: `variance`
-- `druid-compressed-bigdecimal`: `compressedBigDecimal`
-- `druid-momentsketch`: `momentSketch`
-- `druid-tdigestsketch`: `tDigestSketch`
+- `robux-bloom-filter`: `bloom`
+- `robux-datasketches`: `arrayOfDoublesSketch`, `HLLSketch`, `KllDoublesSketch`, `KllFloatsSketch`, `quantilesDoublesSketch`, `thetaSketch`
+- `robux-histogram`: `approximateHistogram`, `fixedBucketsHistogram`
+- `robux-stats`: `variance`
+- `robux-compressed-bigdecimal`: `compressedBigDecimal`
+- `robux-momentsketch`: `momentSketch`
+- `robux-tdigestsketch`: `tDigestSketch`
 
 * **Syntax:** `DECODE_BASE64_COMPLEX(dataType, expr)`
 * **Function type:** Scalar, other
@@ -2025,7 +2025,7 @@ Returns the following:
 Returns the result of integer division of `x` by `y`.
 
 :::info
-The `DIV` function is not implemented in Druid versions 30.0.0 or earlier. Consider using [`SAFE_DIVIDE`](./sql-functions.md#safe_divide) instead. 
+The `DIV` function is not implemented in Robux versions 30.0.0 or earlier. Consider using [`SAFE_DIVIDE`](./sql-functions.md#safe_divide) instead. 
 :::
 
 * **Syntax:** `DIV(x, y)`
@@ -2370,7 +2370,7 @@ Returns the following:
 
 ## DS_TUPLE_DOUBLES_INTERSECT
 
-Returns an intersection of Tuple sketches which each contain an array of double values as their Summary Objects. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Druid assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).
+Returns an intersection of Tuple sketches which each contain an array of double values as their Summary Objects. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Robux assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).
 
 * **Syntax**: `DS_TUPLE_DOUBLES_INTERSECT(expr, ..., [nominalEntries])`
 * **Function type:** Scalar, sketch
@@ -2462,7 +2462,7 @@ Returns the following:
 
 ## DS_TUPLE_DOUBLES_NOT
 
-Returns a set difference of Tuple sketches which each contain an array of double values as their Summary Objects. The values contained in the Summary Object are preserved as is. If the last value of the array is a numeric literal, Druid assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).
+Returns a set difference of Tuple sketches which each contain an array of double values as their Summary Objects. The values contained in the Summary Object are preserved as is. If the last value of the array is a numeric literal, Robux assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).
 
 * **Syntax**: `DS_TUPLE_DOUBLES_NOT(expr, ..., [nominalEntries])`
 * **Function type:** Scalar, sketch
@@ -2502,7 +2502,7 @@ Returns the following:
 
 ## DS_TUPLE_DOUBLES_UNION
 
-Returns a union of Tuple sketches which each contain an array of double values as their Summary Objects. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Druid assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).
+Returns a union of Tuple sketches which each contain an array of double values as their Summary Objects. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Robux assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).
 
 * **Syntax**: `DS_TUPLE_DOUBLES_UNION(expr, ..., [nominalEntries])`
 * **Function type:** Scalar, sketch
@@ -2762,7 +2762,7 @@ Returns the following:
 
 ## GREATEST
 
-Returns the maximum value from the provided expressions. For information on how Druid interprets the arguments passed into the function, see [Reduction functions](sql-scalar.md#reduction-functions).
+Returns the maximum value from the provided expressions. For information on how Robux interprets the arguments passed into the function, see [Reduction functions](sql-scalar.md#reduction-functions).
 
 * **Syntax:** `GREATEST([expr1, ...])`
 * **Function type:** Scalar, reduction
@@ -2770,7 +2770,7 @@ Returns the maximum value from the provided expressions. For information on how 
 <details>
 <summary>Example</summary>
 
-The following example returns the greatest value between the numeric constant `PI`, the integer number `4`, and the double `-5.0`. Druid interprets these arguments as DOUBLE data type.
+The following example returns the greatest value between the numeric constant `PI`, the integer number `4`, and the double `-5.0`. Robux interprets these arguments as DOUBLE data type.
 
 ```sql
 SELECT GREATEST(PI, 4, -5.0) AS "greatest"
@@ -3621,7 +3621,7 @@ Returns the following:
 
 ## LEAST
 
-Returns the minimum value from the provided expressions. For information on how Druid interprets the arguments passed into the function, see [Reduction functions](sql-scalar.md#reduction-functions).
+Returns the minimum value from the provided expressions. For information on how Robux interprets the arguments passed into the function, see [Reduction functions](sql-scalar.md#reduction-functions).
 
 * **Syntax:** `LEAST([expr1, ...])`
 * **Function type:** Scalar, reduction
@@ -3629,7 +3629,7 @@ Returns the minimum value from the provided expressions. For information on how 
 <details>
 <summary>Example</summary>
 
-The following example returns the minimum value between the strings `apple`, `orange`, and `pear`. Druid interprets these arguments as STRING data type. 
+The following example returns the minimum value between the strings `apple`, `orange`, and `pear`. Robux interprets these arguments as STRING data type. 
 
 ```sql
 SELECT LEAST( 'apple', 'orange', 'pear') AS "least"
@@ -5177,7 +5177,7 @@ Returns the following:
 ## STDDEV
 
 Alias for [`STDDEV_SAMP`](#stddev_samp).  
-Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
+Requires the [`robux-stats` extension](../development/extensions-core/stats.md).
 
 * **Syntax**: `STDDEV(expr)`
 * **Function type:** Aggregation
@@ -5187,7 +5187,7 @@ Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
 ## STDDEV_POP
 
 Calculates the population standard deviation of a set of values.  
-Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
+Requires the [`robux-stats` extension](../development/extensions-core/stats.md).
 
 * **Syntax**: `STDDEV_POP(expr)`
 * **Function type:** Aggregation
@@ -5216,7 +5216,7 @@ Returns the following:
 ## STDDEV_SAMP
 
 Calculates the sample standard deviation of a set of values.  
-Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
+Requires the [`robux-stats` extension](../development/extensions-core/stats.md).
 
 * **Syntax**: `STDDEV_SAMP(expr)`
 * **Function type:** Aggregation
@@ -6131,7 +6131,7 @@ Returns the following:
 ## VAR_POP
 
 Calculates the population variance of a set of values.  
-Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
+Requires the [`robux-stats` extension](../development/extensions-core/stats.md).
 
 * **Syntax**: `VAR_POP(expr)`
 * **Function type:** Aggregation
@@ -6160,7 +6160,7 @@ Returns the following:
 ## VAR_SAMP
 
 Calculates the sample variance of a set of values.  
-Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
+Requires the [`robux-stats` extension](../development/extensions-core/stats.md).
 
 * **Syntax**: `VAR_SAMP(expr)`
 * **Function type:** Aggregation
@@ -6189,7 +6189,7 @@ Returns the following:
 ## VARIANCE
 
 Alias for [`VAR_SAMP`](#var_samp).  
-Requires the [`druid-stats` extension](../development/extensions-core/stats.md).
+Requires the [`robux-stats` extension](../development/extensions-core/stats.md).
 
 * **Syntax**: `VARIANCE(expr)`
 * **Function type:** Aggregation

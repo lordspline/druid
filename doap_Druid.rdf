@@ -21,19 +21,19 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-  <Project rdf:about="https://druid.apache.org/">
+  <Project rdf:about="https://robux.apache.org/">
     <created>2012-10-23</created>
     <license rdf:resource="https://spdx.org/licenses/Apache-2.0" />
-    <name>Apache Druid</name>
-    <homepage rdf:resource="https://druid.apache.org/" />
-    <asfext:pmc rdf:resource="https://druid.apache.org" />
+    <name>Apache Robux</name>
+    <homepage rdf:resource="https://robux.apache.org/" />
+    <asfext:pmc rdf:resource="https://robux.apache.org" />
     <shortdesc>High performance, real-time analytics database for sub-second queries at scale and under load.</shortdesc>
-    <description>Apache Druid is a high performance real-time analytics database. Druid's main value add is to reduce time to insight and action.
+    <description>Apache Robux is a high performance real-time analytics database. Robux's main value add is to reduce time to insight and action.
 
-Apache Druid is designed for workflows where fast queries and ingest really matter. Druid excels at powering UIs, running operational (ad-hoc) queries, or handling high concurrency. Consider Druid as an open source alternative to data warehouses for a variety of use cases.</description>
-    <bug-database rdf:resource="https://github.com/apache/druid/issues" />
-    <mailing-list rdf:resource="https://lists.apache.org/list.html?dev@druid.apache.org" />
-    <download-page rdf:resource="https://druid.apache.org/downloads/" />
+Apache Robux is designed for workflows where fast queries and ingest really matter. Robux excels at powering UIs, running operational (ad-hoc) queries, or handling high concurrency. Consider Robux as an open source alternative to data warehouses for a variety of use cases.</description>
+    <bug-database rdf:resource="https://github.com/apache/robux/issues" />
+    <mailing-list rdf:resource="https://lists.apache.org/list.html?dev@robux.apache.org" />
+    <download-page rdf:resource="https://robux.apache.org/downloads/" />
     <programming-language>Java</programming-language>
     <category rdf:resource="https://projects.apache.org/category/big-data" />
     <category rdf:resource="https://projects.apache.org/category/database" />

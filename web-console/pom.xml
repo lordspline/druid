@@ -23,11 +23,11 @@
 
   <artifactId>web-console</artifactId>
   <name>web-console</name>
-  <description>Web console for Druid</description>
+  <description>Web console for Robux</description>
 
   <parent>
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
   </parent>
 
@@ -166,7 +166,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>
-          <outputDirectory>${project.build.outputDirectory}/org/apache/druid/console</outputDirectory>
+          <outputDirectory>${project.build.outputDirectory}/org/apache/robux/console</outputDirectory>
           <skip>${web.console.skip}</skip>
         </configuration>
       </plugin>

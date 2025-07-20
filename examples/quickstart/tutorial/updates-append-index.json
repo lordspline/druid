@@ -30,7 +30,7 @@
         "type": "combining",
         "delegates": [
           {
-            "type": "druid",
+            "type": "robux",
             "dataSource": "updates-tutorial",
             "interval": "2018-01-01/2018-01-03"
           },

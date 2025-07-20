@@ -16,20 +16,20 @@
 
 set -e
 
-# Build Druid Cluster Image
+# Build Robux Cluster Image
 set -e
 
-if [ -z "$DRUID_INTEGRATION_TEST_JVM_RUNTIME" ]
+if [ -z "$ROBUX_INTEGRATION_TEST_JVM_RUNTIME" ]
 then
-  echo "\$DRUID_INTEGRATION_TEST_JVM_RUNTIME is not set. Building druid-cluster with default Java version"
-  docker build -t druid/cluster --build-arg ZK_VERSION --build-arg KAFKA_VERSION --build-arg CONFLUENT_VERSION --build-arg MYSQL_VERSION --build-arg MARIA_VERSION --build-arg MYSQL_DRIVER_CLASSNAME $SHARED_DIR/docker
+  echo "\$ROBUX_INTEGRATION_TEST_JVM_RUNTIME is not set. Building robux-cluster with default Java version"
+  docker build -t robux/cluster --build-arg ZK_VERSION --build-arg KAFKA_VERSION --build-arg CONFLUENT_VERSION --build-arg MYSQL_VERSION --build-arg MARIA_VERSION --build-arg MYSQL_DRIVER_CLASSNAME $SHARED_DIR/docker
 else
-  echo "\$DRUID_INTEGRATION_TEST_JVM_RUNTIME is set with value ${DRUID_INTEGRATION_TEST_JVM_RUNTIME}"
-  case "${DRUID_INTEGRATION_TEST_JVM_RUNTIME}" in
+  echo "\$ROBUX_INTEGRATION_TEST_JVM_RUNTIME is set with value ${ROBUX_INTEGRATION_TEST_JVM_RUNTIME}"
+  case "${ROBUX_INTEGRATION_TEST_JVM_RUNTIME}" in
   11 | 17 | 21)
-    echo "Build druid-cluster with Java $DRUID_INTEGRATION_TEST_JVM_RUNTIME"
-    docker build -t druid/cluster \
-      --build-arg JDK_VERSION=$DRUID_INTEGRATION_TEST_JVM_RUNTIME-slim-bullseye \
+    echo "Build robux-cluster with Java $ROBUX_INTEGRATION_TEST_JVM_RUNTIME"
+    docker build -t robux/cluster \
+      --build-arg JDK_VERSION=$ROBUX_INTEGRATION_TEST_JVM_RUNTIME-slim-bullseye \
       --build-arg ZK_VERSION \
       --build-arg KAFKA_VERSION \
       --build-arg CONFLUENT_VERSION \
@@ -47,7 +47,7 @@ else
 fi
 
 # Build Hadoop docker if needed
-if [ -n "$DRUID_INTEGRATION_TEST_BUILD_HADOOP_DOCKER" ] && [ "$DRUID_INTEGRATION_TEST_BUILD_HADOOP_DOCKER" == true ]
+if [ -n "$ROBUX_INTEGRATION_TEST_BUILD_HADOOP_DOCKER" ] && [ "$ROBUX_INTEGRATION_TEST_BUILD_HADOOP_DOCKER" == true ]
 then
-    docker build -t druid-it/hadoop:9.9.9  --build-arg APACHE_ARCHIVE_MIRROR_HOST $HADOOP_DOCKER_DIR
+    docker build -t robux-it/hadoop:9.9.9  --build-arg APACHE_ARCHIVE_MIRROR_HOST $HADOOP_DOCKER_DIR
 fi

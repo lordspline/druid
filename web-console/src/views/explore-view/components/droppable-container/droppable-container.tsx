@@ -17,7 +17,7 @@
  */
 
 import classNames from 'classnames';
-import type { Column } from 'druid-query-toolkit';
+import type { Column } from 'robux-query-toolkit';
 import type React from 'react';
 import { forwardRef, useState } from 'react';
 

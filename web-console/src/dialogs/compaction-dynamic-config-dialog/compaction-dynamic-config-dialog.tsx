@@ -22,16 +22,16 @@ import React, { useState } from 'react';
 
 import type { FormJsonTabs } from '../../components';
 import { AutoForm, ExternalLink, FormJsonSelector, JsonInput, Loader } from '../../components';
-import type { CompactionDynamicConfig } from '../../druid-models';
+import type { CompactionDynamicConfig } from '../../robux-models';
 import {
   COMPACTION_DYNAMIC_CONFIG_DEFAULT_MAX,
   COMPACTION_DYNAMIC_CONFIG_DEFAULT_RATIO,
   COMPACTION_DYNAMIC_CONFIG_FIELDS,
-} from '../../druid-models';
+} from '../../robux-models';
 import { useQueryManager } from '../../hooks';
 import { getLink } from '../../links';
 import { Api, AppToaster } from '../../singletons';
-import { getDruidErrorMessage, wait } from '../../utils';
+import { getRobuxErrorMessage, wait } from '../../utils';
 
 import { COMPACTION_DYNAMIC_CONFIG_COMPLETIONS } from './compaction-dynamic-config-completions';
 
@@ -53,7 +53,7 @@ export const CompactionDynamicConfigDialog = React.memo(function CompactionDynam
     initQuery: null,
     processQuery: async (_, cancelToken) => {
       try {
-        const configResp = await Api.instance.get('/druid/indexer/v1/compaction/config/cluster', {
+        const configResp = await Api.instance.get('/robux/indexer/v1/compaction/config/cluster', {
           cancelToken,
         });
         setDynamicConfig(configResp.data || {});
@@ -61,7 +61,7 @@ export const CompactionDynamicConfigDialog = React.memo(function CompactionDynam
         AppToaster.show({
           icon: IconNames.ERROR,
           intent: Intent.DANGER,
-          message: `Could not load compaction dynamic config: ${getDruidErrorMessage(e)}`,
+          message: `Could not load compaction dynamic config: ${getRobuxErrorMessage(e)}`,
         });
         onClose();
       }
@@ -72,12 +72,12 @@ export const CompactionDynamicConfigDialog = React.memo(function CompactionDynam
   async function saveConfig() {
     if (!dynamicConfig) return;
     try {
-      await Api.instance.post('/druid/indexer/v1/compaction/config/cluster', dynamicConfig);
+      await Api.instance.post('/robux/indexer/v1/compaction/config/cluster', dynamicConfig);
     } catch (e) {
       AppToaster.show({
         icon: IconNames.ERROR,
         intent: Intent.DANGER,
-        message: `Could not save compaction dynamic config: ${getDruidErrorMessage(e)}`,
+        message: `Could not save compaction dynamic config: ${getRobuxErrorMessage(e)}`,
       });
       return;
     }

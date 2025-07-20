@@ -19,14 +19,14 @@
 import { Code, Intent } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import axios from 'axios';
-import { QueryResult, QueryRunner, SqlQuery } from 'druid-query-toolkit';
+import { QueryResult, QueryRunner, SqlQuery } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from 'zustand';
 
 import { Loader, QueryErrorPane, SplitterLayout } from '../../../components';
-import type { CapacityInfo, DruidEngine, LastExecution, QueryContext } from '../../../druid-models';
-import { DEFAULT_SERVER_QUERY_CONTEXT, Execution, WorkbenchQuery } from '../../../druid-models';
+import type { CapacityInfo, RobuxEngine, LastExecution, QueryContext } from '../../../robux-models';
+import { DEFAULT_SERVER_QUERY_CONTEXT, Execution, WorkbenchQuery } from '../../../robux-models';
 import {
   executionBackgroundStatusCheck,
   reattachTaskExecution,
@@ -41,7 +41,7 @@ import { WorkbenchRunningPromises } from '../../../singletons/workbench-running-
 import type { ColumnMetadata, QueryAction, QuerySlice, RowColumn } from '../../../utils';
 import {
   deepGet,
-  DruidError,
+  RobuxError,
   findAllSqlQueriesInText,
   localStorageGetJson,
   LocalStorageKeys,
@@ -92,7 +92,7 @@ export interface QueryTabProps
   onQueryChange(newQuery: WorkbenchQuery): void;
   onQueryTab(newQuery: WorkbenchQuery, tabName?: string): void;
   onDetails(execution: Execution, initTab?: ExecutionDetailsTab): void;
-  queryEngines: DruidEngine[];
+  queryEngines: RobuxEngine[];
   runMoreMenu: JSX.Element;
   clusterCapacity: number | undefined;
   goToTask(taskId: string): void;
@@ -197,7 +197,7 @@ export const QueryTab = React.memo(function QueryTab(props: QueryTabProps) {
     WorkbenchQuery | WorkbenchRunningPromise | LastExecution,
     Execution,
     Execution,
-    DruidError
+    RobuxError
   >({
     initQuery: cachedExecutionState ? undefined : currentRunningPromise || query.getLastExecution(),
     initState: cachedExecutionState,
@@ -228,7 +228,7 @@ export const QueryTab = React.memo(function QueryTab(props: QueryTabProps) {
                 .then(cancel => {
                   if (cancel.message === QueryManager.TERMINATION_MESSAGE) return;
                   return Api.instance.delete(
-                    `/druid/v2${engine === 'sql-native' ? '/sql' : ''}/${Api.encodePath(
+                    `/robux/v2${engine === 'sql-native' ? '/sql' : ''}/${Api.encodePath(
                       cancelQueryId,
                     )}`,
                   );
@@ -250,9 +250,9 @@ export const QueryTab = React.memo(function QueryTab(props: QueryTabProps) {
               .then(
                 queryResult => Execution.fromResult(engine, queryResult),
                 e => {
-                  const druidError = new DruidError(e, prefixLines);
-                  druidError.queryDuration = Date.now() - startTime.valueOf();
-                  throw druidError;
+                  const robuxError = new RobuxError(e, prefixLines);
+                  robuxError.queryDuration = Date.now() - startTime.valueOf();
+                  throw robuxError;
                 },
               );
 
@@ -278,7 +278,7 @@ export const QueryTab = React.memo(function QueryTab(props: QueryTabProps) {
               void cancelToken.promise
                 .then(cancel => {
                   if (cancel.message === QueryManager.TERMINATION_MESSAGE) return;
-                  return Api.instance.delete(`/druid/v2/sql/${Api.encodePath(cancelQueryId)}`);
+                  return Api.instance.delete(`/robux/v2/sql/${Api.encodePath(cancelQueryId)}`);
                 })
                 .catch(() => {});
             }
@@ -286,7 +286,7 @@ export const QueryTab = React.memo(function QueryTab(props: QueryTabProps) {
             onQueryChange(props.query.changeLastExecution(undefined));
 
             const executionPromise = Api.instance
-              .post(`/druid/v2/sql`, query, {
+              .post(`/robux/v2/sql`, query, {
                 cancelToken: new axios.CancelToken(cancelFn => {
                   nativeQueryCancelFnRef.current = cancelFn;
                 }),
@@ -314,7 +314,7 @@ export const QueryTab = React.memo(function QueryTab(props: QueryTabProps) {
                   }
                 },
                 e => {
-                  throw new DruidError(e, prefixLines);
+                  throw new RobuxError(e, prefixLines);
                 },
               );
 

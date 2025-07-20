@@ -22,11 +22,11 @@ title: "Joins"
   ~ under the License.
   -->
 
-Apache Druid has two features related to joining of data:
+Apache Robux has two features related to joining of data:
 
 1. [Join](datasource.md#join) operators. These are available using a [join datasource](datasource.md#join) in native
-queries, or using the [JOIN operator](sql.md) in Druid SQL. Refer to the
-[join datasource](datasource.md#join) documentation for information about how joins work in Druid native queries,
+queries, or using the [JOIN operator](sql.md) in Robux SQL. Refer to the
+[join datasource](datasource.md#join) documentation for information about how joins work in Robux native queries,
 or the [multi-stage query join documentation](../multi-stage-query/reference.md#joins) for information about how joins
 work in multi-stage query tasks.
 2. [Query-time lookups](lookups.md), simple key-to-value mappings. These are preloaded on all servers that are involved
@@ -34,7 +34,7 @@ in queries and can be accessed with or without an explicit join operator. Refer 
 documentation for more details.
 
 Whenever possible, for best performance it is good to avoid joins at query time. Often this can be accomplished by
-joining data before it is loaded into Druid. However, there are situations where joins or lookups are the best solution
+joining data before it is loaded into Robux. However, there are situations where joins or lookups are the best solution
 available despite the performance overhead, including:
 
 - The fact-to-dimension (star and snowflake schema) case: you need to change dimension values after initial ingestion,

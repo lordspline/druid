@@ -27,9 +27,9 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-This topic describes the API endpoints for managing retention rules in Apache Druid. You can configure retention rules in the Druid web console or API.
+This topic describes the API endpoints for managing retention rules in Apache Robux. You can configure retention rules in the Robux web console or API.
 
-Druid uses retention rules to determine what data is retained in the cluster. Druid supports load, drop, and broadcast rules. For more information, see [Using rules to drop and retain data](../operations/rule-configuration.md).
+Robux uses retention rules to determine what data is retained in the cluster. Robux supports load, drop, and broadcast rules. For more information, see [Using rules to drop and retain data](../operations/rule-configuration.md).
 
 In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router service address and port. Replace it with the information for your deployment. For example, use `http://localhost:8888` for quickstart deployments.
 
@@ -42,22 +42,22 @@ Updates one or more retention rules for a datasource. The request body takes an 
 * [Broadcast rules](../operations/rule-configuration.md#broadcast-rules)
 
 This request overwrites any existing rules for the datasource.
-Druid reads rules in the order in which they appear; for more information, see [rule structure](../operations/rule-configuration.md).
+Robux reads rules in the order in which they appear; for more information, see [rule structure](../operations/rule-configuration.md).
 
 Note that this endpoint returns an HTTP `200 OK` even if the datasource does not exist.
 
 ### URL
 
-`POST` `/druid/coordinator/v1/rules/{dataSource}`
+`POST` `/robux/coordinator/v1/rules/{dataSource}`
 
 ### Header parameters
 
 The endpoint supports a set of optional header parameters to populate the `author` and `comment` fields in the `auditInfo` property for audit history.
 
-* `X-Druid-Author` (optional)
+* `X-Robux-Author` (optional)
   * Type: String
   * A string representing the author making the configuration change.
-* `X-Druid-Comment` (optional)
+* `X-Robux-Comment` (optional)
   * Type: String
   * A string describing the update.
 
@@ -85,9 +85,9 @@ The following example sets a set of broadcast, load, and drop retention rules fo
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/kttm1" \
---header 'X-Druid-Author: doc intern' \
---header 'X-Druid-Comment: submitted via api' \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/rules/kttm1" \
+--header 'X-Robux-Author: doc intern' \
+--header 'X-Robux-Comment: submitted via api' \
 --header 'Content-Type: application/json' \
 --data '[
     {
@@ -112,10 +112,10 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/kttm1" \
 
 
 ```HTTP
-POST /druid/coordinator/v1/rules/kttm1 HTTP/1.1
+POST /robux/coordinator/v1/rules/kttm1 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
-X-Druid-Author: doc intern
-X-Druid-Comment: submitted via api
+X-Robux-Author: doc intern
+X-Robux-Comment: submitted via api
 Content-Type: application/json
 Content-Length: 273
 
@@ -156,16 +156,16 @@ This request overwrites any existing rules for all datasources. To remove defaul
 
 ### URL
 
-`POST` `/druid/coordinator/v1/rules/_default`
+`POST` `/robux/coordinator/v1/rules/_default`
 
 ### Header parameters
 
 The endpoint supports a set of optional header parameters to populate the `author` and `comment` fields in the `auditInfo` property for audit history.
 
-* `X-Druid-Author` (optional)
+* `X-Robux-Author` (optional)
   * Type: String
   * A string representing the author making the configuration change.
-* `X-Druid-Comment` (optional)
+* `X-Robux-Comment` (optional)
   * Type: String
   * A string describing the update.
 
@@ -199,7 +199,7 @@ The following example updates the default retention rule for all datasources wit
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/_default" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/rules/_default" \
 --header 'Content-Type: application/json' \
 --data '[
     {
@@ -216,7 +216,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/_default" \
 
 
 ```HTTP
-POST /druid/coordinator/v1/rules/_default HTTP/1.1
+POST /robux/coordinator/v1/rules/_default HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 205
@@ -244,7 +244,7 @@ Retrieves all current retention rules in the cluster including the default reten
 
 ### URL
 
-`GET` `/druid/coordinator/v1/rules`
+`GET` `/robux/coordinator/v1/rules`
 
 ### Responses
 
@@ -268,7 +268,7 @@ Retrieves all current retention rules in the cluster including the default reten
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/rules"
 ```
 
 </TabItem>
@@ -276,7 +276,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules"
 
 
 ```HTTP
-GET /druid/coordinator/v1/rules HTTP/1.1
+GET /robux/coordinator/v1/rules HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -317,7 +317,7 @@ Note that this endpoint returns an HTTP `200 OK` message code even if the dataso
 
 ### URL
 
-`GET` `/druid/coordinator/v1/rules/{dataSource}`
+`GET` `/robux/coordinator/v1/rules/{dataSource}`
 
 ### Query parameters
 
@@ -348,7 +348,7 @@ The following example retrieves the custom retention rules and default retention
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/social_media?full=null"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/rules/social_media?full=null"
 ```
 
 </TabItem>
@@ -356,7 +356,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/social_media?full=
 
 
 ```HTTP
-GET /druid/coordinator/v1/rules/social_media?full=null HTTP/1.1
+GET /robux/coordinator/v1/rules/social_media?full=null HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -394,11 +394,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ## Get audit history for all datasources
 
-Retrieves the audit history of rules for all datasources over an interval of time. The default interval is 1 week. You can change this period by setting `druid.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Coordinator.
+Retrieves the audit history of rules for all datasources over an interval of time. The default interval is 1 week. You can change this period by setting `robux.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Coordinator.
 
 ### URL
 
-`GET` `/druid/coordinator/v1/rules/history`
+`GET` `/robux/coordinator/v1/rules/history`
 
 ### Query parameters
 
@@ -447,7 +447,7 @@ The following example retrieves the audit history for all datasources from `2023
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/history?interval=2023-07-13%2F2023-07-19"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/rules/history?interval=2023-07-13%2F2023-07-19"
 ```
 
 </TabItem>
@@ -455,7 +455,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/rules/history?interval=2
 
 
 ```HTTP
-GET /druid/coordinator/v1/rules/history?interval=2023-07-13/2023-07-19 HTTP/1.1
+GET /robux/coordinator/v1/rules/history?interval=2023-07-13/2023-07-19 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 

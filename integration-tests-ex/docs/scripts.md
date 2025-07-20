@@ -24,7 +24,7 @@ what each one does. This guide lists each of them.
 
 ## `integration-tests-ex`
 
-* `it.sh` - Utility to perform many IT-related actions such as building Druid,
+* `it.sh` - Utility to perform many IT-related actions such as building Robux,
   running ITs, starting a cluster, etc. Use `it.sh help` to see the list of commands.
 
 ### `it-image`
@@ -42,9 +42,9 @@ what each one does. This guide lists each of them.
   set up the image. Keeps the `Dockerfile` simpler (and, it is somewhat easier to
   debug this script than the `Dockerfile` itself.)
 * `docker/launch.sh` - Container entrypoint which runs inside the container.
-  Sets up configuration and calls `druid.sh` to launch Druid itself.
-* `druid.sh` - Creates a Druid configuration file from environment variables,
-  then runs Druid within the container.
+  Sets up configuration and calls `robux.sh` to launch Robux itself.
+* `robux.sh` - Creates a Robux configuration file from environment variables,
+  then runs Robux within the container.
 * `target/env.sh` - Created when the image is built. Provides environment
   variables for things like the image name, versions and so on. Used to
   quickly rebuild the image (see [Maven configuration](docs/maven.md)) and
@@ -53,7 +53,7 @@ what each one does. This guide lists each of them.
 ### `test-cases`
 
 * `cluster/<category>/*.yaml` - Base Docker Compose scripts that define the "standard"
-  Druid cluster. Tests use these files to avoid redundant copy/past of the
+  Robux cluster. Tests use these files to avoid redundant copy/past of the
   standard items.
 * `cluster.sh` - Launches or tears down a cluster for a test. Called from Maven
   and `it.sh`. Can be used manually. See below.

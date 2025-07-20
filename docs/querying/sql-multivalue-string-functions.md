@@ -32,12 +32,12 @@ sidebar_label: "Multi-value string functions"
 
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
-Druid supports string dimensions containing multiple values.
-This page describes the operations you can perform on multi-value string dimensions using [Druid SQL](./sql.md).
+Robux supports string dimensions containing multiple values.
+This page describes the operations you can perform on multi-value string dimensions using [Robux SQL](./sql.md).
 See [SQL multi-value strings](./sql-data-types.md#multi-value-strings) and native [Multi-value dimensions](multi-value-dimensions.md) for more information.
 
 All array references in the multi-value string function documentation can refer to multi-value string columns or

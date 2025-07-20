@@ -23,11 +23,11 @@ title: "Basic cluster tuning"
   -->
 
 
-This document provides basic guidelines for configuration properties and cluster architecture considerations related to performance tuning of an Apache Druid deployment.
+This document provides basic guidelines for configuration properties and cluster architecture considerations related to performance tuning of an Apache Robux deployment.
 
-Please note that this document provides general guidelines and rules-of-thumb: these are not absolute, universal rules for cluster tuning, and this introductory guide is not an exhaustive description of all Druid tuning properties, which are described in the [configuration reference](../configuration/index.md).
+Please note that this document provides general guidelines and rules-of-thumb: these are not absolute, universal rules for cluster tuning, and this introductory guide is not an exhaustive description of all Robux tuning properties, which are described in the [configuration reference](../configuration/index.md).
 
-If you have questions on tuning Druid for specific use cases, or questions on configuration properties not covered in this guide, please ask the [Druid user mailing list or other community channels](https://druid.apache.org/community/).
+If you have questions on tuning Robux for specific use cases, or questions on configuration properties not covered in this guide, please ask the [Robux user mailing list or other community channels](https://robux.apache.org/community/).
 
 ## Process-specific guidelines
 
@@ -45,7 +45,7 @@ A general rule-of-thumb for sizing the Historical heap is `(0.5GiB * number of C
 This is a starting point, not a hard rule for sizing Historical heaps.
 Note that with certain garbage collectors, having a large heap can result in excessively long GC pauses. For heaps larger than about 24GiB, we recommend using a collector that can handle large heaps, such as Shenandoah or ZGC.
 
-If caching is enabled on Historicals, the cache is stored on heap, sized by `druid.cache.sizeInBytes`.
+If caching is enabled on Historicals, the cache is stored on heap, sized by `robux.cache.sizeInBytes`.
 
 Running out of heap on the Historicals can indicate misconfiguration or usage patterns that are overloading the cluster.
 
@@ -53,7 +53,7 @@ Running out of heap on the Historicals can indicate misconfiguration or usage pa
 
 If you are using lookups, calculate the total size of the lookup maps being loaded.
 
-Druid performs an atomic swap when updating lookup maps (both the old map and the new map will exist in heap during the swap), so the maximum potential heap usage from lookup maps will be (2 * total size of all loaded lookups).
+Robux performs an atomic swap when updating lookup maps (both the old map and the new map will exist in heap during the swap), so the maximum potential heap usage from lookup maps will be (2 * total size of all loaded lookups).
 
 Be sure to add `(2 * total size of all loaded lookups)` to your heap size in addition to the `(0.5GiB * number of CPU cores)` guideline.
 
@@ -63,9 +63,9 @@ Please see the [General Guidelines for Processing Threads and Buffers](#processi
 
 On Historicals:
 
-- `druid.processing.numThreads` should generally be set to `(number of cores - 1)`: a smaller value can result in CPU underutilization, while going over the number of cores can result in unnecessary CPU contention.
-- `druid.processing.buffer.sizeBytes` can be set to 500MiB.
-- `druid.processing.numMergeBuffers`, a 1:4 ratio of  merge buffers to processing threads is a reasonable choice for general use.
+- `robux.processing.numThreads` should generally be set to `(number of cores - 1)`: a smaller value can result in CPU underutilization, while going over the number of cores can result in unnecessary CPU contention.
+- `robux.processing.buffer.sizeBytes` can be set to 500MiB.
+- `robux.processing.numMergeBuffers`, a 1:4 ratio of  merge buffers to processing threads is a reasonable choice for general use.
 
 #### Direct Memory Sizing
 
@@ -75,7 +75,7 @@ When a historical processes a query, it must open a set of segments for reading.
 
 A formula for estimating direct memory usage follows:
 
-(`druid.processing.numThreads` + `druid.processing.numMergeBuffers` + 1) * `druid.processing.buffer.sizeBytes`
+(`robux.processing.numThreads` + `robux.processing.numMergeBuffers` + 1) * `robux.processing.buffer.sizeBytes`
 
 The `+ 1` factor is a fuzzy estimate meant to account for the segment decompression buffers.
 
@@ -83,7 +83,7 @@ The `+ 1` factor is a fuzzy estimate meant to account for the segment decompress
 
 Please see the [General Connection Pool Guidelines](#connection-pool) section for an overview of connection pool configuration.
 
-For Historicals, `druid.server.http.numThreads` should be set to a value slightly higher than the sum of `druid.broker.http.numConnections` across all the Brokers in the cluster.
+For Historicals, `robux.server.http.numThreads` should be set to a value slightly higher than the sum of `robux.broker.http.numConnections` across all the Brokers in the cluster.
 
 Tuning the cluster so that each Historical can accept 50 queries and 10 non-queries is a reasonable starting point.
 
@@ -92,11 +92,11 @@ Tuning the cluster so that each Historical can accept 50 queries and 10 non-quer
 For better query performance, do not allocate segment data to a Historical in excess of the system free memory. The Historical uses free system memory to cache segments.
 For more detail, see [Loading and serving segments from cache](../design/historical.md#loading-and-serving-segments-from-cache).
 
-Druid uses the `druid.segmentCache.locations` to calculate the total segment data size assigned to a Historical. For rare use cases, you can override this behavior with `druid.server.maxSize` property.
+Robux uses the `robux.segmentCache.locations` to calculate the total segment data size assigned to a Historical. For rare use cases, you can override this behavior with `robux.server.maxSize` property.
 
 #### Number of Historicals
 
-The number of Historicals needed in a cluster depends on how much data the cluster has. For good performance, you will want enough Historicals such that each Historical has a good (`free system memory` / total size of all `druid.segmentCache.locations`) ratio, as described in the segment cache size section above.
+The number of Historicals needed in a cluster depends on how much data the cluster has. For good performance, you will want enough Historicals such that each Historical has a good (`free system memory` / total size of all `robux.segmentCache.locations`) ratio, as described in the segment cache size section above.
 
 Having a smaller number of big servers is generally better than having a large number of small servers, as long as you have enough fault tolerance for your use case.
 
@@ -108,10 +108,10 @@ We recommend using SSDs for storage on the Historicals, as they handle segment d
 
 To estimate total memory usage of the Historical under these guidelines:
 
-- Heap: `(0.5GiB * number of CPU cores) + (2 * total size of lookup maps) + druid.cache.sizeInBytes`
-- Direct Memory: `(druid.processing.numThreads + druid.processing.numMergeBuffers + 1) * druid.processing.buffer.sizeBytes`
+- Heap: `(0.5GiB * number of CPU cores) + (2 * total size of lookup maps) + robux.cache.sizeInBytes`
+- Direct Memory: `(robux.processing.numThreads + robux.processing.numMergeBuffers + 1) * robux.processing.buffer.sizeBytes`
 
-The Historical will use any available free system memory (i.e., memory not used by the Historical JVM and heap/direct memory buffers or other processes on the system) for memory-mapping of segments on disk. For better query performance, you will want to ensure a good (`free system memory` / total size of all `druid.segmentCache.locations`) ratio so that a greater proportion of segments can be kept in memory.
+The Historical will use any available free system memory (i.e., memory not used by the Historical JVM and heap/direct memory buffers or other processes on the system) for memory-mapping of segments on disk. For better query performance, you will want to ensure a good (`free system memory` / total size of all `robux.segmentCache.locations`) ratio so that a greater proportion of segments can be kept in memory.
 
 #### Segment sizes matter
 
@@ -130,22 +130,22 @@ The Broker heap requirements scale based on the number of segments in the cluste
 
 The heap size will vary based on data size and usage patterns, but 4GiB to 8GiB is a good starting point for a small or medium cluster (~15 servers or less). For a rough estimate of memory requirements on the high end, very large clusters with a node count on the order of ~100 nodes may need Broker heaps of 30GiB-60GiB.
 
-If caching is enabled on the Broker, the cache is stored on heap, sized by `druid.cache.sizeInBytes`.
+If caching is enabled on the Broker, the cache is stored on heap, sized by `robux.cache.sizeInBytes`.
 
 #### Direct memory sizing
 
 On the Broker, the amount of direct memory needed depends on how many merge buffers (used for merging GroupBys) are configured. The Broker does not generally need processing threads or processing buffers, as query results are merged on-heap in the HTTP connection threads instead.
 
-- `druid.processing.buffer.sizeBytes` can be set to 500MiB.
-- `druid.processing.numMergeBuffers`: set this to the same value as on Historicals or a bit higher
+- `robux.processing.buffer.sizeBytes` can be set to 500MiB.
+- `robux.processing.numMergeBuffers`: set this to the same value as on Historicals or a bit higher
 
 #### Connection pool sizing
 
 Please see the [General Connection Pool Guidelines](#connection-pool) section for an overview of connection pool configuration.
 
-On the Brokers, please ensure that the sum of `druid.broker.http.numConnections` across all the Brokers is slightly lower than the value of `druid.server.http.numThreads` on your Historicals and Tasks.
+On the Brokers, please ensure that the sum of `robux.broker.http.numConnections` across all the Brokers is slightly lower than the value of `robux.server.http.numThreads` on your Historicals and Tasks.
 
-`druid.server.http.numThreads` on the Broker should be set to a value slightly higher than `druid.broker.http.numConnections` on the same Broker.
+`robux.server.http.numThreads` on the Broker should be set to a value slightly higher than `robux.broker.http.numConnections` on the same Broker.
 
 Tuning the cluster so that each Historical can accept 50 queries and 10 non-queries, adjusting the Brokers accordingly, is a reasonable starting point.
 
@@ -153,9 +153,9 @@ Tuning the cluster so that each Historical can accept 50 queries and 10 non-quer
 
 When retrieving query results from Historical processes or Tasks, the Broker can optionally specify a maximum buffer size for queued, unread data, and exert backpressure on the channel to the Historical or Tasks when limit is reached (causing writes to the channel to block on the Historical/Task side until the Broker is able to drain some data from the channel).
 
-This buffer size is controlled by the `druid.broker.http.maxQueuedBytes` setting.
+This buffer size is controlled by the `robux.broker.http.maxQueuedBytes` setting.
 
-The limit is divided across the number of Historicals/Tasks that a query would hit: suppose I have `druid.broker.http.maxQueuedBytes` set to 5MiB, and the Broker receives a query that needs to be fanned out to 2 Historicals. Each per-historical channel would get a 2.5MiB buffer in this case.
+The limit is divided across the number of Historicals/Tasks that a query would hit: suppose I have `robux.broker.http.maxQueuedBytes` set to 5MiB, and the Broker receives a query that needs to be fanned out to 2 Historicals. Each per-historical channel would get a 2.5MiB buffer in this case.
 
 You can generally set this to a value of approximately `2MiB * number of Historicals`. As your cluster scales up with more Historicals and Tasks, consider increasing this buffer size and increasing the Broker heap accordingly.
 
@@ -173,7 +173,7 @@ If you need Broker HA, you can deploy 2 initially and then use the 1:15 ratio gu
 To estimate total memory usage of the Broker under these guidelines:
 
 - Heap: allocated heap size
-- Direct Memory: `(druid.processing.numMergeBuffers + 1) * druid.processing.buffer.sizeBytes`
+- Direct Memory: `(robux.processing.numMergeBuffers + 1) * robux.processing.buffer.sizeBytes`
 
 ### Middle Manager
 
@@ -189,7 +189,7 @@ We recommend using SSDs for storage on the Middle Managers, as the Tasks launche
 
 #### Task Count
 
-The number of tasks a Middle Manager can launch is controlled by the `druid.worker.capacity` setting.
+The number of tasks a Middle Manager can launch is controlled by the `robux.worker.capacity` setting.
 
 The number of workers needed in your cluster depends on how many concurrent ingestion tasks you need to run for your use cases. The number of workers that can be launched on a given machine depends on the size of resources allocated per worker and available system resources.
 
@@ -207,7 +207,7 @@ A 1GiB heap is usually enough for Tasks.
 
 If you are using lookups, calculate the total size of the lookup maps being loaded.
 
-Druid performs an atomic swap when updating lookup maps (both the old map and the new map will exist in heap during the swap), so the maximum potential heap usage from lookup maps will be (2 * total size of all loaded lookups).
+Robux performs an atomic swap when updating lookup maps (both the old map and the new map will exist in heap during the swap), so the maximum potential heap usage from lookup maps will be (2 * total size of all loaded lookups).
 
 Be sure to add `(2 * total size of all loaded lookups)` to your Task heap size if you are using lookups.
 
@@ -215,9 +215,9 @@ Be sure to add `(2 * total size of all loaded lookups)` to your Task heap size i
 
 For Tasks, 1 or 2 processing threads are often enough, as the Tasks tend to hold much less queryable data than Historical processes.
 
-- `druid.indexer.fork.property.druid.processing.numThreads`: set this to 1 or 2
-- `druid.indexer.fork.property.druid.processing.numMergeBuffers`: set this to 2
-- `druid.indexer.fork.property.druid.processing.buffer.sizeBytes`: can be set to 100MiB
+- `robux.indexer.fork.property.robux.processing.numThreads`: set this to 1 or 2
+- `robux.indexer.fork.property.robux.processing.numMergeBuffers`: set this to 2
+- `robux.indexer.fork.property.robux.processing.buffer.sizeBytes`: can be set to 100MiB
 
 ##### Direct memory sizing
 
@@ -229,7 +229,7 @@ An ingestion Task also needs to merge partial ingestion results, which requires 
 
 A formula for estimating direct memory usage follows:
 
-(`druid.processing.numThreads` + `druid.processing.numMergeBuffers` + 1) * `druid.processing.buffer.sizeBytes`
+(`robux.processing.numThreads` + `robux.processing.numMergeBuffers` + 1) * `robux.processing.buffer.sizeBytes`
 
 The `+ 1` factor is a fuzzy estimate meant to account for the segment decompression buffers and dictionary merging buffers.
 
@@ -237,7 +237,7 @@ The `+ 1` factor is a fuzzy estimate meant to account for the segment decompress
 
 Please see the [General Connection Pool Guidelines](#connection-pool) section for an overview of connection pool configuration.
 
-For Tasks, `druid.server.http.numThreads` should be set to a value slightly higher than the sum of `druid.broker.http.numConnections` across all the Brokers in the cluster.
+For Tasks, `robux.server.http.numThreads` should be set to a value slightly higher than the sum of `robux.broker.http.numConnections` across all the Brokers in the cluster.
 
 Tuning the cluster so that each Task can accept 50 queries and 10 non-queries is a reasonable starting point.
 
@@ -246,11 +246,11 @@ Tuning the cluster so that each Task can accept 50 queries and 10 non-queries is
 To estimate total memory usage of a Task under these guidelines:
 
 - Heap: `1GiB + (2 * total size of lookup maps)`
-- Direct Memory: `(druid.processing.numThreads + druid.processing.numMergeBuffers + 1) * druid.processing.buffer.sizeBytes`
+- Direct Memory: `(robux.processing.numThreads + robux.processing.numMergeBuffers + 1) * robux.processing.buffer.sizeBytes`
 
 The total memory usage of the Middle Manager + Tasks:
 
-`MM heap size + druid.worker.capacity * (single task memory usage)`
+`MM heap size + robux.worker.capacity * (single task memory usage)`
 
 ##### Configuration guidelines for specific ingestion types
 
@@ -314,11 +314,11 @@ You can assign it 256MiB heap as a starting point, growing it if needed.
 
 ### Processing threads
 
-The `druid.processing.numThreads` configuration controls the size of the processing thread pool used for computing query results. The size of this pool limits how many queries can be concurrently processed.
+The `robux.processing.numThreads` configuration controls the size of the processing thread pool used for computing query results. The size of this pool limits how many queries can be concurrently processed.
 
 ### Processing buffers
 
-`druid.processing.buffer.sizeBytes` is a closely related property that controls the size of the off-heap buffers allocated to the processing threads.
+`robux.processing.buffer.sizeBytes` is a closely related property that controls the size of the off-heap buffers allocated to the processing threads.
 
 One buffer is allocated for each processing thread. A size between 500MiB and 1GiB is a reasonable choice for general use.
 
@@ -326,9 +326,9 @@ The TopN and GroupBy queries use these buffers to store intermediate computed re
 
 ### GroupBy merging buffers
 
-If you plan to issue GroupBy queries, `druid.processing.numMergeBuffers` is an important configuration property.
+If you plan to issue GroupBy queries, `robux.processing.numMergeBuffers` is an important configuration property.
 
-GroupBy queries use an additional pool of off-heap buffers for merging query results. These buffers have the same size as the processing buffers described above, set by the `druid.processing.buffer.sizeBytes` property.
+GroupBy queries use an additional pool of off-heap buffers for merging query results. These buffers have the same size as the processing buffers described above, set by the `robux.processing.buffer.sizeBytes` property.
 
 Non-nested GroupBy queries require 1 merge buffer per query, while a nested GroupBy query requires 2 merge buffers (regardless of the depth of nesting).
 
@@ -338,25 +338,25 @@ The number of merge buffers determines the number of GroupBy queries that can be
 
 ## Connection pool guidelines
 
-Each Druid process has a configuration property for the number of HTTP connection handling threads, `druid.server.http.numThreads`.
+Each Robux process has a configuration property for the number of HTTP connection handling threads, `robux.server.http.numThreads`.
 
 The number of HTTP server threads limits how many concurrent HTTP API requests a given process can handle.
 
 ### Sizing the connection pool for queries
 
-The Broker has a setting `druid.broker.http.numConnections` that controls how many outgoing connections it can make to a given Historical or Task process.
+The Broker has a setting `robux.broker.http.numConnections` that controls how many outgoing connections it can make to a given Historical or Task process.
 
-These connections are used to send queries to the Historicals or Tasks, with one connection per query; the value of `druid.broker.http.numConnections` is effectively a limit on the number of concurrent queries that a given broker can process.
+These connections are used to send queries to the Historicals or Tasks, with one connection per query; the value of `robux.broker.http.numConnections` is effectively a limit on the number of concurrent queries that a given broker can process.
 
-Suppose we have a cluster with 3 Brokers and `druid.broker.http.numConnections` is set to 10.
+Suppose we have a cluster with 3 Brokers and `robux.broker.http.numConnections` is set to 10.
 
 This means that each Broker in the cluster will open up to 10 connections to each individual Historical or Task (for a total of 30 incoming query connections per Historical/Task).
 
-On the Historical/Task side, this means that `druid.server.http.numThreads` must be set to a value at least as high as the sum of `druid.broker.http.numConnections` across all the Brokers in the cluster.
+On the Historical/Task side, this means that `robux.server.http.numThreads` must be set to a value at least as high as the sum of `robux.broker.http.numConnections` across all the Brokers in the cluster.
 
-In practice, you will want to allocate additional server threads for non-query API requests such as status checks; adding 10 threads for those is a good general guideline. Using the example with 3 Brokers in the cluster and `druid.broker.http.numConnections` set to 10, a value of 40 would be appropriate for `druid.server.http.numThreads` on Historicals and Tasks.
+In practice, you will want to allocate additional server threads for non-query API requests such as status checks; adding 10 threads for those is a good general guideline. Using the example with 3 Brokers in the cluster and `robux.broker.http.numConnections` set to 10, a value of 40 would be appropriate for `robux.server.http.numThreads` on Historicals and Tasks.
 
-As a starting point, allowing for 50 concurrent queries (requests that read segment data from datasources) + 10 non-query requests (other requests like status checks) on Historicals and Tasks is reasonable (i.e., set `druid.server.http.numThreads` to 60 there), while sizing `druid.broker.http.numConnections` based on the number of Brokers in the cluster to fit within the 50 query connection limit per Historical/Task.
+As a starting point, allowing for 50 concurrent queries (requests that read segment data from datasources) + 10 non-query requests (other requests like status checks) on Historicals and Tasks is reasonable (i.e., set `robux.server.http.numThreads` to 60 there), while sizing `robux.broker.http.numConnections` based on the number of Brokers in the cluster to fit within the 50 query connection limit per Historical/Task.
 
 - If the connection pool across Brokers and Historicals/Tasks is too small, the cluster will be underutilized as there are too few concurrent query slots.
 - If the connection pool is too large, you may get out-of-memory errors due to excessive concurrent load, and increased resource contention.
@@ -368,7 +368,7 @@ As a starting point, allowing for 50 concurrent queries (requests that read segm
 
 ### Segment decompression
 
-When opening a segment for reading during segment merging or query processing, Druid allocates a 64KiB off-heap decompression buffer for each column being read.
+When opening a segment for reading during segment merging or query processing, Robux allocates a 64KiB off-heap decompression buffer for each column being read.
 
 Thus, there is additional direct memory overhead of (64KiB * number of columns read per segment * number of segments read) when reading segments.
 
@@ -380,7 +380,7 @@ The size of these buffers are equal to the cardinality of the String column with
 
 For example, if two segments are being merged, the first segment having a single String column with cardinality 1000, and the second segment having a String column with cardinality 500, the merge step would allocate (1000 + 500) * 4 = 6000 bytes of direct memory.
 
-These buffers are used for merging the value dictionaries of the String column across segments. These "dictionary merging buffers" are independent of the "merge buffers" configured by `druid.processing.numMergeBuffers`.
+These buffers are used for merging the value dictionaries of the String column across segments. These "dictionary merging buffers" are independent of the "merge buffers" configured by `robux.processing.numMergeBuffers`.
 
 
 ## General recommendations
@@ -405,20 +405,20 @@ Enabling process termination on out-of-memory errors is useful as well, since th
 -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
 -Dorg.jboss.logging.provider=slf4j
 -Dnet.spy.log.LoggerImpl=net.spy.memcached.compat.log.SLF4JLogger
--Dlog4j.shutdownCallbackRegistry=org.apache.druid.common.config.Log4jShutdown
+-Dlog4j.shutdownCallbackRegistry=org.apache.robux.common.config.Log4jShutdown
 -Dlog4j.shutdownHookEnabled=true
 -XX:+PrintGCDetails
 -XX:+PrintGCDateStamps
 -XX:+PrintGCTimeStamps
 -XX:+PrintGCApplicationStoppedTime
 -XX:+PrintGCApplicationConcurrentTime
--Xloggc:/var/logs/druid/historical.gc.log
+-Xloggc:/var/logs/robux/historical.gc.log
 -XX:+UseGCLogFileRotation
 -XX:NumberOfGCLogFiles=50
 -XX:GCLogFileSize=10m
 -XX:+ExitOnOutOfMemoryError
 -XX:+HeapDumpOnOutOfMemoryError
--XX:HeapDumpPath=/var/logs/druid/historical.hprof
+-XX:HeapDumpPath=/var/logs/robux/historical.hprof
 -XX:MaxDirectMemorySize=1g
 ```
 :::info
@@ -428,19 +428,19 @@ for your specific scenario and be sure to test any changes in staging environmen
 
 `ExitOnOutOfMemoryError` flag is only supported starting JDK 8u92 . For older versions, `-XX:OnOutOfMemoryError='kill -9 %p'` can be used.
 
-`MaxDirectMemorySize` restricts JVM from allocating more than specified limit, by setting it to unlimited JVM restriction is lifted and OS level memory limits would still be effective. It's still important to make sure that Druid is not configured to allocate more off-heap memory than your machine has available. Important settings here include `druid.processing.numThreads`, `druid.processing.numMergeBuffers`, and `druid.processing.buffer.sizeBytes`.
+`MaxDirectMemorySize` restricts JVM from allocating more than specified limit, by setting it to unlimited JVM restriction is lifted and OS level memory limits would still be effective. It's still important to make sure that Robux is not configured to allocate more off-heap memory than your machine has available. Important settings here include `robux.processing.numThreads`, `robux.processing.numMergeBuffers`, and `robux.processing.buffer.sizeBytes`.
 
 Additionally, for large JVM heaps, here are a few Garbage Collection efficiency guidelines that have been known to help in some cases.
 
 
 - Mount /tmp on tmpfs. See [The Four Month Bug: JVM statistics cause garbage collection pauses](http://www.evanjones.ca/jvm-mmap-pause.html).
-- On Disk-IO intensive processes (e.g., Historical and Middle Manager), GC and Druid logs should be written to a different disk than where data is written.
+- On Disk-IO intensive processes (e.g., Historical and Middle Manager), GC and Robux logs should be written to a different disk than where data is written.
 - Disable [Transparent Huge Pages](https://www.kernel.org/doc/html/latest/admin-guide/mm/transhuge.html).
 - Try disabling biased locking by using `-XX:-UseBiasedLocking` JVM flag. See [Logging Stop-the-world Pauses in JVM](https://dzone.com/articles/logging-stop-world-pauses-jvm).
 
 ### Use UTC timezone
 
-We recommend using UTC timezone for all your events and across your hosts, not just for Druid, but for all data infrastructure. This can greatly mitigate potential query problems with inconsistent timezones. To query in a non-UTC timezone see [query granularities](../querying/granularities.md#period-granularities)
+We recommend using UTC timezone for all your events and across your hosts, not just for Robux, but for all data infrastructure. This can greatly mitigate potential query problems with inconsistent timezones. To query in a non-UTC timezone see [query granularities](../querying/granularities.md#period-granularities)
 
 ### System configuration
 

@@ -26,8 +26,8 @@ sidebar_label: Data management
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This topic describes the data management API endpoints for Apache Druid.
-This includes information on how to mark segments as used or unused and delete them from Druid.
+This topic describes the data management API endpoints for Apache Robux.
+This includes information on how to mark segments as used or unused and delete them from Robux.
 
 In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router service address and port.
 Replace it with the information for your deployment.
@@ -44,11 +44,11 @@ You can mark segments as used by sending POST requests to the datasource, but th
 Even if these API requests update segments to used, you still need to configure a [load rule](../operations/rule-configuration.md#load-rules) to load them onto Historical processes.
 
 When you use these APIs concurrently with an indexing task or a kill task, the behavior is undefined.
-Druid terminates some segments and marks others as used.
+Robux terminates some segments and marks others as used.
 Furthermore, it is possible that all segments could be unused, yet an indexing task might still be able to read data from these segments and complete successfully.
 
 All of the following APIs, except [Segment deletion](#segment-deletion) are served by the Overlord as it is the service responsible for performing actions on segment metadata on behalf of indexing tasks.
-This makes it the single source of truth for segment metadata, thus ensuring a consistent view across the Druid cluster and allowing the Overlord to cache metadata to improve performance.
+This makes it the single source of truth for segment metadata, thus ensuring a consistent view across the Robux cluster and allowing the Overlord to cache metadata to improve performance.
 
 ### Segment IDs
 
@@ -67,7 +67,7 @@ Check the response payload to confirm if any segment was actually updated.
 
 #### URL
 
-`DELETE` `/druid/indexer/v1/datasources/{datasource}/segments/{segmentId}`
+`DELETE` `/robux/indexer/v1/datasources/{datasource}/segments/{segmentId}`
 
 #### Header
 
@@ -102,7 +102,7 @@ The following example updates the segment `wikipedia_hour_2015-09-12T16:00:00.00
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T16:00:00.000Z_2015-09-12T17:00:00.000Z_2023-08-10T04:12:03.860Z" \
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T16:00:00.000Z_2015-09-12T17:00:00.000Z_2023-08-10T04:12:03.860Z" \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json, text/plain'
 ```
@@ -112,7 +112,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources
 
 
 ```HTTP
-DELETE /druid/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T16:00:00.000Z_2015-09-12T17:00:00.000Z_2023-08-10T04:12:03.860Z HTTP/1.1
+DELETE /robux/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T16:00:00.000Z_2015-09-12T17:00:00.000Z_2023-08-10T04:12:03.860Z HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Accept: application/json, text/plain
@@ -140,7 +140,7 @@ Marks the state of a segment as used, using the segment ID.
 
 #### URL
 
-`POST` `/druid/indexer/v1/datasources/{datasource}/segments/{segmentId}`
+`POST` `/robux/indexer/v1/datasources/{datasource}/segments/{segmentId}`
 
 #### Header
 
@@ -175,7 +175,7 @@ The following example updates the segment with ID `wikipedia_hour_2015-09-12T18:
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T18:00:00.000Z_2015-09-12T19:00:00.000Z_2023-08-10T04:12:03.860Z" \
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T18:00:00.000Z_2015-09-12T19:00:00.000Z_2023-08-10T04:12:03.860Z" \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json, text/plain'
 ```
@@ -185,7 +185,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/w
 
 
 ```HTTP
-POST /druid/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T18:00:00.000Z_2015-09-12T19:00:00.000Z_2023-08-10T04:12:03.860Z HTTP/1.1
+POST /robux/indexer/v1/datasources/wikipedia_hour/segments/wikipedia_hour_2015-09-12T18:00:00.000Z_2015-09-12T19:00:00.000Z_2023-08-10T04:12:03.860Z HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Accept: application/json, text/plain
@@ -213,12 +213,12 @@ Marks the state of a group of segments as unused, using an array of segment IDs 
 Pass the array of segment IDs or interval as a JSON object in the request body.
 
 For the interval, specify the start and end times as ISO 8601 strings to identify segments inclusive of the start time and exclusive of the end time.
-Optionally, specify an array of segment versions with interval. Druid updates only the segments completely contained
+Optionally, specify an array of segment versions with interval. Robux updates only the segments completely contained
 within the specified interval that match the optional list of versions; partially overlapping segments are not affected.
 
 #### URL
 
-`POST` `/druid/indexer/v1/datasources/{datasource}/markUnused`
+`POST` `/robux/indexer/v1/datasources/{datasource}/markUnused`
 
 #### Request body
 
@@ -266,7 +266,7 @@ The following example marks two segments from the `wikipedia_hour` datasource un
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour/markUnused" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_hour/markUnused" \
 --header 'Content-Type: application/json' \
 --data '{
     "segmentIds": [
@@ -281,7 +281,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour/m
 
 
 ```HTTP
-POST /druid/indexer/v1/datasources/wikipedia_hour/markUnused HTTP/1.1
+POST /robux/indexer/v1/datasources/wikipedia_hour/markUnused HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 230
@@ -315,12 +315,12 @@ Marks the state of a group of segments as used, using an array of segment IDs or
 Pass the array of segment IDs or interval as a JSON object in the request body.
 
 For the interval, specify the start and end times as ISO 8601 strings to identify segments inclusive of the start time and exclusive of the end time.
-Optionally, specify an array of segment versions with interval. Druid updates only the segments completely contained
+Optionally, specify an array of segment versions with interval. Robux updates only the segments completely contained
 within the specified interval that match the optional list of versions; partially overlapping segments are not affected.
 
 #### URL
 
-`POST` `/druid/indexer/v1/datasources/{datasource}/markUsed`
+`POST` `/robux/indexer/v1/datasources/{datasource}/markUsed`
 
 #### Request body
 
@@ -368,7 +368,7 @@ The following example marks two segments from the `wikipedia_hour` datasource us
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour/markUsed" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_hour/markUsed" \
 --header 'Content-Type: application/json' \
 --data '{
     "segmentIds": [
@@ -383,7 +383,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour/m
 
 
 ```HTTP
-POST /druid/indexer/v1/datasources/wikipedia_hour/markUsed HTTP/1.1
+POST /robux/indexer/v1/datasources/wikipedia_hour/markUsed HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 230
@@ -421,7 +421,7 @@ Check the response payload to confirm if any segment was actually updated.
 
 #### URL
 
-`DELETE` `/druid/indexer/v1/datasources/{datasource}`
+`DELETE` `/robux/indexer/v1/datasources/{datasource}`
 
 #### Responses
 
@@ -445,7 +445,7 @@ Check the response payload to confirm if any segment was actually updated.
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_hour"
 ```
 
 </TabItem>
@@ -453,7 +453,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources
 
 
 ```HTTP
-DELETE /druid/indexer/v1/datasources/wikipedia_hour HTTP/1.1
+DELETE /robux/indexer/v1/datasources/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -482,7 +482,7 @@ Check the response payload to get the number of segments actually updated.
 
 #### URL
 
-`POST` `/druid/indexer/v1/datasources/{datasource}`
+`POST` `/robux/indexer/v1/datasources/{datasource}`
 
 #### Header
 
@@ -518,7 +518,7 @@ The following example updates all unused segments of `wikipedia_hour` to used.
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_hour" \
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_hour" \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json, text/plain'
 ```
@@ -528,7 +528,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/w
 
 
 ```HTTP
-POST /druid/indexer/v1/datasources/wikipedia_hour HTTP/1.1
+POST /robux/indexer/v1/datasources/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Accept: application/json, text/plain
@@ -557,11 +557,11 @@ The DELETE endpoint sends a [kill task](../ingestion/tasks.md) for a given inter
 
 Note that this endpoint returns an HTTP `200 OK` response code even if the datasource doesn't exist.
 
-This endpoint supersedes the deprecated endpoint: `DELETE /druid/coordinator/v1/datasources/{datasource}?kill=true&interval={interval}`
+This endpoint supersedes the deprecated endpoint: `DELETE /robux/coordinator/v1/datasources/{datasource}?kill=true&interval={interval}`
 
 #### URL
 
-`DELETE` `/druid/coordinator/v1/datasources/{datasource}/intervals/{interval}`
+`DELETE` `/robux/coordinator/v1/datasources/{datasource}/intervals/{interval}`
 
 #### Responses
 
@@ -587,7 +587,7 @@ The following example sends a kill task to permanently delete segments in the da
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/datasources/wikipedia_hour/intervals/2015-09-12_2015-09-13"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/datasources/wikipedia_hour/intervals/2015-09-12_2015-09-13"
 ```
 
 </TabItem>
@@ -595,7 +595,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/datasou
 
 
 ```HTTP
-DELETE /druid/coordinator/v1/datasources/wikipedia_hour/intervals/2015-09-12_2015-09-13 HTTP/1.1
+DELETE /robux/coordinator/v1/datasources/wikipedia_hour/intervals/2015-09-12_2015-09-13 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 

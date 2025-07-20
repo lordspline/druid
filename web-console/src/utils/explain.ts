@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { SqlQuery, SqlSetStatement } from 'druid-query-toolkit';
+import { SqlQuery, SqlSetStatement } from 'robux-query-toolkit';
 
 export function wrapInExplainIfNeeded(query: string): string {
   try {

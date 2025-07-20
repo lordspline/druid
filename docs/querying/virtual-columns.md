@@ -23,7 +23,7 @@ title: "Virtual columns"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the native
  language. For information about functions available in SQL, refer to the
  [SQL documentation](sql-scalar.md).
@@ -35,7 +35,7 @@ A virtual column can potentially draw from multiple underlying columns, although
 
 Virtual columns can be referenced by their output names to be used as [dimensions](./dimensionspecs.md) or as inputs to [filters](./filters.md) and [aggregators](./aggregations.md).
 
-Each Apache Druid query can accept a list of virtual columns as a parameter. The following scan query is provided as an example:
+Each Apache Robux query can accept a list of virtual columns as a parameter. The following scan query is provided as an example:
 
 ```
 {
@@ -67,7 +67,7 @@ Each Apache Druid query can accept a list of virtual columns as a parameter. The
 
 ### Expression virtual column
 
-Expression virtual columns use Druid's native [expression](math-expr.md) system to allow defining query time
+Expression virtual columns use Robux's native [expression](math-expr.md) system to allow defining query time
 transforms of inputs from one or more columns.
 
 The expression virtual column has the following syntax:
@@ -150,7 +150,7 @@ is using JSONPath syntax `path`, the second with a jq `path`, and the third uses
 |type|Must be `"nested-field"` to indicate that this is a nested field virtual column.|yes|
 |columnName|The name of the `COMPLEX<json>` input column.|yes|
 |outputName|The name of the virtual column.|yes|
-|expectedType|The native Druid output type of the column, Druid will coerce output to this type if it does not match the underlying data. This can be `STRING`, `LONG`, `FLOAT`, `DOUBLE`, or `COMPLEX<json>`. Extracting `ARRAY` types is not yet supported.|no, default `STRING`|
+|expectedType|The native Robux output type of the column, Robux will coerce output to this type if it does not match the underlying data. This can be `STRING`, `LONG`, `FLOAT`, `DOUBLE`, or `COMPLEX<json>`. Extracting `ARRAY` types is not yet supported.|no, default `STRING`|
 |pathParts|The parsed path parts used to locate the nested values. `path` will be translated into `pathParts` internally. One of `path` or `pathParts` must be set|no, if `path` is defined|
 |processFromRaw|If set to true, the virtual column will process the "raw" JSON data to extract values rather than using an optimized "literal" value selector. This option allows extracting non-literal values (such as nested JSON objects or arrays) as a `COMPLEX<json>` at the cost of much slower performance.|no, default false|
 |path|'JSONPath' (or 'jq') syntax path. One of `path` or `pathParts` must be set. |no, if `pathParts` is defined|

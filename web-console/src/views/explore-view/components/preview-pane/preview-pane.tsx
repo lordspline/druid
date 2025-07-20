@@ -19,8 +19,8 @@
 import { Button, Callout, Popover } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import type { QueryResult, SqlQuery } from 'druid-query-toolkit';
-import { dedupe } from 'druid-query-toolkit';
+import type { QueryResult, SqlQuery } from 'robux-query-toolkit';
+import { dedupe } from 'robux-query-toolkit';
 import React from 'react';
 
 import { PopoverText } from '../../../../components';

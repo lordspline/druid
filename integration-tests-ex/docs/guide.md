@@ -54,7 +54,7 @@ running the tests in parallel, even if they reuse an existing cluster configurat
 Use your best judgment.
 
 The existing categories are listed in the
-`org.apache.druid.testsEx.categories` package. The classes there represent
+`org.apache.robux.testsEx.categories` package. The classes there represent
 [JUnit categories](
 https://junit.org/junit4/javadoc/4.12/org/junit/experimental/categories/Categories.html).
 See [Test Category](tests.md#Test+Category) for details.
@@ -97,7 +97,7 @@ You may also need:
 
 * Test-specific Guice modules
 * Environment variable bindings to various properties
-* MySQL statements to pre-populate the Druid metastore DB
+* MySQL statements to pre-populate the Robux metastore DB
 * And so on.
 
 ### Test Config File
@@ -126,7 +126,7 @@ Start by ensuring your cluster works.
 * Verify the cluster using `it.sh up <category>`.
 * Look at the Docker desktop UI to ensure the cluster says up. if not,
   track down what went wrong. Look at both the Docker (stdout) and
-  Druid (`target/<category>/logs/<service>.log`) files.
+  Robux (`target/<category>/logs/<service>.log`) files.
 
 ### Starter Test
 
@@ -149,11 +149,11 @@ Etc.
 
 ### Client
 
-Every test is a Druid client. Determine which service API you need. Find an
-existing test client. The `DruidClusterAdminClient` is the "modern" way to
+Every test is a Robux client. Determine which service API you need. Find an
+existing test client. The `RobuxClusterAdminClient` is the "modern" way to
 interact with the cluster, but thus far has a limited set of methods. There
 are older clients as well, but they tend to be quirky. Feel free to extend
-`DruidClusterAdminClient`, or use the older one: whatever works.
+`RobuxClusterAdminClient`, or use the older one: whatever works.
 
 Inject the client into your test. See existing tests for how this is done.
 
@@ -163,7 +163,7 @@ Retest to ensure things work.
 ### Test Cases
 
 From here, you can start writing tests. Explore the existing mechanisms
-(including those in the original `druid-integration-tests` module which may
+(including those in the original `robux-integration-tests` module which may
 not yet have been ported to the new framework yet.) For example, there are
 ways to store specs as files and parameterize them in tests. There is a
 syntax for running queries and specifying expected results.
@@ -178,17 +178,17 @@ Your test may need a "non-default" extension. See [Special Environment Variables
 compose.md#Special+Environment+Variables) for how to specify test-specific
 extensions. (Hint: don't copy/paste the full load list!)
 
-Extensions have two aspects in ITs. They act like extensions in the Druid servers
+Extensions have two aspects in ITs. They act like extensions in the Robux servers
 running in Docker. So, the extension must be avaialble in the Docker image. All
-standard Druid extensions which are available in the Druid distribution, are also
+standard Robux extensions which are available in the Robux distribution, are also
 available in the image. The may not be enabled, however. Hence the need to define
 the custom load list.
 
 Your test may use code from the extension. To the *tests*, however, the extension
 is just another jar: it must be listed in the `pom.xml` file. There is no such
-thing as a "Druid extensions" to the tests themselves.
+thing as a "Robux extensions" to the tests themselves.
 
-If you test an extension that is *not* part of the Druid distributeion, then it
+If you test an extension that is *not* part of the Robux distributeion, then it
 has to get into the image. Reach out on the slack mailing list so we can discuss
 solutions (such as mounting a directory that contains the extension).
 
@@ -204,7 +204,7 @@ used to handle:
 * flaky tests.
 
 The new framework takes a stricter view. The framework itself will ensure
-service are ready (using the Druid API for that purpose.) If a server reports
+service are ready (using the Robux API for that purpose.) If a server reports
 itself ready, but still fails on one of your API calls, then we've got a bug
 to fix. Don't use retries to work around this issue because users won't know
 to do this.
@@ -214,7 +214,7 @@ development; they waste time. If your test is flaky, please fix it. Don't count
 on the amount of times things take: a busy build system will run much slower than
 your dedicated laptop. And so on.
 
-Ideally, Druid would provide a way to positively confirm that an action has
+Ideally, Robux would provide a way to positively confirm that an action has
 occurred. Perhaps this might be a test-only API. Otherwise, a retry is fine, but
 should be coded into your test. (Or, better, implemented in a client.) Do this only
 if we document that, for that API, users should poll. Otherwise, again, users of
@@ -304,6 +304,6 @@ way to handle this is:
   }
 ```
 
-It would be possible to define an annotation, managed by the `DruidTestRunner`, if this
+It would be possible to define an annotation, managed by the `RobuxTestRunner`, if this
 becomes something we need to do often.
 

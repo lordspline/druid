@@ -24,7 +24,7 @@ sidebar_label: "Search"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes a query
  type that is only available in the native language.
 :::
@@ -57,7 +57,7 @@ There are several main parts to a search query:
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "search"; this is the first thing Apache Druid looks at to figure out how to interpret the query.|yes|
+|queryType|This String should always be "search"; this is the first thing Apache Robux looks at to figure out how to interpret the query.|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../querying/datasource.md) for more information.|yes|
 |granularity|Defines the granularity of the query. See [Granularities](../querying/granularities.md).|no (default to `all`)|
 |filter|See [Filters](../querying/filters.md).|no|
@@ -111,7 +111,7 @@ The format of the result is:
 #### Strategies
 
 Search queries can be executed using two different strategies. The default strategy is determined by the
-"druid.query.search.searchStrategy" runtime property on the Broker. This can be overridden using "searchStrategy" in the
+"robux.query.search.searchStrategy" runtime property on the Broker. This can be overridden using "searchStrategy" in the
 query context. If neither the context field nor the property is set, the "useIndexes" strategy will be used.
 
 - "useIndexes" strategy, the default, first categorizes search dimensions into two groups according to their support for
@@ -132,7 +132,7 @@ The following runtime properties apply:
 
 |Property|Description|Default|
 |--------|-----------|-------|
-|`druid.query.search.searchStrategy`|Default search query strategy.|useIndexes|
+|`robux.query.search.searchStrategy`|Default search query strategy.|useIndexes|
 
 ## Query context
 
@@ -140,7 +140,7 @@ The following query context parameters apply:
 
 |Property|Description|
 |--------|-----------|
-|`searchStrategy`|Overrides the value of `druid.query.search.searchStrategy` for this query.|
+|`searchStrategy`|Overrides the value of `robux.query.search.searchStrategy` for this query.|
 
 ## SearchQuerySpec
 

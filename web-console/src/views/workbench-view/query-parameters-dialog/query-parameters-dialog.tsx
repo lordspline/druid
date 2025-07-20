@@ -31,8 +31,8 @@ import {
   Position,
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { QueryParameter } from 'druid-query-toolkit';
-import { isEmptyArray } from 'druid-query-toolkit';
+import type { QueryParameter } from 'robux-query-toolkit';
+import { isEmptyArray } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 
 import { FancyNumericInput } from '../../../components/fancy-numeric-input/fancy-numeric-input';
@@ -70,7 +70,7 @@ export const QueryParametersDialog = React.memo(function QueryParametersDialog(
     >
       <div className={Classes.DIALOG_BODY}>
         <p>
-          Druid SQL supports dynamic parameters using question mark <Code>?</Code> syntax, where
+          Robux SQL supports dynamic parameters using question mark <Code>?</Code> syntax, where
           parameters are bound positionally to ? placeholders at execution time.
         </p>
         {currentQueryParameters.map((queryParameter, i) => {

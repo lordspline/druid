@@ -19,14 +19,14 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <groupId>org.apache.druid.extensions</groupId>
-  <artifactId>druid-parquet-extensions</artifactId>
-  <name>druid-parquet-extensions</name>
-  <description>druid-parquet-extensions</description>
+  <groupId>org.apache.robux.extensions</groupId>
+  <artifactId>robux-parquet-extensions</artifactId>
+  <name>robux-parquet-extensions</name>
+  <description>robux-parquet-extensions</description>
 
   <parent>
-    <artifactId>druid</artifactId>
-    <groupId>org.apache.druid</groupId>
+    <artifactId>robux</artifactId>
+    <groupId>org.apache.robux</groupId>
     <version>35.0.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -37,20 +37,20 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-avro-extensions</artifactId>
+      <groupId>org.apache.robux.extensions</groupId>
+      <artifactId>robux-avro-extensions</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -112,8 +112,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-indexing-hadoop</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-indexing-hadoop</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -173,8 +173,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
       <type>test-jar</type>

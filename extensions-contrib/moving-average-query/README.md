@@ -17,13 +17,13 @@
   ~ under the License.
   -->
 
-druid-moving-average-query
+robux-moving-average-query
 =============
 
 Overview
 =============
-**Moving Average Query** is an extension which provides support for [Moving Average](https://en.wikipedia.org/wiki/Moving_average) and other Aggregate [Window Functions](https://en.wikibooks.org/wiki/Structured_Query_Language/Window_functions) in Druid queries.
+**Moving Average Query** is an extension which provides support for [Moving Average](https://en.wikipedia.org/wiki/Moving_average) and other Aggregate [Window Functions](https://en.wikibooks.org/wiki/Structured_Query_Language/Window_functions) in Robux queries.
 
 Documentation 
 =============
-See the druid.apache.org website or under [Druid GitHub Repo](https://github.com/apache/druid/tree/master/docs/development/extensions-contrib/moving-average-query.md).
+See the robux.apache.org website or under [Robux GitHub Repo](https://github.com/apache/robux/tree/master/docs/development/extensions-contrib/moving-average-query.md).

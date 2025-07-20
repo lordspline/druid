@@ -28,8 +28,8 @@ import type {
   QueryResult,
   SqlExpression,
   SqlQuery,
-} from 'druid-query-toolkit';
-import { filterPatternsToExpression, fitFilterPatterns } from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
+import { filterPatternsToExpression, fitFilterPatterns } from 'robux-query-toolkit';
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 
 import { useQueryManager } from '../../../../hooks';

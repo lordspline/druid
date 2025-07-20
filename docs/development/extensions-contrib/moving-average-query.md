@@ -24,9 +24,9 @@ title: "Moving Average Query"
 
 
 ## Overview
-**Moving Average Query** is an extension which provides support for [Moving Average](https://en.wikipedia.org/wiki/Moving_average) and other Aggregate [Window Functions](https://en.wikibooks.org/wiki/Structured_Query_Language/Window_functions) in Druid queries.
+**Moving Average Query** is an extension which provides support for [Moving Average](https://en.wikipedia.org/wiki/Moving_average) and other Aggregate [Window Functions](https://en.wikibooks.org/wiki/Structured_Query_Language/Window_functions) in Robux queries.
 
-These Aggregate Window Functions consume standard Druid Aggregators and outputs additional windowed aggregates called [Averagers](#averagers).
+These Aggregate Window Functions consume standard Robux Aggregators and outputs additional windowed aggregates called [Averagers](#averagers).
 
 #### High level algorithm
 
@@ -38,7 +38,7 @@ It runs the query in two main phases:
 2. Passes over aggregated results in Broker, in order to compute Averagers (i.e. moving 7 day average of the daily count).
 
 #### Main enhancements provided by this extension:
-1. Functionality: Extending druid query functionality (i.e. initial introduction of Window Functions).
+1. Functionality: Extending robux query functionality (i.e. initial introduction of Window Functions).
 2. Performance: Improving performance of such moving aggregations by eliminating multiple segment scans.
 
 #### Further reading
@@ -52,19 +52,19 @@ It runs the query in two main phases:
 ## Operations
 
 ### Installation
-Use [pull-deps](../../operations/pull-deps.md) tool shipped with Druid to install this [extension](../../configuration/extensions.md#community-extensions) on all Druid broker and router nodes.
+Use [pull-deps](../../operations/pull-deps.md) tool shipped with Robux to install this [extension](../../configuration/extensions.md#community-extensions) on all Robux broker and router nodes.
 
 ```bash
-java -classpath "<your_druid_dir>/lib/*" org.apache.druid.cli.Main tools pull-deps -c org.apache.druid.extensions.contrib:druid-moving-average-query:{VERSION}
+java -classpath "<your_robux_dir>/lib/*" org.apache.robux.cli.Main tools pull-deps -c org.apache.robux.extensions.contrib:robux-moving-average-query:{VERSION}
 ```
 
 ### Enabling
-After installation, to enable this extension, just add `druid-moving-average-query` to `druid.extensions.loadList` in broker and routers' `runtime.properties` file and then restart broker and router nodes.
+After installation, to enable this extension, just add `robux-moving-average-query` to `robux.extensions.loadList` in broker and routers' `runtime.properties` file and then restart broker and router nodes.
 
 For example:
 
 ```bash
-druid.extensions.loadList=["druid-moving-average-query"]
+robux.extensions.loadList=["robux-moving-average-query"]
 ```
 
 ## Configuration
@@ -80,7 +80,7 @@ There are currently no configuration properties specific to Moving Average.
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "movingAverage"; this is the first thing Druid looks at to figure out how to interpret the query.|yes|
+|queryType|This String should always be "movingAverage"; this is the first thing Robux looks at to figure out how to interpret the query.|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../../querying/datasource.md) for more information.|yes|
 |dimensions|A JSON list of [DimensionSpec](../../querying/dimensionspecs.md) (Notice that property is optional)|no|
 |limitSpec|See [LimitSpec](../../querying/limitspec.md)|no|
@@ -161,7 +161,7 @@ Whereas without specifying cycleSize it would have computed over all 28 buckets.
 
 ## Examples
 
-All examples are based on the Wikipedia dataset provided in the Druid [tutorials](../../tutorials/index.md).
+All examples are based on the Wikipedia dataset provided in the Robux [tutorials](../../tutorials/index.md).
 
 ### Basic example
 

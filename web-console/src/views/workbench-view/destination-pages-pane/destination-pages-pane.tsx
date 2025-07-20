@@ -32,7 +32,7 @@ import { IconNames } from '@blueprintjs/icons';
 import React, { useState } from 'react';
 import ReactTable from 'react-table';
 
-import type { Execution } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
 import { SMALL_TABLE_PAGE_SIZE } from '../../../react-table';
 import { Api, UrlBaser } from '../../../singletons';
 import { clamp, formatBytes, formatInteger, pluralIfNeeded, tickIcon } from '../../../utils';
@@ -87,7 +87,7 @@ export const DestinationPagesPane = React.memo(function DestinationPagesPane(
 
   function getResultUrl(pageIndex: number) {
     return UrlBaser.base(
-      `/druid/v2/sql/statements/${Api.encodePath(execution.id)}/results?${
+      `/robux/v2/sql/statements/${Api.encodePath(execution.id)}/results?${
         pageIndex < 0 ? '' : `page=${pageIndex}&`
       }resultFormat=${desiredResultFormat}&filename=${getPageFilename(pageIndex)}`,
     );

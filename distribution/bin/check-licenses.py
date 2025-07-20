@@ -40,12 +40,12 @@ class DependencyReportParser(HTMLParser):
     dep_to_license = None
     compatible_license_names = None
     include_classifier = False
-    druid_module_name = None
+    robux_module_name = None
 
-    def __init__(self, druid_module_name, compatible_license_names):
+    def __init__(self, robux_module_name, compatible_license_names):
         HTMLParser.__init__(self)
         self.state = "none"
-        self.druid_module_name = druid_module_name
+        self.robux_module_name = robux_module_name
         self.compatible_license_names = compatible_license_names
 
     def parse(self, f):
@@ -151,8 +151,8 @@ class DependencyReportParser(HTMLParser):
             if tag == "tr":
                 self.state = "row_end"
                 # print(json.dumps({"groupId": self.group_id, "artifactId": self.artifact_id, "version": self.version, "classifier": self.classifier, "type": self.dep_type, "license": self.license}))
-                if self.group_id.find("org.apache.druid") < 0:
-                    self.dep_to_license[get_dep_key(self.group_id, self.artifact_id, self.version)] = (self.license, self.druid_module_name)
+                if self.group_id.find("org.apache.robux") < 0:
+                    self.dep_to_license[get_dep_key(self.group_id, self.artifact_id, self.version)] = (self.license, self.robux_module_name)
 
         if self.state == "row_end":
             if tag == "table":
@@ -212,9 +212,9 @@ class DependencyReportParser(HTMLParser):
                     self.license = self.compatible_license_names[data]
                 except KeyError:
                     print("Unsupported license: " + data)
-                    print("For:" +  self.group_id + " "  + self.artifact_id + " in: "+ self.druid_module_name)
+                    print("For:" +  self.group_id + " "  + self.artifact_id + " in: "+ self.robux_module_name)
             else:
-                print(self.group_id + " "  + self.artifact_id + " in: " + self.druid_module_name + " with: " + self.license + " ignoring " + data)
+                print(self.group_id + " "  + self.artifact_id + " in: " + self.robux_module_name + " with: " + self.license + " ignoring " + data)
 
 
 def print_log_to_stderr(string):
@@ -324,7 +324,7 @@ def get_version_string(version):
     else:
         return str(version)
 
-def find_druid_module_name(dirpath):
+def find_robux_module_name(dirpath):
     ext_start = dirpath.find("/ext/")
     if ext_start > 0:
         # Found an extension
@@ -335,7 +335,7 @@ def find_druid_module_name(dirpath):
         else:
             return subpath[0:ext_name_end]
     else:
-        # Druid core
+        # Robux core
         return "core"
 
 def check_licenses(license_yaml, dependency_reports_root):
@@ -349,11 +349,11 @@ def check_licenses(license_yaml, dependency_reports_root):
         for filename in filenames:
             if filename == "dependencies.html":
                 full_path = os.path.join(dirpath, filename)
-                # Determine if it's druid core or an extension
-                druid_module_name = find_druid_module_name(dirpath)
+                # Determine if it's robux core or an extension
+                robux_module_name = find_robux_module_name(dirpath)
                 print_log_to_stderr("Parsing {}".format(full_path))
                 with open(full_path, encoding="utf-8") as report_file:
-                    parser = DependencyReportParser(druid_module_name, compatible_license_names)
+                    parser = DependencyReportParser(robux_module_name, compatible_license_names)
                     reported_dep_to_licenses.update(parser.parse(report_file))
 
     if len(reported_dep_to_licenses) == 0:
@@ -397,31 +397,31 @@ def check_licenses(license_yaml, dependency_reports_root):
     # Iterate through registered licenses and check if its license is same with the reported one.
     for key, registered_license in registered_dep_to_licenses.items():
         if key in reported_dep_to_licenses: # key is (group_id, artifact_id, version)
-            reported_license_druid_module = reported_dep_to_licenses[key]
-            reported_license = reported_license_druid_module[0]
-            druid_module = reported_license_druid_module[1]
+            reported_license_robux_module = reported_dep_to_licenses[key]
+            reported_license = reported_license_robux_module[0]
+            robux_module = reported_license_robux_module[1]
             if reported_license is not None and reported_license != "-" and reported_license != registered_license:
                 group_id = key[0]
                 artifact_id = key[1]
                 version = key[2]
-                mismatched_licenses.append((druid_module, group_id, artifact_id, version, reported_license, registered_license))
+                mismatched_licenses.append((robux_module, group_id, artifact_id, version, reported_license, registered_license))
 
     # If we find any mismatched license, stop immediately.
     if len(mismatched_licenses) > 0:
         print_log_to_stderr("Error: found {} mismatches between reported licenses and registered licenses".format(len(mismatched_licenses)))
         for mismatched_license in mismatched_licenses:
-            print_log_to_stderr("druid_module: {}, groupId: {}, artifactId: {}, version: {}, reported_license: {}, registered_license: {}".format(mismatched_license[0], mismatched_license[1], mismatched_license[2], mismatched_license[3], mismatched_license[4], mismatched_license[5]))
+            print_log_to_stderr("robux_module: {}, groupId: {}, artifactId: {}, version: {}, reported_license: {}, registered_license: {}".format(mismatched_license[0], mismatched_license[1], mismatched_license[2], mismatched_license[3], mismatched_license[4], mismatched_license[5]))
         print_log_to_stderr("")
 
     # Let's find missing licenses, which are reported but missing in the registry.
-    for key, reported_license_druid_module in reported_dep_to_licenses.items():
-        if reported_license_druid_module[0] != "-" and key not in registered_dep_to_licenses and key not in skipping_licenses:
-            missing_licenses.append((reported_license_druid_module[1], key[0], key[1], key[2], reported_license_druid_module[0]))
+    for key, reported_license_robux_module in reported_dep_to_licenses.items():
+        if reported_license_robux_module[0] != "-" and key not in registered_dep_to_licenses and key not in skipping_licenses:
+            missing_licenses.append((reported_license_robux_module[1], key[0], key[1], key[2], reported_license_robux_module[0]))
 
     if len(missing_licenses) > 0:
         print_log_to_stderr("Error: found {} missing licenses. These licenses are reported, but missing in the registry".format(len(missing_licenses)))
         for missing_license in missing_licenses:
-            print_log_to_stderr("druid_module: {}, groupId: {}, artifactId: {}, version: {}, license: {}".format(missing_license[0], missing_license[1], missing_license[2], missing_license[3], missing_license[4]))
+            print_log_to_stderr("robux_module: {}, groupId: {}, artifactId: {}, version: {}, license: {}".format(missing_license[0], missing_license[1], missing_license[2], missing_license[3], missing_license[4]))
         print_log_to_stderr("")
 
     # Let's find unchecked licenses, which are registered but missing in the report.

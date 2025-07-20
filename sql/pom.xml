@@ -22,25 +22,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>druid-sql</artifactId>
-  <name>druid-sql</name>
-  <description>Druid SQL</description>
+  <artifactId>robux-sql</artifactId>
+  <name>robux-sql</name>
+  <description>Robux SQL</description>
 
   <parent>
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
@@ -50,8 +50,8 @@
         <!--
           ~ Calcite 1.15.0 uses sketches-core 0.9.0 for a profiling feature:
           ~ (https://issues.apache.org/jira/browse/CALCITE-1616).
-          ~ This conflicts with druid-datasketches which uses a newer version of sketches-core.
-          ~ Druid does not use this Calcite profiling feature, so we exclude sketches-core here.
+          ~ This conflicts with robux-datasketches which uses a newer version of sketches-core.
+          ~ Robux does not use this Calcite profiling feature, so we exclude sketches-core here.
           -->
         <exclusion>
           <groupId>com.yahoo.datasketches</groupId>
@@ -273,15 +273,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
@@ -426,6 +426,6 @@
       </plugin>
     </plugins>
   </build>
-  <!-- Build for Druid's custom SQL parser complete -->
+  <!-- Build for Robux's custom SQL parser complete -->
 
 </project>

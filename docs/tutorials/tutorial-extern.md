@@ -27,52 +27,52 @@ description: How to use EXTERN to export query results.
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-This tutorial demonstrates how to use the Apache Druid&circledR; SQL [EXTERN](../multi-stage-query/reference.md#extern-function) function to export data.
+This tutorial demonstrates how to use the Apache Robux&circledR; SQL [EXTERN](../multi-stage-query/reference.md#extern-function) function to export data.
 
 ## Prerequisites
 
-Before you follow the steps in this tutorial, download Druid as described in the [Local quickstart](index.md).
-Don't start Druid, you'll do that as part of the tutorial.
+Before you follow the steps in this tutorial, download Robux as described in the [Local quickstart](index.md).
+Don't start Robux, you'll do that as part of the tutorial.
 
-You should be familiar with ingesting and querying data in Druid.
+You should be familiar with ingesting and querying data in Robux.
 If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
 
 ## Export query results to the local file system
 
-This example demonstrates how to configure Druid to export data to the local file system.
+This example demonstrates how to configure Robux to export data to the local file system.
 While you can use this approach to learn about EXTERN syntax for exporting data, it's not suitable for production scenarios.
 
-### Configure Druid local export directory 
+### Configure Robux local export directory 
 
-The following commands set the base path for the Druid exports to `/tmp/druid/`.
-If the account running Druid doesn't have access to `/tmp/druid/`, change the path.
-For example: `/Users/Example/druid`.
+The following commands set the base path for the Robux exports to `/tmp/robux/`.
+If the account running Robux doesn't have access to `/tmp/robux/`, change the path.
+For example: `/Users/Example/robux`.
 If you change the path in this step, use the updated path in all subsequent steps.
 
-From the root of the Druid distribution, run the following:
+From the root of the Robux distribution, run the following:
 
 ```bash
-export export_path="/tmp/druid"
-sed -i -e $'$a\\\n\\\n\\\n#\\\n###Local export\\\n#\\\ndruid.export.storage.baseDir='$export_path' conf/druid/auto/_common/common.runtime.properties
+export export_path="/tmp/robux"
+sed -i -e $'$a\\\n\\\n\\\n#\\\n###Local export\\\n#\\\nrobux.export.storage.baseDir='$export_path' conf/robux/auto/_common/common.runtime.properties
 ```
 
-This adds the following section to the Druid `common.runtime.properties` configuration file located in `conf/druid/auto/_common`:
+This adds the following section to the Robux `common.runtime.properties` configuration file located in `conf/robux/auto/_common`:
 
 ```
 #
 ###Local export
 #
-druid.export.storage.baseDir=/tmp/druid/
+robux.export.storage.baseDir=/tmp/robux/
 ```
 
-### Start Druid and load sample data
+### Start Robux and load sample data
 
-1. From the root of the Druid distribution, launch Druid as follows:
+1. From the root of the Robux distribution, launch Robux as follows:
 
      ```bash
-    ./bin/start-druid
+    ./bin/start-robux
      ```
-1. After Druid starts, open [http://localhost:8888/](http://localhost:8888/) in your browser to access the Web Console.
+1. After Robux starts, open [http://localhost:8888/](http://localhost:8888/) in your browser to access the Web Console.
 1. From the [Query view](http://localhost:8888/unified-console.html#workbench), run the following command to load the Wikipedia example data set:
      ```sql
      REPLACE INTO "wikipedia" OVERWRITE ALL
@@ -80,7 +80,7 @@ druid.export.storage.baseDir=/tmp/druid/
        SELECT *
        FROM TABLE(
          EXTERN(
-           '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+           '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
            '{"type":"json"}'
          )
        ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR, "flags" VARCHAR, "isUnpatrolled" VARCHAR, "page" VARCHAR, "diffUrl" VARCHAR, "added" BIGINT, "comment" VARCHAR, "commentLength" BIGINT, "isNew" VARCHAR, "isMinor" VARCHAR, "delta" BIGINT, "isAnonymous" VARCHAR, "user" VARCHAR, "deltaBucket" BIGINT, "deleted" BIGINT, "namespace" VARCHAR, "cityName" VARCHAR, "countryName" VARCHAR, "regionIsoCode" VARCHAR, "metroCode" BIGINT, "countryIsoCode" VARCHAR, "regionName" VARCHAR)
@@ -117,14 +117,14 @@ druid.export.storage.baseDir=/tmp/druid/
 ### Query to export data
 
 Open a new tab and run the following query to export query results to the path:
-`/tmp/druid/wiki_example`.
-The path must be a subdirectory of the `druid.export.storage.baseDir`.
+`/tmp/robux/wiki_example`.
+The path must be a subdirectory of the `robux.export.storage.baseDir`.
 
 
 ```sql
 INSERT INTO
   EXTERN(
-    local(exportPath => '/tmp/druid/wiki_example')
+    local(exportPath => '/tmp/robux/wiki_example')
         )
 AS CSV
 SELECT "channel",
@@ -134,11 +134,11 @@ GROUP BY 1
 LIMIT 10
 ```
 
-Druid exports the results of the query to the `/tmp/druid/wiki_example` directory.
+Robux exports the results of the query to the `/tmp/robux/wiki_example` directory.
 Run the following command to list the contents of 
 
 ```bash
-ls /tmp/druid/wiki_example
+ls /tmp/robux/wiki_example
 ```
 
 The results are a CSV file export of the data and a directory.
@@ -146,17 +146,17 @@ The results are a CSV file export of the data and a directory.
 ## Export query results to cloud storage
 
 The steps to export to cloud storage are similar to exporting to the local file system.
-Druid supports Amazon S3 or Google Cloud Storage (GCS) as cloud storage destinations.
+Robux supports Amazon S3 or Google Cloud Storage (GCS) as cloud storage destinations.
 
 1. Enable the extension for your cloud storage destination. See [Loading core extensions](../configuration/extensions.md#loading-core-extensions).
-   - **Amazon S3**: `druid-s3-extensions`
+   - **Amazon S3**: `robux-s3-extensions`
    - **GCS**: `google-extensions`
   See [Loading core extensions](../configuration/extensions.md#loading-core-extensions) for more information.
 1. Configure the additional properties for your cloud storage destination. Replace `{CLOUD}` with `s3` or `google` accordingly:
-   - `druid.export.storage.{CLOUD}.tempLocalDir`:  Local temporary directory where the query engine stages files to export.
-   - `druid.export.storage.{CLOUD}.allowedExportPaths`: S3 or GS prefixes allowed as Druid export locations. For example `[\"s3://bucket1/export/\",\"s3://bucket2/export/\"]` or `[\"gs://bucket1/export/\", \"gs://bucket2/export/\"]`.
-   - `druid.export.storage.{CLOUD}.maxRetry`: Maximum number of times to attempt cloud API calls to avoid failures from transient errors.
-   - `druid.export.storage.s3.chunkSize`: Maximum size of individual data chunks to store in the temporary directory.
+   - `robux.export.storage.{CLOUD}.tempLocalDir`:  Local temporary directory where the query engine stages files to export.
+   - `robux.export.storage.{CLOUD}.allowedExportPaths`: S3 or GS prefixes allowed as Robux export locations. For example `[\"s3://bucket1/export/\",\"s3://bucket2/export/\"]` or `[\"gs://bucket1/export/\", \"gs://bucket2/export/\"]`.
+   - `robux.export.storage.{CLOUD}.maxRetry`: Maximum number of times to attempt cloud API calls to avoid failures from transient errors.
+   - `robux.export.storage.s3.chunkSize`: Maximum size of individual data chunks to store in the temporary directory.
 1. Verify the instance role has the correct permissions to the bucket and folders: read, write, create, and delete. See [Permissions for durable storage](../multi-stage-query/security.md#permissions-for-durable-storage).
 1. Use the query syntax for your cloud storage type. For example:
 
@@ -196,7 +196,7 @@ Druid supports Amazon S3 or Google Cloud Storage (GCS) as cloud storage destinat
 
    </Tabs>
 
-1. When querying, use the `rowsPerPage` query context parameter to restrict the output file size. While it's possible to add a very large LIMIT at the end of your query to force Druid to create a single file, we don't recommend this technique.
+1. When querying, use the `rowsPerPage` query context parameter to restrict the output file size. While it's possible to add a very large LIMIT at the end of your query to force Robux to create a single file, we don't recommend this technique.
 
 ## Learn more
 

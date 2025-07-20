@@ -50,7 +50,7 @@ exports[`AboutDialog matches snapshot 1`] = `
             class="bp5-heading"
             id="title-bp-dialog-0"
           >
-            Apache Druid
+            Apache Robux
           </h6>
           <button
             aria-label="Close"
@@ -83,14 +83,14 @@ exports[`AboutDialog matches snapshot 1`] = `
         >
           <p>
             <strong>
-              Apache Druid is a high performance real-time analytics database.
+              Apache Robux is a high performance real-time analytics database.
             </strong>
           </p>
           <p>
-            For help and support with Druid, please refer to the
+            For help and support with Robux, please refer to the
              
             <a
-              href="https://druid.apache.org/community/"
+              href="https://robux.apache.org/community/"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -99,7 +99,7 @@ exports[`AboutDialog matches snapshot 1`] = `
              and the
              
             <a
-              href="https://groups.google.com/forum/#!forum/druid-user"
+              href="https://groups.google.com/forum/#!forum/robux-user"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -108,10 +108,10 @@ exports[`AboutDialog matches snapshot 1`] = `
             .
           </p>
           <p>
-            Druid is made with ❤️ by a community of passionate developers. To contribute, join in the discussion on the
+            Robux is made with ❤️ by a community of passionate developers. To contribute, join in the discussion on the
              
             <a
-              href="https://lists.apache.org/list?dev@druid.apache.org"
+              href="https://lists.apache.org/list?dev@robux.apache.org"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -139,14 +139,14 @@ exports[`AboutDialog matches snapshot 1`] = `
             <a
               aria-disabled="false"
               class="bp5-button bp5-intent-primary"
-              href="https://druid.apache.org"
+              href="https://robux.apache.org"
               role="button"
               target="_blank"
             >
               <span
                 class="bp5-button-text"
               >
-                Visit Druid
+                Visit Robux
               </span>
             </a>
           </div>

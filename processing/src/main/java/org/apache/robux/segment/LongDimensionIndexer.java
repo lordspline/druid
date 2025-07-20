@@ -1,0 +1,212 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.segment;
+
+import org.apache.robux.collections.bitmap.BitmapFactory;
+import org.apache.robux.collections.bitmap.MutableBitmap;
+import org.apache.robux.java.util.common.guava.Comparators;
+import org.apache.robux.query.dimension.DimensionSpec;
+import org.apache.robux.query.monomorphicprocessing.RuntimeShapeInspector;
+import org.apache.robux.segment.column.ColumnCapabilities;
+import org.apache.robux.segment.column.ColumnCapabilitiesImpl;
+import org.apache.robux.segment.column.ColumnType;
+import org.apache.robux.segment.data.CloseableIndexed;
+import org.apache.robux.segment.incremental.IncrementalIndex;
+import org.apache.robux.segment.incremental.IncrementalIndexRowHolder;
+
+import javax.annotation.Nullable;
+import java.util.Comparator;
+import java.util.Objects;
+
+public class LongDimensionIndexer implements DimensionIndexer<Long, Long, Long>
+{
+  public static final Comparator<Long> LONG_COMPARATOR = Comparators.naturalNullsFirst();
+  private final String dimensionName;
+  private volatile boolean hasNulls = false;
+
+  public LongDimensionIndexer(String dimensionName)
+  {
+    this.dimensionName = dimensionName;
+  }
+
+  @Override
+  public EncodedKeyComponent<Long> processRowValsToUnsortedEncodedKeyComponent(
+      @Nullable Object dimValues,
+      boolean reportParseExceptions
+  )
+  {
+    Long l = DimensionHandlerUtils.convertObjectToLong(dimValues, reportParseExceptions, dimensionName);
+    if (l == null) {
+      hasNulls = true;
+    }
+    return new EncodedKeyComponent<>(l, Long.BYTES);
+  }
+
+  @Override
+  public void setSparseIndexed()
+  {
+    hasNulls = true;
+  }
+
+  @Override
+  public Long getUnsortedEncodedValueFromSorted(Long sortedIntermediateValue)
+  {
+    return sortedIntermediateValue;
+  }
+
+  @Override
+  public CloseableIndexed<Long> getSortedIndexedValues()
+  {
+    throw new UnsupportedOperationException("Numeric columns do not support value dictionaries.");
+  }
+
+  @Override
+  public Long getMinValue()
+  {
+    return Long.MIN_VALUE;
+  }
+
+  @Override
+  public Long getMaxValue()
+  {
+    return Long.MAX_VALUE;
+  }
+
+  @Override
+  public int getCardinality()
+  {
+    return DimensionDictionarySelector.CARDINALITY_UNKNOWN;
+  }
+
+  @Override
+  public ColumnCapabilities getColumnCapabilities()
+  {
+    ColumnCapabilitiesImpl builder = ColumnCapabilitiesImpl.createSimpleNumericColumnCapabilities(ColumnType.LONG);
+    if (hasNulls) {
+      builder.setHasNulls(hasNulls);
+    }
+    return builder;
+  }
+
+  @Override
+  public DimensionSelector makeDimensionSelector(
+      DimensionSpec spec,
+      IncrementalIndexRowHolder currEntry,
+      IncrementalIndex.DimensionDesc desc
+  )
+  {
+    return new LongWrappingDimensionSelector(makeColumnValueSelector(currEntry, desc), spec.getExtractionFn());
+  }
+
+  @Override
+  public ColumnValueSelector<?> makeColumnValueSelector(
+      IncrementalIndexRowHolder currEntry,
+      IncrementalIndex.DimensionDesc desc
+  )
+  {
+    final int dimIndex = desc.getIndex();
+    class IndexerLongColumnSelector implements LongColumnSelector
+    {
+
+      @Override
+      public boolean isNull()
+      {
+        final Object[] dims = currEntry.get().getDims();
+        return hasNulls && (dimIndex >= dims.length || dims[dimIndex] == null);
+      }
+
+      @Override
+      public long getLong()
+      {
+        final Object[] dims = currEntry.get().getDims();
+
+        if (dimIndex >= dims.length || dims[dimIndex] == null) {
+          assert !isNull();
+          return 0;
+        }
+
+        return (Long) dims[dimIndex];
+      }
+
+      @SuppressWarnings("deprecation")
+      @Nullable
+      @Override
+      public Long getObject()
+      {
+        final Object[] dims = currEntry.get().getDims();
+
+        if (dimIndex >= dims.length || dims[dimIndex] == null) {
+          return null;
+        }
+
+        return (Long) dims[dimIndex];
+      }
+
+      @Override
+      public void inspectRuntimeShape(RuntimeShapeInspector inspector)
+      {
+        // nothing to inspect
+      }
+    }
+
+    return new IndexerLongColumnSelector();
+  }
+
+  @Override
+  public int compareUnsortedEncodedKeyComponents(@Nullable Long lhs, @Nullable Long rhs)
+  {
+    return LONG_COMPARATOR.compare(lhs, rhs);
+  }
+
+  @Override
+  public boolean checkUnsortedEncodedKeyComponentsEqual(@Nullable Long lhs, @Nullable Long rhs)
+  {
+    return Objects.equals(lhs, rhs);
+  }
+
+  @Override
+  public int getUnsortedEncodedKeyComponentHashCode(@Nullable Long key)
+  {
+    return DimensionHandlerUtils.nullToZero(key).hashCode();
+  }
+
+  @Override
+  public Object convertUnsortedEncodedKeyComponentToActualList(Long key)
+  {
+    return key;
+  }
+
+  @Override
+  public ColumnValueSelector convertUnsortedValuesToSorted(ColumnValueSelector selectorWithUnsortedValues)
+  {
+    return selectorWithUnsortedValues;
+  }
+
+  @Override
+  public void fillBitmapsFromUnsortedEncodedKeyComponent(
+      Long key,
+      int rowNum,
+      MutableBitmap[] bitmapIndexes,
+      BitmapFactory factory
+  )
+  {
+    throw new UnsupportedOperationException("Numeric columns do not support bitmaps.");
+  }
+}

@@ -5,7 +5,7 @@
     "url": "%%SCHEMA_REGISTRY_HOST%%",
     "config": {
       "basic.auth.credentials.source": "USER_INFO",
-      "basic.auth.user.info": "druid:diurd"
+      "basic.auth.user.info": "robux:diurd"
     }
   },
   "parseSpec": {

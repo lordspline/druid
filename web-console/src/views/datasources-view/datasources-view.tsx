@@ -19,7 +19,7 @@
 import { Button, FormGroup, InputGroup, Intent, MenuItem, Switch, Tag } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import { sum } from 'd3-array';
-import { SqlQuery, T } from 'druid-query-toolkit';
+import { SqlQuery, T } from 'robux-query-toolkit';
 import React from 'react';
 import type { Filter } from 'react-table';
 import ReactTable from 'react-table';
@@ -53,7 +53,7 @@ import type {
   CompactionStatus,
   QueryWithContext,
   Rule,
-} from '../../druid-models';
+} from '../../robux-models';
 import {
   END_OF_TIME_DATE,
   formatCompactionInfo,
@@ -62,7 +62,7 @@ import {
   RuleUtil,
   START_OF_TIME_DATE,
   zeroCompactionStatus,
-} from '../../druid-models';
+} from '../../robux-models';
 import type { Capabilities, CapabilitiesMode } from '../../helpers';
 import { STANDARD_TABLE_PAGE_SIZE, STANDARD_TABLE_PAGE_SIZE_OPTIONS } from '../../react-table';
 import { Api, AppToaster } from '../../singletons';
@@ -78,7 +78,7 @@ import {
   formatMillions,
   formatPercent,
   getApiArray,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   groupByAsMap,
   hasOverlayOpen,
   isNumberLikeNaN,
@@ -87,7 +87,7 @@ import {
   lookupBy,
   moveToEnd,
   pluralIfNeeded,
-  queryDruidSql,
+  queryRobuxSql,
   QueryManager,
   QueryState,
   ResultWithAuxiliaryWork,
@@ -446,13 +446,13 @@ GROUP BY 1, 2`;
         if (capabilities.hasSql()) {
           const query = DatasourcesView.query(visibleColumns);
           setIntermediateQuery(query);
-          datasources = await queryDruidSql({ query }, cancelToken);
+          datasources = await queryRobuxSql({ query }, cancelToken);
         } else if (capabilities.hasCoordinatorAccess()) {
           const datasourcesResp = await getApiArray(
-            '/druid/coordinator/v1/datasources?simple',
+            '/robux/coordinator/v1/datasources?simple',
             cancelToken,
           );
-          const loadstatusResp = await Api.instance.get('/druid/coordinator/v1/loadstatus?simple', {
+          const loadstatusResp = await Api.instance.get('/robux/coordinator/v1/loadstatus?simple', {
             cancelToken,
           });
           const loadstatus = loadstatusResp.data;
@@ -495,7 +495,7 @@ GROUP BY 1, 2`;
           if (capabilities.hasSql()) {
             auxiliaryQueries.push(async (datasourcesAndDefaultRules, cancelToken) => {
               try {
-                const runningTasks = await queryDruidSql<RunningTaskRow>(
+                const runningTasks = await queryRobuxSql<RunningTaskRow>(
                   {
                     query: DatasourcesView.RUNNING_TASK_SQL,
                   },
@@ -533,7 +533,7 @@ GROUP BY 1, 2`;
             auxiliaryQueries.push(async (datasourcesAndDefaultRules, cancelToken) => {
               try {
                 const taskList = await getApiArray(
-                  `/druid/indexer/v1/tasks?state=running`,
+                  `/robux/indexer/v1/tasks?state=running`,
                   cancelToken,
                 );
 
@@ -575,7 +575,7 @@ GROUP BY 1, 2`;
             try {
               unused = (
                 await getApiArray<string>(
-                  '/druid/coordinator/v1/metadata/datasources?includeUnused',
+                  '/robux/coordinator/v1/metadata/datasources?includeUnused',
                 )
               ).filter(d => !seen[d]);
             } catch {
@@ -591,7 +591,7 @@ GROUP BY 1, 2`;
           auxiliaryQueries.push(async (datasourcesAndDefaultRules, cancelToken) => {
             try {
               const rules = (
-                await Api.instance.get<Record<string, Rule[]>>('/druid/coordinator/v1/rules', {
+                await Api.instance.get<Record<string, Rule[]>>('/robux/coordinator/v1/rules', {
                   cancelToken,
                 })
               ).data;
@@ -618,7 +618,7 @@ GROUP BY 1, 2`;
             try {
               const compactionConfigsAndMore = (
                 await Api.instance.get<CompactionConfigs>(
-                  '/druid/indexer/v1/compaction/config/datasources',
+                  '/robux/indexer/v1/compaction/config/datasources',
                   { cancelToken },
                 )
               ).data;
@@ -629,7 +629,7 @@ GROUP BY 1, 2`;
 
               const compactionStatusesResp = await Api.instance.get<{
                 latestStatus: CompactionStatus[];
-              }>('/druid/indexer/v1/compaction/status/datasources', { cancelToken });
+              }>('/robux/indexer/v1/compaction/status/datasources', { cancelToken });
               const compactionStatuses = lookupBy(
                 compactionStatusesResp.data.latestStatus || [],
                 c => c.dataSource,
@@ -709,7 +709,7 @@ GROUP BY 1, 2`;
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.delete(
-            `/druid/indexer/v1/datasources/${Api.encodePath(
+            `/robux/indexer/v1/datasources/${Api.encodePath(
               datasourceToMarkAsUnusedAllSegmentsIn,
             )}`,
             {},
@@ -750,7 +750,7 @@ GROUP BY 1, 2`;
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/datasources/${Api.encodePath(
+            `/robux/indexer/v1/datasources/${Api.encodePath(
               datasourceToMarkAllNonOvershadowedSegmentsAsUsedIn,
             )}`,
             {},
@@ -793,7 +793,7 @@ GROUP BY 1, 2`;
           if (!useUnuseInterval) return;
           const param = isUse ? 'markUsed' : 'markUnused';
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/datasources/${Api.encodePath(
+            `/robux/indexer/v1/datasources/${Api.encodePath(
               datasourceToMarkSegmentsByIntervalIn,
             )}/${Api.encodePath(param)}`,
             {
@@ -887,7 +887,7 @@ GROUP BY 1, 2`;
     return (
       <AsyncActionDialog
         action={async () => {
-          const resp = await Api.instance.post(`/druid/coordinator/v1/compaction/compact`, {});
+          const resp = await Api.instance.post(`/robux/coordinator/v1/compaction/compact`, {});
           return resp.data;
         }}
         confirmButtonText="Force compaction run"
@@ -907,15 +907,15 @@ GROUP BY 1, 2`;
 
   private readonly saveRules = async (datasource: string, rules: Rule[], comment: string) => {
     try {
-      await Api.instance.post(`/druid/coordinator/v1/rules/${Api.encodePath(datasource)}`, rules, {
+      await Api.instance.post(`/robux/coordinator/v1/rules/${Api.encodePath(datasource)}`, rules, {
         headers: {
-          'X-Druid-Author': 'console',
-          'X-Druid-Comment': comment,
+          'X-Robux-Author': 'console',
+          'X-Robux-Comment': comment,
         },
       });
     } catch (e) {
       AppToaster.show({
-        message: `Failed to submit retention rules: ${getDruidErrorMessage(e)}`,
+        message: `Failed to submit retention rules: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
       return;
@@ -950,7 +950,7 @@ GROUP BY 1, 2`;
     if (!compactionConfig) return;
     try {
       await Api.instance.post(
-        `/druid/indexer/v1/compaction/config/datasources/${Api.encodePath(
+        `/robux/indexer/v1/compaction/config/datasources/${Api.encodePath(
           compactionConfig.dataSource,
         )}`,
         compactionConfig,
@@ -959,7 +959,7 @@ GROUP BY 1, 2`;
       this.fetchData();
     } catch (e) {
       AppToaster.show({
-        message: getDruidErrorMessage(e),
+        message: getRobuxErrorMessage(e),
         intent: Intent.DANGER,
       });
     }
@@ -978,12 +978,12 @@ GROUP BY 1, 2`;
         onClick: async () => {
           try {
             await Api.instance.delete(
-              `/druid/indexer/v1/compaction/config/datasources/${Api.encodePath(datasource)}`,
+              `/robux/indexer/v1/compaction/config/datasources/${Api.encodePath(datasource)}`,
             );
             this.setState({ compactionDialogOpenOn: undefined }, () => this.fetchData());
           } catch (e) {
             AppToaster.show({
-              message: getDruidErrorMessage(e),
+              message: getRobuxErrorMessage(e),
               intent: Intent.DANGER,
             });
           }

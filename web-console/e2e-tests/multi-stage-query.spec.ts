@@ -20,7 +20,7 @@ import type * as playwright from 'playwright-chromium';
 
 import { WorkbenchOverview } from './component/workbench/overview';
 import { saveScreenshotIfError } from './util/debug';
-import { DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR, UNIFIED_CONSOLE_URL } from './util/druid';
+import { ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR, UNIFIED_CONSOLE_URL } from './util/robux';
 import { createBrowser, createPage } from './util/playwright';
 import { waitTillWebConsoleReady } from './util/setup';
 
@@ -51,7 +51,7 @@ describe('Multi-stage query', () => {
 FROM TABLE(
   EXTERN(
     '{"type":"local","filter":"wikiticker-2015-09-12-sampled.json.gz","baseDir":${JSON.stringify(
-      DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
+      ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
     )}}',
     '{"type":"json"}'
   )

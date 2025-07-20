@@ -29,8 +29,8 @@ import { select } from 'd3-selection';
 import type { MouseEvent as ReactMouseEvent, ReactNode } from 'react';
 import { useMemo, useRef, useState } from 'react';
 
-import type { Rule } from '../../druid-models';
-import { getDatasourceColor, RuleUtil } from '../../druid-models';
+import type { Rule } from '../../robux-models';
+import { getDatasourceColor, RuleUtil } from '../../robux-models';
 import { useClock, useGlobalEventListener } from '../../hooks';
 import type { Margin, Stage } from '../../utils';
 import {

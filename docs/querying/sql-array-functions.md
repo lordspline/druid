@@ -32,11 +32,11 @@ sidebar_label: "Array functions"
 
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
-This page describes the operations you can perform on arrays using [Druid SQL](./sql.md). See [`ARRAY` data type documentation](./sql-data-types.md#arrays) for additional details. 
+This page describes the operations you can perform on arrays using [Robux SQL](./sql.md). See [`ARRAY` data type documentation](./sql-data-types.md#arrays) for additional details. 
 
 All array references in the array function documentation can refer to multi-value string columns or `ARRAY` literals.
 These functions are largely identical to the [multi-value string functions](sql-multivalue-string-functions.md), but

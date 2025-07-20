@@ -24,17 +24,17 @@ title: "Native queries"
 
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the
- native query language. For information about how Druid SQL chooses which native query types to use when
+ native query language. For information about how Robux SQL chooses which native query types to use when
  it runs a SQL query, refer to the [SQL documentation](sql-translation.md#query-types).
 :::
 
-Native queries in Druid are JSON objects and are typically issued to the Broker or Router processes. Queries can be
+Native queries in Robux are JSON objects and are typically issued to the Broker or Router processes. Queries can be
 posted like this:
 
 ```bash
-curl -X POST '<queryable_host>:<port>/druid/v2/?pretty' -H 'Content-Type:application/json' -H 'Accept:application/json' -d @<query_json_file>
+curl -X POST '<queryable_host>:<port>/robux/v2/?pretty' -H 'Content-Type:application/json' -H 'Accept:application/json' -d @<query_json_file>
 ```
 
 :::info
@@ -45,22 +45,22 @@ You can also enter them directly in the web console's Query view. Simply pasting
 
 ![Native query](../assets/native-queries-01.png "Native query")
 
-Druid's native query language is JSON over HTTP, although many members of the community have contributed different
-[client libraries](https://druid.apache.org/libraries.html) in other languages to query Druid.
+Robux's native query language is JSON over HTTP, although many members of the community have contributed different
+[client libraries](https://robux.apache.org/libraries.html) in other languages to query Robux.
 
 The Content-Type/Accept Headers can also take 'application/x-jackson-smile'.
 
 ```bash
-curl -X POST '<queryable_host>:<port>/druid/v2/?pretty' -H 'Content-Type:application/json' -H 'Accept:application/x-jackson-smile' -d @<query_json_file>
+curl -X POST '<queryable_host>:<port>/robux/v2/?pretty' -H 'Content-Type:application/json' -H 'Accept:application/x-jackson-smile' -d @<query_json_file>
 ```
 
 :::info
  If the Accept header is not provided, it defaults to the value of 'Content-Type' header.
 :::
 
-Druid's native query is relatively low level, mapping closely to how computations are performed internally. Druid queries
+Robux's native query is relatively low level, mapping closely to how computations are performed internally. Robux queries
 are designed to be lightweight and complete very quickly. This means that for more complex analysis, or to build
-more complex visualizations, multiple Druid queries may be required.
+more complex visualizations, multiple Robux queries may be required.
 
 Even though queries are typically made to Brokers or Routers, they can also be accepted by
 [Historical](../design/historical.md) processes and by [Peons (task JVMs)](../design/peons.md) that are running
@@ -69,7 +69,7 @@ specific processes.
 
 ## Available queries
 
-Druid has numerous query types for various use cases. Queries are composed of various JSON properties and Druid has different types of queries for different use cases. The documentation for the various query types describe all the JSON properties that can be set.
+Robux has numerous query types for various use cases. Queries are composed of various JSON properties and Robux has different types of queries for different use cases. The documentation for the various query types describe all the JSON properties that can be set.
 
 ### Aggregation queries
 
@@ -101,31 +101,31 @@ query identifier is set at the time of query, or is otherwise known, the followi
 endpoint can be used on the Broker or Router to cancel the query.
 
 ```sh
-DELETE /druid/v2/{queryId}
+DELETE /robux/v2/{queryId}
 ```
 
 For example, if the query ID is `abc123`, the query can be cancelled as follows:
 
 ```sh
-curl -X DELETE "http://host:port/druid/v2/abc123"
+curl -X DELETE "http://host:port/robux/v2/abc123"
 ```
 
 ## Query errors
 
 ### Authentication and authorization failures
 
-For [secured](../operations/auth.md) Druid clusters, query requests respond with an HTTP 401 response code in case of an authentication failure. For authorization failures, an HTTP 403 response code is returned. 
+For [secured](../operations/auth.md) Robux clusters, query requests respond with an HTTP 401 response code in case of an authentication failure. For authorization failures, an HTTP 403 response code is returned. 
 
 ### Query execution failures
 
-If a query fails, Druid returns a response with an HTTP response code and a JSON object with the following structure:
+If a query fails, Robux returns a response with an HTTP response code and a JSON object with the following structure:
 
 ```json
 {
   "error" : "Query timeout",
   "errorMessage" : "Timeout waiting for task.",
   "errorClass" : "java.util.concurrent.TimeoutException",
-  "host" : "druid1.example.com:8083"
+  "host" : "robux1.example.com:8083"
 }
 ```
 
@@ -138,7 +138,7 @@ The fields in the response are:
 |errorClass|The class of the exception that caused this error. May be null.|
 |host|The host on which this error occurred. May be null.|
 
-Possible Druid error codes for the `error` field include:
+Possible Robux error codes for the `error` field include:
 
 |Error code|HTTP response code|description|
 |----|-----------|-----------|
@@ -150,5 +150,5 @@ Possible Druid error codes for the `error` field include:
 |`Query timeout`|504|The query timed out.|
 |`Query interrupted`|500|The query was interrupted, possibly due to JVM shutdown.|
 |`Query cancelled`|500|The query was cancelled through the query cancellation API.|
-|`Truncated response context`|500|An intermediate response context for the query exceeded the built-in limit of 7KiB.<br/><br/>The response context is an internal data structure that Druid servers use to share out-of-band information when sending query results to each other. It is serialized in an HTTP header with a maximum length of 7KiB. This error occurs when an intermediate response context sent from a data server (like a Historical) to the Broker exceeds this limit.<br/><br/>The response context is used for a variety of purposes, but the one most likely to generate a large context is sharing details about segments that move during a query. That means this error can potentially indicate that a very large number of segments moved in between the time a Broker issued a query and the time it was processed on Historicals. This should rarely, if ever, occur during normal operation.|
+|`Truncated response context`|500|An intermediate response context for the query exceeded the built-in limit of 7KiB.<br/><br/>The response context is an internal data structure that Robux servers use to share out-of-band information when sending query results to each other. It is serialized in an HTTP header with a maximum length of 7KiB. This error occurs when an intermediate response context sent from a data server (like a Historical) to the Broker exceeds this limit.<br/><br/>The response context is used for a variety of purposes, but the one most likely to generate a large context is sharing details about segments that move during a query. That means this error can potentially indicate that a very large number of segments moved in between the time a Broker issued a query and the time it was processed on Historicals. This should rarely, if ever, occur during normal operation.|
 |`Unknown exception`|500|Some other exception occurred. Check errorMessage and errorClass for details, although keep in mind that the contents of those fields are free-form and may change from release to release.|

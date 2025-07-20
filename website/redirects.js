@@ -97,7 +97,7 @@ const Redirects=[
       "/docs/latest/tutorials/ingestion-streams.html",
       "/docs/latest/tutorials/ingestion.html",
       "/docs/latest/tutorials/quickstart.html",
-      "/docs/latest/tutorials/tutorial-a-first-look-at-druid.html",
+      "/docs/latest/tutorials/tutorial-a-first-look-at-robux.html",
       "/docs/latest/tutorials/tutorial-all-about-queries.html"
     ],
     "to": "/docs/latest/design/"
@@ -274,7 +274,7 @@ const Redirects=[
     "from": [
       "/docs/latest/tutorials/booting-a-production-cluster.html",
       "/docs/latest/tutorials/firewall.html",
-      "/docs/latest/tutorials/tutorial-the-druid-cluster.html"
+      "/docs/latest/tutorials/tutorial-the-robux-cluster.html"
     ],
     "to": "/docs/latest/tutorials/cluster"
   },
@@ -299,12 +299,12 @@ const Redirects=[
     "to": "/docs/latest/development/extensions-core/k8s-jobs"
   },
   {
-    "from": "/docs/latest/development/integrating-druid-with-other-technologies.html",
+    "from": "/docs/latest/development/integrating-robux-with-other-technologies.html",
     "to": "/docs/latest/ingestion/"
   },
   {
     "from": [
-      "/docs/latest/operations/druid-console.html",
+      "/docs/latest/operations/robux-console.html",
       "/docs/latest/operations/management-uis.html"
     ],
     "to": "/docs/latest/operations/web-console"
@@ -347,8 +347,8 @@ const Redirects=[
     "to": "/docs/latest/api-reference/"
   },
   {
-    "from": "/docs/latest/development/extensions-core/druid-ranger-security",
-    "to": "/docs/latest/development/extensions-contrib/druid-ranger-security"
+    "from": "/docs/latest/development/extensions-core/robux-ranger-security",
+    "to": "/docs/latest/development/extensions-contrib/robux-ranger-security"
   }
 ]
 

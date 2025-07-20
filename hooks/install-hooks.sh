@@ -27,14 +27,14 @@ function cp_if_not_exist(){
 
 if [ $# != 1 ]
   then
-    echo 'usage: program {$DRUID_ROOT}'
+    echo 'usage: program {$ROBUX_ROOT}'
     exit 1
 fi
 
-DRUID_ROOT=$1
+ROBUX_ROOT=$1
 
-cp_if_not_exist ${DRUID_ROOT}/hooks/run-all-in-dir.py ${DRUID_ROOT}/.git/hooks/run-all-in-dir.py
-cp_if_not_exist ${DRUID_ROOT}/hooks/pre-commit ${DRUID_ROOT}/.git/hooks/pre-commit
-cp_if_not_exist ${DRUID_ROOT}/hooks/pre-push ${DRUID_ROOT}/.git/hooks/pre-push
-cp_if_not_exist ${DRUID_ROOT}/hooks/pre-commits ${DRUID_ROOT}/.git/hooks/pre-commits
-cp_if_not_exist ${DRUID_ROOT}/hooks/pre-pushes ${DRUID_ROOT}/.git/hooks/pre-pushes
+cp_if_not_exist ${ROBUX_ROOT}/hooks/run-all-in-dir.py ${ROBUX_ROOT}/.git/hooks/run-all-in-dir.py
+cp_if_not_exist ${ROBUX_ROOT}/hooks/pre-commit ${ROBUX_ROOT}/.git/hooks/pre-commit
+cp_if_not_exist ${ROBUX_ROOT}/hooks/pre-push ${ROBUX_ROOT}/.git/hooks/pre-push
+cp_if_not_exist ${ROBUX_ROOT}/hooks/pre-commits ${ROBUX_ROOT}/.git/hooks/pre-commits
+cp_if_not_exist ${ROBUX_ROOT}/hooks/pre-pushes ${ROBUX_ROOT}/.git/hooks/pre-pushes

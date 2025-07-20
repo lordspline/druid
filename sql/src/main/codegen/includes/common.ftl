@@ -63,7 +63,7 @@ SqlGranularityLiteral PartitionGranularity() :
   |
     e = Expression(ExprContext.ACCEPT_SUB_QUERY)
     {
-      granularity = DruidSqlParserUtils.convertSqlNodeToGranularity(e);
+      granularity = RobuxSqlParserUtils.convertSqlNodeToGranularity(e);
       unparseString = e.toString();
     }
   )
@@ -91,7 +91,7 @@ SqlNodeList ClusteredBy() :
   }
 }
 
-SqlTypeNameSpec DruidType() :
+SqlTypeNameSpec RobuxType() :
 {
   String typeName;
 }

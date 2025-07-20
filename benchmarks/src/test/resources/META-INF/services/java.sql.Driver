@@ -1,2 +1,2 @@
-org.apache.druid.quidem.DruidAvaticaTestDriver
+org.apache.robux.quidem.RobuxAvaticaTestDriver
 org.apache.calcite.avatica.remote.Driver

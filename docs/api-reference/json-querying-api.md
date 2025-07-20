@@ -27,7 +27,7 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-This topic describes the API endpoints to submit JSON-based [native queries](../querying/querying.md) to Apache Druid.
+This topic describes the API endpoints to submit JSON-based [native queries](../querying/querying.md) to Apache Robux.
 
 In this topic, `http://SERVICE_IP:SERVICE_PORT` is a placeholder for the server address of deployment and the service port. For example, on the quickstart configuration, replace `http://ROUTER_IP:ROUTER_PORT` with `http://localhost:8888`.
 
@@ -36,20 +36,20 @@ In this topic, `http://SERVICE_IP:SERVICE_PORT` is a placeholder for the server 
 
 Submits a JSON-based native query. The body of the request is the native query itself.
 
-Druid supports different types of queries for different use cases. All queries require the following properties:
-* `queryType`: A string representing the type of query. Druid supports the following native query types: `timeseries`, `topN`, `groupBy`, `timeBoundaries`, `segmentMetadata`, `datasourceMetadata`, `scan`, and `search`.
+Robux supports different types of queries for different use cases. All queries require the following properties:
+* `queryType`: A string representing the type of query. Robux supports the following native query types: `timeseries`, `topN`, `groupBy`, `timeBoundaries`, `segmentMetadata`, `datasourceMetadata`, `scan`, and `search`.
 * `dataSource`: A string or object defining the source of data to query. The most common value is the name of the datasource to query. For more information, see [Datasources](../querying/datasource.md).
 
 For additional properties based on your query type or use case, see [available native queries](../querying/querying.md#available-queries).
 
 ### URL
 
-`POST` `/druid/v2`
+`POST` `/robux/v2`
 
 ### Query parameters
 
 * `pretty` (optional)
-  * Druid returns the response in a pretty-printed format using indentation and line breaks.
+  * Robux returns the response in a pretty-printed format using indentation and line breaks.
 
 ### Responses
 
@@ -91,7 +91,7 @@ The following example shows a `topN` query. The query analyzes the `social_media
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2?pretty=null" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2?pretty=null" \
 --header 'Content-Type: application/json' \
 --data '{
   "queryType": "topN",
@@ -117,7 +117,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2?pretty=null" \
 
 
 ```HTTP
-POST /druid/v2?pretty=null HTTP/1.1
+POST /robux/v2?pretty=null HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 336
@@ -197,7 +197,7 @@ In this query:
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2" \
 --header 'Content-Type: application/json' \
 --data '{
   "queryType": "groupBy",
@@ -235,7 +235,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2" \
 <TabItem value="6" label="HTTP">
 
 ```HTTP
-POST /druid/v2?pretty=null HTTP/1.1
+POST /robux/v2?pretty=null HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 817
@@ -301,12 +301,12 @@ Retrieves an array that contains objects with segment information, including the
 
 ### URL
 
-`POST` `/druid/v2/candidates`
+`POST` `/robux/v2/candidates`
 
 ### Query parameters
 
 * `pretty` (optional)
-  *  Druid returns the response in a pretty-printed format using indentation and line breaks.
+  *  Robux returns the response in a pretty-printed format using indentation and line breaks.
 
 ### Responses
 
@@ -347,7 +347,7 @@ For more information on possible error messages, see [query execution failures](
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/candidates" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2/candidates" \
 --header 'Content-Type: application/json' \
 --data '{
   "queryType": "topN",
@@ -374,7 +374,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/candidates" \
 
 
 ```HTTP
-POST /druid/v2/candidates HTTP/1.1
+POST /robux/v2/candidates HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 336

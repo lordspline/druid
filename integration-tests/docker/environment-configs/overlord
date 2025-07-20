@@ -17,21 +17,21 @@
 # under the License.
 #
 
-DRUID_SERVICE=overlord
-DRUID_LOG_PATH=/shared/logs/overlord.log
+ROBUX_SERVICE=overlord
+ROBUX_LOG_PATH=/shared/logs/overlord.log
 
 # JAVA OPTS
-SERVICE_DRUID_JAVA_OPTS=-server -Xmx128m -Xms64m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5009
+SERVICE_ROBUX_JAVA_OPTS=-server -Xmx128m -Xms64m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5009
 
-# Druid configs
-druid_host=druid-overlord
-druid_metadata_storage_type=mysql
-druid_metadata_storage_connector_connectURI=jdbc:mysql://druid-metadata-storage/druid
-druid_metadata_storage_connector_user=druid
-druid_metadata_storage_connector_password=diurd
-druid_indexer_storage_type=metadata
-druid_indexer_runner_type=remote
-druid_auth_basic_common_cacheDirectory=/tmp/authCache/overlord
-druid_server_https_crlPath=/tls/revocations.crl
-druid_manager_segments_pollDuration=PT2S
-druid_manager_segments_useIncrementalCache=always
+# Robux configs
+robux_host=robux-overlord
+robux_metadata_storage_type=mysql
+robux_metadata_storage_connector_connectURI=jdbc:mysql://robux-metadata-storage/robux
+robux_metadata_storage_connector_user=robux
+robux_metadata_storage_connector_password=diurd
+robux_indexer_storage_type=metadata
+robux_indexer_runner_type=remote
+robux_auth_basic_common_cacheDirectory=/tmp/authCache/overlord
+robux_server_https_crlPath=/tls/revocations.crl
+robux_manager_segments_pollDuration=PT2S
+robux_manager_segments_useIncrementalCache=always

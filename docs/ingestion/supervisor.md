@@ -23,15 +23,15 @@ sidebar_label: Supervisor
   ~ under the License.
   -->
 
-Apache Druid uses supervisors to manage streaming ingestion from external streaming sources into Druid.
+Apache Robux uses supervisors to manage streaming ingestion from external streaming sources into Robux.
 Supervisors oversee the state of indexing tasks to coordinate handoffs, manage failures, and ensure that the scalability and replication requirements are maintained. They can also be used to perform [automatic compaction](../data-management/automatic-compaction.md) after data has been ingested.
 
 This topic uses the Apache Kafka term offset to refer to the identifier for records in a partition. If you are using Amazon Kinesis, the equivalent is sequence number.
 
 ## Supervisor spec
 
-Druid uses a JSON specification, often referred to as the supervisor spec, to define tasks used for streaming ingestion or auto-compaction.
-The supervisor spec specifies how Druid should consume, process, and index data from an external stream or Druid itself.
+Robux uses a JSON specification, often referred to as the supervisor spec, to define tasks used for streaming ingestion or auto-compaction.
+The supervisor spec specifies how Robux should consume, process, and index data from an external stream or Robux itself.
 
 The following table outlines the high-level configuration options for a supervisor spec:
 
@@ -56,15 +56,15 @@ For configuration properties specific to Kafka and Kinesis, see [Kafka I/O confi
 |`inputFormat`|Object|The [input format](../ingestion/data-formats.md#input-format) to define input data parsing.|Yes||
 |`autoScalerConfig`|Object|Defines auto scaling behavior for ingestion tasks. See [Task autoscaler](#task-autoscaler) for more information.|No|null|
 |`taskCount`|Integer|The maximum number of reading tasks in a replica set. Multiply `taskCount` and replicas to measure the maximum number of reading tasks. The total number of tasks, reading and publishing, is higher than the maximum number of reading tasks. See [Capacity planning](../ingestion/supervisor.md#capacity-planning) for more details. When `taskCount` is greater than the number of Kafka partitions or Kinesis shards, the actual number of reading tasks is less than the `taskCount` value.|No|1|
-|`replicas`|Integer|The number of replica sets, where 1 is a single set of tasks (no replication). Druid always assigns replicate tasks to different workers to provide resiliency against process failure.|No|1|
+|`replicas`|Integer|The number of replica sets, where 1 is a single set of tasks (no replication). Robux always assigns replicate tasks to different workers to provide resiliency against process failure.|No|1|
 |`taskDuration`|ISO 8601 period|The length of time before tasks stop reading and begin publishing segments.|No|`PT1H`|
 |`startDelay`|ISO 8601 period|The period to wait before the supervisor starts managing tasks.|No|`PT5S`|
 |`period`|ISO 8601 period|Determines how often the supervisor executes its management logic. Note that the supervisor also runs in response to certain events, such as tasks succeeding, failing, and reaching their task duration. The `period` value specifies the maximum time between iterations.|No|`PT30S`|
 |`completionTimeout`|ISO 8601 period|The length of time to wait before declaring a publishing task as failed and terminating it. If the value is too low, tasks may never publish. The publishing clock for a task begins roughly after `taskDuration` elapses.|No|`PT30M`|
-|`lateMessageRejectionStartDateTime`|ISO 8601 date time|Configures tasks to reject messages with timestamps earlier than this date time. For example, if this property is set to `2016-01-01T11:00Z` and the supervisor creates a task at `2016-01-01T12:00Z`, Druid drops messages with timestamps earlier than `2016-01-01T11:00Z`. This can prevent concurrency issues if your data stream has late messages and you have multiple pipelines that need to operate on the same segments, such as a realtime and a nightly batch ingestion pipeline.|No||
-|`lateMessageRejectionPeriod`|ISO 8601 period|Configures tasks to reject messages with timestamps earlier than this period before the task was created. For example, if this property is set to `PT1H` and the supervisor creates a task at `2016-01-01T12:00Z`, Druid drops messages with timestamps earlier than `2016-01-01T11:00Z`. This may help prevent concurrency issues if your data stream has late messages and you have multiple pipelines that need to operate on the same segments, such as a streaming and a nightly batch ingestion pipeline. You can specify only one of the late message rejection properties.|No||
-|`earlyMessageRejectionPeriod`|ISO 8601 period|Configures tasks to reject messages with timestamps later than this period after the task reached its task duration. For example, if this property is set to `PT1H`, the task duration is set to `PT1H` and the supervisor creates a task at `2016-01-01T12:00Z`, Druid drops messages with timestamps later than `2016-01-01T14:00Z`. Tasks sometimes run past their task duration, such as in cases of supervisor failover.|No||
-|`stopTaskCount`|Integer|Limits the number of ingestion tasks Druid can cycle at any given time. If not set, Druid can cycle all tasks at the same time. If set to a value less than `taskCount`, your cluster needs fewer available slots to run the supervisor. You can save costs by scaling down your ingestion tier, but this can lead to slower cycle times and lag. See [`stopTaskCount`](#stoptaskcount) for more information.|No|`taskCount` value|
+|`lateMessageRejectionStartDateTime`|ISO 8601 date time|Configures tasks to reject messages with timestamps earlier than this date time. For example, if this property is set to `2016-01-01T11:00Z` and the supervisor creates a task at `2016-01-01T12:00Z`, Robux drops messages with timestamps earlier than `2016-01-01T11:00Z`. This can prevent concurrency issues if your data stream has late messages and you have multiple pipelines that need to operate on the same segments, such as a realtime and a nightly batch ingestion pipeline.|No||
+|`lateMessageRejectionPeriod`|ISO 8601 period|Configures tasks to reject messages with timestamps earlier than this period before the task was created. For example, if this property is set to `PT1H` and the supervisor creates a task at `2016-01-01T12:00Z`, Robux drops messages with timestamps earlier than `2016-01-01T11:00Z`. This may help prevent concurrency issues if your data stream has late messages and you have multiple pipelines that need to operate on the same segments, such as a streaming and a nightly batch ingestion pipeline. You can specify only one of the late message rejection properties.|No||
+|`earlyMessageRejectionPeriod`|ISO 8601 period|Configures tasks to reject messages with timestamps later than this period after the task reached its task duration. For example, if this property is set to `PT1H`, the task duration is set to `PT1H` and the supervisor creates a task at `2016-01-01T12:00Z`, Robux drops messages with timestamps later than `2016-01-01T14:00Z`. Tasks sometimes run past their task duration, such as in cases of supervisor failover.|No||
+|`stopTaskCount`|Integer|Limits the number of ingestion tasks Robux can cycle at any given time. If not set, Robux can cycle all tasks at the same time. If set to a value less than `taskCount`, your cluster needs fewer available slots to run the supervisor. You can save costs by scaling down your ingestion tier, but this can lead to slower cycle times and lag. See [`stopTaskCount`](#stoptaskcount) for more information.|No|`taskCount` value|
 
 #### Task autoscaler
 
@@ -74,12 +74,12 @@ The following table outlines the configuration properties for `autoScalerConfig`
 
 |Property|Description|Required|Default|
 |--------|-----------|--------|-------|
-|`enableTaskAutoScaler`|Enables the autoscaler. If not specified, Druid disables the autoscaler even when `autoScalerConfig` is not null.|No|`false`|
-|`taskCountMax`|The maximum number of ingestion tasks. Must be greater than or equal to `taskCountMin`. If `taskCountMax` is greater than the number of Kafka partitions or Kinesis shards, Druid sets the maximum number of reading tasks to the number of Kafka partitions or Kinesis shards and ignores `taskCountMax`.|Yes||
-|`taskCountMin`|The minimum number of ingestion tasks. When you enable the autoscaler, Druid ignores the value of `taskCount` in `ioConfig` and starts with the `taskCountMin` number of tasks to launch.|Yes||
-|`taskCountStart`|Optional config to specify the number of ingestion tasks to start with. When you enable the autoscaler, Druid ignores the value of `taskCount` in `ioConfig` and, if specified, starts with the `taskCountStart` number of tasks. Otherwise, defaults to `taskCountMin`.|No|`taskCountMin`|
+|`enableTaskAutoScaler`|Enables the autoscaler. If not specified, Robux disables the autoscaler even when `autoScalerConfig` is not null.|No|`false`|
+|`taskCountMax`|The maximum number of ingestion tasks. Must be greater than or equal to `taskCountMin`. If `taskCountMax` is greater than the number of Kafka partitions or Kinesis shards, Robux sets the maximum number of reading tasks to the number of Kafka partitions or Kinesis shards and ignores `taskCountMax`.|Yes||
+|`taskCountMin`|The minimum number of ingestion tasks. When you enable the autoscaler, Robux ignores the value of `taskCount` in `ioConfig` and starts with the `taskCountMin` number of tasks to launch.|Yes||
+|`taskCountStart`|Optional config to specify the number of ingestion tasks to start with. When you enable the autoscaler, Robux ignores the value of `taskCount` in `ioConfig` and, if specified, starts with the `taskCountStart` number of tasks. Otherwise, defaults to `taskCountMin`.|No|`taskCountMin`|
 |`minTriggerScaleActionFrequencyMillis`|The minimum time interval between two scale actions.| No|600000|
-|`autoScalerStrategy`|The algorithm of autoscaler. Druid only supports the `lagBased` strategy. See [Autoscaler strategy](#autoscaler-strategy) for more information.|No|`lagBased`|
+|`autoScalerStrategy`|The algorithm of autoscaler. Robux only supports the `lagBased` strategy. See [Autoscaler strategy](#autoscaler-strategy) for more information.|No|`lagBased`|
 
 ##### Autoscaler strategy
 
@@ -91,7 +91,7 @@ The following table outlines the configuration properties related to the `lagBas
 
 |Property|Description|Required|Default|
 |--------|-----------|--------|-------|
-|`lagCollectionIntervalMillis`|The time period during which Druid collects lag metric points.|No|30000|
+|`lagCollectionIntervalMillis`|The time period during which Robux collects lag metric points.|No|30000|
 |`lagCollectionRangeMillis`|The total time window of lag collection. Use with `lagCollectionIntervalMillis` to specify the intervals at which to collect lag metric points.|No|600000|
 |`scaleOutThreshold`|The threshold of scale out action. |No|6000000|
 |`triggerScaleOutFractionThreshold`|Enables scale out action if `triggerScaleOutFractionThreshold` percent of lag points is higher than `scaleOutThreshold`.|No|0.3|
@@ -192,11 +192,11 @@ Before you set `stopTaskCount`, note the following:
 
 - Some operations require all tasks to cycle at the same time, for example changes to the supervisor spec and change to the number of Kafka partitions. These operations can cause lag without sufficient task slot capacity.
 - The [task autoscaler](#task-autoscaler) ignores `stopTaskCount` when shutting down tasks in response to a task count change. The task autoscaler needs to redistribute partitions across tasks, which requires all tasks to be shut down.
-- If you set `stopTaskCount` to a value less than `taskCount`, Druid cycles the longest running tasks first, then other tasks up to the value set.
+- If you set `stopTaskCount` to a value less than `taskCount`, Robux cycles the longest running tasks first, then other tasks up to the value set.
 
 ### Tuning configuration
 
-The `tuningConfig` object is optional. If you don't specify the `tuningConfig` object, Druid uses the default configuration settings.
+The `tuningConfig` object is optional. If you don't specify the `tuningConfig` object, Robux uses the default configuration settings.
 
 The following table outlines the `tuningConfig` configuration properties that apply to both Kafka and Kinesis ingestion methods.
 For configuration properties specific to Kafka and Kinesis, see [Kafka tuning configuration](kafka-ingestion.md#tuning-configuration) and [Kinesis tuning configuration](kinesis-ingestion.md#tuning-configuration) respectively.
@@ -204,34 +204,34 @@ For configuration properties specific to Kafka and Kinesis, see [Kafka tuning co
 |Property|Type|Description|Required|Default|
 |--------|----|-----------|--------|-------|
 |`type`|String|The tuning type code for the ingestion method. One of `kafka` or `kinesis`.|Yes||
-|`maxRowsInMemory`|Integer|The number of rows to accumulate before persisting. This number represents the post-aggregation rows. It is not equivalent to the number of input events, but the resulting number of aggregated rows. Druid uses `maxRowsInMemory` to manage the required JVM heap size. The maximum heap memory usage for indexing scales is `maxRowsInMemory * (2 + maxPendingPersists)`. Normally, you don't need to set this, but depending on the nature of data, if rows are short in terms of bytes, you may not want to store a million rows in memory and this value should be set.|No|150000|
-|`maxBytesInMemory`|Long|The number of bytes to accumulate in heap memory before persisting. The value is based on a rough estimate of memory usage and not actual usage. Normally, Druid computes the value internally. The maximum heap memory usage for indexing is `maxBytesInMemory * (2 + maxPendingPersists)`.|No|One-sixth of max JVM memory|
+|`maxRowsInMemory`|Integer|The number of rows to accumulate before persisting. This number represents the post-aggregation rows. It is not equivalent to the number of input events, but the resulting number of aggregated rows. Robux uses `maxRowsInMemory` to manage the required JVM heap size. The maximum heap memory usage for indexing scales is `maxRowsInMemory * (2 + maxPendingPersists)`. Normally, you don't need to set this, but depending on the nature of data, if rows are short in terms of bytes, you may not want to store a million rows in memory and this value should be set.|No|150000|
+|`maxBytesInMemory`|Long|The number of bytes to accumulate in heap memory before persisting. The value is based on a rough estimate of memory usage and not actual usage. Normally, Robux computes the value internally. The maximum heap memory usage for indexing is `maxBytesInMemory * (2 + maxPendingPersists)`.|No|One-sixth of max JVM memory|
 |`skipBytesInMemoryOverheadCheck`|Boolean|The calculation of `maxBytesInMemory` takes into account overhead objects created during ingestion and each intermediate persist. To exclude the bytes of these overhead objects from the `maxBytesInMemory` check, set `skipBytesInMemoryOverheadCheck` to `true`.|No|`false`|
 |`maxRowsPerSegment`|Integer|The number of rows to store in a segment. This number is post-aggregation rows. Handoff occurs when `maxRowsPerSegment` or `maxTotalRows` is reached or every `intermediateHandoffPeriod`, whichever happens first.|No|5000000|
 |`maxTotalRows`|Long|The number of rows to aggregate across all segments; this number is post-aggregation rows. Handoff happens either if `maxRowsPerSegment` or `maxTotalRows` is reached or every `intermediateHandoffPeriod`, whichever happens earlier.|No|20000000|
 |`intermediateHandoffPeriod`|ISO 8601 period|The period that determines how often tasks hand off segments. Handoff occurs if `maxRowsPerSegment` or `maxTotalRows` is reached or every `intermediateHandoffPeriod`, whichever happens first.|No|`P2147483647D`|
 |`intermediatePersistPeriod`|ISO 8601 period|The period that determines the rate at which intermediate persists occur.|No|`PT10M`|
-|`maxPendingPersists`|Integer|Maximum number of persists that can be pending but not started. If a new intermediate persist exceeds this limit, Druid blocks ingestion until the currently running persist finishes. One persist can be running concurrently with ingestion, and none can be queued up. The maximum heap memory usage for indexing scales is `maxRowsInMemory * (2 + maxPendingPersists)`.|No|0|
+|`maxPendingPersists`|Integer|Maximum number of persists that can be pending but not started. If a new intermediate persist exceeds this limit, Robux blocks ingestion until the currently running persist finishes. One persist can be running concurrently with ingestion, and none can be queued up. The maximum heap memory usage for indexing scales is `maxRowsInMemory * (2 + maxPendingPersists)`.|No|0|
 |`indexSpec`|Object|Defines segment storage format options to use at indexing time. See [IndexSpec](../ingestion/ingestion-spec.md#indexspec) for more information.|No||
 |`indexSpecForIntermediatePersists`|Object|Defines segment storage format options to use at indexing time for intermediate persisted temporary segments. You can use `indexSpecForIntermediatePersists` to disable dimension/metric compression on intermediate segments to reduce memory required for final merging. However, disabling compression on intermediate segments might increase page cache use while they are used before getting merged into final segment published.|No||
-|`reportParseExceptions`|Boolean|DEPRECATED. If `true`, Druid throws exceptions encountered during parsing causing ingestion to halt. If `false`, Druid skips unparseable rows and fields. Setting `reportParseExceptions` to `true` overrides existing configurations for `maxParseExceptions` and `maxSavedParseExceptions`, setting `maxParseExceptions` to 0 and limiting `maxSavedParseExceptions` to not more than 1.|No|`false`|
+|`reportParseExceptions`|Boolean|DEPRECATED. If `true`, Robux throws exceptions encountered during parsing causing ingestion to halt. If `false`, Robux skips unparseable rows and fields. Setting `reportParseExceptions` to `true` overrides existing configurations for `maxParseExceptions` and `maxSavedParseExceptions`, setting `maxParseExceptions` to 0 and limiting `maxSavedParseExceptions` to not more than 1.|No|`false`|
 |`handoffConditionTimeout`|Long|Number of milliseconds to wait for segment handoff. Set to a value >= 0, where 0 means to wait indefinitely.|No|900000 (15 minutes) for Kafka. 0 for Kinesis.|
-|`resetOffsetAutomatically`|Boolean|Resets partitions when the offset is unavailable. If set to `true`, Druid resets partitions to the earliest or latest offset, based on the value of `useEarliestOffset` or `useEarliestSequenceNumber` (earliest if `true`, latest if `false`). If set to `false`, Druid surfaces the exception causing tasks to fail and ingestion to halt. If this occurs, manual intervention is required to correct the situation, potentially through [resetting the supervisor](../api-reference/supervisor-api.md#reset-a-supervisor).|No|`false`|
+|`resetOffsetAutomatically`|Boolean|Resets partitions when the offset is unavailable. If set to `true`, Robux resets partitions to the earliest or latest offset, based on the value of `useEarliestOffset` or `useEarliestSequenceNumber` (earliest if `true`, latest if `false`). If set to `false`, Robux surfaces the exception causing tasks to fail and ingestion to halt. If this occurs, manual intervention is required to correct the situation, potentially through [resetting the supervisor](../api-reference/supervisor-api.md#reset-a-supervisor).|No|`false`|
 |`workerThreads`|Integer|The number of threads that the supervisor uses to handle requests/responses for worker tasks, along with any other internal asynchronous operation.|No|`min(10, taskCount)`|
-|`chatRetries`|Integer|The number of times Druid retries HTTP requests to indexing tasks before considering tasks unresponsive.|No|8|
+|`chatRetries`|Integer|The number of times Robux retries HTTP requests to indexing tasks before considering tasks unresponsive.|No|8|
 |`httpTimeout`|ISO 8601 period|The period of time to wait for a HTTP response from an indexing task.|No|`PT10S`|
 |`shutdownTimeout`|ISO 8601 period|The period of time to wait for the supervisor to attempt a graceful shutdown of tasks before exiting.|No|`PT80S`|
 |`offsetFetchPeriod`|ISO 8601 period|Determines how often the supervisor queries the streaming source and the indexing tasks to fetch current offsets and calculate lag. If the user-specified value is below the minimum value of `PT5S`, the supervisor ignores the value and uses the minimum value instead.|No|`PT30S`|
-|`segmentWriteOutMediumFactory`|Object|The segment write-out medium to use when creating segments. See [Additional Peon configuration: SegmentWriteOutMediumFactory](../configuration/index.md#segmentwriteoutmediumfactory) for explanation and available options.|No|If not specified, Druid uses the value from `druid.peon.defaultSegmentWriteOutMediumFactory.type`.|
-|`logParseExceptions`|Boolean|If `true`, Druid logs an error message when a parsing exception occurs, containing information about the row where the error occurred.|No|`false`|
+|`segmentWriteOutMediumFactory`|Object|The segment write-out medium to use when creating segments. See [Additional Peon configuration: SegmentWriteOutMediumFactory](../configuration/index.md#segmentwriteoutmediumfactory) for explanation and available options.|No|If not specified, Robux uses the value from `robux.peon.defaultSegmentWriteOutMediumFactory.type`.|
+|`logParseExceptions`|Boolean|If `true`, Robux logs an error message when a parsing exception occurs, containing information about the row where the error occurred.|No|`false`|
 |`maxParseExceptions`|Integer|The maximum number of parse exceptions that can occur before the task halts ingestion and fails. Setting `reportParseExceptions` overrides this limit.|No|unlimited|
-|`maxSavedParseExceptions`|Integer|When a parse exception occurs, Druid keeps track of the most recent parse exceptions. `maxSavedParseExceptions` limits the number of saved exception instances. These saved exceptions are available after the task finishes in the [task completion report](../ingestion/tasks.md#task-reports). Setting `reportParseExceptions` overrides this limit.|No|0|
-|`maxColumnsToMerge`|Integer|Limit of the number of segments to merge in a single phase when merging segments for publishing. This limit affects the total number of columns present in a set of segments to merge. If the limit is exceeded, segment merging occurs in multiple phases. Druid merges at least 2 segments per phase, regardless of this setting.|No|-1|
+|`maxSavedParseExceptions`|Integer|When a parse exception occurs, Robux keeps track of the most recent parse exceptions. `maxSavedParseExceptions` limits the number of saved exception instances. These saved exceptions are available after the task finishes in the [task completion report](../ingestion/tasks.md#task-reports). Setting `reportParseExceptions` overrides this limit.|No|0|
+|`maxColumnsToMerge`|Integer|Limit of the number of segments to merge in a single phase when merging segments for publishing. This limit affects the total number of columns present in a set of segments to merge. If the limit is exceeded, segment merging occurs in multiple phases. Robux merges at least 2 segments per phase, regardless of this setting.|No|-1|
 
 ## Start a supervisor
 
-Druid starts a new supervisor when you submit a supervisor spec.
-You can submit the supervisor spec in the Druid web console [data loader](../operations/web-console.md#data-loader) or with the [Supervisor API](../api-reference/supervisor-api.md).
+Robux starts a new supervisor when you submit a supervisor spec.
+You can submit the supervisor spec in the Robux web console [data loader](../operations/web-console.md#data-loader) or with the [Supervisor API](../api-reference/supervisor-api.md).
 
 The following screenshot shows the [Supervisors](../operations/web-console.md#supervisors) view of the web console for a cluster with two supervisors:
 
@@ -243,13 +243,13 @@ When an Overlord gains leadership, either by being started or as a result of ano
 
 ### Schema and configuration changes
 
-To make schema or configuration changes, you must submit a new supervisor spec. The Overlord initiates a graceful shutdown of the existing supervisor. The running supervisor signals its tasks to stop reading and begin publishing, exiting itself. Druid then uses the new configuration to create a new supervisor. Druid submits the updated schema while retaining existing publishing tasks. It also starts new tasks at the previous task offsets.
+To make schema or configuration changes, you must submit a new supervisor spec. The Overlord initiates a graceful shutdown of the existing supervisor. The running supervisor signals its tasks to stop reading and begin publishing, exiting itself. Robux then uses the new configuration to create a new supervisor. Robux submits the updated schema while retaining existing publishing tasks. It also starts new tasks at the previous task offsets.
 This way, configuration changes can be applied without requiring any pause in ingestion.
 
 ## Status report
 
 The supervisor status report contains the state of the supervisor tasks and an array of recently thrown exceptions reported as `recentErrors`.
-You can control the maximum size of the exceptions using the `druid.supervisor.maxStoredExceptionEvents` configuration.
+You can control the maximum size of the exceptions using the `robux.supervisor.maxStoredExceptionEvents` configuration.
 
 To view the supervisor status in the web console, navigate to the **Supervisors** view and click the supervisor ID to open the **Supervisor** dialog.
 Click **Status** in the left navigation pane to display the status:
@@ -311,8 +311,8 @@ The following table lists `detailedState` values and their corresponding `state`
 
 |`detailedState`|`state`|Description|
 |--------------|-------------------|-----------|
-|`UNHEALTHY_SUPERVISOR`|`UNHEALTHY_SUPERVISOR`|The supervisor encountered errors on previous `druid.supervisor.unhealthinessThreshold` iterations.|
-|`UNHEALTHY_TASKS`|`UNHEALTHY_TASKS`|The last `druid.supervisor.taskUnhealthinessThreshold` tasks all failed.|
+|`UNHEALTHY_SUPERVISOR`|`UNHEALTHY_SUPERVISOR`|The supervisor encountered errors on previous `robux.supervisor.unhealthinessThreshold` iterations.|
+|`UNHEALTHY_TASKS`|`UNHEALTHY_TASKS`|The last `robux.supervisor.taskUnhealthinessThreshold` tasks all failed.|
 |`UNABLE_TO_CONNECT_TO_STREAM`|`UNHEALTHY_SUPERVISOR`|The supervisor is encountering connectivity issues with the stream and hasn't successfully connected in the past.|
 |`LOST_CONTACT_WITH_STREAM`|`UNHEALTHY_SUPERVISOR`|The supervisor is encountering connectivity issues with the stream but has successfully connected in the past.|
 |`PENDING` (first iteration only)|`PENDING`|The supervisor has been initialized but hasn't started connecting to the stream.|
@@ -326,7 +326,7 @@ The following table lists `detailedState` values and their corresponding `state`
 
 On each iteration of the supervisor's run loop, the supervisor completes the following tasks in sequence:
 
-1. Retrieve the list of partitions and determine the starting offset for each partition. If continuing, Druid uses the last processed offset. For new streams, Druid starts from either the beginning or end of the stream, depending on the `useEarliestOffset` property.
+1. Retrieve the list of partitions and determine the starting offset for each partition. If continuing, Robux uses the last processed offset. For new streams, Robux starts from either the beginning or end of the stream, depending on the `useEarliestOffset` property.
 2. Discover any running indexing tasks that are writing to the supervisor's datasource and adopt them if they match the supervisor's configuration, else signal them to stop.
 3. Send a status request to each supervised task to update the view of the state of the tasks under supervision.
 4. Handle tasks that have exceeded `taskDuration` and should transition from reading to publishing.
@@ -342,12 +342,12 @@ that is, once it has completed a full execution without encountering any issues,
 state until it is stopped, suspended, or hits a failure threshold and transitions to an unhealthy state.
 
 :::info
-For the Kafka indexing service, Druid may report the consumer lag per partition as a negative value if the supervisor hasn't received the latest offset response from Kafka. The aggregate lag value is always >= 0.
+For the Kafka indexing service, Robux may report the consumer lag per partition as a negative value if the supervisor hasn't received the latest offset response from Kafka. The aggregate lag value is always >= 0.
 :::
 
 ## SUPERVISORS system table
 
-Druid exposes system information through special system schemas. You can query the `sys.supervisors` table to retrieve information about the supervisor internals.
+Robux exposes system information through special system schemas. You can query the `sys.supervisors` table to retrieve information about the supervisor internals.
 The following example shows how to retrieve supervisor tasks information filtered by health status:
 
 ```sql
@@ -379,7 +379,7 @@ Perform this action with caution as it may result in skipped messages and lead t
 :::
 
 **Set offsets** resets the offsets for supervisor partitions.
-This action clears the stored offsets and instructs the supervisor to resume reading data from the specified offsets. If there are no stored offsets, Druid saves the specified offsets in the metadata store.
+This action clears the stored offsets and instructs the supervisor to resume reading data from the specified offsets. If there are no stored offsets, Robux saves the specified offsets in the metadata store.
 **Set offsets** terminates and recreates active tasks for the specified partitions to begin reading from the reset offsets.
 For partitions not specified in this operation, the supervisor resumes from the last stored offset.
 
@@ -399,7 +399,7 @@ For information on how to reset a supervisor by API, see [Supervisors: Reset a s
 
 ### Terminate
 
-**Terminate** stops a supervisor and its indexing tasks, triggering the publishing of their segments. When you terminate a supervisor, Druid places a tombstone marker in the metadata store to prevent reloading on restart.
+**Terminate** stops a supervisor and its indexing tasks, triggering the publishing of their segments. When you terminate a supervisor, Robux places a tombstone marker in the metadata store to prevent reloading on restart.
 The terminated supervisor still exists in the metadata store and its history can be retrieved.
 
 For information on how to terminate a supervisor by API, see [Supervisors: Terminate a supervisor](../api-reference/supervisor-api.md#terminate-a-supervisor).
@@ -407,12 +407,12 @@ For information on how to terminate a supervisor by API, see [Supervisors: Termi
 ## Capacity planning
 
 Indexing tasks run on Middle Managers and are limited by the resources available in the Middle Manager cluster. In particular, you should make sure that you have sufficient worker capacity, configured using the
-`druid.worker.capacity` property, to handle the configuration in the supervisor spec. Note that worker capacity is
+`robux.worker.capacity` property, to handle the configuration in the supervisor spec. Note that worker capacity is
 shared across all types of indexing tasks, so you should plan your worker capacity to handle your total indexing load, such as batch processing, streaming tasks, and merging tasks. If your workers run out of capacity, indexing tasks queue and wait for the next available worker. This may cause queries to return partial results but will not result in data loss, assuming the tasks run before the stream purges those offsets.
 
 A running task can be in one of two states: reading or publishing. A task remains in reading state for the period defined in `taskDuration`, at which point it transitions to publishing state. A task remains in publishing state for as long as it takes to generate segments, push segments to deep storage, and have them loaded and served by a Historical service or until `completionTimeout` elapses.
 
-The number of reading tasks is controlled by `replicas` and `taskCount`. In general, there are `replicas * taskCount` reading tasks. An exception occurs if `taskCount` is over the number of shards in Kinesis or partitions in Kafka, in which case Druid uses the number of shards or partitions. When `taskDuration` elapses, these tasks transition to publishing state and `replicas * taskCount` new reading tasks are created. To allow for reading tasks and publishing tasks to run concurrently, there should be a minimum capacity of:
+The number of reading tasks is controlled by `replicas` and `taskCount`. In general, there are `replicas * taskCount` reading tasks. An exception occurs if `taskCount` is over the number of shards in Kinesis or partitions in Kafka, in which case Robux uses the number of shards or partitions. When `taskDuration` elapses, these tasks transition to publishing state and `replicas * taskCount` new reading tasks are created. To allow for reading tasks and publishing tasks to run concurrently, there should be a minimum capacity of:
 
 ```text
 workerCapacity = 2 * replicas * taskCount
@@ -423,7 +423,7 @@ In some circumstances, it is possible to have multiple sets of tasks publishing 
 time-to-publish (generate segment, push to deep storage, load on Historical) is greater than `taskDuration`. This is a valid and correct scenario but requires additional worker capacity to support. In general, it is a good idea to have `taskDuration` be large enough that the previous set of tasks finishes publishing before the current set begins.
 
 ## Multi-Supervisor Support (Experimental)
-Druid supports multiple stream supervisors ingesting into the same datasource. This means you can have any number of stream supervisors (Kafka, Kinesis, etc.) ingesting into the same datasource at the same time.
+Robux supports multiple stream supervisors ingesting into the same datasource. This means you can have any number of stream supervisors (Kafka, Kinesis, etc.) ingesting into the same datasource at the same time.
 In order to ensure proper synchronization between ingestion tasks with multiple supervisors, it's important to set `useConcurrentLocks=true` in the `context` field of the supervisor spec. Read more [here](concurrent-append-replace.md).
 
 ## Learn more

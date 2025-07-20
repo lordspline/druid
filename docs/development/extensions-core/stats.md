@@ -23,7 +23,7 @@ title: "Stats aggregator"
   -->
 
 
-This Apache Druid extension includes stat-related aggregators, including variance and standard deviations, etc. Make sure to [include](../../configuration/extensions.md#loading-extensions) `druid-stats` in the extensions load list.
+This Apache Robux extension includes stat-related aggregators, including variance and standard deviations, etc. Make sure to [include](../../configuration/extensions.md#loading-extensions) `robux-stats` in the extensions load list.
 
 ## Variance aggregator
 
@@ -58,7 +58,7 @@ Numer. Math, 58 (1991) pp. 583--590
 
 ### Variance and Standard Deviation SQL Aggregators
 
-You can use the variance and standard deviation aggregation functions in the SELECT clause of any Druid SQL query.
+You can use the variance and standard deviation aggregation functions in the SELECT clause of any Robux SQL query.
 
 |Function|Notes|Default|
 |--------|-----|-------|
@@ -120,7 +120,7 @@ To acquire standard deviation from variance, user can use "stddev" post aggregat
 
 ### Timeseries query
 
-#### Druid SQL
+#### Robux SQL
 
 ```SQL
 SELECT 
@@ -152,7 +152,7 @@ GROUP BY 1
 
 ### TopN query
 
-#### Druid SQL
+#### Robux SQL
 
 ```SQL
 SELECT
@@ -196,7 +196,7 @@ LIMIT 5
 
 ### GroupBy query
 
-#### Druid SQL
+#### Robux SQL
 
 ```SQL
 SELECT

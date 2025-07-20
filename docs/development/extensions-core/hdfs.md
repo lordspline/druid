@@ -22,7 +22,7 @@ title: "HDFS"
   ~ under the License.
   -->
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-hdfs-storage` in the extensions load list and run druid processes with `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account_keyfile` in the environment.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-hdfs-storage` in the extensions load list and run robux processes with `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account_keyfile` in the environment.
 
 ## Deep Storage
 
@@ -30,16 +30,16 @@ To use this Apache Druid extension, [include](../../configuration/extensions.md#
 
 |Property|Possible Values|Description|Default|
 |--------|---------------|-----------|-------|
-|`druid.storage.type`|hdfs||Must be set.|
-|`druid.storage.storageDirectory`||Directory for storing segments.|Must be set.|
-|`druid.hadoop.security.kerberos.principal`|`druid@EXAMPLE.COM`| Principal user name |empty|
-|`druid.hadoop.security.kerberos.keytab`|`/etc/security/keytabs/druid.headlessUser.keytab`|Path to keytab file|empty|
+|`robux.storage.type`|hdfs||Must be set.|
+|`robux.storage.storageDirectory`||Directory for storing segments.|Must be set.|
+|`robux.hadoop.security.kerberos.principal`|`robux@EXAMPLE.COM`| Principal user name |empty|
+|`robux.hadoop.security.kerberos.keytab`|`/etc/security/keytabs/robux.headlessUser.keytab`|Path to keytab file|empty|
 
 Besides the above settings, you also need to include all Hadoop configuration files (such as `core-site.xml`, `hdfs-site.xml`)
-in the Druid classpath. One way to do this is copying all those files under `${DRUID_HOME}/conf/_common`.
+in the Robux classpath. One way to do this is copying all those files under `${ROBUX_HOME}/conf/_common`.
 
 If you are using the Hadoop ingestion, set your output directory to be a location on Hadoop and it will work.
-If you want to eagerly authenticate against a secured hadoop/hdfs cluster you must set `druid.hadoop.security.kerberos.principal` and `druid.hadoop.security.kerberos.keytab`, this is an alternative to the cron job method that runs `kinit` command periodically.
+If you want to eagerly authenticate against a secured hadoop/hdfs cluster you must set `robux.hadoop.security.kerberos.principal` and `robux.hadoop.security.kerberos.keytab`, this is an alternative to the cron job method that runs `kinit` command periodically.
 
 ### Configuration for Cloud Storage
 
@@ -47,19 +47,19 @@ You can also use the Amazon S3 or the Google Cloud Storage as the deep storage v
 
 #### Configuration for Amazon S3
 
-To use the Amazon S3 as the deep storage, you need to configure `druid.storage.storageDirectory` properly.
+To use the Amazon S3 as the deep storage, you need to configure `robux.storage.storageDirectory` properly.
 
 |Property|Possible Values|Description|Default|
 |--------|---------------|-----------|-------|
-|`druid.storage.type`|hdfs| |Must be set.|
-|`druid.storage.storageDirectory`|s3a://bucket/example/directory or s3n://bucket/example/directory|Path to the deep storage|Must be set.|
+|`robux.storage.type`|hdfs| |Must be set.|
+|`robux.storage.storageDirectory`|s3a://bucket/example/directory or s3n://bucket/example/directory|Path to the deep storage|Must be set.|
 
-You also need to include the [Hadoop AWS module](https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/), especially the `hadoop-aws.jar` in the Druid classpath.
-Run the below command to install the `hadoop-aws.jar` file under `${DRUID_HOME}/extensions/druid-hdfs-storage` in all nodes.
+You also need to include the [Hadoop AWS module](https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/), especially the `hadoop-aws.jar` in the Robux classpath.
+Run the below command to install the `hadoop-aws.jar` file under `${ROBUX_HOME}/extensions/robux-hdfs-storage` in all nodes.
 
 ```bash
-${DRUID_HOME}/bin/run-java -classpath "${DRUID_HOME}/lib/*" org.apache.druid.cli.Main tools pull-deps -h "org.apache.hadoop:hadoop-aws:${HADOOP_VERSION}";
-cp ${DRUID_HOME}/hadoop-dependencies/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar ${DRUID_HOME}/extensions/druid-hdfs-storage/
+${ROBUX_HOME}/bin/run-java -classpath "${ROBUX_HOME}/lib/*" org.apache.robux.cli.Main tools pull-deps -h "org.apache.hadoop:hadoop-aws:${HADOOP_VERSION}";
+cp ${ROBUX_HOME}/hadoop-dependencies/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar ${ROBUX_HOME}/extensions/robux-hdfs-storage/
 ```
 
 Finally, you need to add the below properties in the `core-site.xml`.
@@ -93,17 +93,17 @@ For more configurations, see the [Hadoop AWS module](https://hadoop.apache.org/d
 
 #### Configuration for Google Cloud Storage
 
-To use the Google Cloud Storage as the deep storage, you need to configure `druid.storage.storageDirectory` properly.
+To use the Google Cloud Storage as the deep storage, you need to configure `robux.storage.storageDirectory` properly.
 
 |Property|Possible Values|Description|Default|
 |--------|---------------|-----------|-------|
-|`druid.storage.type`|hdfs||Must be set.|
-|`druid.storage.storageDirectory`|gs://bucket/example/directory|Path to the deep storage|Must be set.|
+|`robux.storage.type`|hdfs||Must be set.|
+|`robux.storage.storageDirectory`|gs://bucket/example/directory|Path to the deep storage|Must be set.|
 
 All services that need to access GCS need to have the [GCS connector jar](https://cloud.google.com/dataproc/docs/concepts/connectors/cloud-storage#other_sparkhadoop_clusters) in their class path.
 Please read the [install instructions](https://github.com/GoogleCloudPlatform/bigdata-interop/blob/master/gcs/INSTALL.md)
 to properly set up the necessary libraries and configurations.
-One option is to place this jar in `${DRUID_HOME}/lib/` and `${DRUID_HOME}/extensions/druid-hdfs-storage/`.
+One option is to place this jar in `${ROBUX_HOME}/lib/` and `${ROBUX_HOME}/extensions/robux-hdfs-storage/`.
 
 Finally, you need to configure the `core-site.xml` file with the filesystem
 and authentication properties needed for GCS. You may want to copy the below

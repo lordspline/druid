@@ -21,10 +21,10 @@
 # Example of override config file to provide.
 # Please replace <OVERRIDE_THIS> and <YOUR_GOOGLE_CREDENTIALS_FILE_NAME> with your cloud configs/credentials
 #
-druid_storage_type=hdfs
-druid_storage_storageDirectory=/druid/segments
+robux_storage_type=hdfs
+robux_storage_storageDirectory=/robux/segments
 
-druid_extensions_loadList=["druid-google-extensions","druid-hdfs-storage"]
+robux_extensions_loadList=["robux-google-extensions","robux-hdfs-storage"]
 
 GOOGLE_APPLICATION_CREDENTIALS=/shared/docker/credentials/<YOUR_GOOGLE_CREDENTIALS_FILE_NAME>
 

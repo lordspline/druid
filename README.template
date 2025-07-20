@@ -17,26 +17,26 @@ under the License.
 
 
 
-Apache Druid is a high performance analytics data store for event-driven data. More information about Druid
-can be found on https://druid.apache.org.
+Apache Robux is a high performance analytics data store for event-driven data. More information about Robux
+can be found on https://robux.apache.org.
 
 Documentation
 -------------
-You can find the documentation for {THIS_OR_THE_LATEST} Druid release on the project website https://druid.apache.org/docs/{DRUIDVERSION}/.
+You can find the documentation for {THIS_OR_THE_LATEST} Robux release on the project website https://robux.apache.org/docs/{ROBUXVERSION}/.
 
-You can get started with Druid with our quickstart at https://druid.apache.org/docs/{DRUIDVERSION}/tutorials/quickstart.html.
+You can get started with Robux with our quickstart at https://robux.apache.org/docs/{ROBUXVERSION}/tutorials/quickstart.html.
 
 
 Build from Source
 -----------------
-You can build Apache Druid directly from source.
+You can build Apache Robux directly from source.
 
 Prerequisites:
   JDK 8, 8u92+
   Maven version 3.x
 
 
-The basic command to build Druid from source is:
+The basic command to build Robux from source is:
 
     mvn clean install
 
@@ -47,9 +47,9 @@ source or binary distribution tarball.
 In addition to the basic stages, you may also want to add the following profiles and properties:
 
   -Pdist           - Distribution profile: Generates the binary distribution tarball by pulling in core extensions and
-                     dependencies and packaging the files as 'distribution/target/apache-druid-x.x.x-bin.tar.gz'
+                     dependencies and packaging the files as 'distribution/target/apache-robux-x.x.x-bin.tar.gz'
   -Papache-release - Apache release profile: Generates GPG signature and checksums, and builds the source distribution
-                     tarball as `distribution/target/apache-druid-x.x.x-src.tar.gz`
+                     tarball as `distribution/target/apache-robux-x.x.x-src.tar.gz`
   -Prat            - Apache Rat profile: Runs the Apache Rat license audit tool
   -DskipTests      - Skips unit tests (which reduces build time)
 
@@ -61,16 +61,16 @@ licenses, and skip the unit tests, you would run:
 
 Community
 ---------
-Community support is available on the druid-user mailing list druid-user@googlegroups.com also available at
-https://groups.google.com/forum/#!forum/druid-user.
+Community support is available on the robux-user mailing list robux-user@googlegroups.com also available at
+https://groups.google.com/forum/#!forum/robux-user.
 
-Development discussions occur on dev@druid.apache.org (archive available at
-https://lists.apache.org/list.html?dev@druid.apache.org), which you can subscribe to by emailing
-dev-subscribe@druid.apache.org.
+Development discussions occur on dev@robux.apache.org (archive available at
+https://lists.apache.org/list.html?dev@robux.apache.org), which you can subscribe to by emailing
+dev-subscribe@robux.apache.org.
 
 
 Contributing
 ------------
-If you find any bugs, please file a GitHub issue at https://github.com/apache/druid/issues.
+If you find any bugs, please file a GitHub issue at https://github.com/apache/robux/issues.
 
-If you wish to contribute, please follow the guidelines listed at https://druid.apache.org/community/.
+If you wish to contribute, please follow the guidelines listed at https://robux.apache.org/community/.

@@ -19,7 +19,7 @@
 include:
   - /cluster/Common/zk-metastore.yaml
 
-druid:
+robux:
   coordinator:
     instances:
       - port: 8081

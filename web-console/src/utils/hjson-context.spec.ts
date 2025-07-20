@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { sane } from 'druid-query-toolkit';
+import { sane } from 'robux-query-toolkit';
 
 import { getHjsonContext } from './hjson-context';
 

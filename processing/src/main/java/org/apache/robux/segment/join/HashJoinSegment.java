@@ -1,0 +1,148 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.segment.join;
+
+import org.apache.robux.java.util.common.IAE;
+import org.apache.robux.java.util.common.logger.Logger;
+import org.apache.robux.query.filter.Filter;
+import org.apache.robux.query.policy.PolicyEnforcer;
+import org.apache.robux.query.rowsandcols.CursorFactoryRowsAndColumns;
+import org.apache.robux.segment.CloseableShapeshifter;
+import org.apache.robux.segment.CursorFactory;
+import org.apache.robux.segment.Segment;
+import org.apache.robux.segment.SimpleTopNOptimizationInspector;
+import org.apache.robux.segment.TimeBoundaryInspector;
+import org.apache.robux.segment.TopNOptimizationInspector;
+import org.apache.robux.segment.WrappedTimeBoundaryInspector;
+import org.apache.robux.segment.join.filter.JoinFilterPreAnalysis;
+import org.apache.robux.timeline.SegmentId;
+import org.apache.robux.utils.CloseableUtils;
+import org.joda.time.Interval;
+
+import javax.annotation.Nullable;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * Represents a deep, left-heavy join of a left-hand side baseSegment onto a series of right-hand side clauses.
+ * <p>
+ * In other words, logically the operation is: join(join(join(baseSegment, clauses[0]), clauses[1]), clauses[2]) etc.
+ */
+public class HashJoinSegment implements Segment
+{
+  private static final Logger log = new Logger(HashJoinSegment.class);
+
+  private final Segment baseSegment;
+  private final Closeable referenceCloseable;
+
+  @Nullable
+  private final Filter baseFilter;
+  private final List<JoinableClause> clauses;
+  private final JoinFilterPreAnalysis joinFilterPreAnalysis;
+
+  /**
+   * @param baseSegment           The left-hand side base segment
+   * @param baseFilter            Filter for left-hand side base segment
+   * @param clauses               The right-hand side clauses. The caller is responsible for ensuring that there are no
+   *                              duplicate prefixes or prefixes that shadow each other across the clauses
+   * @param joinFilterPreAnalysis Pre-analysis for the query we expect to run on this segment
+   * @param referenceCloseable    Closeables for the right-hand side clauses
+   */
+  public HashJoinSegment(
+      Segment baseSegment,
+      @Nullable Filter baseFilter,
+      List<JoinableClause> clauses,
+      JoinFilterPreAnalysis joinFilterPreAnalysis,
+      Closeable referenceCloseable
+  )
+  {
+    this.baseSegment = baseSegment;
+    this.baseFilter = baseFilter;
+    this.clauses = clauses;
+    this.joinFilterPreAnalysis = joinFilterPreAnalysis;
+    this.referenceCloseable = referenceCloseable;
+
+    // Verify this virtual segment is doing something useful (otherwise it's a waste to create this object)
+    if (clauses.isEmpty() && baseFilter == null) {
+      CloseableUtils.closeAndWrapExceptions(this);
+      throw new IAE("'clauses' and 'baseFilter' are both empty, no need to create HashJoinSegment");
+    }
+  }
+
+  @Override
+  public SegmentId getId()
+  {
+    return baseSegment.getId();
+  }
+
+  @Override
+  public Interval getDataInterval()
+  {
+    // __time column will come from the baseSegment, so use its data interval.
+    return baseSegment.getDataInterval();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> T as(Class<T> clazz)
+  {
+    if (CursorFactory.class.equals(clazz)) {
+      return (T) new HashJoinSegmentCursorFactory(
+          baseSegment.as(CursorFactory.class),
+          baseFilter,
+          clauses,
+          joinFilterPreAnalysis
+      );
+    } else if (CloseableShapeshifter.class.equals(clazz)) {
+      return (T) new CursorFactoryRowsAndColumns(as(CursorFactory.class));
+    } else if (TimeBoundaryInspector.class.equals(clazz)) {
+      return (T) WrappedTimeBoundaryInspector.create(baseSegment.as(TimeBoundaryInspector.class));
+    } else if (TopNOptimizationInspector.class.equals(clazz)) {
+      // if the baseFilter is not null, then rows from underlying cursor can be potentially filtered.
+      // otherwise, a filtering inner or left join can also filter rows.
+      return (T) new SimpleTopNOptimizationInspector(
+          baseFilter == null && clauses.stream().allMatch(
+              clause -> clause.getJoinType().isLefty() || clause.getCondition().isAlwaysTrue()
+          )
+      );
+    }
+    return null;
+  }
+
+  @Override
+  public void validateOrElseThrow(PolicyEnforcer policyEnforcer)
+  {
+    baseSegment.validateOrElseThrow(policyEnforcer);
+  }
+
+  @Override
+  public String getDebugString()
+  {
+    return "join->" + baseSegment.getDebugString();
+  }
+
+  @Override
+  public void close() throws IOException
+  {
+    baseSegment.close();
+    referenceCloseable.close();
+  }
+}

@@ -58,11 +58,11 @@ export const StatusCard = React.memo(function StatusCard() {
       >
         {statusSummary && (
           <>
-            <p>{`Apache Druid is running version ${statusSummary.version}`}</p>
+            <p>{`Apache Robux is running version ${statusSummary.version}`}</p>
             <p>{`${pluralIfNeeded(statusSummary.extensionCount, 'extension')} loaded`}</p>
           </>
         )}
-        <p data-tooltip="This version of Druid only supports the SQL compliant querying mode.">
+        <p data-tooltip="This version of Robux only supports the SQL compliant querying mode.">
           SQL compliant NULL mode (built-in)
         </p>
       </HomeViewCard>

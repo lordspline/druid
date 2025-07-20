@@ -1,6 +1,6 @@
 ---
 id: k8s-jobs
-title: "MM-less Druid in K8s"
+title: "MM-less Robux in K8s"
 ---
 
 <!--
@@ -25,30 +25,30 @@ title: "MM-less Druid in K8s"
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Apache Druid Extension to enable using Kubernetes for launching and managing tasks instead of the Middle Managers.  This extension allows you to launch tasks as kubernetes jobs removing the need for your middle manager.  
+Apache Robux Extension to enable using Kubernetes for launching and managing tasks instead of the Middle Managers.  This extension allows you to launch tasks as kubernetes jobs removing the need for your middle manager.  
 
-Consider this an [EXPERIMENTAL](../experimental.md) feature mostly because it has not been tested yet on a wide variety of long-running Druid clusters.
+Consider this an [EXPERIMENTAL](../experimental.md) feature mostly because it has not been tested yet on a wide variety of long-running Robux clusters.
 
 ## How it works
 
-The K8s extension builds a pod spec for each task using the specified pod adapter. All jobs are natively restorable, they are decoupled from the Druid deployment, thus restarting pods or doing upgrades has no effect on tasks in flight.  They will continue to run and when the overlord comes back up it will start tracking them again.  
+The K8s extension builds a pod spec for each task using the specified pod adapter. All jobs are natively restorable, they are decoupled from the Robux deployment, thus restarting pods or doing upgrades has no effect on tasks in flight.  They will continue to run and when the overlord comes back up it will start tracking them again.  
 
 
 ## Configuration
 
-To use this extension please make sure to [include](../../configuration/extensions.md#loading-extensions) `druid-kubernetes-overlord-extensions` in the extensions load list for your overlord process.
+To use this extension please make sure to [include](../../configuration/extensions.md#loading-extensions) `robux-kubernetes-overlord-extensions` in the extensions load list for your overlord process.
 
-The extension uses `druid.indexer.runner.capacity` to limit the number of k8s jobs in flight. A good initial value for this would be the sum of the total task slots of all the middle managers you were running before switching to K8s based ingestion. The K8s task runner uses one thread per Job that is created, so setting this number too large can cause memory issues on the overlord. Additionally set the variable `druid.indexer.runner.namespace` to the namespace in which you are running druid.
+The extension uses `robux.indexer.runner.capacity` to limit the number of k8s jobs in flight. A good initial value for this would be the sum of the total task slots of all the middle managers you were running before switching to K8s based ingestion. The K8s task runner uses one thread per Job that is created, so setting this number too large can cause memory issues on the overlord. Additionally set the variable `robux.indexer.runner.namespace` to the namespace in which you are running robux.
 
 Other configurations required are:
-`druid.indexer.runner.type: k8s` and `druid.indexer.task.encapsulatedTask: true`
+`robux.indexer.runner.type: k8s` and `robux.indexer.task.encapsulatedTask: true`
 
 ### Dynamic config
 
-Druid operators can dynamically tune certain features within this extension. You don't need to restart the Overlord
+Robux operators can dynamically tune certain features within this extension. You don't need to restart the Overlord
 service for these changes to take effect.
 
-Druid can dynamically tune [pod template selection](#pod-template-selection), which allows you to configure the pod 
+Robux can dynamically tune [pod template selection](#pod-template-selection), which allows you to configure the pod 
 template based on the task to be run. To enable dynamic pod template selection, first configure the 
 [custom template pod adapter](#custom-template-pod-adapter).
 
@@ -65,7 +65,7 @@ Returns a JSON object with the dynamic configuration properties.
 
 ##### URL
 
-`GET` `/druid/indexer/v1/k8s/taskrunner/executionconfig`
+`GET` `/robux/indexer/v1/k8s/taskrunner/executionconfig`
 
 ##### Responses
 
@@ -88,14 +88,14 @@ Returns a JSON object with the dynamic configuration properties.
 <TabItem value="2" label="cURL">
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/k8s/taskrunner/executionconfig"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/k8s/taskrunner/executionconfig"
 ```
 </TabItem>
 
 <TabItem value="3" label="HTTP">
 
 ```HTTP
-GET /druid/indexer/v1/k8s/taskrunner/executionconfig HTTP/1.1
+GET /robux/indexer/v1/k8s/taskrunner/executionconfig HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -137,16 +137,16 @@ Updates the dynamic configuration for the Kubernetes Task Runner
 
 ##### URL
 
-`POST` `/druid/indexer/v1/k8s/taskrunner/executionconfig`
+`POST` `/robux/indexer/v1/k8s/taskrunner/executionconfig`
 
 ##### Header parameters
 
 The endpoint supports the following optional header parameters to populate the `author` and `comment` fields in the configuration history.
 
-* `X-Druid-Author`
+* `X-Robux-Author`
   * Type: String
   * Author of the configuration change.
-* `X-Druid-Comment`
+* `X-Robux-Comment`
   * Type: String
   * Description for the update.
 
@@ -172,7 +172,7 @@ The endpoint supports the following optional header parameters to populate the `
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/k8s/taskrunner/executionconfig" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/k8s/taskrunner/executionconfig" \
 --header 'Content-Type: application/json' \
 --data '{
   "type": "default",
@@ -202,7 +202,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/k8s/taskrunner/executionconf
 
 
 ```HTTP
-POST /druid/indexer/v1/k8s/taskrunner/executionconfig HTTP/1.1
+POST /robux/indexer/v1/k8s/taskrunner/executionconfig HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 
@@ -243,7 +243,7 @@ an empty array if there are no history records available.
 
 ##### URL
 
-`GET` `/druid/indexer/v1/k8s/taskrunner/executionconfig/history`
+`GET` `/robux/indexer/v1/k8s/taskrunner/executionconfig/history`
 
 ##### Query parameters
 
@@ -251,7 +251,7 @@ The endpoint supports the following optional query parameters to filter results.
 
 * `interval`
   * Type: String
-  * Limit the results to the specified time interval in ISO 8601 format delimited with `/`. For example, `2023-07-13/2023-07-19`. The default interval is one week. You can change this period by setting `druid.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Coordinator.
+  * Limit the results to the specified time interval in ISO 8601 format delimited with `/`. For example, `2023-07-13/2023-07-19`. The default interval is one week. You can change this period by setting `robux.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Coordinator.
 
 * `count`
   * Type: Integer
@@ -279,7 +279,7 @@ The endpoint supports the following optional query parameters to filter results.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/k8s/taskrunner/executionconfig/history"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/k8s/taskrunner/executionconfig/history"
 ```
 
 </TabItem>
@@ -287,7 +287,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/k8s/taskrunner/executionconf
 
 
 ```HTTP
-GET /druid/indexer/v1/k8s/taskrunner/executionconfig/history HTTP/1.1
+GET /robux/indexer/v1/k8s/taskrunner/executionconfig/history HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -320,9 +320,9 @@ Host: http://ROUTER_IP:ROUTER_PORT
 The logic defining how the pod template is built for your Kubernetes Job depends on which pod adapter you have specified.
 
 ### Overlord Single Container Pod Adapter/Overlord Multi Container Pod Adapter
-The overlord single container pod adapter takes the podSpec of your `Overlord` pod and creates a kubernetes job from this podSpec.  This is the default pod adapter implementation, to explicitly enable it you can specify the runtime property `druid.indexer.runner.k8s.adapter.type: overlordSingleContainer`
+The overlord single container pod adapter takes the podSpec of your `Overlord` pod and creates a kubernetes job from this podSpec.  This is the default pod adapter implementation, to explicitly enable it you can specify the runtime property `robux.indexer.runner.k8s.adapter.type: overlordSingleContainer`
 
-The overlord multi container pod adapter takes the podSpec of your `Overlord` pod and creates a kubernetes job from this podSpec.  It uses kubexit to manage dependency ordering between the main container that runs your druid peon and other sidecars defined in the `Overlord` pod spec. Thus if you have sidecars such as Splunk or Istio it will be able to handle them. To enable this pod adapter you can specify the runtime property `druid.indexer.runner.k8s.adapter.type: overlordMultiContainer` 
+The overlord multi container pod adapter takes the podSpec of your `Overlord` pod and creates a kubernetes job from this podSpec.  It uses kubexit to manage dependency ordering between the main container that runs your robux peon and other sidecars defined in the `Overlord` pod spec. Thus if you have sidecars such as Splunk or Istio it will be able to handle them. To enable this pod adapter you can specify the runtime property `robux.indexer.runner.k8s.adapter.type: overlordMultiContainer` 
 
 For the sidecar support to work for the multi container pod adapter, your entry point / command in docker must be explicitly defined your spec.
 
@@ -352,35 +352,35 @@ You can keep your Dockerfile the same but you must have a sidecar spec like so:
 ```
 
 For both of these adapters, you can add optional labels to your K8s jobs / pods if you need them by using the following configuration:
-`druid.indexer.runner.labels: '{"key":"value"}'`
+`robux.indexer.runner.labels: '{"key":"value"}'`
 Annotations are the same with:
-`druid.indexer.runner.annotations: '{"key":"value"}'`
+`robux.indexer.runner.annotations: '{"key":"value"}'`
 
 All other configurations you had for the middle manager tasks must be moved under the overlord with one caveat, you must specify javaOpts as an array:
-`druid.indexer.runner.javaOptsArray`, `druid.indexer.runner.javaOpts` is no longer supported.
+`robux.indexer.runner.javaOptsArray`, `robux.indexer.runner.javaOpts` is no longer supported.
 
-If you are running without a middle manager you need to also use `druid.processing.intermediaryData.storage.type=deepstore`
+If you are running without a middle manager you need to also use `robux.processing.intermediaryData.storage.type=deepstore`
 
 ### Custom Template Pod Adapter
-The custom template pod adapter allows you to specify a pod template file per task type for more flexibility on how to define your pods. This adapter expects a [Pod Template](https://kubernetes.io/docs/concepts/workloads/pods/#pod-templates) to be available on the overlord's file system. This pod template is used as the base of the pod spec for the Kubernetes Job. You can override things like labels, environment variables, resources, annotation, or even the base image with this template. To enable this pod adapter you can specify the runtime property `druid.indexer.runner.k8s.adapter.type: customTemplateAdapter`
+The custom template pod adapter allows you to specify a pod template file per task type for more flexibility on how to define your pods. This adapter expects a [Pod Template](https://kubernetes.io/docs/concepts/workloads/pods/#pod-templates) to be available on the overlord's file system. This pod template is used as the base of the pod spec for the Kubernetes Job. You can override things like labels, environment variables, resources, annotation, or even the base image with this template. To enable this pod adapter you can specify the runtime property `robux.indexer.runner.k8s.adapter.type: customTemplateAdapter`
 
-The base pod template must be specified as the runtime property `druid.indexer.runner.k8s.podTemplate.base: /path/to/basePodSpec.yaml`
+The base pod template must be specified as the runtime property `robux.indexer.runner.k8s.podTemplate.base: /path/to/basePodSpec.yaml`
 
 The below runtime properties need to be passed to the Job's peon process.
 
 ```
-druid.port=8100 (what port the peon should run on)
-druid.peon.mode=remote
-druid.service=druid/peon (for metrics reporting)
-druid.indexer.task.baseTaskDir=/druid/data (this should match the argument to the ./peon.sh run command in the PodTemplate)
-druid.indexer.runner.type=k8s
-druid.indexer.task.encapsulatedTask=true
+robux.port=8100 (what port the peon should run on)
+robux.peon.mode=remote
+robux.service=robux/peon (for metrics reporting)
+robux.indexer.task.baseTaskDir=/robux/data (this should match the argument to the ./peon.sh run command in the PodTemplate)
+robux.indexer.runner.type=k8s
+robux.indexer.task.encapsulatedTask=true
 ```
 
 #### Example 1: Using a Pod Template that retrieves values from a ConfigMap 
 
 <details>
-<summary>Example Pod Template that uses the regular druid docker image</summary>
+<summary>Example Pod Template that uses the regular robux docker image</summary>
 
 ```yaml
 apiVersion: "v1"
@@ -390,7 +390,7 @@ template:
     annotations:
       sidecar.istio.io/proxyCPU: "512m" # to handle an injected istio sidecar
     labels:
-      app.kubernetes.io/name: "druid-realtime-backend"
+      app.kubernetes.io/name: "robux-realtime-backend"
   spec:
     affinity: {}
     containers:
@@ -398,18 +398,18 @@ template:
         - sh
         - -c
         - |
-          /peon.sh /druid/data 1
+          /peon.sh /robux/data 1
       env:
       - name: CUSTOM_ENV_VARIABLE
         value: "hello"
-      image: apache/druid:{{DRUIDVERSION}}
+      image: apache/robux:{{ROBUXVERSION}}
       name: main
       ports:
       - containerPort: 8091
-        name: druid-tls-port
+        name: robux-tls-port
         protocol: TCP
       - containerPort: 8100
-        name: druid-port
+        name: robux-port
         protocol: TCP
       resources:
         limits:
@@ -419,12 +419,12 @@ template:
           cpu: "1"
           memory: 2400M
       volumeMounts:
-      - mountPath: /opt/druid/conf/druid/cluster/master/coordinator-overlord # runtime props are still mounted in this location because that's where peon.sh looks for configs
+      - mountPath: /opt/robux/conf/robux/cluster/master/coordinator-overlord # runtime props are still mounted in this location because that's where peon.sh looks for configs
         name: nodetype-config-volume
         readOnly: true
-      - mountPath: /druid/data
+      - mountPath: /robux/data
         name: data-volume
-      - mountPath: /druid/deepstorage
+      - mountPath: /robux/deepstorage
         name: deepstorage-volume
     restartPolicy: "Never"
     securityContext:
@@ -443,7 +443,7 @@ template:
     volumes:
     - configMap:
         defaultMode: 420
-        name: druid-tiny-cluster-peons-config
+        name: robux-tiny-cluster-peons-config
       name: nodetype-config-volume
     - emptyDir: {}
       name: data-volume
@@ -461,7 +461,7 @@ Any runtime property or JVM config used by the peon process can also be passed. 
 apiVersion: v1
 kind: ConfigMap
 metadata:
-    name: druid-tiny-cluster-peons-config
+    name: robux-tiny-cluster-peons-config
     namespace: default
 data:
     jvm.config: |-
@@ -471,7 +471,7 @@ data:
         -Dfile.encoding=UTF-8
         -Dlog4j.debug
         -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
-        -Djava.io.tmpdir=/druid/data
+        -Djava.io.tmpdir=/robux/data
         -Xmx1024M
         -Xms1024M
     log4j2.xml: |-
@@ -489,13 +489,13 @@ data:
             </Loggers>
         </Configuration>
     runtime.properties: |
-        druid.port=8100
-        druid.service=druid/peon
-        druid.server.http.numThreads=5
-        druid.indexer.task.baseTaskDir=/druid/data
-        druid.indexer.runner.type=k8s
-        druid.peon.mode=remote
-        druid.indexer.task.encapsulatedTask=true
+        robux.port=8100
+        robux.service=robux/peon
+        robux.server.http.numThreads=5
+        robux.indexer.task.baseTaskDir=/robux/data
+        robux.indexer.runner.type=k8s
+        robux.peon.mode=remote
+        robux.indexer.task.encapsulatedTask=true
 ```
 </details>
 
@@ -508,13 +508,13 @@ Alternatively, we can mount the ConfigMap onto Overlord services, and use the Co
 
 ```yaml
   volumeMounts:
-    - name: druid-pod-templates
+    - name: robux-pod-templates
       mountPath: /path/to/podTemplate/directory
 
   volumes:
-    - name: druid-pod-templates
+    - name: robux-pod-templates
       configMap:
-        name: druid-pod-templates
+        name: robux-pod-templates
 ```
 </details>
 
@@ -525,7 +525,7 @@ Alternatively, we can mount the ConfigMap onto Overlord services, and use the Co
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: druid-pod-templates
+  name: robux-pod-templates
 data:
   basePodSpec.yaml: |-
     apiVersion: "v1"
@@ -533,41 +533,41 @@ data:
     template:
       metadata:
         labels:
-          app.kubernetes.io/name: "druid-realtime-backend"
+          app.kubernetes.io/name: "robux-realtime-backend"
         annotations:
           sidecar.istio.io/proxyCPU: "512m"
       spec:
         containers:
         - name: main
-          image: apache/druid:{{DRUIDVERSION}}
+          image: apache/robux:{{ROBUXVERSION}}
           command:
             - sh
             - -c
             - |
-              /peon.sh /druid/data 1
+              /peon.sh /robux/data 1
           env:
-            - name: druid_port
+            - name: robux_port
               value: 8100
-            - name: druid_plaintextPort
+            - name: robux_plaintextPort
               value: 8100
-            - name: druid_tlsPort
+            - name: robux_tlsPort
               value: 8091
-            - name: druid_peon_mode
+            - name: robux_peon_mode
               value: remote
-            - name: druid_service
-              value: "druid/peon"
-            - name: druid_indexer_task_baseTaskDir
-              value: /druid/data
-            - name: druid_indexer_runner_type
+            - name: robux_service
+              value: "robux/peon"
+            - name: robux_indexer_task_baseTaskDir
+              value: /robux/data
+            - name: robux_indexer_runner_type
               value: k8s
-            - name: druid_indexer_task_encapsulatedTask
+            - name: robux_indexer_task_encapsulatedTask
               value: true
           ports:
             - containerPort: 8091
-              name: druid-tls-port
+              name: robux-tls-port
               protocol: TCP
             - containerPort: 8100
-              name: druid-port
+              name: robux-port
               protocol: TCP
           resources:
             limits:
@@ -613,25 +613,25 @@ strategy. To explicitly select this strategy, set the `podTemplateSelectStrategy
 ```
 
 Task specific pod templates can be specified as the runtime property 
-`druid.indexer.runner.k8s.podTemplate.{taskType}: /path/to/taskSpecificPodSpec.yaml` where `{taskType}` is the name of the
+`robux.indexer.runner.k8s.podTemplate.{taskType}: /path/to/taskSpecificPodSpec.yaml` where `{taskType}` is the name of the
 task type. For example, `index_parallel`.
 
 If you are trying to use the default image's environment variable parsing feature to set runtime properties, you need to add an extra escape underscore when specifying pod templates.
-For example, set the environment variable `druid_indexer_runner_k8s_podTemplate_index__kafka` when you set the runtime property `druid.indexer.runner.k8s.podTemplate.index_kafka`
+For example, set the environment variable `robux_indexer_runner_k8s_podTemplate_index__kafka` when you set the runtime property `robux.indexer.runner.k8s.podTemplate.index_kafka`
 
 
 The following example shows a configuration for task-based pod template selection:
 
 ```properties
-druid.indexer.runner.k8s.podTemplate.base=/path/to/basePodSpec.yaml
-druid.indexer.runner.k8s.podTemplate.index_kafka=/path/to/kafkaPodSpec.yaml
+robux.indexer.runner.k8s.podTemplate.base=/path/to/basePodSpec.yaml
+robux.indexer.runner.k8s.podTemplate.index_kafka=/path/to/kafkaPodSpec.yaml
 ```
 
 ##### Select based on one or more conditions
 
 The `SelectorBasedPodTemplateSelectStrategy` strategy evaluates a series of criteria within `selectors` to determine
 which pod template to use to run the task. Pod  templates are configured in the runtime properties like
-`druid.indexer.runner.k8s.podTemplate.<selectionKey>=...`.
+`robux.indexer.runner.k8s.podTemplate.<selectionKey>=...`.
 
 ```json
 {
@@ -653,7 +653,7 @@ which pod template to use to run the task. Pod  templates are configured in the 
 }
 ```
 
-Selectors are processed in order. Druid selects the template based on the first matching selector. If a  task does not
+Selectors are processed in order. Robux selects the template based on the first matching selector. If a  task does not
 match any selector in the list, it will use the `base` pod template.
 
 For a task to match a selector, all the conditions within the selector must match. A selector can match on
@@ -663,12 +663,12 @@ For a task to match a selector, all the conditions within the selector must matc
 
 ##### Example
 
-Set the following runtime properties to define the pod specs that can be used by Druid.
+Set the following runtime properties to define the pod specs that can be used by Robux.
 
 ```properties
-druid.indexer.runner.k8s.podTemplate.base=/path/to/basePodSpec.yaml
-druid.indexer.runner.k8s.podTemplate.podSpec1=/path/to/podSpecWithHighMemRequests.yaml
-druid.indexer.runner.k8s.podTemplate.podSpec2=/path/to/podSpecWithLowCpuRequests.yaml
+robux.indexer.runner.k8s.podTemplate.base=/path/to/basePodSpec.yaml
+robux.indexer.runner.k8s.podTemplate.podSpec1=/path/to/podSpecWithHighMemRequests.yaml
+robux.indexer.runner.k8s.podTemplate.podSpec2=/path/to/podSpecWithLowCpuRequests.yaml
 ```
 
 Set the dynamic execution config to define the pod template selection strategy.
@@ -693,7 +693,7 @@ Set the dynamic execution config to define the pod template selection strategy.
 }
 ```
 
-Druid selects the pod templates as follows: 
+Robux selects the pod templates as follows: 
 1. Use `podSpecWithHighMemRequests.yaml` when both of the following conditions are met:
    1. The task context contains a tag with the key `userProvidedTag` that has the value `tag1` or `tag2`.
    2. The task targets the `wikipedia` datasource.
@@ -701,7 +701,7 @@ Druid selects the pod templates as follows:
 3. Use the `basePodSpec.yaml` for all other tasks.
 
 In this example, if there is an `index_kafka` task for the `wikipedia` datasource with the tag `userProvidedTag: tag1`,
-Druid selects the pod template `podSpecWithHighMemRequests.yaml`.
+Robux selects the pod template `podSpecWithHighMemRequests.yaml`.
 
 In the above example, for selection key `podSpec1` we didn't specify task `type`. This is equivalent to setting `type` to `null` or an empty array.
 All three examples below are equivalent.
@@ -735,29 +735,29 @@ All three examples below are equivalent.
     }
     ```
 
-In all the above cases, Druid will match the selector to any value of task type. Druid applies similar logic for `dataSource`. For `context.tags` setting `null` or an empty object `{}` is equivalent. 
+In all the above cases, Robux will match the selector to any value of task type. Robux applies similar logic for `dataSource`. For `context.tags` setting `null` or an empty object `{}` is equivalent. 
 
 #### Running Task Pods in Another Namespace
 
-It is possible to run task pods in a different namespace from the rest of your Druid cluster.
+It is possible to run task pods in a different namespace from the rest of your Robux cluster.
 
-If you are running multiple Druid clusters and would like to have a dedicated namespace for all your task pods, you can make the following changes to the runtime properties for your Overlord deployment:
+If you are running multiple Robux clusters and would like to have a dedicated namespace for all your task pods, you can make the following changes to the runtime properties for your Overlord deployment:
 
-- `druid.indexer.runner.namespace`: The namespace where the task pods will run. It can be the same as the namespace where your Druid cluster is deployed, or different from it. In the latter case, you need to define the following `overlordNamespace`.
-- `druid.indexer.runner.overlordNamespace`: The namespace where the Overlord resides. This must be defined when tasks are scheduled in different namespace.
-- `druid.indexer.runner.k8sTaskPodNamePrefix` (Optional):  Self-defined field to differentiate which task pods are created from which namespace. More information [here](#differentiating-task-pods-created-from-multiple-namespaces).
+- `robux.indexer.runner.namespace`: The namespace where the task pods will run. It can be the same as the namespace where your Robux cluster is deployed, or different from it. In the latter case, you need to define the following `overlordNamespace`.
+- `robux.indexer.runner.overlordNamespace`: The namespace where the Overlord resides. This must be defined when tasks are scheduled in different namespace.
+- `robux.indexer.runner.k8sTaskPodNamePrefix` (Optional):  Self-defined field to differentiate which task pods are created from which namespace. More information [here](#differentiating-task-pods-created-from-multiple-namespaces).
 
-Warning: When `druid.indexer.runner.overlordNamespace` and `druid.indexer.runner.k8sTaskPodNamePrefix` is configured, users should ensure that all running tasks are stopped when changing these values. Failure to do so will cause the Overlord to lose track of running tasks, and re-launch them. This may lead to duplicate data and possibly metadata inconsistency issues.
+Warning: When `robux.indexer.runner.overlordNamespace` and `robux.indexer.runner.k8sTaskPodNamePrefix` is configured, users should ensure that all running tasks are stopped when changing these values. Failure to do so will cause the Overlord to lose track of running tasks, and re-launch them. This may lead to duplicate data and possibly metadata inconsistency issues.
 
-Druid will tag Kubernetes jobs with a `druid.overlord.namespace` label. This label helps Druid filter out Kubernetes jobs belonging to other namespaces. Should you need to deploy a Druid cluster on a namespace `N1` that is already running tasks from another namespace `N2`, take note to set `druid.indexer.runner.overlordNamespace` to `druid.indexer.runner.namespace` (which is `N1`). Failure to do so will result in the cluster in `N1` detecting task pods created from both `N1` and `N2`.
+Robux will tag Kubernetes jobs with a `robux.overlord.namespace` label. This label helps Robux filter out Kubernetes jobs belonging to other namespaces. Should you need to deploy a Robux cluster on a namespace `N1` that is already running tasks from another namespace `N2`, take note to set `robux.indexer.runner.overlordNamespace` to `robux.indexer.runner.namespace` (which is `N1`). Failure to do so will result in the cluster in `N1` detecting task pods created from both `N1` and `N2`.
 
 ##### Differentiating Task Pods Created From Multiple Namespaces
 
-When we have task pods started by Overlord servers of different Druid clusters, running in different K8S namespaces, it will be difficult to tell which task pods are being started by which overlord or Druid cluster. You can specify a task name prefix, `druid.indexer.runner.k8sTaskPodNamePrefix`, to apply your specified prefix to all task pods created by your cluster.
+When we have task pods started by Overlord servers of different Robux clusters, running in different K8S namespaces, it will be difficult to tell which task pods are being started by which overlord or Robux cluster. You can specify a task name prefix, `robux.indexer.runner.k8sTaskPodNamePrefix`, to apply your specified prefix to all task pods created by your cluster.
 
 After configuration, you can witness the change from `coordinatorissuedcompactdataso-0e74d5132781cc950eecf04--1-vbx6t` to `yourtaskprefix-0e74d5132781cc950eecf04--1-vbx6t` by either doing `kubectl get pods` or by viewing the "Location" column under the web console.
 
-When configuring the `druid.indexer.runner.k8sTaskPodNamePrefix`, you should note that:
+When configuring the `robux.indexer.runner.k8sTaskPodNamePrefix`, you should note that:
 - The prefix will cut off at 30 characters, as the task pod names must respect a character limit of 63 in Kubernetes.
 - Special characters `: - . _` will be ignored.
 - The prefix will be converted to lowercase.
@@ -765,7 +765,7 @@ When configuring the `druid.indexer.runner.k8sTaskPodNamePrefix`, you should not
 
 ##### Dealing with ZooKeeper Problems
 
-Ensure that when you are running task pods in another namespace, your task pods are able to communicate with ZooKeeper which might be deployed in the same namespace with overlord. If you are using custom pod templates as described below, you can configure `druid.zk.service.host` to your tasks.
+Ensure that when you are running task pods in another namespace, your task pods are able to communicate with ZooKeeper which might be deployed in the same namespace with overlord. If you are using custom pod templates as described below, you can configure `robux.zk.service.host` to your tasks.
 
 ##### Dealing with Permissions
 
@@ -774,26 +774,26 @@ Should you require the needed permissions for interacting across Kubernetes name
 ### Properties
 | Property | Possible Values | Description | Default | Required |
 | --- | --- | --- | --- | --- |
-| `druid.indexer.runner.namespace` | `String` | If Overlord and task pods are running in different namespaces, specify the Overlord namespace. | - | Yes |
-| `druid.indexer.runner.overlordNamespace` | `String` | Only applicable when using Custom Template Pod Adapter. If Overlord and task pods are running in different namespaces, specify the Overlord namespace. <br /> Warning: You need to stop all running tasks in Druid to change this property. Failure to do so will lead to duplicate data and metadata inconsistencies. | `""` | No |
-| `druid.indexer.runner.k8sTaskPodNamePrefix` | `String` |  Use this if you want to change your task name to contain a more human-readable prefix. Maximum 30 characters. Special characters `: - . _` will be ignored. <br /> Warning: You need to stop all running tasks in Druid to change this property. Failure to do so will lead to duplicate data and metadata inconsistencies. | `""` | No |
-| `druid.indexer.runner.debugJobs` | `boolean` | Boolean flag used to disable clean up of K8s jobs after tasks complete. | False | No |
-| `druid.indexer.runner.sidecarSupport` | `boolean` | Deprecated, specify adapter type as runtime property `druid.indexer.runner.k8s.adapter.type: overlordMultiContainer` instead. If your overlord pod has sidecars, this will attempt to start the task with the same sidecars as the overlord pod. | False | No |
-| `druid.indexer.runner.primaryContainerName` | `String` | If running with sidecars, the `primaryContainerName` should be that of your druid container like `druid-overlord`. | First container in `podSpec` list | No |
-| `druid.indexer.runner.kubexitImage` | `String` | Used kubexit project to help shutdown sidecars when the main pod completes. Otherwise, jobs with sidecars never terminate. | karlkfi/kubexit:latest | No |
-| `druid.indexer.runner.disableClientProxy` | `boolean` | Use this if you have a global http(s) proxy and you wish to bypass it. | false | No |
-| `druid.indexer.runner.maxTaskDuration` | `Duration` | Max time a task is allowed to run for before getting killed. | `PT4H` | No |
-| `druid.indexer.runner.taskCleanupDelay` | `Duration` | How long do jobs stay around before getting reaped from K8s. | `P2D` | No |
-| `druid.indexer.runner.taskCleanupInterval` | `Duration` | How often to check for jobs to be reaped. | `PT10M` | No |
-| `druid.indexer.runner.taskJoinTimeout` | `Duration` | Timeout for gathering metadata about existing tasks on startup. | `PT1M` | No |
-| `druid.indexer.runner.k8sjobLaunchTimeout` | `Duration` | How long to wait to launch a K8s task before marking it as failed, on a resource constrained cluster it may take some time. | `PT1H` | No |
-| `druid.indexer.runner.javaOptsArray` | `JsonArray` | java opts for the task. | `-Xmx1g` | No |
-| `druid.indexer.runner.labels` | `JsonObject` | Additional labels you want to add to peon pod. | `{}` | No |
-| `druid.indexer.runner.annotations` | `JsonObject` | Additional annotations you want to add to peon pod. | `{}` | No |
-| `druid.indexer.runner.peonMonitors` | `JsonArray` | Overrides `druid.monitoring.monitors`. Use this property if you don't want to inherit monitors from the Overlord. | `[]` | No |
-| `druid.indexer.runner.graceTerminationPeriodSeconds` | `Long` | Number of seconds you want to wait after a sigterm for container lifecycle hooks to complete. Keep at a smaller value if you want tasks to hold locks for shorter periods. | `PT30S` (K8s default) | No |
-| `druid.indexer.runner.capacity` | `Integer` | Number of concurrent jobs that can be sent to Kubernetes. | `2147483647` | No |
-| `druid.indexer.runner.cpuCoreInMicro` | `Integer` | Number of CPU micro core for the task. | `1000` | No |
+| `robux.indexer.runner.namespace` | `String` | If Overlord and task pods are running in different namespaces, specify the Overlord namespace. | - | Yes |
+| `robux.indexer.runner.overlordNamespace` | `String` | Only applicable when using Custom Template Pod Adapter. If Overlord and task pods are running in different namespaces, specify the Overlord namespace. <br /> Warning: You need to stop all running tasks in Robux to change this property. Failure to do so will lead to duplicate data and metadata inconsistencies. | `""` | No |
+| `robux.indexer.runner.k8sTaskPodNamePrefix` | `String` |  Use this if you want to change your task name to contain a more human-readable prefix. Maximum 30 characters. Special characters `: - . _` will be ignored. <br /> Warning: You need to stop all running tasks in Robux to change this property. Failure to do so will lead to duplicate data and metadata inconsistencies. | `""` | No |
+| `robux.indexer.runner.debugJobs` | `boolean` | Boolean flag used to disable clean up of K8s jobs after tasks complete. | False | No |
+| `robux.indexer.runner.sidecarSupport` | `boolean` | Deprecated, specify adapter type as runtime property `robux.indexer.runner.k8s.adapter.type: overlordMultiContainer` instead. If your overlord pod has sidecars, this will attempt to start the task with the same sidecars as the overlord pod. | False | No |
+| `robux.indexer.runner.primaryContainerName` | `String` | If running with sidecars, the `primaryContainerName` should be that of your robux container like `robux-overlord`. | First container in `podSpec` list | No |
+| `robux.indexer.runner.kubexitImage` | `String` | Used kubexit project to help shutdown sidecars when the main pod completes. Otherwise, jobs with sidecars never terminate. | karlkfi/kubexit:latest | No |
+| `robux.indexer.runner.disableClientProxy` | `boolean` | Use this if you have a global http(s) proxy and you wish to bypass it. | false | No |
+| `robux.indexer.runner.maxTaskDuration` | `Duration` | Max time a task is allowed to run for before getting killed. | `PT4H` | No |
+| `robux.indexer.runner.taskCleanupDelay` | `Duration` | How long do jobs stay around before getting reaped from K8s. | `P2D` | No |
+| `robux.indexer.runner.taskCleanupInterval` | `Duration` | How often to check for jobs to be reaped. | `PT10M` | No |
+| `robux.indexer.runner.taskJoinTimeout` | `Duration` | Timeout for gathering metadata about existing tasks on startup. | `PT1M` | No |
+| `robux.indexer.runner.k8sjobLaunchTimeout` | `Duration` | How long to wait to launch a K8s task before marking it as failed, on a resource constrained cluster it may take some time. | `PT1H` | No |
+| `robux.indexer.runner.javaOptsArray` | `JsonArray` | java opts for the task. | `-Xmx1g` | No |
+| `robux.indexer.runner.labels` | `JsonObject` | Additional labels you want to add to peon pod. | `{}` | No |
+| `robux.indexer.runner.annotations` | `JsonObject` | Additional annotations you want to add to peon pod. | `{}` | No |
+| `robux.indexer.runner.peonMonitors` | `JsonArray` | Overrides `robux.monitoring.monitors`. Use this property if you don't want to inherit monitors from the Overlord. | `[]` | No |
+| `robux.indexer.runner.graceTerminationPeriodSeconds` | `Long` | Number of seconds you want to wait after a sigterm for container lifecycle hooks to complete. Keep at a smaller value if you want tasks to hold locks for shorter periods. | `PT30S` (K8s default) | No |
+| `robux.indexer.runner.capacity` | `Integer` | Number of concurrent jobs that can be sent to Kubernetes. | `2147483647` | No |
+| `robux.indexer.runner.cpuCoreInMicro` | `Integer` | Number of CPU micro core for the task. | `1000` | No |
 
 ### Metrics added
 
@@ -803,7 +803,7 @@ Should you require the needed permissions for interacting across Kubernetes name
 
 ### Gotchas
 
-- With the exception of task pods, all Druid Pods belonging to one Druid cluster must be inside the same Kubernetes namespace.
+- With the exception of task pods, all Robux Pods belonging to one Robux cluster must be inside the same Kubernetes namespace.
 
 - You must have a role binding for the overlord's service account that provides the needed permissions for interacting with Kubernetes. An example spec could be:
 
@@ -811,8 +811,8 @@ Should you require the needed permissions for interacting across Kubernetes name
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  namespace: <druid-namespace>
-  name: druid-k8s-task-scheduler
+  namespace: <robux-namespace>
+  name: robux-k8s-task-scheduler
 rules:
   - apiGroups: ["batch"]
     resources: ["jobs"]
@@ -824,35 +824,35 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: druid-k8s-binding
-  namespace: <druid-namespace>
+  name: robux-k8s-binding
+  namespace: <robux-namespace>
 subjects:
   - kind: ServiceAccount
-    name: <druid-overlord-k8s-service-account>
-    namespace: <druid-namespace>
+    name: <robux-overlord-k8s-service-account>
+    namespace: <robux-namespace>
 roleRef:
   kind: Role
-  name: druid-k8s-task-scheduler
+  name: robux-k8s-task-scheduler
   apiGroup: rbac.authorization.k8s.io
 ```
 
 ## Migration/Kubernetes and Worker Task Runner
 :::info
-This feature is only available starting in Druid 28. If you require a rolling update to enable Kubernetes-based ingestion, first update your cluster to Druid 28 then apply the overlord configurations mentioned in this section.
+This feature is only available starting in Robux 28. If you require a rolling update to enable Kubernetes-based ingestion, first update your cluster to Robux 28 then apply the overlord configurations mentioned in this section.
 :::
 
 If you are running a cluster with tasks running on middle managers or indexers and want to do a zero downtime migration to mm-less ingestion, the mm-less ingestion system is capable of running in migration mode by reading tasks from middle managers/indexers and Kubernetes and writing tasks to either middle managers or to Kubernetes.
 
 To do this, set the following property.
-`druid.indexer.runner.type: k8sAndWorker` (instead of `druid.indexer.runner.type: k8s`)
+`robux.indexer.runner.type: k8sAndWorker` (instead of `robux.indexer.runner.type: k8s`)
 
 ### Additional Configurations
 
 |Property| Possible Values |Description|Default|required|
 |--------|-----------------|-----------|-------|--------|
-|`druid.indexer.runner.k8sAndWorker.runnerStrategy.type`| `String` (e.g., `k8s`, `worker`, `taskType`)| Defines the strategy for task runner selection. |`k8s`|No|
-|`druid.indexer.runner.k8sAndWorker.runnerStrategy.workerType`| `String` (e.g., `httpRemote`, `remote`)| Specifies the variant of the worker task runner to be utilized.|`httpRemote`|No|
+|`robux.indexer.runner.k8sAndWorker.runnerStrategy.type`| `String` (e.g., `k8s`, `worker`, `taskType`)| Defines the strategy for task runner selection. |`k8s`|No|
+|`robux.indexer.runner.k8sAndWorker.runnerStrategy.workerType`| `String` (e.g., `httpRemote`, `remote`)| Specifies the variant of the worker task runner to be utilized.|`httpRemote`|No|
 | **For `taskType` runner strategy:**|||||
-|`druid.indexer.runner.k8sAndWorker.runnerStrategy.taskType.default`| `String` (e.g., `k8s`, `worker`) | Specifies the default runner to use if no overrides apply. This setting ensures there is always a fallback runner available.|None|No|
-|`druid.indexer.runner.k8sAndWorker.runnerStrategy.taskType.overrides`| `JsonObject`(e.g., `{"index_kafka": "worker"}`)| Defines task-specific overrides for runner types. Each entry sets a task type to a specific runner, allowing fine control. |`{}`|No|
+|`robux.indexer.runner.k8sAndWorker.runnerStrategy.taskType.default`| `String` (e.g., `k8s`, `worker`) | Specifies the default runner to use if no overrides apply. This setting ensures there is always a fallback runner available.|None|No|
+|`robux.indexer.runner.k8sAndWorker.runnerStrategy.taskType.overrides`| `JsonObject`(e.g., `{"index_kafka": "worker"}`)| Defines task-specific overrides for runner types. Each entry sets a task type to a specific runner, allowing fine control. |`{}`|No|
 

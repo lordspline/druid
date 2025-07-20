@@ -24,8 +24,8 @@ sidebar_label: Known issues
   -->
 
 :::info
- This page describes SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md)
- extension, new in Druid 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
+ This page describes SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md)
+ extension, new in Robux 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
  ingestion method is right for you.
 :::
 
@@ -33,7 +33,7 @@ sidebar_label: Known issues
 
 - Fault tolerance is partially implemented. Workers get relaunched when they are killed unexpectedly. The controller does not get relaunched if it is killed unexpectedly.
 
-- Worker task stage outputs are stored in the working directory given by `druid.indexer.task.baseDir`. Stages that
+- Worker task stage outputs are stored in the working directory given by `robux.indexer.task.baseDir`. Stages that
 generate a large amount of output data may exhaust all available disk space. In this case, the query fails with
 an [UnknownError](./reference.md#error-codes) with a message including "No space left on device".
 
@@ -61,7 +61,7 @@ properties, and the `indexSpec` [`tuningConfig`](../ingestion/ingestion-spec.md#
 
 - `EXTERN` with input sources that match large numbers of files may exhaust available memory on the controller task.
 
-- `EXTERN` refers to external files. Use `FROM` to access `druid` input sources.
+- `EXTERN` refers to external files. Use `FROM` to access `robux` input sources.
 
 ## `WINDOW` Function
 

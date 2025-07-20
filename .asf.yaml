@@ -1,8 +1,8 @@
 # note: documentation can be found here https://cwiki.apache.org/confluence/display/INFRA/Git+-+.asf.yaml+features
 
 github:
-  description: 'Apache Druid: a high performance real-time analytics database.'
-  homepage: https://druid.apache.org/
+  description: 'Apache Robux: a high performance real-time analytics database.'
+  homepage: https://robux.apache.org/
 
   # Attempt to make the auto-generated github emails more easily readable in email clients.
   # Configuration adapted from https://github.com/apache/plc4x/blob/develop/.asf.yaml.
@@ -26,9 +26,9 @@ github:
     delete_comment_discussion: "Re: [D] {title} ({repository})"
 
 notifications:
-  commits: commits@druid.apache.org
-  issues: commits@druid.apache.org
-  discussions: commits@druid.apache.org
-  pullrequests_status: commits@druid.apache.org
-  pullrequests_comment: commits@druid.apache.org
-  pullrequests_bot_dependabot: commits@druid.apache.org
+  commits: commits@robux.apache.org
+  issues: commits@robux.apache.org
+  discussions: commits@robux.apache.org
+  pullrequests_status: commits@robux.apache.org
+  pullrequests_comment: commits@robux.apache.org
+  pullrequests_bot_dependabot: commits@robux.apache.org

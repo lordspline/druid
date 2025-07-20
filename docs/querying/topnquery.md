@@ -24,15 +24,15 @@ sidebar_label: "TopN"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes a query
- type in the native language. For information about when Druid SQL will use this query type, refer to the
+ type in the native language. For information about when Robux SQL will use this query type, refer to the
  [SQL documentation](sql-translation.md#query-types).
 :::
 
-Apache Druid TopN queries return a sorted set of results for the values in a given dimension according to some criteria. Conceptually, they can be thought of as an approximate [GroupByQuery](../querying/groupbyquery.md) over a single dimension with an [Ordering](../querying/limitspec.md) spec. TopNs are much faster and resource efficient than GroupBys for this use case. These types of queries take a topN query object and return an array of JSON objects where each object represents a value asked for by the topN query.
+Apache Robux TopN queries return a sorted set of results for the values in a given dimension according to some criteria. Conceptually, they can be thought of as an approximate [GroupByQuery](../querying/groupbyquery.md) over a single dimension with an [Ordering](../querying/limitspec.md) spec. TopNs are much faster and resource efficient than GroupBys for this use case. These types of queries take a topN query object and return an array of JSON objects where each object represents a value asked for by the topN query.
 
-TopNs are approximate in that each data process will rank their top K results and only return those top K results to the Broker. K, by default in Druid, is `max(1000, threshold)`.
+TopNs are approximate in that each data process will rank their top K results and only return those top K results to the Broker. K, by default in Robux, is `max(1000, threshold)`.
 
 A topN query object looks like:
 
@@ -100,7 +100,7 @@ There are 11 parts to a topN query.
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "topN"; this is the first thing Druid looks at to figure out how to interpret the query|yes|
+|queryType|This String should always be "topN"; this is the first thing Robux looks at to figure out how to interpret the query|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../querying/datasource.md) for more information.|yes|
 |intervals|A JSON Object representing ISO-8601 Intervals. This defines the time ranges to run the query over.|yes|
 |granularity|Defines the granularity to bucket query results. See [Granularities](../querying/granularities.md)|yes|
@@ -171,7 +171,7 @@ See [Multi-value dimensions](multi-value-dimensions.md) for more details.
 
 The current TopN algorithm is an approximate algorithm. The top 1000 local results from each segment are returned for merging to determine the global topN. As such, the topN algorithm is approximate in both rank and results. Approximate results *ONLY APPLY WHEN THERE ARE MORE THAN 1000 DIM VALUES*. A topN over a dimension with fewer than 1000 unique dimension values can be considered accurate in rank and accurate in aggregates.
 
-The threshold can be modified from its default 1000 via the server parameter `druid.query.topN.minTopNThreshold`, which needs a restart of the servers to take effect, or via `minTopNThreshold` in the query context, which takes effect per query.
+The threshold can be modified from its default 1000 via the server parameter `robux.query.topN.minTopNThreshold`, which needs a restart of the servers to take effect, or via `minTopNThreshold` in the query context, which takes effect per query.
 
 If you are wanting the top 100 of a high cardinality, uniformly distributed dimension ordered by some low-cardinality, uniformly distributed dimension, you are potentially going to get aggregates back that are missing data.
 

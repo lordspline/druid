@@ -58,10 +58,10 @@ tar -xzf /tmp/kafka_2.13-$KAFKA_VERSION.tgz -C /usr/local
 ln -s /usr/local/kafka_2.13-$KAFKA_VERSION /usr/local/kafka
 rm /tmp/kafka_2.13-$KAFKA_VERSION.tgz
 
-# Druid system user
-adduser --system --group --no-create-home druid \
-  && mkdir -p /var/lib/druid \
-  && chown druid:druid /var/lib/druid
+# Robux system user
+adduser --system --group --no-create-home robux \
+  && mkdir -p /var/lib/robux \
+  && chown robux:robux /var/lib/robux
 
 # clean up time
 apt-get clean \

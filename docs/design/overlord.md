@@ -27,11 +27,11 @@ sidebar_label: "Overlord"
 The Overlord service is responsible for accepting tasks, coordinating task distribution, creating locks around tasks, and returning statuses to callers. The Overlord can be configured to run in one of two modes - local or remote (local being default).
 In local mode, the Overlord is also responsible for creating Peons for executing tasks. When running the Overlord in local mode, all Middle Manager and Peon configurations must be provided as well.
 Local mode is typically used for simple workflows. In remote mode, the Overlord and Middle Manager are run in separate services and you can run each on a different server.
-This mode is recommended if you intend to use the indexing service as the single endpoint for all Druid indexing.
+This mode is recommended if you intend to use the indexing service as the single endpoint for all Robux indexing.
 
 ## Configuration
 
-For Apache Druid Overlord service configuration, see [Overlord Configuration](../configuration/index.md#overlord).
+For Apache Robux Overlord service configuration, see [Overlord Configuration](../configuration/index.md#overlord).
 
 For basic tuning guidance for the Overlord service, see [Basic cluster tuning](../operations/basic-cluster-tuning.md#overlord).
 
@@ -46,10 +46,10 @@ If a Middle Manager has task failures above a threshold, the Overlord will black
 The following variables can be used to set the threshold and blacklist timeouts.
 
 ```
-druid.indexer.runner.maxRetriesBeforeBlacklist
-druid.indexer.runner.workerBlackListBackoffTime
-druid.indexer.runner.workerBlackListCleanupPeriod
-druid.indexer.runner.maxPercentageBlacklistWorkers
+robux.indexer.runner.maxRetriesBeforeBlacklist
+robux.indexer.runner.workerBlackListBackoffTime
+robux.indexer.runner.workerBlackListCleanupPeriod
+robux.indexer.runner.maxPercentageBlacklistWorkers
 ```
 
 ## Autoscaling

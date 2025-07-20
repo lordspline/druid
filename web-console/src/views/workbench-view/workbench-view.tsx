@@ -28,25 +28,25 @@ import {
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
-import type { SqlQuery } from 'druid-query-toolkit';
-import { SqlExpression } from 'druid-query-toolkit';
+import type { SqlQuery } from 'robux-query-toolkit';
+import { SqlExpression } from 'robux-query-toolkit';
 import React from 'react';
 
 import { MenuCheckbox, SplitterLayout } from '../../components';
 import { SpecDialog, StringInputDialog } from '../../dialogs';
 import type {
   CapacityInfo,
-  DruidEngine,
+  RobuxEngine,
   Execution,
   QueryContext,
   QueryWithContext,
   TabEntry,
-} from '../../druid-models';
+} from '../../robux-models';
 import {
   DEFAULT_SERVER_QUERY_CONTEXT,
   guessDataSourceNameFromInputSource,
   WorkbenchQuery,
-} from '../../druid-models';
+} from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import { convertSpecToSql, getSpecDatasourceName, getTaskExecution } from '../../helpers';
 import { getLink } from '../../links';
@@ -63,7 +63,7 @@ import {
   LocalStorageKeys,
   localStorageSet,
   localStorageSetJson,
-  queryDruidSql,
+  queryRobuxSql,
   QueryManager,
   QueryState,
 } from '../../utils';
@@ -113,7 +113,7 @@ type MoreMenuItem =
   | 'convert-ingestion-to-sql'
   | 'attach-tab-from-task-id'
   | 'open-query-detail-archive'
-  | 'druid-sql-documentation'
+  | 'robux-sql-documentation'
   | 'load-demo-queries';
 
 export interface WorkbenchViewProps
@@ -129,17 +129,17 @@ export interface WorkbenchViewProps
   defaultQueryContext?: QueryContext;
   mandatoryQueryContext?: QueryContext;
   serverQueryContext?: QueryContext;
-  queryEngines: DruidEngine[];
-  hiddenMoreMenuItems?: MoreMenuItem[] | ((engine: DruidEngine) => MoreMenuItem[]);
+  queryEngines: RobuxEngine[];
+  hiddenMoreMenuItems?: MoreMenuItem[] | ((engine: RobuxEngine) => MoreMenuItem[]);
   goToTask(taskId: string): void;
   getClusterCapacity: (() => Promise<CapacityInfo | undefined>) | undefined;
   hideToolbar?: boolean;
   maxTasksOptions?:
     | QueryTabProps['maxTasksOptions']
-    | ((engine: DruidEngine) => QueryTabProps['maxTasksOptions']);
+    | ((engine: RobuxEngine) => QueryTabProps['maxTasksOptions']);
   hiddenOptions?:
     | QueryTabProps['hiddenOptions']
-    | ((engine: DruidEngine) => QueryTabProps['hiddenOptions']);
+    | ((engine: RobuxEngine) => QueryTabProps['hiddenOptions']);
 }
 
 export interface WorkbenchViewState {
@@ -221,7 +221,7 @@ export class WorkbenchView extends React.PureComponent<WorkbenchViewProps, Workb
   componentDidMount(): void {
     this.metadataQueryManager = new QueryManager({
       processQuery: async (_, cancelToken) => {
-        return await queryDruidSql<ColumnMetadata>(
+        return await queryRobuxSql<ColumnMetadata>(
           {
             query: `SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS`,
           },
@@ -837,10 +837,10 @@ export class WorkbenchView extends React.PureComponent<WorkbenchViewProps, Workb
                 </>
               )}
               <MenuDivider />
-              {!hiddenMoreMenuItems.includes('druid-sql-documentation') && (
+              {!hiddenMoreMenuItems.includes('robux-sql-documentation') && (
                 <MenuItem
                   icon={IconNames.HELP}
-                  text="DruidSQL documentation"
+                  text="RobuxSQL documentation"
                   href={getLink('DOCS_SQL')}
                   target="_blank"
                 />
@@ -949,7 +949,7 @@ export class WorkbenchView extends React.PureComponent<WorkbenchViewProps, Workb
                 columnMetadata={columnMetadataState.getSomeData()}
                 columnMetadataLoading={columnMetadataState.loading}
                 onQueryChange={this.handleSqlQueryChange}
-                defaultSchema={defaultSchema ? defaultSchema : 'druid'}
+                defaultSchema={defaultSchema ? defaultSchema : 'robux'}
                 defaultTables={defaultTables}
                 defaultWhere={LAST_DAY}
                 highlightTable={undefined}

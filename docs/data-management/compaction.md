@@ -23,7 +23,7 @@ description: "Defines compaction and automatic compaction (auto-compaction or au
   ~ under the License.
   -->
   
-Query performance in Apache Druid depends on optimally sized segments. Compaction is one strategy you can use to optimize segment size for your Druid database. Compaction tasks read an existing set of segments for a given time interval and combine the data into a new "compacted" set of segments. In some cases the compacted segments are larger, but there are fewer of them. In other cases the compacted segments may be smaller. Compaction tends to increase performance because optimized segments require less per-segment processing and less memory overhead for ingestion and for querying paths.
+Query performance in Apache Robux depends on optimally sized segments. Compaction is one strategy you can use to optimize segment size for your Robux database. Compaction tasks read an existing set of segments for a given time interval and combine the data into a new "compacted" set of segments. In some cases the compacted segments are larger, but there are fewer of them. In other cases the compacted segments may be smaller. Compaction tends to increase performance because optimized segments require less per-segment processing and less memory overhead for ingestion and for querying paths.
 
 ## Compaction guidelines
 
@@ -61,9 +61,9 @@ See [Setting up a manual compaction task](./manual-compaction.md#setting-up-manu
 
 ## Data handling with compaction
 
-During compaction, Druid overwrites the original set of segments with the compacted set. Druid also locks the segments for the time interval being compacted to ensure data consistency. By default, compaction tasks do not modify the underlying data. You can configure the compaction task to change the query granularity or add or remove dimensions in the compaction task. This means that the only changes to query results should be the result of intentional, not automatic, changes.
+During compaction, Robux overwrites the original set of segments with the compacted set. Robux also locks the segments for the time interval being compacted to ensure data consistency. By default, compaction tasks do not modify the underlying data. You can configure the compaction task to change the query granularity or add or remove dimensions in the compaction task. This means that the only changes to query results should be the result of intentional, not automatic, changes.
 
-You can set `dropExisting` in `ioConfig` to "true" in the compaction task to configure Druid to replace all existing segments fully contained by the interval. See the suggestion for reindexing with finer granularity under [Implementation considerations](../ingestion/native-batch.md#implementation-considerations) for an example.
+You can set `dropExisting` in `ioConfig` to "true" in the compaction task to configure Robux to replace all existing segments fully contained by the interval. See the suggestion for reindexing with finer granularity under [Implementation considerations](../ingestion/native-batch.md#implementation-considerations) for an example.
 :::info
  WARNING: `dropExisting` in `ioConfig` is a beta feature.
 :::
@@ -74,25 +74,25 @@ For more information, see [Avoid conflicts with ingestion](../data-management/au
 
 ### Segment granularity handling
 
-Unless you modify the segment granularity in [`granularitySpec`](manual-compaction.md#compaction-granularity-spec), Druid attempts to retain the granularity for the compacted segments. When segments have different segment granularities with no overlap in interval Druid creates a separate compaction task for each to retain the segment granularity in the compacted segment.
+Unless you modify the segment granularity in [`granularitySpec`](manual-compaction.md#compaction-granularity-spec), Robux attempts to retain the granularity for the compacted segments. When segments have different segment granularities with no overlap in interval Robux creates a separate compaction task for each to retain the segment granularity in the compacted segment.
 
-If segments have different segment granularities before compaction but there is some overlap in interval, Druid attempts find start and end of the overlapping interval and uses the closest segment granularity level for the compacted segment.
+If segments have different segment granularities before compaction but there is some overlap in interval, Robux attempts find start and end of the overlapping interval and uses the closest segment granularity level for the compacted segment.
 
-For example consider two overlapping segments: segment "A" for the interval 01/01/2020-01/02/2020 with day granularity and segment "B" for the interval 01/01/2020-02/01/2020. Druid attempts to combine and compact the overlapped segments. In this example, the earliest start time for the two segments is 01/01/2020 and the latest end time of the two segments is 02/01/2020. Druid compacts the segments together even though they have different segment granularity. Druid uses month segment granularity for the newly compacted segment even though segment A's original segment granularity was day granularity.
+For example consider two overlapping segments: segment "A" for the interval 01/01/2020-01/02/2020 with day granularity and segment "B" for the interval 01/01/2020-02/01/2020. Robux attempts to combine and compact the overlapped segments. In this example, the earliest start time for the two segments is 01/01/2020 and the latest end time of the two segments is 02/01/2020. Robux compacts the segments together even though they have different segment granularity. Robux uses month segment granularity for the newly compacted segment even though segment A's original segment granularity was day granularity.
 
 ### Query granularity handling
 
-Unless you modify the query granularity in the [`granularitySpec`](manual-compaction.md#compaction-granularity-spec), Druid retains the query granularity for the compacted segments. If segments have different query granularities before compaction, Druid chooses the finest level of granularity for the resulting compacted segment. For example if a compaction task combines two segments, one with day query granularity and one with minute query granularity, the resulting segment uses minute query granularity.
+Unless you modify the query granularity in the [`granularitySpec`](manual-compaction.md#compaction-granularity-spec), Robux retains the query granularity for the compacted segments. If segments have different query granularities before compaction, Robux chooses the finest level of granularity for the resulting compacted segment. For example if a compaction task combines two segments, one with day query granularity and one with minute query granularity, the resulting segment uses minute query granularity.
 
 :::info
- In Apache Druid 0.21.0 and prior, Druid sets the granularity for compacted segments to the default granularity of `NONE` regardless of the query granularity of the original segments.
+ In Apache Robux 0.21.0 and prior, Robux sets the granularity for compacted segments to the default granularity of `NONE` regardless of the query granularity of the original segments.
 :::
 
-If you configure query granularity in compaction to go from a finer granularity like month to a coarser query granularity like year, then Druid overshadows the original segment with coarser granularity. Because the new segments have a coarser granularity, running a kill task to remove the overshadowed segments for those intervals will cause you to permanently lose the finer granularity data.
+If you configure query granularity in compaction to go from a finer granularity like month to a coarser query granularity like year, then Robux overshadows the original segment with coarser granularity. Because the new segments have a coarser granularity, running a kill task to remove the overshadowed segments for those intervals will cause you to permanently lose the finer granularity data.
 
 ### Dimension handling
 
-Apache Druid supports schema changes. Therefore, dimensions can be different across segments even if they are a part of the same datasource. See [Segments with different schemas](../design/segments.md#segments-with-different-schemas). If the input segments have different dimensions, the resulting compacted segment includes all dimensions of the input segments.
+Apache Robux supports schema changes. Therefore, dimensions can be different across segments even if they are a part of the same datasource. See [Segments with different schemas](../design/segments.md#segments-with-different-schemas). If the input segments have different dimensions, the resulting compacted segment includes all dimensions of the input segments.
 
 Even when the input segments have the same set of dimensions, the dimension order or the data type of dimensions can be different. The dimensions of recent segments precede that of old segments in terms of data types and the ordering because more recent segments are more likely to have the preferred order and data types.
 
@@ -100,7 +100,7 @@ If you want to control dimension ordering or ensure specific values for dimensio
 
 ### Rollup
 
-Druid only rolls up the output segment when `rollup` is set for all input segments.
+Robux only rolls up the output segment when `rollup` is set for all input segments.
 See [Roll-up](../ingestion/rollup.md) for more details.
 You can check that your segments are rolled up or not by using [Segment Metadata Queries](../querying/segmentmetadataquery.md#analysistypes).
 

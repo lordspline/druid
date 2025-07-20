@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { IngestionSpec } from '../druid-models';
+import type { IngestionSpec } from '../robux-models';
 
 import { applyCache } from './sampler';
 

@@ -18,7 +18,7 @@
 
 import { render } from '@testing-library/react';
 
-import { getConsoleViewIcon } from '../../../druid-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 
 import { HomeViewCard } from './home-view-card';
 

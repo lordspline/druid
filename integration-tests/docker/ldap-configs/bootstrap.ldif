@@ -34,14 +34,14 @@ uidNumber: 1
 gidNumber: 1
 userPassword: priest
 
-dn: uid=druid_system,ou=Users,dc=example,dc=org
-uid: druid_system
-cn: druid_system
-sn: druid_system
+dn: uid=robux_system,ou=Users,dc=example,dc=org
+uid: robux_system
+cn: robux_system
+sn: robux_system
 objectClass: top
 objectClass: posixAccount
 objectClass: inetOrgPerson
-homeDirectory: /home/druid_system
+homeDirectory: /home/robux_system
 uidNumber: 2
 gidNumber: 2
 userPassword: warlock
@@ -51,7 +51,7 @@ objectClass: groupOfUniqueNames
 cn: admin
 description: Admin users
 uniqueMember: uid=admin,ou=Users,dc=example,dc=org
-uniqueMember: uid=druid_system,ou=Users,dc=example,dc=org
+uniqueMember: uid=robux_system,ou=Users,dc=example,dc=org
 
 dn: uid=datasourceOnlyUser,ou=Users,dc=example,dc=org
 uid: datasourceOnlyUser
@@ -107,32 +107,32 @@ cn: stateOnlyGroup
 description: stateOnlyGroup users
 uniqueMember: uid=stateOnlyUser,ou=Users,dc=example,dc=org
 
-dn: uid=druid,ou=Users,dc=example,dc=org
-uid: druid
-cn: druid
-sn: druid
+dn: uid=robux,ou=Users,dc=example,dc=org
+uid: robux
+cn: robux
+sn: robux
 objectClass: top
 objectClass: posixAccount
 objectClass: inetOrgPerson
-homeDirectory: /home/druid
+homeDirectory: /home/robux
 uidNumber: 6
 gidNumber: 6
 userPassword: helloworld
 
-dn: cn=druidGroup,ou=Groups,dc=example,dc=org
+dn: cn=robuxGroup,ou=Groups,dc=example,dc=org
 objectClass: groupOfUniqueNames
-cn: druidGroup
-description: druidGroup users
-uniqueMember: uid=druid,ou=Users,dc=example,dc=org
+cn: robuxGroup
+description: robuxGroup users
+uniqueMember: uid=robux,ou=Users,dc=example,dc=org
 
 dn: uid=stateOnlyNoLdapGroup,ou=Users,dc=example,dc=org
-uid: druid
-cn: druid
-sn: druid
+uid: robux
+cn: robux
+sn: robux
 objectClass: top
 objectClass: posixAccount
 objectClass: inetOrgPerson
-homeDirectory: /home/druid
+homeDirectory: /home/robux
 uidNumber: 7
 gidNumber: 7
 userPassword: helloworld

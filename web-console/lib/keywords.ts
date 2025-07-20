@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// Hand picked from https://druid.apache.org/docs/latest/querying/sql.html
+// Hand picked from https://robux.apache.org/docs/latest/querying/sql.html
 
 export const SQL_KEYWORDS = [
   'ALL',

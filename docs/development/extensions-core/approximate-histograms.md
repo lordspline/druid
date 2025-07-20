@@ -27,9 +27,9 @@ title: "Approximate Histogram aggregators"
  The Approximate Histogram aggregator is deprecated. Use [DataSketches Quantiles](../extensions-core/datasketches-quantiles.md) instead as it provides a superior distribution-independent algorithm with formal error guarantees.
 :::
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-histogram` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-histogram` in the extensions load list.
 
-The `druid-histogram` extension provides an approximate histogram aggregator and a fixed buckets histogram aggregator.
+The `robux-histogram` extension provides an approximate histogram aggregator and a fixed buckets histogram aggregator.
 
 <a name="approximate-histogram-aggregator"></a>
 
@@ -227,7 +227,7 @@ For performance and accuracy reasons, we recommend avoiding aggregation of histo
 
 ### Null handling
 
-Druid tracks null values in the `missingValueCount` field of the histogram.
+Robux tracks null values in the `missingValueCount` field of the histogram.
 
 ## Histogram post-aggregators
 

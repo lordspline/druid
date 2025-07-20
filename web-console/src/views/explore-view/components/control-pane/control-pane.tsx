@@ -29,8 +29,8 @@ import {
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import type { Column, SqlExpression } from 'druid-query-toolkit';
-import { SqlColumn } from 'druid-query-toolkit';
+import type { Column, SqlExpression } from 'robux-query-toolkit';
+import { SqlColumn } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 
 import {

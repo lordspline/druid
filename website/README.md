@@ -17,7 +17,7 @@
   ~ under the License.
   -->
 
-# Druid doc builder
+# Robux doc builder
 
 This website was created with [Docusaurus 3](https://docusaurus.io/).
 
@@ -53,11 +53,11 @@ as part of the the above `npm` commands.
 Documentation pages can refer to a number of special variables using the
 `\{\{var}}` syntax:
 
-* `\{\{DRUIDVERSION}}` - the version of Druid in which the page appears. Allows
+* `\{\{ROBUXVERSION}}` - the version of Robux in which the page appears. Allows
 creating links to files of the same version on GitHub.
 
 The variables are not replaced when running the web site locally using the
-`start` command above. They're replaced as part of the process that copies the docs to `apache/druid-website-src/`.
+`start` command above. They're replaced as part of the process that copies the docs to `apache/robux-website-src/`.
 
 ## Tests
 

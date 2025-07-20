@@ -23,11 +23,11 @@ title: "Segments"
   -->
 
 
-Apache Druid stores its data and indexes in *segment files* partitioned by time. Druid creates a segment for each segment interval that contains data. If an interval is empty—that is, containing no rows—no segment exists for that time interval. Druid may create multiple segments for the same interval if you ingest data for that period via different ingestion jobs. [Compaction](../data-management/compaction.md) is the Druid process that attempts to combine these segments into a single segment per interval for optimal performance.
+Apache Robux stores its data and indexes in *segment files* partitioned by time. Robux creates a segment for each segment interval that contains data. If an interval is empty—that is, containing no rows—no segment exists for that time interval. Robux may create multiple segments for the same interval if you ingest data for that period via different ingestion jobs. [Compaction](../data-management/compaction.md) is the Robux process that attempts to combine these segments into a single segment per interval for optimal performance.
 
 The time interval is configurable in the `segmentGranularity` parameter of the [`granularitySpec`](../ingestion/ingestion-spec.md#granularityspec).
 
-For Druid to operate well under heavy query load, it is important for the segment
+For Robux to operate well under heavy query load, it is important for the segment
 file size to be within the recommended range of 300-700 MB. If your
 segment files are larger than this range, then consider either
 changing the granularity of the segment time interval or partitioning your
@@ -40,13 +40,13 @@ for more guidance.
 ## Segment file structure
 
 Segment files are *columnar*: the data for each column is laid out in
-separate data structures. By storing each column separately, Druid decreases query latency by scanning only those columns actually needed for a query. There are three basic column types: timestamp, dimensions, and metrics:
+separate data structures. By storing each column separately, Robux decreases query latency by scanning only those columns actually needed for a query. There are three basic column types: timestamp, dimensions, and metrics:
 
-![Druid column types](../assets/druid-column-types.png "Druid Column Types")
+![Robux column types](../assets/robux-column-types.png "Robux Column Types")
 
 Timestamp and metrics type columns are arrays of integer or floating point values compressed with
 [LZ4](https://github.com/lz4/lz4-java). Once a query identifies which rows to select, it decompresses them, pulls out the relevant rows, and applies the
-desired aggregation operator. If a query doesn’t require a column, Druid skips over that column's data.
+desired aggregation operator. If a query doesn’t require a column, Robux skips over that column's data.
 
 Dimension columns are different because they support filter and
 group-by operations, so each dimension requires the following
@@ -78,7 +78,7 @@ To get a better sense of these data structures, consider the "Page" column from 
 
 Note that the bitmap is different from the dictionary and list data structures: the dictionary and list grow linearly with the size of the data, but the size of the bitmap section is the product of data size and column cardinality. That is, there is one bitmap per separate column value. Columns with the same value share the same bitmap.
 
-For each row in the list of column data, there is only a single bitmap that has a non-zero entry. This means that high cardinality columns have extremely sparse, and therefore highly compressible, bitmaps. Druid exploits this using compression algorithms that are specially suited for bitmaps, such as [Roaring bitmap compression](https://github.com/RoaringBitmap/RoaringBitmap).
+For each row in the list of column data, there is only a single bitmap that has a non-zero entry. This means that high cardinality columns have extremely sparse, and therefore highly compressible, bitmaps. Robux exploits this using compression algorithms that are specially suited for bitmaps, such as [Roaring bitmap compression](https://github.com/RoaringBitmap/RoaringBitmap).
 
 ## Handling null values
 
@@ -86,7 +86,7 @@ String columns always store the null value if present in any row as id 0, the fi
 
 ## Segments with different schemas
 
-Druid segments for the same datasource may have different schemas. If a string column (dimension) exists in one segment but not another, queries that involve both segments still work. In default mode, queries for the segment without the dimension behave as if the dimension contains only blank values. In SQL-compatible mode, queries for the segment without the dimension behave as if the dimension contains only null values. Similarly, if one segment has a numeric column (metric) but another does not, queries on the segment without the metric generally operate as expected. Aggregations over the missing metric operate as if the metric doesn't exist.
+Robux segments for the same datasource may have different schemas. If a string column (dimension) exists in one segment but not another, queries that involve both segments still work. In default mode, queries for the segment without the dimension behave as if the dimension contains only blank values. In SQL-compatible mode, queries for the segment without the dimension behave as if the dimension contains only null values. Similarly, if one segment has a numeric column (metric) but another does not, queries on the segment without the metric generally operate as expected. Aggregations over the missing metric operate as if the metric doesn't exist.
 
 ## Column format
 
@@ -95,7 +95,7 @@ Each column is stored as two parts:
 - A Jackson-serialized `ColumnDescriptor`.
 - The binary data for the column.
 
-A `ColumnDescriptor` is  Jackson-serialized instance of the internal Druid `ColumnDescriptor` class . It allows the use of Jackson's polymorphic deserialization to add new and interesting methods of serialization with minimal impact to the code. It consists of some metadata about the column (for example: type, whether it's multi-value) and a list of serialization/deserialization logic that can deserialize the rest of the binary.
+A `ColumnDescriptor` is  Jackson-serialized instance of the internal Robux `ColumnDescriptor` class . It allows the use of Jackson's polymorphic deserialization to add new and interesting methods of serialization with minimal impact to the code. It consists of some metadata about the column (for example: type, whether it's multi-value) and a list of serialization/deserialization logic that can deserialize the rest of the binary.
 
 ### Multi-value columns
 
@@ -129,9 +129,9 @@ the list is an array of values. Additionally, a row with *n* values in the list 
 
 ## Compression
 
-Druid uses LZ4 by default to compress blocks of values for string, long, float, and double columns. Druid uses Roaring to compress bitmaps for string columns and numeric null values. We recommend that you use these defaults unless you've experimented with your data and query patterns suggest that non-default options will perform better in your specific case. 
+Robux uses LZ4 by default to compress blocks of values for string, long, float, and double columns. Robux uses Roaring to compress bitmaps for string columns and numeric null values. We recommend that you use these defaults unless you've experimented with your data and query patterns suggest that non-default options will perform better in your specific case. 
 
-Druid also supports Concise bitmap compression. For string column bitmaps, the differences between using Roaring and Concise are most pronounced for high cardinality columns. In this case, Roaring is substantially faster on filters that match many values, but in some cases Concise can have a lower footprint due to the overhead of the Roaring format (but is still slower when many values are matched). You configure compression at the segment level, not for individual columns. See [IndexSpec](../ingestion/ingestion-spec.md#indexspec) for more details.
+Robux also supports Concise bitmap compression. For string column bitmaps, the differences between using Roaring and Concise are most pronounced for high cardinality columns. In this case, Roaring is substantially faster on filters that match many values, but in some cases Concise can have a lower footprint due to the overhead of the Roaring format (but is still slower when many values are matched). You configure compression at the segment level, not for individual columns. See [IndexSpec](../ingestion/ingestion-spec.md#indexspec) for more details.
 
 ## Segment identification
 
@@ -149,7 +149,7 @@ foo_2015-01-01/2015-01-02_v1_1
 foo_2015-01-01/2015-01-02_v1_2
 ```
 
-If you reindex the data with a new schema, Druid allocates a new version ID to the newly created segments:
+If you reindex the data with a new schema, Robux allocates a new version ID to the newly created segments:
 
 ```
 foo_2015-01-01/2015-01-02_v2_0
@@ -159,7 +159,7 @@ foo_2015-01-01/2015-01-02_v2_2
 
 ## Sharding
 
-Multiple segments can exist for a single time interval and datasource. These segments form a `block` for an interval. Depending on the type of `shardSpec` used to shard the data, Druid queries may only complete if a `block` is complete. For example, if a block consists of the following three segments:
+Multiple segments can exist for a single time interval and datasource. These segments form a `block` for an interval. Depending on the type of `shardSpec` used to shard the data, Robux queries may only complete if a `block` is complete. For example, if a block consists of the following three segments:
 
 ```
 sampleData_2011-01-01T02:00:00:00Z_2011-01-01T03:00:00:00Z_v1_0
@@ -196,7 +196,7 @@ In the codebase, segments have an internal format version. The current segment f
 
 ## Implications of updating segments
 
-Druid uses versioning to manage updates to create a form of multi-version concurrency control (MVCC). These MVCC versions are distinct from the segment format version discussed above.
+Robux uses versioning to manage updates to create a form of multi-version concurrency control (MVCC). These MVCC versions are distinct from the segment format version discussed above.
 
 Note that updates that span multiple segment intervals are only atomic within each interval. They are not atomic across the entire update. For example, if you have the following segments:
 

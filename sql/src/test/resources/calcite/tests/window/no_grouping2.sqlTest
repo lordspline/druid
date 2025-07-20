@@ -4,7 +4,7 @@ sql: |
   SELECT
     m2, m1,
     SUM(m1) OVER () cc
-  FROM druid.foo
+  FROM robux.foo
 
 expectedOperators:
   - type: "naivePartition"

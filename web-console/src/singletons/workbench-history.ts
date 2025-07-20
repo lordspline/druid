@@ -18,7 +18,7 @@
 
 import * as JSONBig from 'json-bigint-native';
 
-import { WorkbenchQuery } from '../druid-models';
+import { WorkbenchQuery } from '../robux-models';
 import { localStorageGetJson, LocalStorageKeys, localStorageSetJson } from '../utils';
 
 export interface WorkbenchQueryHistoryEntry {

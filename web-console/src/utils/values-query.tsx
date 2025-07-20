@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { Column, QueryResult, SqlExpression } from 'druid-query-toolkit';
+import type { Column, QueryResult, SqlExpression } from 'robux-query-toolkit';
 import {
   C,
   F,
@@ -28,7 +28,7 @@ import {
   SqlRecord,
   SqlType,
   SqlValues,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 import * as JSONBig from 'json-bigint-native';
 
 import { oneOf } from './general';
@@ -36,7 +36,7 @@ import { oneOf } from './general';
 const SAMPLE_ARRAY_SEPARATOR = '<#>'; // Note that this is a regexp so don't add anything that is a special regexp thing
 
 /**
- This function corrects for the legacy behaviour where Druid sometimes returns array columns as
+ This function corrects for the legacy behaviour where Robux sometimes returns array columns as
  { sqlType: 'ARRAY', nativeType: 'ARRAY<STRING>' }
  instead of the more correct description of
  { sqlType: 'VARCHAR ARRAY', nativeType: 'ARRAY<STRING>' }
@@ -101,7 +101,7 @@ export function queryResultToValuesQuery(sample: QueryResult): SqlQuery {
       const { name, nativeType } = column;
       const sqlType = getEffectiveSqlType(column);
 
-      // The columnIsAllNulls check is needed due to https://github.com/apache/druid/issues/16456
+      // The columnIsAllNulls check is needed due to https://github.com/apache/robux/issues/16456
       // Remove it when the issue above is resolved
       let ex: SqlExpression = columnIsAllNulls(rows, i) ? L.NULL : C(`c${i + 1}`);
       if (nativeType === 'COMPLEX<json>') {

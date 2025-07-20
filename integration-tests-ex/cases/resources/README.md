@@ -20,7 +20,7 @@
 # Test Data
 
 This directory contains resources, such as test data, mounted into
-Druid indexer container at `/resources`.
+Robux indexer container at `/resources`.
 That name is chosen for backward compatibility with the previous IT
 version that mounted `/src/test/resources` to that mount point.
 See the `indexer` node in `docker-compose.yaml` for `BatchIndex`

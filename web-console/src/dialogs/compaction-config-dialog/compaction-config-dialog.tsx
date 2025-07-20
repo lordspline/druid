@@ -28,11 +28,11 @@ import {
   JsonInput,
   PopoverText,
 } from '../../components';
-import type { CompactionConfig } from '../../druid-models';
+import type { CompactionConfig } from '../../robux-models';
 import {
   COMPACTION_CONFIG_FIELDS,
   compactionConfigHasLegacyInputSegmentSizeBytesSet,
-} from '../../druid-models';
+} from '../../robux-models';
 import { getLink } from '../../links';
 import { deepDelete, deepGet, deepSet, formatBytesCompact } from '../../utils';
 import { CompactionHistoryDialog } from '../compaction-history-dialog/compaction-history-dialog';

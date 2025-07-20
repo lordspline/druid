@@ -25,7 +25,7 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-This topic describes the API endpoints to manage and monitor supervisors for Apache Druid.
+This topic describes the API endpoints to manage and monitor supervisors for Apache Robux.
 The topic uses the Apache Kafka term offset to refer to the identifier for records in a partition. If you are using Amazon Kinesis, the equivalent is sequence number.
 
 In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router service address and port. Replace it with the information for your deployment. For example, use `http://localhost:8888` for quickstart deployments.
@@ -49,7 +49,7 @@ Returns an array of strings representing the names of active supervisors. If the
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor`
+`GET` `/robux/indexer/v1/supervisor`
 
 #### Responses
 
@@ -73,7 +73,7 @@ Returns an array of strings representing the names of active supervisors. If the
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor"
 ```
 
 </TabItem>
@@ -81,7 +81,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor"
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor HTTP/1.1
+GET /robux/indexer/v1/supervisor HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -107,7 +107,7 @@ Retrieves an array of active supervisor objects. If there are no active supervis
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor?full`
+`GET` `/robux/indexer/v1/supervisor?full`
 
 #### Responses
 
@@ -131,7 +131,7 @@ Retrieves an array of active supervisor objects. If there are no active supervis
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor?full=null"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor?full=null"
 ```
 
 </TabItem>
@@ -139,7 +139,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor?full=null"
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor?full=null HTTP/1.1
+GET /robux/indexer/v1/supervisor?full=null HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -763,7 +763,7 @@ Retrieves an array of objects representing active supervisors and their current 
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor?state=true`
+`GET` `/robux/indexer/v1/supervisor?state=true`
 
 #### Responses
 
@@ -787,7 +787,7 @@ Retrieves an array of objects representing active supervisors and their current 
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor?state=true"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor?state=true"
 ```
 
 </TabItem>
@@ -795,7 +795,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor?state=true"
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor?state=true HTTP/1.1
+GET /robux/indexer/v1/supervisor?state=true HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -834,7 +834,7 @@ Retrieves the specification for a single supervisor. The returned specification 
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor/{supervisorId}`
+`GET` `/robux/indexer/v1/supervisor/{supervisorId}`
 
 #### Responses
 
@@ -866,7 +866,7 @@ The following example shows how to retrieve the specification of a supervisor wi
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/wikipedia_stream"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/wikipedia_stream"
 ```
 
 </TabItem>
@@ -874,7 +874,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/wikipedia_stream"
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor/wikipedia_stream HTTP/1.1
+GET /robux/indexer/v1/supervisor/wikipedia_stream HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1192,7 +1192,7 @@ For additional information about the status report, see [Supervisor reference](.
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor/{supervisorId}/status`
+`GET` `/robux/indexer/v1/supervisor/{supervisorId}/status`
 
 #### Responses
 
@@ -1224,7 +1224,7 @@ The following example shows how to retrieve the status of a supervisor with the 
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/status"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/status"
 ```
 
 </TabItem>
@@ -1232,7 +1232,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/stat
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor/social_media/status HTTP/1.1
+GET /robux/indexer/v1/supervisor/social_media/status HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1292,11 +1292,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get supervisor health
 
-Retrieves the current health report for a single supervisor. The health of a supervisor is determined by the supervisor's `state` (as returned by the `/status` endpoint) and the `druid.supervisor.*` Overlord configuration thresholds.
+Retrieves the current health report for a single supervisor. The health of a supervisor is determined by the supervisor's `state` (as returned by the `/status` endpoint) and the `robux.supervisor.*` Overlord configuration thresholds.
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor/{supervisorId}/health`
+`GET` `/robux/indexer/v1/supervisor/{supervisorId}/health`
 
 #### Responses
 
@@ -1333,14 +1333,14 @@ The following example shows how to retrieve the health report for a supervisor w
 <TabItem value="21" label="cURL">
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/health"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/health"
 ```
 </TabItem>
 
 <TabItem value="22" label="HTTP">
 
 ```HTTP
-GET /druid/indexer/v1/supervisor/social_media/health HTTP/1.1
+GET /robux/indexer/v1/supervisor/social_media/health HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 </TabItem>
@@ -1365,7 +1365,7 @@ Returns a snapshot of the current ingestion row counters for each task being man
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor/{supervisorId}/stats`
+`GET` `/robux/indexer/v1/supervisor/{supervisorId}/stats`
 
 #### Responses
 
@@ -1397,7 +1397,7 @@ The following example shows how to retrieve the current ingestion row counters f
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/custom_data/stats"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/custom_data/stats"
 ```
 
 </TabItem>
@@ -1405,7 +1405,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/custom_data/stats
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor/custom_data/stats HTTP/1.1
+GET /robux/indexer/v1/supervisor/custom_data/stats HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1471,7 +1471,7 @@ Retrieves an audit history of specs for all supervisors.
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor/history`
+`GET` `/robux/indexer/v1/supervisor/history`
 
 #### Responses
 
@@ -1495,7 +1495,7 @@ Retrieves an audit history of specs for all supervisors.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/history"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/history"
 ```
 
 </TabItem>
@@ -1503,7 +1503,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/history"
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor/history HTTP/1.1
+GET /robux/indexer/v1/supervisor/history HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1825,7 +1825,7 @@ Retrieves an audit history of specs for a single supervisor.
 
 #### URL
 
-`GET` `/druid/indexer/v1/supervisor/{supervisorId}/history`
+`GET` `/robux/indexer/v1/supervisor/{supervisorId}/history`
 
 
 #### Responses
@@ -1858,7 +1858,7 @@ The following example shows how to retrieve the audit history of a supervisor wi
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/wikipedia_stream/history"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/wikipedia_stream/history"
 ```
 
 </TabItem>
@@ -1866,7 +1866,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/wikipedia_stream/
 
 
 ```HTTP
-GET /druid/indexer/v1/supervisor/wikipedia_stream/history HTTP/1.1
+GET /robux/indexer/v1/supervisor/wikipedia_stream/history HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -2198,12 +2198,12 @@ The following table lists the properties of a supervisor spec:
 |`dataSchema`|Object|The schema for the indexing task to use during ingestion. See [`dataSchema`](../ingestion/ingestion-spec.md#dataschema) for more information.|Yes|
 |`tuningConfig`|Object|The tuning configuration object to define performance-related settings for the supervisor and indexing tasks.|No|
 
-When you call this endpoint on an existing supervisor, the running supervisor signals its tasks to stop reading and begin publishing, exiting itself. Druid then uses the provided configuration from the request body to create a new supervisor. Druid submits a new schema while retaining existing publishing tasks and starts new tasks at the previous task offsets.
+When you call this endpoint on an existing supervisor, the running supervisor signals its tasks to stop reading and begin publishing, exiting itself. Robux then uses the provided configuration from the request body to create a new supervisor. Robux submits a new schema while retaining existing publishing tasks and starts new tasks at the previous task offsets.
 This way, you can apply configuration changes without a pause in ingestion.
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor`
+`POST` `/robux/indexer/v1/supervisor`
 
 #### Responses
 
@@ -2234,7 +2234,7 @@ The following example uses JSON input format to create a supervisor spec for Kaf
 <TabItem value="35" label="cURL">
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor" \
 --header 'Content-Type: application/json' \
 --data '{
     "type": "kafka",
@@ -2293,7 +2293,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor" \
 <TabItem value="36" label="HTTP">
 
 ```HTTP
-POST /druid/indexer/v1/supervisor HTTP/1.1
+POST /robux/indexer/v1/supervisor HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 1359
@@ -2357,7 +2357,7 @@ Content-Length: 1359
 
 The following example sets the `skipRestartIfUnmodified` flag to true. With this flag set to true, the Supervisor will only restart if there has been a modification to the SupervisorSpec. If left unset, the flag defaults to false.
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor?skipRestartIfUnmodified=true" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor?skipRestartIfUnmodified=true" \
 --header 'Content-Type: application/json' \
 --data '{
     "type": "kafka",
@@ -2430,7 +2430,7 @@ Indexing tasks remain suspended until you [resume the supervisor](#resume-a-supe
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/suspend`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/suspend`
 
 #### Responses
 
@@ -2468,7 +2468,7 @@ The following example shows how to suspend a running supervisor with the name `s
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/suspend"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/suspend"
 ```
 
 </TabItem>
@@ -2476,7 +2476,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/so
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/social_media/suspend HTTP/1.1
+POST /robux/indexer/v1/supervisor/social_media/suspend HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -2791,7 +2791,7 @@ Suspends all supervisors. Note that this endpoint returns an HTTP `200 Success` 
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/suspendAll`
+`POST` `/robux/indexer/v1/supervisor/suspendAll`
 
 #### Responses
 
@@ -2815,7 +2815,7 @@ Suspends all supervisors. Note that this endpoint returns an HTTP `200 Success` 
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/suspendAll"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/suspendAll"
 ```
 
 </TabItem>
@@ -2823,7 +2823,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/su
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/suspendAll HTTP/1.1
+POST /robux/indexer/v1/supervisor/suspendAll HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -2848,7 +2848,7 @@ Resumes indexing tasks for a supervisor. Returns an updated supervisor spec with
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/resume`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/resume`
 
 #### Responses
 
@@ -2886,7 +2886,7 @@ The following example resumes a previously suspended supervisor with name `socia
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/resume"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/resume"
 ```
 
 </TabItem>
@@ -2894,7 +2894,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/so
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/social_media/resume HTTP/1.1
+POST /robux/indexer/v1/supervisor/social_media/resume HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -3209,7 +3209,7 @@ Resumes all supervisors. Note that this endpoint returns an HTTP `200 Success` c
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/resumeAll`
+`POST` `/robux/indexer/v1/supervisor/resumeAll`
 
 #### Responses
 
@@ -3233,7 +3233,7 @@ Resumes all supervisors. Note that this endpoint returns an HTTP `200 Success` c
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/resumeAll"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/resumeAll"
 ```
 
 </TabItem>
@@ -3241,7 +3241,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/re
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/resumeAll HTTP/1.1
+POST /robux/indexer/v1/supervisor/resumeAll HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -3270,11 +3270,11 @@ so that tasks begin reading from valid positions.
 
 Use this endpoint to recover from a stopped state due to missing offsets. Use this endpoint with caution as it may result in skipped messages and lead to data loss or duplicate data.
 
-The indexing service keeps track of the latest persisted offsets to provide exactly-once ingestion guarantees across tasks. Subsequent tasks must start reading from where the previous task completed for Druid to accept the generated segments. If the messages at the expected starting offsets are no longer available, the supervisor refuses to start and in-flight tasks fail. Possible causes for missing messages include the message retention period elapsing or the topic being removed and re-created. Use the `reset` endpoint to recover from this condition.
+The indexing service keeps track of the latest persisted offsets to provide exactly-once ingestion guarantees across tasks. Subsequent tasks must start reading from where the previous task completed for Robux to accept the generated segments. If the messages at the expected starting offsets are no longer available, the supervisor refuses to start and in-flight tasks fail. Possible causes for missing messages include the message retention period elapsing or the topic being removed and re-created. Use the `reset` endpoint to recover from this condition.
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/reset`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/reset`
 
 #### Responses
 
@@ -3306,7 +3306,7 @@ The following example shows how to reset a supervisor with the name `social_medi
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/reset"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/reset"
 ```
 
 </TabItem>
@@ -3314,7 +3314,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/so
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/social_media/reset HTTP/1.1
+POST /robux/indexer/v1/supervisor/social_media/reset HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -3349,7 +3349,7 @@ Use this endpoint with caution. It can cause skipped messages, leading to data l
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/resetOffsets`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/resetOffsets`
 
 #### Responses
 
@@ -3399,7 +3399,7 @@ The following example shows how to reset offsets for a Kafka supervisor with the
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/resetOffsets"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/resetOffsets"
 --header 'Content-Type: application/json'
 --data-raw '{"type":"kafka","partitions":{"type":"end","stream":"ads_media_stream","partitionOffsetMap":{"0":100, "2": 650}}}'
 ```
@@ -3409,7 +3409,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/so
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/social_media/resetOffsets HTTP/1.1
+POST /robux/indexer/v1/supervisor/social_media/resetOffsets HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 
@@ -3446,13 +3446,13 @@ when the supervisor's tasks restart, they resume reading from `{"0": 100, "1": 1
 
 ### Terminate a supervisor
 
-Terminates a supervisor and its associated indexing tasks, triggering the publishing of their segments. When you terminate a supervisor, Druid places a tombstone marker in the metadata store to prevent reloading on restart.
+Terminates a supervisor and its associated indexing tasks, triggering the publishing of their segments. When you terminate a supervisor, Robux places a tombstone marker in the metadata store to prevent reloading on restart.
 
 The terminated supervisor still exists in the metadata store and its history can be retrieved.
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/terminate`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/terminate`
 
 #### Responses
 
@@ -3482,7 +3482,7 @@ The terminated supervisor still exists in the metadata store and its history can
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/terminate"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/terminate"
 ```
 
 </TabItem>
@@ -3490,7 +3490,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/so
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/social_media/terminate HTTP/1.1
+POST /robux/indexer/v1/supervisor/social_media/terminate HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -3515,7 +3515,7 @@ Terminates all supervisors. Terminated supervisors still exist in the metadata s
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/terminateAll`
+`POST` `/robux/indexer/v1/supervisor/terminateAll`
 
 #### Responses
 
@@ -3539,7 +3539,7 @@ Terminates all supervisors. Terminated supervisors still exist in the metadata s
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/terminateAll"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/terminateAll"
 ```
 
 </TabItem>
@@ -3547,7 +3547,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/te
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/terminateAll HTTP/1.1
+POST /robux/indexer/v1/supervisor/terminateAll HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -3572,7 +3572,7 @@ Trigger handoff for specified task groups of a supervisor early. This is a best 
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/taskGroups/handoff`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/taskGroups/handoff`
 
 #### Sample request
 
@@ -3584,7 +3584,7 @@ The following example shows how to handoff task groups for a supervisor with the
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/social_media/taskGroups/handoff"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/supervisor/social_media/taskGroups/handoff"
 --header 'Content-Type: application/json'
 --data-raw '{"taskGroupIds": [1, 2, 3]}'
 ```
@@ -3594,7 +3594,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/supervisor/so
 
 
 ```HTTP
-POST /druid/indexer/v1/supervisor/social_media/taskGroups/handoff HTTP/1.1
+POST /robux/indexer/v1/supervisor/social_media/taskGroups/handoff HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 
@@ -3619,4 +3619,4 @@ Shuts down a supervisor. This endpoint is deprecated and will be removed in futu
 
 #### URL
 
-`POST` `/druid/indexer/v1/supervisor/{supervisorId}/shutdown`
+`POST` `/robux/indexer/v1/supervisor/{supervisorId}/shutdown`

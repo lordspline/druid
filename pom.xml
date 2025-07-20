@@ -27,14 +27,14 @@
         <version>25</version>
     </parent>
 
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Druid</name>
-    <description>Druid - A Distributed Column Store</description>
-    <url>https://druid.apache.org/</url>
+    <name>Robux</name>
+    <description>Robux - A Distributed Column Store</description>
+    <url>https://robux.apache.org/</url>
 
     <licenses>
         <license>
@@ -45,27 +45,27 @@
 
     <developers>
         <developer>
-            <name>Apache Druid Committers</name>
-            <url>https://druid.apache.org/community/#committers</url>
+            <name>Apache Robux Committers</name>
+            <url>https://robux.apache.org/community/#committers</url>
         </developer>
     </developers>
 
     <mailingLists>
         <mailingList>
-            <name>Apache Druid developers list</name>
-            <subscribe>dev-subscribe@druid.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@druid.apache.org</unsubscribe>
-            <post>dev@druid.apache.org</post>
-            <archive>https://mail-archives.apache.org/mod_mbox/druid-dev</archive>
+            <name>Apache Robux developers list</name>
+            <subscribe>dev-subscribe@robux.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@robux.apache.org</unsubscribe>
+            <post>dev@robux.apache.org</post>
+            <archive>https://mail-archives.apache.org/mod_mbox/robux-dev</archive>
         </mailingList>
     </mailingLists>
 
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:git:ssh://git@github.com/apache/druid.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/apache/druid.git</developerConnection>
-        <url>https://github.com/apache/druid.git</url>
+        <connection>scm:git:ssh://git@github.com/apache/robux.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/apache/robux.git</developerConnection>
+        <url>https://github.com/apache/robux.git</url>
         <tag>29.0.0-SNAPSHOT</tag>
     </scm>
 
@@ -77,7 +77,7 @@
         <apache.curator.version>5.8.0</apache.curator.version>
         <apache.kafka.version>3.9.1</apache.kafka.version>
         <!-- when updating apache ranger, verify the usage of aws-bundle-sdk vs aws-logs-sdk
-        and update as needed in extensions-core/druid-ranger-security/pm.xml  -->
+        and update as needed in extensions-core/robux-ranger-security/pm.xml  -->
         <apache.ranger.version>2.4.0</apache.ranger.version>
         <gson.version>2.10.1</gson.version>
         <scala.library.version>2.13.14</scala.library.version>
@@ -202,9 +202,9 @@
         <module>extensions-core/avro-extensions</module>
         <module>extensions-core/azure-extensions</module>
         <module>extensions-core/datasketches</module>
-        <module>extensions-core/druid-bloom-filter</module>
-        <module>extensions-core/druid-kerberos</module>
-        <module>extensions-core/druid-pac4j</module>
+        <module>extensions-core/robux-bloom-filter</module>
+        <module>extensions-core/robux-kerberos</module>
+        <module>extensions-core/robux-pac4j</module>
         <module>extensions-core/hdfs-storage</module>
         <module>extensions-core/histogram</module>
         <module>extensions-core/stats</module>
@@ -221,11 +221,11 @@
         <module>extensions-core/lookups-cached-single</module>
         <module>extensions-core/ec2-extensions</module>
         <module>extensions-core/s3-extensions</module>
-        <module>extensions-core/druid-aws-rds-extensions</module>
+        <module>extensions-core/robux-aws-rds-extensions</module>
         <module>extensions-core/simple-client-sslcontext</module>
-        <module>extensions-core/druid-basic-security</module>
+        <module>extensions-core/robux-basic-security</module>
         <module>extensions-core/google-extensions</module>
-        <module>extensions-core/druid-catalog</module>
+        <module>extensions-core/robux-catalog</module>
         <module>extensions-core/testing-tools</module>
         <!-- Community extensions -->
         <module>extensions-contrib/compressed-bigdecimal</module>
@@ -256,11 +256,11 @@
         <module>extensions-contrib/prometheus-emitter</module>
         <module>extensions-contrib/opentelemetry-emitter</module>
         <module>extensions-contrib/grpc-query</module>
-        <module>extensions-contrib/druid-iceberg-extensions</module>
-        <module>extensions-contrib/druid-deltalake-extensions</module>
+        <module>extensions-contrib/robux-iceberg-extensions</module>
+        <module>extensions-contrib/robux-deltalake-extensions</module>
         <module>extensions-contrib/spectator-histogram</module>
         <module>extensions-contrib/rabbit-stream-indexing-service</module>
-        <module>extensions-contrib/druid-ranger-security</module>
+        <module>extensions-contrib/robux-ranger-security</module>
         <!-- distribution packaging -->
         <module>distribution</module>
         <!-- Revised integration tests -->
@@ -412,8 +412,8 @@
                 <version>1.9.25</version>
             </dependency>
             <!-- Transitive dependency of kubernetes-client-java in kubernetes-extension,
-            schema-repo in avro-extensions, and com.google.caliper:caliper in druid-server
-            and direct dependency of druid-ranger
+            schema-repo in avro-extensions, and com.google.caliper:caliper in robux-server
+            and direct dependency of robux-ranger
               -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -427,8 +427,8 @@
                 <artifactId>bcpkix-jdk18on</artifactId>
                 <version>1.78.1</version>
             </dependency>
-            <!-- Transitive dependency of hive-common in druid-kerberos, druid-ranger-security and
-            druid-iceberg-extension  -->
+            <!-- Transitive dependency of hive-common in robux-kerberos, robux-ranger-security and
+            robux-iceberg-extension  -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-configuration2</artifactId>
@@ -1447,7 +1447,7 @@
                 <version>5.42.0</version>
                 <configuration>
                     <activeRecipes>
-                        <recipe>org.apache.druid.RewriteRules</recipe>
+                        <recipe>org.apache.robux.RewriteRules</recipe>
                     </activeRecipes>
                     <configLocation>${maven.multiModuleProjectDirectory}/rewrite.yml</configLocation>
                     <checkstyleDetectionEnabled>false</checkstyleDetectionEnabled>
@@ -1484,38 +1484,38 @@
                 <configuration>
                     <excludes>
                         <!-- Ignore initialization classes, these are tested by the integration tests. -->
-                        <exclude>org/apache/druid/cli/Cli*</exclude>
-                        <exclude>org/apache/druid/cli/GuiceRunnable.class</exclude>
-                        <exclude>org/apache/druid/cli/*JettyServerInitializer*</exclude>
-                        <exclude>org/apache/druid/server/initialization/*Module*</exclude>
-                        <exclude>org/apache/druid/server/initialization/jetty/*Module*</exclude>
-                        <exclude>org/apache/druid/guice/http/*</exclude>
+                        <exclude>org/apache/robux/cli/Cli*</exclude>
+                        <exclude>org/apache/robux/cli/GuiceRunnable.class</exclude>
+                        <exclude>org/apache/robux/cli/*JettyServerInitializer*</exclude>
+                        <exclude>org/apache/robux/server/initialization/*Module*</exclude>
+                        <exclude>org/apache/robux/server/initialization/jetty/*Module*</exclude>
+                        <exclude>org/apache/robux/guice/http/*</exclude>
 
                         <!-- Ignore cli tools -->
-                        <exclude>org/apache/druid/cli/UpdateTables*</exclude>
+                        <exclude>org/apache/robux/cli/UpdateTables*</exclude>
 
                         <!-- Ignore generated code -->
-                        <exclude>org/apache/druid/math/expr/antlr/Expr*</exclude>  <!-- core -->
-                        <exclude>org/apache/druid/**/generated/*Benchmark*</exclude>  <!-- benchmarks -->
-                        <exclude>org/apache/druid/data/input/influx/InfluxLineProtocol*</exclude>  <!-- extensions-contrib/influx-extensions -->
+                        <exclude>org/apache/robux/math/expr/antlr/Expr*</exclude>  <!-- core -->
+                        <exclude>org/apache/robux/**/generated/*Benchmark*</exclude>  <!-- benchmarks -->
+                        <exclude>org/apache/robux/data/input/influx/InfluxLineProtocol*</exclude>  <!-- extensions-contrib/influx-extensions -->
 
                         <!-- Ignore non-production code -->
-                        <exclude>org/apache/druid/benchmark/**/*</exclude>  <!-- benchmarks -->
-                        <exclude>org/apache/druid/**/*Benchmark*</exclude>  <!-- benchmarks -->
-                        <exclude>org/apache/druid/testing/**/*</exclude>  <!-- integration-tests -->
+                        <exclude>org/apache/robux/benchmark/**/*</exclude>  <!-- benchmarks -->
+                        <exclude>org/apache/robux/**/*Benchmark*</exclude>  <!-- benchmarks -->
+                        <exclude>org/apache/robux/testing/**/*</exclude>  <!-- integration-tests -->
                         <!-- The "new" ITs put the test classes into the above testing package. However,
                              the "old" version has them sprinked through the module tree. Remove the following
                              once the old version is retired. -->
-                        <exclude>org/apache/druid/server/coordination/ServerManagerForQueryErrorTest.class</exclude>
-                        <exclude>org/apache/druid/guice/SleepModule.class</exclude>
-                        <exclude>org/apache/druid/guice/CustomNodeRoleClientModule.class</exclude>
-                        <exclude>org/apache/druid/cli/CustomNodeRoleCommandCreator.class</exclude>
-                        <exclude>org/apache/druid/cli/QueryRetryTestCommandCreator.class</exclude>
+                        <exclude>org/apache/robux/server/coordination/ServerManagerForQueryErrorTest.class</exclude>
+                        <exclude>org/apache/robux/guice/SleepModule.class</exclude>
+                        <exclude>org/apache/robux/guice/CustomNodeRoleClientModule.class</exclude>
+                        <exclude>org/apache/robux/cli/CustomNodeRoleCommandCreator.class</exclude>
+                        <exclude>org/apache/robux/cli/QueryRetryTestCommandCreator.class</exclude>
 
                         <!-- Exceptions -->
-                        <exclude>org/apache/druid/query/TruncatedResponseContextException.class</exclude>
+                        <exclude>org/apache/robux/query/TruncatedResponseContextException.class</exclude>
 
-                        <exclude>org/apache/druid/common/aws/AWSCredentials*</exclude>
+                        <exclude>org/apache/robux/common/aws/AWSCredentials*</exclude>
                         <exclude>com/fasterxml/jackson/databind/*</exclude>
                     </excludes>
                     <!-- fileSets specify the target locations which will be scanned by jacoco:merge -->
@@ -1634,12 +1634,12 @@
                     </bundledSignatures>
                     <signaturesFiles>
                         <signaturesFile>${project.parent.basedir}/codestyle/joda-time-forbidden-apis.txt</signaturesFile>
-                        <signaturesFile>${project.parent.basedir}/codestyle/druid-forbidden-apis.txt</signaturesFile>
+                        <signaturesFile>${project.parent.basedir}/codestyle/robux-forbidden-apis.txt</signaturesFile>
                     </signaturesFiles>
                     <excludes>
                       <exclude>**/SomeAvroDatum.class</exclude>
-                      <exclude>**/DruidSqlParserImpl.class</exclude>
-                      <exclude>**/DruidSqlParserImplTokenManager.class</exclude>
+                      <exclude>**/RobuxSqlParserImpl.class</exclude>
+                      <exclude>**/RobuxSqlParserImplTokenManager.class</exclude>
                       <exclude>**/SimpleCharStream.class</exclude>
                     </excludes>
                     <suppressAnnotations>
@@ -1733,7 +1733,7 @@
                                         <exclude>com.google.code.findbugs:annotations</exclude>
                                         <!-- shouldn't be loaded alongside with log4j-slf4j2-impl -->
                                         <exclude>org.apache.logging.log4j:log4j-slf4j-impl</exclude>
-                                        <!-- See https://github.com/apache/druid/pull/17370 -->
+                                        <!-- See https://github.com/apache/robux/pull/17370 -->
                                         <exclude>javax.xml.bind:jaxb-api</exclude>
                                     </excludes>
                                 </bannedDependencies>
@@ -1809,7 +1809,7 @@
                         </goals>
                         <configuration>
                             <properties>
-                                <projectName>Apache Druid</projectName>
+                                <projectName>Apache Robux</projectName>
                             </properties>
                             <resourceBundles>
                                 <resourceBundle>org.apache.apache.resources:apache-jar-resource-bundle:1.5</resourceBundle>
@@ -1880,11 +1880,11 @@
                             -Duser.timezone=UTC
                             -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
                             -Daws.region=us-east-1 <!-- required for s3-related unit tests -->
-                            -Ddruid.test.stupidPool.poison=true
+                            -Drobux.test.stupidPool.poison=true
                             -XX:OnOutOfMemoryError=${project.parent.basedir}/dev/chmod-heap-dumps.sh
                             -XX:HeapDumpPath=${project.parent.basedir}/target
-                            <!--@TODO After fixing https://github.com/apache/druid/issues/4964 remove this parameter-->
-                            -Ddruid.indexing.doubleStorage=double
+                            <!--@TODO After fixing https://github.com/apache/robux/issues/4964 remove this parameter-->
+                            -Drobux.indexing.doubleStorage=double
                             ${jfrProfilerArgLine}
                         </argLine>
                         <!-- Skip the tests which Surefire runs. Surefire runs the unit tests,
@@ -2079,9 +2079,9 @@
                                 -XX:+HeapDumpOnOutOfMemoryError
                                 -Duser.timezone=UTC -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
                                 -Daws.region=us-east-1 <!-- required for s3-related unit tests -->
-                                -Ddruid.test.stupidPool.poison=true
-                                <!--@TODO After fixing https://github.com/apache/druid/issues/4964 remove this parameter-->
-                                -Ddruid.indexing.doubleStorage=double
+                                -Drobux.test.stupidPool.poison=true
+                                <!--@TODO After fixing https://github.com/apache/robux/issues/4964 remove this parameter-->
+                                -Drobux.indexing.doubleStorage=double
                             </argLine>
                             <!-- our tests are very verbose, let's keep the volume down -->
                             <redirectTestOutputToFile>true</redirectTestOutputToFile>

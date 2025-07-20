@@ -19,7 +19,7 @@
 
 # Docker Compose Configuration
 
-The integration tests use Docker Compose to launch Druid clusters. Each
+The integration tests use Docker Compose to launch Robux clusters. Each
 test defines its own cluster
 depending on what is to be tested. Since a large amount of the definition is
 common, we use inheritance to simplify cluster definition.
@@ -30,14 +30,14 @@ redundancy, test categories can share cluster configurations.
 
 See also:
 
-* [Druid configuration](druid-config.md) which is done via Compose.
+* [Robux configuration](robux-config.md) which is done via Compose.
 * [Test configuration](test-config.md) which tells tests about the
   cluster configuration.
 * [Docker compose specification](https://github.com/compose-spec/compose-spec/blob/master/spec.md)
 
 ## File Structure
 
-Docker Compose files live in the `druid-it-cases` module (`cases` folder)
+Docker Compose files live in the `robux-it-cases` module (`cases` folder)
 in the `cluster` directory. There is a separate subdirectory for each cluster type
 (subset of test categories), plus a `Common` folder for shared files.
 
@@ -64,7 +64,7 @@ scripts and can thus make use of environment variables already set:
   of scripts and cluster definitions reside.
 * `MODULE_DIR` points to the Maven module folder that contains the test.
 * `CATEGORY` gives the name of the test category.
-* `DRUID_INTEGRATION_TEST_GROUP` is the cluster name. Often the same as `CATEGORY`,
+* `ROBUX_INTEGRATION_TEST_GROUP` is the cluster name. Often the same as `CATEGORY`,
   but not always.
 
 The `set -e` option is in effect so that an any errors fail the test.
@@ -80,7 +80,7 @@ keep log files separate for each category.
 ## Base Configurations
 
 Test clusters run some number of third-party "infrastructure" containers,
-and some number of Druid service containers. For the most part, each of
+and some number of Robux service containers. For the most part, each of
 these services (in Compose terms) is similar from test to test. Compose
 provides [an inheritance feature](
 https://github.com/compose-spec/compose-spec/blob/master/spec.md#extends)
@@ -88,16 +88,16 @@ that we use to define base configurations.
 
 * `cluster/Common/dependencies.yaml` defines external dependencis (MySQL, Kafka, ZK
   etc.)
-* `cluster/Common/druid.yaml` defines typical settings for each Druid service.
+* `cluster/Common/robux.yaml` defines typical settings for each Robux service.
 
 Test-specific configurations extend and customize the above.
 
-### Druid Configuration
+### Robux Configuration
 
 Docker compose passes information to Docker in the form of environment variables.
 The test use a variation of the environment-variable-based configuration used in
-the [public Docker image](https://druid.apache.org/docs/latest/tutorials/docker.html).
-That is, variables of the form `druid_my_config` are converted, by the image launch
+the [public Docker image](https://robux.apache.org/docs/latest/tutorials/docker.html).
+That is, variables of the form `robux_my_config` are converted, by the image launch
 script, into properties of the form `my.config`. These properties are then written
 to a launch-specific `runtime.properties` file.
 
@@ -114,25 +114,25 @@ files that define properties as environment variables. All are located in
 
 Unit tests can use any MySQL driver, typically MySQL or MariaDB. The tests use MySQL
 by default. Choose a different driver by setting the `MYSQL_DRIVER_CLASSNAME` environment
-variable when running tests. The variable chooses the selected driver both in the Druid
+variable when running tests. The variable chooses the selected driver both in the Robux
 server running in a container, and in the test "clients".
 
 ### Special Environment Variables
 
-Druid properties can be a bit awkward and verbose in a test environment. A number of
+Robux properties can be a bit awkward and verbose in a test environment. A number of
 test-specific properties help:
 
-* `druid_standard_loadList` - Common extension load list for all tests, in the form
+* `robux_standard_loadList` - Common extension load list for all tests, in the form
   of a comma-delimited list of extensions (without the brackets.) Defined in
   `common.env`.
-* `druid_test_loadList` - A list of additional extensions to load for a specific test.
+* `robux_test_loadList` - A list of additional extensions to load for a specific test.
   Defined in the `docker-compose.yaml` file for that test category. Do not include
   quotes.
 
 Example test-specific list:
 
 ```text
-druid_test_loadList=druid-azure-extensions,my-extension
+robux_test_loadList=robux-azure-extensions,my-extension
 ```
 
 The launch script combines the two lists, and adds the required brackets and quotes.
@@ -155,7 +155,7 @@ services:
 
   broker:
     extends:
-      file: ../Common/compose/druid.yaml
+      file: ../Common/compose/robux.yaml
       service: broker
 ...
 ```
@@ -173,20 +173,20 @@ host `broker` on the Docker overlay network.
 The service name is also usually the log file name. Thus `broker` logs
 to `/target/<category>/logs/broker.log`.
 
-An environment variable `DRUID_INSTANCE` adds a suffix to the service
+An environment variable `ROBUX_INSTANCE` adds a suffix to the service
 name and causes the log file to be `broker-one.log` if the instance
 is `one`. The service name should have the full name `broker-one`.
 
-Druid configuration comes from the common and service-specific environment
+Robux configuration comes from the common and service-specific environment
 files in `/compose/environment-config`. A test-specific service configuration
 can override any of these settings using the `environment` section.
-(See [Druid Configuration](druid-config.md) for details.)
+(See [Robux Configuration](robux-config.md) for details.)
 For special cases, the service can define its configuration in-line and
 not load the standard settings at all.
 
 Each service can override the Java options. However, in practice, the
 only options that actually change are those for memory. As a result,
-the memory settings reside in `DRUID_SERVICE_JAVA_OPTS`, which you can
+the memory settings reside in `ROBUX_SERVICE_JAVA_OPTS`, which you can
 easily change on a service-by-service or test-by-test basis.
 
 Debugging is enabled on port 8000 in the container. Each service that
@@ -210,32 +210,32 @@ to tests and other code running outside of Docker.
 
 ## Test-Specific Configuration
 
-In addition to the Druid configuration discussed above, the framework provides
+In addition to the Robux configuration discussed above, the framework provides
 three ways to pass test-specific configuration to the tests. All of these methods
 override any configuration in the `docker-compose` or cluster `env` files.
 
-The values here are passed into the Druid server as configuration values. The
+The values here are passed into the Robux server as configuration values. The
 values apply to all services. (This mechanism does not allow service-specific
-values.) In all three approaches, use the `druid_` environment variable form.
+values.) In all three approaches, use the `robux_` environment variable form.
 
 Precendence is in the order below with the user file lowest priority and environment
 variables highest.
 
-### User-specific `~/druid-it/<category.env` file
+### User-specific `~/robux-it/<category.env` file
 
 If you are debugging a test, you may need to provide values specific to your setup.
 Examples include user names, passwords, credentials, cloud buckets, etc. Put these
-in a file in your *home* directory (not Druid development directory). Create a
-subdirectory `~/druid-it`, then create a separate file for each category that you
+in a file in your *home* directory (not Robux development directory). Create a
+subdirectory `~/robux-it`, then create a separate file for each category that you
 want to customize. Create entries for your information:
 
 ```text
-druid_cloud_bucket=MyBucket
+robux_cloud_bucket=MyBucket
 ```
 
 ### Test-specific `OVERRIDE_ENV` file
 
-Build scripts can pass values into Druid via a file. Set the `OVERRIDE_ENV` environment
+Build scripts can pass values into Robux via a file. Set the `OVERRIDE_ENV` environment
 variable with the path to the file. Each line is formatted as above. The variable can
 be set on the command line:
 
@@ -248,12 +248,12 @@ the script.
 
 ### Environment variables
 
-Normally the environment of the script that runs Druid is separate from the environment
+Normally the environment of the script that runs Robux is separate from the environment
 passed to the container. However, the launch script will copy across any variable that
-starts with `druid_`. The variable can be set on the command line:
+starts with `robux_`. The variable can be set on the command line:
 
 ```bash
-druid_my_config=my_value ./cluster.sh up Category
+robux_my_config=my_value ./cluster.sh up Category
 ```
 
 It can also be set in Maven, or passed from the build environment, through Maven, to
@@ -266,7 +266,7 @@ To define a test cluster, do the following:
 
 * Define the overlay network.
 * Extend the third-party services required (at least ZK and MySQL).
-* Extend each Druid service needed. Add a `depends_on` for `zookeeper` and,
+* Extend each Robux service needed. Add a `depends_on` for `zookeeper` and,
   for the Coordinator and Overlord, `metadata`.
 * If you need multiple instances of the same service, extend that service
   twice, and define distinct names and port numbers.
@@ -310,7 +310,7 @@ For example, you can:
 * Add or remove services.
 * Create multiples of selected services.
 
-The advantage is that, as Druid evolves and we change the basics, those changes
+The advantage is that, as Robux evolves and we change the basics, those changes
 are automatically propagated to all test clusters.
 
 Once you've created your file, the test framework will re-generate the

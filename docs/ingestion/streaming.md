@@ -22,7 +22,7 @@ title: "Streaming ingestion"
   ~ under the License.
   -->
 
-Apache Druid can consume data streams from the following external streaming sources:
+Apache Robux can consume data streams from the following external streaming sources:
 
 * Apache Kafka through the bundled [Kafka indexing service](kafka-ingestion.md) extension.
 * Amazon Kinesis through the bundled [Kinesis indexing service](kinesis-ingestion.md) extension.
@@ -32,4 +32,4 @@ To use either of the streaming ingestion methods, you must first load the associ
 
 Streaming ingestion is controlled by a continuously running [supervisor](supervisor.md).
 The supervisor oversees the state of indexing tasks to coordinate handoffs, manage failures, and ensure that scalability and replication requirements are maintained.
-You start a supervisor by submitting a JSON specification, often referred to as the supervisor spec, either though the Druid web console or using the [Supervisor API](../api-reference/supervisor-api.md).
+You start a supervisor by submitting a JSON specification, often referred to as the supervisor spec, either though the Robux web console or using the [Supervisor API](../api-reference/supervisor-api.md).

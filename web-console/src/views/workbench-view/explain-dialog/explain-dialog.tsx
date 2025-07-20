@@ -34,24 +34,24 @@ import React from 'react';
 import AceEditor from 'react-ace';
 
 import { Loader } from '../../../components';
-import type { DruidEngine, QueryContext, QueryWithContext } from '../../../druid-models';
-import { isEmptyContext } from '../../../druid-models';
+import type { RobuxEngine, QueryContext, QueryWithContext } from '../../../robux-models';
+import { isEmptyContext } from '../../../robux-models';
 import { useQueryManager } from '../../../hooks';
 import { Api } from '../../../singletons';
 import type { QueryExplanation } from '../../../utils';
 import {
   deepGet,
   formatColumnMappingsAndSignature,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   nonEmptyArray,
-  queryDruidSql,
+  queryRobuxSql,
   wrapInExplainIfNeeded,
 } from '../../../utils';
 
 import './explain-dialog.scss';
 
 export interface QueryContextEngine extends QueryWithContext {
-  engine: DruidEngine;
+  engine: RobuxEngine;
 }
 
 export interface ExplainDialogProps {
@@ -91,14 +91,14 @@ export const ExplainDialog = React.memo(function ExplainDialog(props: ExplainDia
       switch (engine) {
         case 'sql-native':
         case 'sql-msq-dart':
-          result = await queryDruidSql(payload, cancelToken);
+          result = await queryRobuxSql(payload, cancelToken);
           break;
 
         case 'sql-msq-task':
           try {
-            result = (await Api.instance.post(`/druid/v2/sql/task`, payload, { cancelToken })).data;
+            result = (await Api.instance.post(`/robux/v2/sql/task`, payload, { cancelToken })).data;
           } catch (e) {
-            throw new Error(getDruidErrorMessage(e));
+            throw new Error(getRobuxErrorMessage(e));
           }
           break;
 

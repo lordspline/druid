@@ -19,7 +19,7 @@
 import { Switch } from '@blueprintjs/core';
 import React from 'react';
 
-import type { ArrayIngestMode } from '../../druid-models';
+import type { ArrayIngestMode } from '../../robux-models';
 import { getLink } from '../../links';
 import { ExternalLink } from '../external-link/external-link';
 import { FormGroupWithInfo } from '../form-group-with-info/form-group-with-info';

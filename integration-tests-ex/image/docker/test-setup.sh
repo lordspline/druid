@@ -15,7 +15,7 @@
 # limitations under the License.
 #-------------------------------------------------------------------------
 
-# This script runs inside the container to prepare the Druid test image.
+# This script runs inside the container to prepare the Robux test image.
 
 # Fail fast on any error
 set -e
@@ -29,49 +29,49 @@ set -u
 # For debugging: verify environment
 #env
 
-# Druid system user
-adduser --system --group --no-create-home druid
+# Robux system user
+adduser --system --group --no-create-home robux
 
-# Adjust ownership of the Druid launch script.
+# Adjust ownership of the Robux launch script.
 cd /
 chmod +x launch.sh
-chown druid:druid launch.sh druid.sh
+chown robux:robux launch.sh robux.sh
 
-# Convenience script to run Druid for tools.
+# Convenience script to run Robux for tools.
 # Expands the env vars into the script for stability.
 # Maybe not needed now?
-cat > /run-druid.sh << EOF
+cat > /run-robux.sh << EOF
 #! /bin/bash
 
-"${DRUID_HOME}/bin/run-java" -cp "${DRUID_HOME}/lib/*" \\
-	-Ddruid.extensions.directory=${DRUID_HOME}/extensions \\
-	-Ddruid.extensions.loadList='["mysql-metadata-storage"]' \\
-	-Ddruid.metadata.storage.type=mysql \\
-	-Ddruid.metadata.mysql.driver.driverClassName=$MYSQL_DRIVER_CLASSNAME \\
+"${ROBUX_HOME}/bin/run-java" -cp "${ROBUX_HOME}/lib/*" \\
+	-Drobux.extensions.directory=${ROBUX_HOME}/extensions \\
+	-Drobux.extensions.loadList='["mysql-metadata-storage"]' \\
+	-Drobux.metadata.storage.type=mysql \\
+	-Drobux.metadata.mysql.driver.driverClassName=$MYSQL_DRIVER_CLASSNAME \\
 	\$*
 EOF
-chmod a+x /run-druid.sh
+chmod a+x /run-robux.sh
 
-# Install Druid, owned by user:group druid:druid
-# The original Druid directory contains only
+# Install Robux, owned by user:group robux:robux
+# The original Robux directory contains only
 # libraries. No extensions should be present: those
 # should be added in this step.
 cd /usr/local/
 
-tar -xzf apache-druid-${DRUID_VERSION}-bin.tar.gz
-rm apache-druid-${DRUID_VERSION}-bin.tar.gz
+tar -xzf apache-robux-${ROBUX_VERSION}-bin.tar.gz
+rm apache-robux-${ROBUX_VERSION}-bin.tar.gz
 
-ls -l /tmp/druid
+ls -l /tmp/robux
 
 # Add extra libraries and extensions.
-mv /tmp/druid/lib/* apache-druid-${DRUID_VERSION}/lib
-mv /tmp/druid/extensions/* apache-druid-${DRUID_VERSION}/extensions
+mv /tmp/robux/lib/* apache-robux-${ROBUX_VERSION}/lib
+mv /tmp/robux/extensions/* apache-robux-${ROBUX_VERSION}/extensions
 
-# The whole shebang is owned by druid.
-chown -R druid:druid apache-druid-${DRUID_VERSION}
+# The whole shebang is owned by robux.
+chown -R robux:robux apache-robux-${ROBUX_VERSION}
 
-# Leave the versioned directory, create a symlink to $DRUID_HOME.
-ln -s apache-druid-${DRUID_VERSION} $DRUID_HOME
+# Leave the versioned directory, create a symlink to $ROBUX_HOME.
+ln -s apache-robux-${ROBUX_VERSION} $ROBUX_HOME
 
 # Clean up time
 # Should be nothing to clean...

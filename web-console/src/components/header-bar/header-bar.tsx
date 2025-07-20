@@ -41,8 +41,8 @@ import {
   DoctorDialog,
   OverlordDynamicConfigDialog,
 } from '../../dialogs';
-import type { ConsoleViewId } from '../../druid-models';
-import { getConsoleViewIcon } from '../../druid-models';
+import type { ConsoleViewId } from '../../robux-models';
+import { getConsoleViewIcon } from '../../robux-models';
 import { Capabilities } from '../../helpers';
 import { getLink } from '../../links';
 import {
@@ -53,7 +53,7 @@ import {
   localStorageSetJson,
   oneOf,
 } from '../../utils';
-import { DruidLogo } from '../druid-logo/druid-logo';
+import { RobuxLogo } from '../robux-logo/robux-logo';
 import { PopoverText } from '../popover-text/popover-text';
 
 import { RestrictedMode } from './restricted-mode/restricted-mode';
@@ -172,7 +172,7 @@ export const HeaderBar = React.memo(function HeaderBar(props: HeaderBarProps) {
     <Menu>
       <MenuItem
         icon={IconNames.PULSE}
-        text="Druid Doctor"
+        text="Robux Doctor"
         onClick={() => setDoctorDialogOpen(true)}
         disabled={!capabilities.hasEverything()}
       />
@@ -242,7 +242,7 @@ export const HeaderBar = React.memo(function HeaderBar(props: HeaderBarProps) {
     <Navbar className="header-bar">
       <NavbarGroup align={Alignment.LEFT}>
         <a href="#">
-          <DruidLogo />
+          <RobuxLogo />
         </a>
         <NavbarDivider />
         <AnchorButton

@@ -23,12 +23,12 @@ title: "Sorting (topN)"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the native
  language. For information about sorting in SQL, refer to the [SQL documentation](sql.md#order-by).
 :::
 
-In Apache Druid, the topN metric spec specifies how topN values should be sorted.
+In Apache Robux, the topN metric spec specifies how topN values should be sorted.
 
 ## Numeric TopNMetricSpec
 
@@ -72,7 +72,7 @@ The following metricSpec uses lexicographic sorting.
 }
 ```
 
-Note that in earlier versions of Druid, the functionality provided by the DimensionTopNMetricSpec was handled by two separate spec types, Lexicographic and Alphanumeric (when only two sorting orders were supported). These spec types have been deprecated but are still usable.
+Note that in earlier versions of Robux, the functionality provided by the DimensionTopNMetricSpec was handled by two separate spec types, Lexicographic and Alphanumeric (when only two sorting orders were supported). These spec types have been deprecated but are still usable.
 
 ## Inverted TopNMetricSpec
 

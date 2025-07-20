@@ -18,7 +18,7 @@
 
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 
-import type { SqlExpression } from 'druid-query-toolkit';
+import type { SqlExpression } from 'robux-query-toolkit';
 
 import { deleteKeys, mapRecord, mapRecordOrReturn } from '../../../utils';
 

@@ -23,10 +23,10 @@ title: "Build from source"
   -->
 
 
-You can build Apache Druid directly from source. Use the version of this page
+You can build Apache Robux directly from source. Use the version of this page
 that matches the version you want to build.
 For building the latest code in master, follow the latest version of this page
-[here](https://github.com/apache/druid/blob/master/docs/development/build.md):
+[here](https://github.com/apache/robux/blob/master/docs/development/build.md):
 make sure it has `/master/` in the URL.
 
 ## Prerequisites
@@ -44,13 +44,13 @@ make sure it has `/master/` in the URL.
 ## Downloading the Source Code
 
 ```bash
-git clone git@github.com:apache/druid.git
-cd druid
+git clone git@github.com:apache/robux.git
+cd robux
 ```
 
 ## Building from Source
 
-The basic command to build Druid from source is:
+The basic command to build Robux from source is:
 
 ```bash
 mvn clean install
@@ -60,8 +60,8 @@ This will run static analysis, unit tests, compile classes, and package the proj
 
 In addition to the basic stages, you may also want to add the following profiles and properties:
 
-- **-Pdist** - Distribution profile: Generates the binary distribution tarball by pulling in core extensions and dependencies and packaging the files as `distribution/target/apache-druid-x.x.x-bin.tar.gz`
-- **-Papache-release** - Apache release profile: Generates GPG signature and checksums, and builds the source distribution tarball as `distribution/target/apache-druid-x.x.x-src.tar.gz`
+- **-Pdist** - Distribution profile: Generates the binary distribution tarball by pulling in core extensions and dependencies and packaging the files as `distribution/target/apache-robux-x.x.x-bin.tar.gz`
+- **-Papache-release** - Apache release profile: Generates GPG signature and checksums, and builds the source distribution tarball as `distribution/target/apache-robux-x.x.x-src.tar.gz`
 - **-Prat** - Apache Rat profile: Runs the Apache Rat license audit tool
 - **-DskipTests** - Skips unit tests (which reduces build time)
 - **-Dweb.console.skip=true** - Skip front end project
@@ -92,7 +92,7 @@ You will expect to find your distribution tar file under the `distribution/targe
 
 ### Missing `pyyaml`
 
-You are building Druid from source following the instructions on this page but you get
+You are building Robux from source following the instructions on this page but you get
 ```
 [ERROR] Failed to execute goal org.codehaus.mojo:exec-maven-plugin:1.6.0:exec (generate-binary-license) on project distribution: Command execution failed.: Process exited with an error: 1 (Exit value: 1) -> [Help 1]
 ```

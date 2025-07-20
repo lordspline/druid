@@ -27,7 +27,7 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-This document describes the API endpoints for task retrieval, submission, and deletion for Apache Druid. Tasks are individual jobs performed by Druid to complete operations such as ingestion, querying, and compaction.
+This document describes the API endpoints for task retrieval, submission, and deletion for Apache Robux. Tasks are individual jobs performed by Robux to complete operations such as ingestion, querying, and compaction.
 
 In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for the Router service address and port. For example, on the quickstart configuration, use `http://localhost:8888`.
 
@@ -35,11 +35,11 @@ In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for the Router se
 
 ### Get an array of tasks
 
-Retrieves an array of all tasks in the Druid cluster. Each task object includes information on its ID, status, associated datasource, and other metadata. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
+Retrieves an array of all tasks in the Robux cluster. Each task object includes information on its ID, status, associated datasource, and other metadata. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
 
 #### URL
 
-`GET` `/druid/indexer/v1/tasks`
+`GET` `/robux/indexer/v1/tasks`
 
 #### Query parameters
 
@@ -48,7 +48,7 @@ The endpoint supports a set of optional query parameters to filter results.
 |Parameter|Type|Description|
 |---|---|---|
 |`state`|String|Filter list of tasks by task state, valid options are `running`, `complete`, `waiting`, and `pending`.|
-| `datasource`|String| Return tasks filtered by Druid datasource.|
+| `datasource`|String| Return tasks filtered by Robux datasource.|
 | `createdTimeInterval`|String (ISO-8601)| Return tasks created within the specified interval. Use `_` as the delimiter for the interval string. Do not use `/`. For example, `2023-06-27_2023-06-28`.|
 | `max`|Integer|Maximum number of `complete` tasks to return. Only applies when `state` is set to `complete`.|
 | `type`|String|Filter tasks by task type. See [task documentation](../ingestion/tasks.md) for more details.|
@@ -100,7 +100,7 @@ The following example shows how to retrieve a list of tasks filtered with the fo
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/tasks/?state=complete&datasource=wikipedia_api&createdTimeInterval=2015-09-12_2015-09-13&max=10&type=query_worker"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/tasks/?state=complete&datasource=wikipedia_api&createdTimeInterval=2015-09-12_2015-09-13&max=10&type=query_worker"
 ```
 
 </TabItem>
@@ -108,7 +108,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/tasks/?state=complete&dataso
 
 
 ```HTTP
-GET /druid/indexer/v1/tasks/?state=complete&datasource=wikipedia_api&createdTimeInterval=2015-09-12_2015-09-13&max=10&type=query_worker HTTP/1.1
+GET /robux/indexer/v1/tasks/?state=complete&datasource=wikipedia_api&createdTimeInterval=2015-09-12_2015-09-13&max=10&type=query_worker HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -183,11 +183,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get an array of complete tasks
 
-Retrieves an array of completed tasks in the Druid cluster. This is functionally equivalent to `/druid/indexer/v1/tasks?state=complete`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
+Retrieves an array of completed tasks in the Robux cluster. This is functionally equivalent to `/robux/indexer/v1/tasks?state=complete`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
 
 #### URL
 
-`GET` `/druid/indexer/v1/completeTasks`
+`GET` `/robux/indexer/v1/completeTasks`
 
 #### Query parameters
 
@@ -195,7 +195,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 |Parameter|Type|Description|
 |---|---|---|
-| `datasource`|String| Return tasks filtered by Druid datasource.|
+| `datasource`|String| Return tasks filtered by Robux datasource.|
 | `createdTimeInterval`|String (ISO-8601)| Return tasks created within the specified interval. The interval string should be delimited by `_` instead of `/`. For example, `2023-06-27_2023-06-28`.|
 | `max`|Integer|Maximum number of `complete` tasks to return. Only applies when `state` is set to `complete`.|
 | `type`|String|Filter tasks by task type. See [task documentation](../ingestion/tasks.md) for more details.|
@@ -232,7 +232,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/completeTasks"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/completeTasks"
 ```
 
 </TabItem>
@@ -240,7 +240,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/completeTasks"
 
 
 ```HTTP
-GET /druid/indexer/v1/completeTasks HTTP/1.1
+GET /robux/indexer/v1/completeTasks HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -297,11 +297,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get an array of running tasks
 
-Retrieves an array of running task objects in the Druid cluster. It is functionally equivalent to `/druid/indexer/v1/tasks?state=running`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
+Retrieves an array of running task objects in the Robux cluster. It is functionally equivalent to `/robux/indexer/v1/tasks?state=running`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
 
 #### URL
 
-`GET` `/druid/indexer/v1/runningTasks`
+`GET` `/robux/indexer/v1/runningTasks`
 
 #### Query parameters
 
@@ -309,7 +309,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 |Parameter|Type|Description|
 |---|---|---|
-| `datasource`|String| Return tasks filtered by Druid datasource.|
+| `datasource`|String| Return tasks filtered by Robux datasource.|
 | `createdTimeInterval`|String (ISO-8601)| Return tasks created within the specified interval. The interval string should be delimited by `_` instead of `/`. For example, `2023-06-27_2023-06-28`.|
 | `max`|Integer|Maximum number of `complete` tasks to return. Only applies when `state` is set to `complete`.|
 | `type`|String|Filter tasks by task type. See [task documentation](../ingestion/tasks.md) for more details.|
@@ -338,7 +338,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/runningTasks"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/runningTasks"
 ```
 
 </TabItem>
@@ -346,7 +346,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/runningTasks"
 
 
 ```HTTP
-GET /druid/indexer/v1/runningTasks HTTP/1.1
+GET /robux/indexer/v1/runningTasks HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -386,11 +386,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get an array of waiting tasks
 
-Retrieves an array of waiting tasks in the Druid cluster. It is functionally equivalent to `/druid/indexer/v1/tasks?state=waiting`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
+Retrieves an array of waiting tasks in the Robux cluster. It is functionally equivalent to `/robux/indexer/v1/tasks?state=waiting`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
 
 #### URL
 
-`GET` `/druid/indexer/v1/waitingTasks`
+`GET` `/robux/indexer/v1/waitingTasks`
 
 #### Query parameters
 
@@ -398,7 +398,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 |Parameter|Type|Description|
 |---|---|---|
-| `datasource`|String| Return tasks filtered by Druid datasource.|
+| `datasource`|String| Return tasks filtered by Robux datasource.|
 | `createdTimeInterval`|String (ISO-8601)| Return tasks created within the specified interval. The interval string should be delimited by `_` instead of `/`. For example, `2023-06-27_2023-06-28`.|
 | `max`|Integer|Maximum number of `complete` tasks to return. Only applies when `state` is set to `complete`.|
 | `type`|String|Filter tasks by task type. See [task documentation](../ingestion/tasks.md) for more details.|
@@ -427,7 +427,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/waitingTasks"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/waitingTasks"
 ```
 
 </TabItem>
@@ -435,7 +435,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/waitingTasks"
 
 
 ```HTTP
-GET /druid/indexer/v1/waitingTasks HTTP/1.1
+GET /robux/indexer/v1/waitingTasks HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -510,11 +510,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get an array of pending tasks
 
-Retrieves an array of pending tasks in the Druid cluster. It is functionally equivalent to `/druid/indexer/v1/tasks?state=pending`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
+Retrieves an array of pending tasks in the Robux cluster. It is functionally equivalent to `/robux/indexer/v1/tasks?state=pending`. For definitions of the response properties, see the [Tasks table](../querying/sql-metadata-tables.md#tasks-table).
 
 #### URL
 
-`GET` `/druid/indexer/v1/pendingTasks`
+`GET` `/robux/indexer/v1/pendingTasks`
 
 #### Query parameters
 
@@ -522,7 +522,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 |Parameter|Type|Description|
 |---|---|---|
-| `datasource`|String| Return tasks filtered by Druid datasource.|
+| `datasource`|String| Return tasks filtered by Robux datasource.|
 | `createdTimeInterval`|String (ISO-8601)| Return tasks created within the specified interval. The interval string should be delimited by `_` instead of `/`. For example, `2023-06-27_2023-06-28`.|
 | `max`|Integer|Maximum number of `complete` tasks to return. Only applies when `state` is set to `complete`.|
 | `type`|String|Filter tasks by task type. See [task documentation](../ingestion/tasks.md) for more details.|
@@ -551,7 +551,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/pendingTasks"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/pendingTasks"
 ```
 
 </TabItem>
@@ -559,7 +559,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/pendingTasks"
 
 
 ```HTTP
-GET /druid/indexer/v1/pendingTasks HTTP/1.1
+GET /robux/indexer/v1/pendingTasks HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -620,7 +620,7 @@ Retrieves the payload of a task given the task ID. It returns a JSON object with
 
 #### URL
 
-`GET` `/druid/indexer/v1/task/{taskId}`
+`GET` `/robux/indexer/v1/task/{taskId}`
 
 #### Responses
 
@@ -656,7 +656,7 @@ The following examples shows how to retrieve the task payload of a task with the
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/index_parallel_wikipedia_short_iajoonnd_2023-07-07T17:53:12.174Z"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/index_parallel_wikipedia_short_iajoonnd_2023-07-07T17:53:12.174Z"
 ```
 
 </TabItem>
@@ -664,7 +664,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/index_parallel_wikipedi
 
 
 ```HTTP
-GET /druid/indexer/v1/task/index_parallel_wikipedia_short_iajoonnd_2023-07-07T17:53:12.174Z HTTP/1.1
+GET /robux/indexer/v1/task/index_parallel_wikipedia_short_iajoonnd_2023-07-07T17:53:12.174Z HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -832,7 +832,7 @@ Retrieves the status of a task given the task ID. It returns a JSON object with 
 
 #### URL
 
-`GET` `/druid/indexer/v1/task/{taskId}/status`
+`GET` `/robux/indexer/v1/task/{taskId}/status`
 
 #### Responses
 
@@ -868,7 +868,7 @@ The following examples shows how to retrieve the status of a task with the speci
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-223549f8-b993-4483-b028-1b0d54713cad/status"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-223549f8-b993-4483-b028-1b0d54713cad/status"
 ```
 
 </TabItem>
@@ -876,7 +876,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-223549f8-b993-448
 
 
 ```HTTP
-GET /druid/indexer/v1/task/query-223549f8-b993-4483-b028-1b0d54713cad/status HTTP/1.1
+GET /robux/indexer/v1/task/query-223549f8-b993-4483-b028-1b0d54713cad/status HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -920,7 +920,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 #### URL
 
-`GET` `/druid/indexer/v1/task/{taskId}/segments`
+`GET` `/robux/indexer/v1/task/{taskId}/segments`
 
 #### Responses
 
@@ -950,7 +950,7 @@ The following examples shows how to retrieve the task segment of the task with t
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports"
 ```
 
 </TabItem>
@@ -958,7 +958,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-52a8aafe-7265-442
 
 
 ```HTTP
-GET /druid/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports HTTP/1.1
+GET /robux/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -977,7 +977,7 @@ Task logs are automatically retrieved from the Middle Manager/Indexer or in long
 
 #### URL
 
-`GET` `/druid/indexer/v1/task/{taskId}/log`
+`GET` `/robux/indexer/v1/task/{taskId}/log`
 
 #### Query parameters
 
@@ -1011,7 +1011,7 @@ The following examples shows how to retrieve the task log of a task with the spe
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/index_kafka_social_media_0e905aa31037879_nommnaeg/log"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/index_kafka_social_media_0e905aa31037879_nommnaeg/log"
 ```
 
 </TabItem>
@@ -1019,7 +1019,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/index_kafka_social_medi
 
 
 ```HTTP
-GET /druid/indexer/v1/task/index_kafka_social_media_0e905aa31037879_nommnaeg/log HTTP/1.1
+GET /robux/indexer/v1/task/index_kafka_social_media_0e905aa31037879_nommnaeg/log HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1032,37 +1032,37 @@ Host: http://ROUTER_IP:ROUTER_PORT
   <summary>View the response</summary>
 
   ```json
-    2023-07-03T22:11:17,891 INFO [qtp1251996697-122] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Sequence[index_kafka_social_media_0e905aa31037879_0] end offsets updated from [{0=9223372036854775807}] to [{0=230985}].
-    2023-07-03T22:11:17,900 INFO [qtp1251996697-122] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Saved sequence metadata to disk: [SequenceMetadata{sequenceId=0, sequenceName='index_kafka_social_media_0e905aa31037879_0', assignments=[0], startOffsets={0=230985}, exclusiveStartPartitions=[], endOffsets={0=230985}, sentinel=false, checkpointed=true}]
-    2023-07-03T22:11:17,901 INFO [task-runner-0-priority-0] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Received resume command, resuming ingestion.
-    2023-07-03T22:11:17,901 INFO [task-runner-0-priority-0] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Finished reading partition[0], up to[230985].
+    2023-07-03T22:11:17,891 INFO [qtp1251996697-122] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Sequence[index_kafka_social_media_0e905aa31037879_0] end offsets updated from [{0=9223372036854775807}] to [{0=230985}].
+    2023-07-03T22:11:17,900 INFO [qtp1251996697-122] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Saved sequence metadata to disk: [SequenceMetadata{sequenceId=0, sequenceName='index_kafka_social_media_0e905aa31037879_0', assignments=[0], startOffsets={0=230985}, exclusiveStartPartitions=[], endOffsets={0=230985}, sentinel=false, checkpointed=true}]
+    2023-07-03T22:11:17,901 INFO [task-runner-0-priority-0] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Received resume command, resuming ingestion.
+    2023-07-03T22:11:17,901 INFO [task-runner-0-priority-0] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Finished reading partition[0], up to[230985].
     2023-07-03T22:11:17,902 INFO [task-runner-0-priority-0] org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-kafka-supervisor-dcanhmig-1, groupId=kafka-supervisor-dcanhmig] Resetting generation and member id due to: consumer pro-actively leaving the group
     2023-07-03T22:11:17,902 INFO [task-runner-0-priority-0] org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-kafka-supervisor-dcanhmig-1, groupId=kafka-supervisor-dcanhmig] Request joining group due to: consumer pro-actively leaving the group
     2023-07-03T22:11:17,902 INFO [task-runner-0-priority-0] org.apache.kafka.clients.consumer.KafkaConsumer - [Consumer clientId=consumer-kafka-supervisor-dcanhmig-1, groupId=kafka-supervisor-dcanhmig] Unsubscribed all topics or patterns and assigned partitions
-    2023-07-03T22:11:17,912 INFO [task-runner-0-priority-0] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Persisted rows[0] and (estimated) bytes[0]
-    2023-07-03T22:11:17,916 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Flushed in-memory data with commit metadata [AppenderatorDriverMetadata{segments={}, lastSegmentIds={}, callerMetadata={nextPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}}] for segments:
-    2023-07-03T22:11:17,917 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Persisted stats: processed rows: [0], persisted rows[0], sinks: [0], total fireHydrants (across sinks): [0], persisted fireHydrants (across sinks): [0]
-    2023-07-03T22:11:17,919 INFO [task-runner-0-priority-0] org.apache.druid.segment.realtime.appenderator.BaseAppenderatorDriver - Pushing [0] segments in background
-    2023-07-03T22:11:17,921 INFO [task-runner-0-priority-0] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Persisted rows[0] and (estimated) bytes[0]
-    2023-07-03T22:11:17,924 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Flushed in-memory data with commit metadata [AppenderatorDriverMetadata{segments={}, lastSegmentIds={}, callerMetadata={nextPartitions=SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}, publishPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}}] for segments:
-    2023-07-03T22:11:17,924 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Persisted stats: processed rows: [0], persisted rows[0], sinks: [0], total fireHydrants (across sinks): [0], persisted fireHydrants (across sinks): [0]
-    2023-07-03T22:11:17,925 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-merge] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Preparing to push (stats): processed rows: [0], sinks: [0], fireHydrants (across sinks): [0]
-    2023-07-03T22:11:17,925 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-merge] org.apache.druid.segment.realtime.appenderator.StreamAppenderator - Push complete...
-    2023-07-03T22:11:17,929 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.druid.indexing.seekablestream.SequenceMetadata - With empty segment set, start offsets [SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}] and end offsets [SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}] are the same, skipping metadata commit.
-    2023-07-03T22:11:17,930 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.druid.segment.realtime.appenderator.BaseAppenderatorDriver - Published [0] segments with commit metadata [{nextPartitions=SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}, publishPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}]
-    2023-07-03T22:11:17,930 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Published 0 segments for sequence [index_kafka_social_media_0e905aa31037879_0] with metadata [AppenderatorDriverMetadata{segments={}, lastSegmentIds={}, callerMetadata={nextPartitions=SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}, publishPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}}].
-    2023-07-03T22:11:17,931 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Saved sequence metadata to disk: []
-    2023-07-03T22:11:17,932 INFO [task-runner-0-priority-0] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Handoff complete for segments:
+    2023-07-03T22:11:17,912 INFO [task-runner-0-priority-0] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Persisted rows[0] and (estimated) bytes[0]
+    2023-07-03T22:11:17,916 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Flushed in-memory data with commit metadata [AppenderatorDriverMetadata{segments={}, lastSegmentIds={}, callerMetadata={nextPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}}] for segments:
+    2023-07-03T22:11:17,917 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Persisted stats: processed rows: [0], persisted rows[0], sinks: [0], total fireHydrants (across sinks): [0], persisted fireHydrants (across sinks): [0]
+    2023-07-03T22:11:17,919 INFO [task-runner-0-priority-0] org.apache.robux.segment.realtime.appenderator.BaseAppenderatorDriver - Pushing [0] segments in background
+    2023-07-03T22:11:17,921 INFO [task-runner-0-priority-0] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Persisted rows[0] and (estimated) bytes[0]
+    2023-07-03T22:11:17,924 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Flushed in-memory data with commit metadata [AppenderatorDriverMetadata{segments={}, lastSegmentIds={}, callerMetadata={nextPartitions=SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}, publishPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}}] for segments:
+    2023-07-03T22:11:17,924 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-persist] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Persisted stats: processed rows: [0], persisted rows[0], sinks: [0], total fireHydrants (across sinks): [0], persisted fireHydrants (across sinks): [0]
+    2023-07-03T22:11:17,925 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-merge] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Preparing to push (stats): processed rows: [0], sinks: [0], fireHydrants (across sinks): [0]
+    2023-07-03T22:11:17,925 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-appenderator-merge] org.apache.robux.segment.realtime.appenderator.StreamAppenderator - Push complete...
+    2023-07-03T22:11:17,929 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.robux.indexing.seekablestream.SequenceMetadata - With empty segment set, start offsets [SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}] and end offsets [SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}] are the same, skipping metadata commit.
+    2023-07-03T22:11:17,930 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.robux.segment.realtime.appenderator.BaseAppenderatorDriver - Published [0] segments with commit metadata [{nextPartitions=SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}, publishPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}]
+    2023-07-03T22:11:17,930 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Published 0 segments for sequence [index_kafka_social_media_0e905aa31037879_0] with metadata [AppenderatorDriverMetadata{segments={}, lastSegmentIds={}, callerMetadata={nextPartitions=SeekableStreamStartSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}, exclusivePartitions=[]}, publishPartitions=SeekableStreamEndSequenceNumbers{stream='social_media', partitionSequenceNumberMap={0=230985}}}}].
+    2023-07-03T22:11:17,931 INFO [[index_kafka_social_media_0e905aa31037879_nommnaeg]-publish] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Saved sequence metadata to disk: []
+    2023-07-03T22:11:17,932 INFO [task-runner-0-priority-0] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Handoff complete for segments:
     2023-07-03T22:11:17,932 INFO [task-runner-0-priority-0] org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-kafka-supervisor-dcanhmig-1, groupId=kafka-supervisor-dcanhmig] Resetting generation and member id due to: consumer pro-actively leaving the group
     2023-07-03T22:11:17,932 INFO [task-runner-0-priority-0] org.apache.kafka.clients.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-kafka-supervisor-dcanhmig-1, groupId=kafka-supervisor-dcanhmig] Request joining group due to: consumer pro-actively leaving the group
     2023-07-03T22:11:17,933 INFO [task-runner-0-priority-0] org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
     2023-07-03T22:11:17,933 INFO [task-runner-0-priority-0] org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
     2023-07-03T22:11:17,933 INFO [task-runner-0-priority-0] org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
     2023-07-03T22:11:17,935 INFO [task-runner-0-priority-0] org.apache.kafka.common.utils.AppInfoParser - App info kafka.consumer for consumer-kafka-supervisor-dcanhmig-1 unregistered
-    2023-07-03T22:11:17,936 INFO [task-runner-0-priority-0] org.apache.druid.curator.announcement.PathChildrenAnnouncer - Unannouncing [/druid/internal-discovery/PEON/localhost:8100]
-    2023-07-03T22:11:17,972 INFO [task-runner-0-priority-0] org.apache.druid.curator.discovery.CuratorDruidNodeAnnouncer - Unannounced self [{"druidNode":{"service":"druid/middleManager","host":"localhost","bindOnHost":false,"plaintextPort":8100,"port":-1,"tlsPort":-1,"enablePlaintextPort":true,"enableTlsPort":false},"nodeType":"peon","services":{"dataNodeService":{"type":"dataNodeService","tier":"_default_tier","maxSize":0,"type":"indexer-executor","serverType":"indexer-executor","priority":0},"lookupNodeService":{"type":"lookupNodeService","lookupTier":"__default"}}}].
-    2023-07-03T22:11:17,972 INFO [task-runner-0-priority-0] org.apache.druid.curator.announcement.PathChildrenAnnouncer - Unannouncing [/druid/announcements/localhost:8100]
-    2023-07-03T22:11:17,996 INFO [task-runner-0-priority-0] org.apache.druid.indexing.worker.executor.ExecutorLifecycle - Task completed with status: {
+    2023-07-03T22:11:17,936 INFO [task-runner-0-priority-0] org.apache.robux.curator.announcement.PathChildrenAnnouncer - Unannouncing [/robux/internal-discovery/PEON/localhost:8100]
+    2023-07-03T22:11:17,972 INFO [task-runner-0-priority-0] org.apache.robux.curator.discovery.CuratorRobuxNodeAnnouncer - Unannounced self [{"robuxNode":{"service":"robux/middleManager","host":"localhost","bindOnHost":false,"plaintextPort":8100,"port":-1,"tlsPort":-1,"enablePlaintextPort":true,"enableTlsPort":false},"nodeType":"peon","services":{"dataNodeService":{"type":"dataNodeService","tier":"_default_tier","maxSize":0,"type":"indexer-executor","serverType":"indexer-executor","priority":0},"lookupNodeService":{"type":"lookupNodeService","lookupTier":"__default"}}}].
+    2023-07-03T22:11:17,972 INFO [task-runner-0-priority-0] org.apache.robux.curator.announcement.PathChildrenAnnouncer - Unannouncing [/robux/announcements/localhost:8100]
+    2023-07-03T22:11:17,996 INFO [task-runner-0-priority-0] org.apache.robux.indexing.worker.executor.ExecutorLifecycle - Task completed with status: {
     "id" : "index_kafka_social_media_0e905aa31037879_nommnaeg",
     "status" : "SUCCESS",
     "duration" : 3601130,
@@ -1073,23 +1073,23 @@ Host: http://ROUTER_IP:ROUTER_PORT
         "tlsPort" : -1
     }
     }
-    2023-07-03T22:11:17,998 INFO [main] org.apache.druid.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [ANNOUNCEMENTS]
-    2023-07-03T22:11:18,005 INFO [main] org.apache.druid.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [SERVER]
+    2023-07-03T22:11:17,998 INFO [main] org.apache.robux.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [ANNOUNCEMENTS]
+    2023-07-03T22:11:18,005 INFO [main] org.apache.robux.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [SERVER]
     2023-07-03T22:11:18,009 INFO [main] org.eclipse.jetty.server.AbstractConnector - Stopped ServerConnector@6491006{HTTP/1.1, (http/1.1)}{0.0.0.0:8100}
     2023-07-03T22:11:18,009 INFO [main] org.eclipse.jetty.server.session - node0 Stopped scavenging
     2023-07-03T22:11:18,012 INFO [main] org.eclipse.jetty.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@742aa00a{/,null,STOPPED}
-    2023-07-03T22:11:18,014 INFO [main] org.apache.druid.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [NORMAL]
-    2023-07-03T22:11:18,014 INFO [main] org.apache.druid.server.coordination.ZkCoordinator - Stopping ZkCoordinator for [DruidServerMetadata{name='localhost:8100', hostAndPort='localhost:8100', hostAndTlsPort='null', maxSize=0, tier='_default_tier', type=indexer-executor, priority=0}]
-    2023-07-03T22:11:18,014 INFO [main] org.apache.druid.server.coordination.SegmentLoadDropHandler - Stopping...
-    2023-07-03T22:11:18,014 INFO [main] org.apache.druid.server.coordination.SegmentLoadDropHandler - Stopped.
-    2023-07-03T22:11:18,014 INFO [main] org.apache.druid.indexing.overlord.SingleTaskBackgroundRunner - Starting graceful shutdown of task[index_kafka_social_media_0e905aa31037879_nommnaeg].
-    2023-07-03T22:11:18,014 INFO [main] org.apache.druid.indexing.seekablestream.SeekableStreamIndexTaskRunner - Stopping forcefully (status: [PUBLISHING])
-    2023-07-03T22:11:18,019 INFO [LookupExtractorFactoryContainerProvider-MainThread] org.apache.druid.query.lookup.LookupReferencesManager - Lookup Management loop exited. Lookup notices are not handled anymore.
-    2023-07-03T22:11:18,020 INFO [main] org.apache.druid.query.lookup.LookupReferencesManager - Closed lookup [name].
+    2023-07-03T22:11:18,014 INFO [main] org.apache.robux.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [NORMAL]
+    2023-07-03T22:11:18,014 INFO [main] org.apache.robux.server.coordination.ZkCoordinator - Stopping ZkCoordinator for [RobuxServerMetadata{name='localhost:8100', hostAndPort='localhost:8100', hostAndTlsPort='null', maxSize=0, tier='_default_tier', type=indexer-executor, priority=0}]
+    2023-07-03T22:11:18,014 INFO [main] org.apache.robux.server.coordination.SegmentLoadDropHandler - Stopping...
+    2023-07-03T22:11:18,014 INFO [main] org.apache.robux.server.coordination.SegmentLoadDropHandler - Stopped.
+    2023-07-03T22:11:18,014 INFO [main] org.apache.robux.indexing.overlord.SingleTaskBackgroundRunner - Starting graceful shutdown of task[index_kafka_social_media_0e905aa31037879_nommnaeg].
+    2023-07-03T22:11:18,014 INFO [main] org.apache.robux.indexing.seekablestream.SeekableStreamIndexTaskRunner - Stopping forcefully (status: [PUBLISHING])
+    2023-07-03T22:11:18,019 INFO [LookupExtractorFactoryContainerProvider-MainThread] org.apache.robux.query.lookup.LookupReferencesManager - Lookup Management loop exited. Lookup notices are not handled anymore.
+    2023-07-03T22:11:18,020 INFO [main] org.apache.robux.query.lookup.LookupReferencesManager - Closed lookup [name].
     2023-07-03T22:11:18,020 INFO [Curator-Framework-0] org.apache.curator.framework.imps.CuratorFrameworkImpl - backgroundOperationsLoop exiting
     2023-07-03T22:11:18,147 INFO [main] org.apache.zookeeper.ZooKeeper - Session: 0x1000097ceaf0007 closed
     2023-07-03T22:11:18,147 INFO [main-EventThread] org.apache.zookeeper.ClientCnxn - EventThread shut down for session: 0x1000097ceaf0007
-    2023-07-03T22:11:18,151 INFO [main] org.apache.druid.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [INIT]
+    2023-07-03T22:11:18,151 INFO [main] org.apache.robux.java.util.common.lifecycle.Lifecycle - Stopping lifecycle [module] stage [INIT]
     Finished peon task
   ```
 
@@ -1097,11 +1097,11 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get task completion report
 
-Retrieves a [task completion report](../ingestion/tasks.md#task-reports) for a task. It returns a JSON object with information about the number of rows ingested, and any parse exceptions that Druid raised.
+Retrieves a [task completion report](../ingestion/tasks.md#task-reports) for a task. It returns a JSON object with information about the number of rows ingested, and any parse exceptions that Robux raised.
 
 #### URL
 
-`GET` `/druid/indexer/v1/task/{taskId}/reports`
+`GET` `/robux/indexer/v1/task/{taskId}/reports`
 
 #### Responses
 
@@ -1129,7 +1129,7 @@ The following examples shows how to retrieve the completion report of a task wit
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports"
 ```
 
 </TabItem>
@@ -1137,7 +1137,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-52a8aafe-7265-442
 
 
 ```HTTP
-GET /druid/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports HTTP/1.1
+GET /robux/indexer/v1/task/query-52a8aafe-7265-4427-89fe-dc51275cc470/reports HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1193,7 +1193,7 @@ Note that for most batch ingestion use cases, you should use the [SQL-ingestion 
 
 #### URL
 
-`POST` `/druid/indexer/v1/task`
+`POST` `/robux/indexer/v1/task`
 
 #### Responses
 
@@ -1245,7 +1245,7 @@ The following request is an example of submitting a task to create a datasource 
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task" \
 --header 'Content-Type: application/json' \
 --data '{
   "type" : "index_parallel",
@@ -1294,7 +1294,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task" \
 
 
 ```HTTP
-POST /druid/indexer/v1/task HTTP/1.1
+POST /robux/indexer/v1/task HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 952
@@ -1363,7 +1363,7 @@ Shuts down a task if it not already complete. Returns a JSON object with the ID 
 
 #### URL
 
-`POST` `/druid/indexer/v1/task/{taskId}/shutdown`
+`POST` `/robux/indexer/v1/task/{taskId}/shutdown`
 
 #### Responses
 
@@ -1399,7 +1399,7 @@ The following request shows how to shut down a task with the ID `query-52as 8aaf
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-52as 8aafe-7265-4427-89fe-dc51275cc470/shutdown"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/task/query-52as 8aafe-7265-4427-89fe-dc51275cc470/shutdown"
 ```
 
 </TabItem>
@@ -1407,7 +1407,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/task/query-52
 
 
 ```HTTP
-POST /druid/indexer/v1/task/query-52as 8aafe-7265-4427-89fe-dc51275cc470/shutdown HTTP/1.1
+POST /robux/indexer/v1/task/query-52as 8aafe-7265-4427-89fe-dc51275cc470/shutdown HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1433,7 +1433,7 @@ Shuts down all tasks for a specified datasource. If successful, it returns a JSO
 
 #### URL
 
-`POST` `/druid/indexer/v1/datasources/{datasource}/shutdownAllTasks`
+`POST` `/robux/indexer/v1/datasources/{datasource}/shutdownAllTasks`
 
 #### Responses
 
@@ -1469,7 +1469,7 @@ The following request is an example of shutting down all tasks for datasource `w
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/wikipedia_auto/shutdownAllTasks"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/datasources/wikipedia_auto/shutdownAllTasks"
 ```
 
 </TabItem>
@@ -1477,7 +1477,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/datasources/w
 
 
 ```HTTP
-POST /druid/indexer/v1/datasources/wikipedia_auto/shutdownAllTasks HTTP/1.1
+POST /robux/indexer/v1/datasources/wikipedia_auto/shutdownAllTasks HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1505,7 +1505,7 @@ Retrieves list of task status objects for list of task ID strings in request bod
 
 #### URL
 
-`POST` `/druid/indexer/v1/taskStatus`
+`POST` `/robux/indexer/v1/taskStatus`
 
 #### Responses
 
@@ -1541,7 +1541,7 @@ The following request is an example of retrieving status objects for task ID `in
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/taskStatus" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/taskStatus" \
 --header 'Content-Type: application/json' \
 --data '["index_parallel_wikipedia_auto_jndhkpbo_2023-06-26T17:23:05.308Z","index_parallel_wikipedia_auto_jbgiianh_2023-06-26T23:17:56.769Z"]'
 ```
@@ -1551,7 +1551,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/taskStatus" \
 
 
 ```HTTP
-POST /druid/indexer/v1/taskStatus HTTP/1.1
+POST /robux/indexer/v1/taskStatus HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 134
@@ -1601,12 +1601,12 @@ Content-Length: 134
 
 Manually clean up pending segments table in metadata storage for `datasource`. It returns a JSON object response with
 `numDeleted` for the number of rows deleted from the pending segments table. This API is used by the
-`druid.coordinator.kill.pendingSegments.on` [Coordinator setting](../configuration/index.md#data-management)
+`robux.coordinator.kill.pendingSegments.on` [Coordinator setting](../configuration/index.md#data-management)
 which automates this operation to perform periodically.
 
 #### URL
 
-`DELETE` `/druid/indexer/v1/pendingSegments/{datasource}`
+`DELETE` `/robux/indexer/v1/pendingSegments/{datasource}`
 
 #### Responses
 
@@ -1634,7 +1634,7 @@ The following request is an example of cleaning up pending segments for the `wik
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/pendingSegments/wikipedia_api"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/pendingSegments/wikipedia_api"
 ```
 
 </TabItem>
@@ -1642,7 +1642,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/pendingSegm
 
 
 ```HTTP
-DELETE /druid/indexer/v1/pendingSegments/wikipedia_api HTTP/1.1
+DELETE /robux/indexer/v1/pendingSegments/wikipedia_api HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 

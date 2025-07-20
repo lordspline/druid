@@ -15,97 +15,97 @@
 
 version: "2.2"
 services:
-  druid-zookeeper-kafka:
+  robux-zookeeper-kafka:
     extends:
       file: docker-compose.base.yml
-      service: druid-zookeeper-kafka
+      service: robux-zookeeper-kafka
 
-  druid-metadata-storage:
+  robux-metadata-storage:
     extends:
       file: docker-compose.base.yml
-      service: druid-metadata-storage
+      service: robux-metadata-storage
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
+      - robux-zookeeper-kafka
 
-  druid-coordinator:
+  robux-coordinator:
     extends:
       file: docker-compose.base.yml
-      service: druid-coordinator
+      service: robux-coordinator
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - druid_centralizedDatasourceSchema_enabled=true
-      - druid_centralizedDatasourceSchema_backFillEnabled=true
-      - druid_centralizedDatasourceSchema_backFillPeriod=15000
-      - druid_coordinator_segmentMetadata_metadataRefreshPeriod=PT15S
-      - druid_manager_segments_useIncrementalCache=always
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - robux_centralizedDatasourceSchema_enabled=true
+      - robux_centralizedDatasourceSchema_backFillEnabled=true
+      - robux_centralizedDatasourceSchema_backFillPeriod=15000
+      - robux_coordinator_segmentMetadata_metadataRefreshPeriod=PT15S
+      - robux_manager_segments_useIncrementalCache=always
     depends_on:
-      - druid-overlord
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-overlord
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-overlord:
+  robux-overlord:
     extends:
       file: docker-compose.base.yml
-      service: druid-overlord
+      service: robux-overlord
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - druid_centralizedDatasourceSchema_enabled=true
-      - druid_manager_segments_useIncrementalCache=always
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - robux_centralizedDatasourceSchema_enabled=true
+      - robux_manager_segments_useIncrementalCache=always
     depends_on:
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-historical:
+  robux-historical:
     extends:
       file: docker-compose.base.yml
-      service: druid-historical
+      service: robux-historical
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
+      - robux-zookeeper-kafka
 
-  druid-middlemanager:
+  robux-middlemanager:
     extends:
       file: docker-compose.base.yml
-      service: druid-middlemanager
+      service: robux-middlemanager
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - druid_indexer_fork_property_druid_centralizedDatasourceSchema_enabled=true
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - robux_indexer_fork_property_robux_centralizedDatasourceSchema_enabled=true
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-overlord
+      - robux-zookeeper-kafka
+      - robux-overlord
 
-  druid-broker:
+  robux-broker:
     extends:
       file: docker-compose.base.yml
-      service: druid-broker
+      service: robux-broker
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - druid_sql_planner_metadataRefreshPeriod=PT30S
-      - druid_sql_planner_disableSegmentMetadataQueries=true
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - robux_sql_planner_metadataRefreshPeriod=PT30S
+      - robux_sql_planner_disableSegmentMetadataQueries=true
     depends_on:
-      - druid-coordinator
-      - druid-zookeeper-kafka
-      - druid-middlemanager
-      - druid-historical
+      - robux-coordinator
+      - robux-zookeeper-kafka
+      - robux-middlemanager
+      - robux-historical
 
-  druid-router:
+  robux-router:
     extends:
       file: docker-compose.base.yml
-      service: druid-router
+      service: robux-router
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-coordinator
-      - druid-broker
-      - druid-overlord
+      - robux-zookeeper-kafka
+      - robux-coordinator
+      - robux-broker
+      - robux-overlord
 
 networks:
-  druid-it-net:
-    name: druid-it-net
+  robux-it-net:
+    name: robux-it-net
     ipam:
       config:
         - subnet: 172.172.172.0/24

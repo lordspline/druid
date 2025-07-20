@@ -19,7 +19,7 @@
 import type { Timezone } from 'chronoshift';
 import { Duration } from 'chronoshift';
 import { isDate } from 'date-fns';
-import type { Column, FilterPattern, SqlExpression } from 'druid-query-toolkit';
+import type { Column, FilterPattern, SqlExpression } from 'robux-query-toolkit';
 import {
   filterPatternsToExpression,
   filterPatternToExpression,
@@ -28,7 +28,7 @@ import {
   SqlComparison,
   SqlMulti,
   SqlQuery,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 
 import { formatIsoDateRange, prettyFormatIsoDateWithMsIfNeeded } from '../../../utils';
 

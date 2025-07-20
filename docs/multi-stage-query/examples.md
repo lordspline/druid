@@ -24,15 +24,15 @@ sidebar_label: Examples
   -->
 
 :::info
- This page describes SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md)
- extension, new in Druid 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
+ This page describes SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md)
+ extension, new in Robux 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
  ingestion method is right for you.
 :::
 
 These example queries show you some of the things you can do when modifying queries for your use case. Copy the example queries into the **Query** view of the web console and run them to see what they do.
 
 :::tip
-When you insert or replace data with SQL-based ingestion, set the context parameter `finalizeAggregations` to `false`. This context parameter is automatically set for you if you use the Druid console. If you use the API, you must explicitly set it. For an example, see [SQL-based ingestion API](../api-reference/sql-ingestion-api#sample-request). For details on aggregations, see [Rollup](./concepts.md#rollup).
+When you insert or replace data with SQL-based ingestion, set the context parameter `finalizeAggregations` to `false`. This context parameter is automatically set for you if you use the Robux console. If you use the API, you must explicitly set it. For an example, see [SQL-based ingestion API](../api-reference/sql-ingestion-api#sample-request). For details on aggregations, see [Rollup](./concepts.md#rollup).
 :::
 
 ## INSERT with no rollup
@@ -71,7 +71,7 @@ SELECT
   regionName
 FROM TABLE(
     EXTERN(
-      '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+      '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
       '{"type":"json"}',
       '[{"name":"isRobot","type":"string"},{"name":"channel","type":"string"},{"name":"timestamp","type":"string"},{"name":"flags","type":"string"},{"name":"isUnpatrolled","type":"string"},{"name":"page","type":"string"},{"name":"diffUrl","type":"string"},{"name":"added","type":"long"},{"name":"comment","type":"string"},{"name":"commentLength","type":"long"},{"name":"isNew","type":"string"},{"name":"isMinor","type":"string"},{"name":"delta","type":"long"},{"name":"isAnonymous","type":"string"},{"name":"user","type":"string"},{"name":"deltaBucket","type":"long"},{"name":"deleted","type":"long"},{"name":"namespace","type":"string"},{"name":"cityName","type":"string"},{"name":"countryName","type":"string"},{"name":"regionIsoCode","type":"string"},{"name":"metroCode","type":"long"},{"name":"countryIsoCode","type":"string"},{"name":"regionName","type":"string"}]'
     )
@@ -164,7 +164,7 @@ INSERT INTO w003
 WITH
 wikidata AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}',
     '[{"name":"isRobot","type":"string"},{"name":"channel","type":"string"},{"name":"timestamp","type":"string"},{"name":"flags","type":"string"},{"name":"isUnpatrolled","type":"string"},{"name":"page","type":"string"},{"name":"diffUrl","type":"string"},{"name":"added","type":"long"},{"name":"comment","type":"string"},{"name":"commentLength","type":"long"},{"name":"isNew","type":"string"},{"name":"isMinor","type":"string"},{"name":"delta","type":"long"},{"name":"isAnonymous","type":"string"},{"name":"user","type":"string"},{"name":"deltaBucket","type":"long"},{"name":"deleted","type":"long"},{"name":"namespace","type":"string"},{"name":"cityName","type":"string"},{"name":"countryName","type":"string"},{"name":"regionIsoCode","type":"string"},{"name":"metroCode","type":"long"},{"name":"countryIsoCode","type":"string"},{"name":"regionName","type":"string"}]'
   )
@@ -246,7 +246,7 @@ SELECT
   regionName
 FROM TABLE(
     EXTERN(
-      '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+      '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
       '{"type":"json"}',
       '[{"name":"isRobot","type":"string"},{"name":"channel","type":"string"},{"name":"timestamp","type":"string"},{"name":"flags","type":"string"},{"name":"isUnpatrolled","type":"string"},{"name":"page","type":"string"},{"name":"diffUrl","type":"string"},{"name":"added","type":"long"},{"name":"comment","type":"string"},{"name":"commentLength","type":"long"},{"name":"isNew","type":"string"},{"name":"isMinor","type":"string"},{"name":"delta","type":"long"},{"name":"isAnonymous","type":"string"},{"name":"user","type":"string"},{"name":"deltaBucket","type":"long"},{"name":"deleted","type":"long"},{"name":"namespace","type":"string"},{"name":"cityName","type":"string"},{"name":"countryName","type":"string"},{"name":"regionIsoCode","type":"string"},{"name":"metroCode","type":"long"},{"name":"countryIsoCode","type":"string"},{"name":"regionName","type":"string"}]'
     )

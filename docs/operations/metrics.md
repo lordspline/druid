@@ -23,9 +23,9 @@ title: "Metrics"
   -->
 
 
-You can configure Druid to [emit metrics](../configuration/index.md#metrics-monitors) that are essential for monitoring query execution, ingestion, coordination, and so on.
+You can configure Robux to [emit metrics](../configuration/index.md#metrics-monitors) that are essential for monitoring query execution, ingestion, coordination, and so on.
 
-All Druid metrics share a common set of fields:
+All Robux metrics share a common set of fields:
 
 * `timestamp`: the time the metric was created
 * `metric`: the name of the metric
@@ -36,7 +36,7 @@ All Druid metrics share a common set of fields:
 Metrics may have additional dimensions beyond those listed above.
 
 :::info
-Most metric values reset each emission period, as specified in `druid.monitoring.emissionPeriod`.
+Most metric values reset each emission period, as specified in `robux.monitoring.emissionPeriod`.
 :::
 
 ## Query metrics
@@ -77,9 +77,9 @@ Most metric values reset each emission period, as specified in `druid.monitoring
 |`serverview/sync/healthy`|Sync status of the Broker with a segment-loading server such as a Historical or Peon. Emitted only when [HTTP-based server view](../configuration/index.md#segment-management) is enabled. This metric can be used in conjunction with `serverview/sync/unstableTime` to debug slow startup of Brokers.|`server`, `tier`|1 for fully synced servers, 0 otherwise|
 |`serverview/sync/unstableTime`|Time in milliseconds for which the Broker has been failing to sync with a segment-loading server. Emitted only when [HTTP-based server view](../configuration/index.md#segment-management) is enabled.|`server`, `tier`|Not emitted for synced servers.|
 |`subquery/rows`|Number of rows materialized by the subquery's results. |`id`, `subqueryId`| Varies |
-|`subquery/bytes`|Number of bytes materialized by the subquery's results. This metric is only emitted if the query uses [byte-based subquery guardrails](https://druid.apache.org/docs/latest/configuration/#guardrails-for-materialization-of-subqueries) |`id`, `subqueryId` | Varies |
+|`subquery/bytes`|Number of bytes materialized by the subquery's results. This metric is only emitted if the query uses [byte-based subquery guardrails](https://robux.apache.org/docs/latest/configuration/#guardrails-for-materialization-of-subqueries) |`id`, `subqueryId` | Varies |
 |`subquery/rowLimit/count`|Number of subqueries whose results are materialized as rows (Java objects on heap).|This metric is only available if the `SubqueryCountStatsMonitor` module is included.| |
-|`subquery/byteLimit/count`|Number of subqueries whose results are materialized as frames (Druid's internal byte representation of rows).|This metric is only available if the `SubqueryCountStatsMonitor` module is included.| |
+|`subquery/byteLimit/count`|Number of subqueries whose results are materialized as frames (Robux's internal byte representation of rows).|This metric is only available if the `SubqueryCountStatsMonitor` module is included.| |
 |`subquery/fallback/count`|Number of subqueries which cannot be materialized as frames|This metric is only available if the `SubqueryCountStatsMonitor` module is included.| |
 |`subquery/fallback/insufficientType/count`|Number of subqueries which cannot be materialized as frames due to insufficient type information in the row signature.|This metric is only available if the `SubqueryCountStatsMonitor` module is included.| |
 |`subquery/fallback/unknownReason/count`|Number of subqueries which cannot be materialized as frames due other reasons.|This metric is only available if the `SubqueryCountStatsMonitor` module is included.| |
@@ -101,7 +101,7 @@ Most metric values reset each emission period, as specified in `druid.monitoring
 |`query/segment/time`|Milliseconds taken to query individual segment. Includes time to page in the segment from disk.|`id`, `status`, `segment`, `vectorized`.|several hundred milliseconds|
 |`query/wait/time`|Milliseconds spent waiting for a segment to be scanned.|`id`, `segment`|< several hundred milliseconds|
 |`segment/scan/pending`|Number of segments in queue waiting to be scanned.||Close to 0|
-|`segment/scan/active`|Number of segments currently scanned. This metric also indicates how many threads from `druid.processing.numThreads` are currently being used.||Close to `druid.processing.numThreads`|
+|`segment/scan/active`|Number of segments currently scanned. This metric also indicates how many threads from `robux.processing.numThreads` are currently being used.||Close to `robux.processing.numThreads`|
 |`query/segmentAndCache/time`|Milliseconds taken to query individual segment or hit the cache (if it is enabled on the Historical process).|`id`, `segment`|several hundred milliseconds|
 |`query/cpu/time`|Microseconds of CPU time taken to complete a query.|<p>Common: `dataSource`, `type`, `interval`, `hasFilters`, `duration`, `context`, `remoteAddress`, `id`.</p><p> Aggregation Queries: `numMetrics`, `numComplexMetrics`.</p><p> GroupBy: `numDimensions`.</p><p> TopN: `threshold`, `dimension`.</p>|Varies|
 |`query/count`|Total number of queries.|This metric is only available if the `QueryCountStatsMonitor` module is included.||
@@ -124,7 +124,7 @@ Most metric values reset each emission period, as specified in `druid.monitoring
 |`query/time`|Milliseconds taken to complete a query.|<p>Common: `dataSource`, `type`, `interval`, `hasFilters`, `duration`, `context`, `remoteAddress`, `id`.</p><p> Aggregation Queries: `numMetrics`, `numComplexMetrics`.</p><p> GroupBy: `numDimensions`.</p><p> TopN: `threshold`, `dimension`.</p>|< 1s|
 |`query/wait/time`|Milliseconds spent waiting for a segment to be scanned.|`id`, `segment`|several hundred milliseconds|
 |`segment/scan/pending`|Number of segments in queue waiting to be scanned.||Close to 0|
-|`segment/scan/active`|Number of segments currently scanned. This metric also indicates how many threads from `druid.processing.numThreads` are currently being used.||Close to `druid.processing.numThreads`|
+|`segment/scan/active`|Number of segments currently scanned. This metric also indicates how many threads from `robux.processing.numThreads` are currently being used.||Close to `robux.processing.numThreads`|
 |`query/cpu/time`|Microseconds of CPU time taken to complete a query.|<p>Common: `dataSource`, `type`, `interval`, `hasFilters`, `duration`, `context`, `remoteAddress`, `id`.</p><p> Aggregation Queries: `numMetrics`, `numComplexMetrics`.</p><p> GroupBy: `numDimensions`. </p><p>TopN: `threshold`, `dimension`.</p>|Varies|
 |`query/count`|Number of total queries.|This metric is only available if the `QueryCountStatsMonitor` module is included.||
 |`query/success/count`|Number of queries successfully processed.|This metric is only available if the `QueryCountStatsMonitor` module is included.||
@@ -148,9 +148,9 @@ Most metric values reset each emission period, as specified in `druid.monitoring
 |`jetty/threadPool/idle`|Number of idle threads.|Less than or equal to `threadPoolNumTotalThreads`. Non zero number means there is less work to do than configured capacity.|
 |`jetty/threadPool/busy`|Number of busy threads that has work to do from the worker queue.|Less than or equal to `threadPoolNumTotalThreads`.|
 |`jetty/threadPool/isLowOnThreads`|A rough indicator of whether number of total workable threads allocated is enough to handle the works in the work queue.|0|
-|`jetty/threadPool/min`|Number of minimum threads allocatable.|`druid.server.http.numThreads` plus a small fixed number of threads allocated for Jetty acceptors and selectors.|
-|`jetty/threadPool/max`|Number of maximum threads allocatable.|`druid.server.http.numThreads` plus a small fixed number of threads allocated for Jetty acceptors and selectors.|
-|`jetty/threadPool/queueSize`|Size of the worker queue.|Not much higher than `druid.server.http.queueSize`.|
+|`jetty/threadPool/min`|Number of minimum threads allocatable.|`robux.server.http.numThreads` plus a small fixed number of threads allocated for Jetty acceptors and selectors.|
+|`jetty/threadPool/max`|Number of maximum threads allocatable.|`robux.server.http.numThreads` plus a small fixed number of threads allocated for Jetty acceptors and selectors.|
+|`jetty/threadPool/queueSize`|Size of the worker queue.|Not much higher than `robux.server.http.queueSize`.|
 
 ### Cache
 
@@ -169,7 +169,7 @@ Most metric values reset each emission period, as specified in `druid.monitoring
 |`*/errors`|Number of cache errors.||0|
 |`*/put/ok`|Number of new cache entries successfully cached.||Varies, but more than zero|
 |`*/put/error`|Number of new cache entries that could not be cached due to errors.||Varies, but more than zero|
-|`*/put/oversized`|Number of potential new cache entries that were skipped due to being too large (based on `druid.{broker,historical,realtime}.cache.maxEntrySize` properties).||Varies|
+|`*/put/oversized`|Number of potential new cache entries that were skipped due to being too large (based on `robux.{broker,historical,realtime}.cache.maxEntrySize` properties).||Varies|
 
 #### Memcached only metrics
 
@@ -177,8 +177,8 @@ Memcached client metrics are reported as per the following. These metrics come d
 
 |Metric|Description|Dimensions|Normal value|
 |------|-----------|----------|------------|
-|`query/cache/memcached/total`|Cache metrics unique to memcached (only if `druid.cache.type=memcached`) as their actual values.|Variable|N/A|
-|`query/cache/memcached/delta`|Cache metrics unique to memcached (only if `druid.cache.type=memcached`) as their delta from the prior event emission.|Variable|N/A|
+|`query/cache/memcached/total`|Cache metrics unique to memcached (only if `robux.cache.type=memcached`) as their actual values.|Variable|N/A|
+|`query/cache/memcached/delta`|Cache metrics unique to memcached (only if `robux.cache.type=memcached`) as their delta from the prior event emission.|Variable|N/A|
 
 ## SQL Metrics
 
@@ -268,7 +268,7 @@ batch ingestion emit the following metrics. These metrics are deltas for each em
 |`ingest/events/thrownAway`|Number of events rejected because they are null, or filtered by `transformSpec`, or outside one of `lateMessageRejectionPeriod`, `earlyMessageRejectionPeriod`, or `windowPeriod`.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|0|
 |`ingest/events/duplicate`|Number of events rejected because the events are duplicated.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|0|
 |`ingest/input/bytes`|Number of bytes read from input sources, after decompression but prior to parsing. This covers all data read, including data that does not end up being fully processed and ingested. For example, this includes data that ends up being rejected for being unparseable or filtered out.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Depends on the amount of data read.|
-|`ingest/rows/output`|Number of Druid rows persisted.|`dataSource`, `taskId`, `taskType`, `groupId`|Your number of events with rollup.|
+|`ingest/rows/output`|Number of Robux rows persisted.|`dataSource`, `taskId`, `taskType`, `groupId`|Your number of events with rollup.|
 |`ingest/persists/count`|Number of times persist occurred.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Depends on the configuration.|
 |`ingest/persists/time`|Milliseconds spent doing intermediate persist.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Depends on the configuration. Generally a few minutes at most.|
 |`ingest/persists/cpu`|CPU time in nanoseconds spent on doing intermediate persist.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Depends on the configuration. Generally a few minutes at most.|
@@ -279,7 +279,7 @@ batch ingestion emit the following metrics. These metrics are deltas for each em
 |`ingest/merge/cpu`|CPU time in Nanoseconds spent on merging intermediate segments.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Depends on the configuration. Generally a few minutes at most.|
 |`ingest/handoff/count`|Number of handoffs that happened.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Varies. Generally greater than 0 once every segment granular period if cluster operating normally.|
 |`ingest/sink/count`|Number of sinks not handed off.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|1~3|
-|`ingest/events/messageGap`|Time gap in milliseconds between the latest ingested event timestamp and the current system timestamp of metrics emission. If the value is increasing but lag is low, Druid may not be receiving new data. This metric is reset as new tasks spawn up.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Greater than 0, depends on the time carried in event.|
+|`ingest/events/messageGap`|Time gap in milliseconds between the latest ingested event timestamp and the current system timestamp of metrics emission. If the value is increasing but lag is low, Robux may not be receiving new data. This metric is reset as new tasks spawn up.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Greater than 0, depends on the time carried in event.|
 |`ingest/events/maxMessageGap`|Maximum seen time gap in milliseconds between each ingested event timestamp and the current system timestamp of metrics emission. This metric is reset every emission period.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Greater than 0, depends on the time carried in event.|
 |`ingest/events/minMessageGap`|Minimum seen time gap in milliseconds between each ingested event timestamp and the current system timestamp of metrics emission. This metric is reset every emission period.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Greater than 0, depends on the time carried in event.|
 |`ingest/events/avgMessageGap`|Average time gap in milliseconds between each ingested event timestamp and the current system timestamp of metrics emission. This metric is reset every emission period.|`dataSource`, `taskId`, `taskType`, `groupId`, `tags`|Greater than 0, depends on the time carried in event.|
@@ -371,7 +371,7 @@ These metrics are emitted only if [auto-kill of unused segments](../data-managem
 
 ## Shuffle metrics (Native parallel task)
 
-The shuffle metrics can be enabled by adding `org.apache.druid.indexing.worker.shuffle.ShuffleMonitor` in `druid.monitoring.monitors`.
+The shuffle metrics can be enabled by adding `org.apache.robux.indexing.worker.shuffle.ShuffleMonitor` in `robux.monitoring.monitors`.
 See [Enabling metrics](../configuration/index.md#metrics-monitors) for more details.
 
 |Metric|Description|Dimensions|Normal value|
@@ -381,7 +381,7 @@ See [Enabling metrics](../configuration/index.md#metrics-monitors) for more deta
 
 ## Coordination
 
-These metrics are emitted by the Druid Coordinator in every run of the corresponding coordinator duty.
+These metrics are emitted by the Robux Coordinator in every run of the corresponding coordinator duty.
 
 |Metric|Description|Dimensions|Normal value|
 |------|-----------|----------|------------|
@@ -431,11 +431,11 @@ These metrics are emitted by the Druid Coordinator in every run of the correspon
 |`interval/skipCompact/count`|Total number of intervals of this datasource that are skipped (not eligible for auto compaction) by the auto compaction.|`dataSource`|Varies|
 |`coordinator/time`|Approximate Coordinator duty runtime in milliseconds. |`duty`|Varies|
 |`coordinator/global/time`|Approximate runtime of a full coordination cycle in milliseconds. The `dutyGroup` dimension indicates what type of coordination this run was. For example: Historical Management or Indexing.|`dutyGroup`|Varies|
-|`metadata/kill/supervisor/count`|Total number of terminated supervisors that were automatically deleted from metadata store per each Coordinator kill supervisor duty run. This metric can help adjust `druid.coordinator.kill.supervisor.durationToRetain` configuration based on whether more or less terminated supervisors need to be deleted per cycle. This metric is only emitted when `druid.coordinator.kill.supervisor.on` is set to true.| |Varies|
-|`metadata/kill/audit/count`|Total number of audit logs that were automatically deleted from metadata store per each Coordinator kill audit duty run. This metric can help adjust `druid.coordinator.kill.audit.durationToRetain` configuration based on whether more or less audit logs need to be deleted per cycle. This metric is emitted only when `druid.coordinator.kill.audit.on` is set to true.| |Varies|
-|`metadata/kill/compaction/count`|Total number of compaction configurations that were automatically deleted from metadata store per each Coordinator kill compaction configuration duty run. This metric is only emitted when `druid.coordinator.kill.compaction.on` is set to true.| |Varies|
-|`metadata/kill/rule/count`|Total number of rules that were automatically deleted from metadata store per each Coordinator kill rule duty run. This metric can help adjust `druid.coordinator.kill.rule.durationToRetain` configuration based on whether more or less rules need to be deleted per cycle. This metric is only emitted when `druid.coordinator.kill.rule.on` is set to true.| |Varies|
-|`metadata/kill/datasource/count`|Total number of datasource metadata that were automatically deleted from metadata store per each Coordinator kill datasource duty run. Note that datasource metadata only exists for datasource created from supervisor. This metric can help adjust `druid.coordinator.kill.datasource.durationToRetain` configuration based on whether more or less datasource metadata need to be deleted per cycle. This metric is only emitted when `druid.coordinator.kill.datasource.on` is set to true.| |Varies|
+|`metadata/kill/supervisor/count`|Total number of terminated supervisors that were automatically deleted from metadata store per each Coordinator kill supervisor duty run. This metric can help adjust `robux.coordinator.kill.supervisor.durationToRetain` configuration based on whether more or less terminated supervisors need to be deleted per cycle. This metric is only emitted when `robux.coordinator.kill.supervisor.on` is set to true.| |Varies|
+|`metadata/kill/audit/count`|Total number of audit logs that were automatically deleted from metadata store per each Coordinator kill audit duty run. This metric can help adjust `robux.coordinator.kill.audit.durationToRetain` configuration based on whether more or less audit logs need to be deleted per cycle. This metric is emitted only when `robux.coordinator.kill.audit.on` is set to true.| |Varies|
+|`metadata/kill/compaction/count`|Total number of compaction configurations that were automatically deleted from metadata store per each Coordinator kill compaction configuration duty run. This metric is only emitted when `robux.coordinator.kill.compaction.on` is set to true.| |Varies|
+|`metadata/kill/rule/count`|Total number of rules that were automatically deleted from metadata store per each Coordinator kill rule duty run. This metric can help adjust `robux.coordinator.kill.rule.durationToRetain` configuration based on whether more or less rules need to be deleted per cycle. This metric is only emitted when `robux.coordinator.kill.rule.on` is set to true.| |Varies|
+|`metadata/kill/datasource/count`|Total number of datasource metadata that were automatically deleted from metadata store per each Coordinator kill datasource duty run. Note that datasource metadata only exists for datasource created from supervisor. This metric can help adjust `robux.coordinator.kill.datasource.durationToRetain` configuration based on whether more or less datasource metadata need to be deleted per cycle. This metric is only emitted when `robux.coordinator.kill.datasource.on` is set to true.| |Varies|
 |`serverview/init/time`|Time taken to initialize the coordinator server view.||Depends on the number of segments.|
 |`serverview/sync/healthy`|Sync status of the Coordinator with a segment-loading server such as a Historical or Peon. Emitted only when [HTTP-based server view](../configuration/index.md#segment-management) is enabled. You can use this metric in conjunction with `serverview/sync/unstableTime` to debug slow startup of the Coordinator.|`server`, `tier`|1 for fully synced servers, 0 otherwise|
 |`serverview/sync/unstableTime`|Time in milliseconds for which the Coordinator has been failing to sync with a segment-loading server. Emitted only when [HTTP-based server view](../configuration/index.md#segment-management) is enabled.|`server`, `tier`|Not emitted for synced servers.|
@@ -473,7 +473,7 @@ These metrics are emitted by the Druid Coordinator in every run of the correspon
 
 ### JVM
 
-These metrics are only available if the `JvmMonitor` module is included in `druid.monitoring.monitors`.
+These metrics are only available if the `JvmMonitor` module is included in `robux.monitoring.monitors`.
 For more information, see [Enabling Metrics](../configuration/index.md#metrics-monitors).
 
 |Metric|Description|Dimensions|Normal value|
@@ -494,7 +494,7 @@ For more information, see [Enabling Metrics](../configuration/index.md#metrics-m
 
 ### ZooKeeper
 
-These metrics are available only when `druid.zk.service.enabled = true`.
+These metrics are available only when `robux.zk.service.enabled = true`.
 
 |Metric|Description|Dimensions|Normal value|
 |------|-----------|----------|------------|
@@ -572,12 +572,12 @@ These metrics are only available if the `OshiSysMonitor` module is included.
 |`sys/tcpv4/out/rsts`|Total "out reset" packets sent to reset the connection||Generally 0|
 |`sys/tcpv4/retrans/segs`|Total segments re-transmitted||Varies|
 
-If you want to enable only some of these metrics categories you could specify `druid.monitoring.sys.categories`.
+If you want to enable only some of these metrics categories you could specify `robux.monitoring.sys.categories`.
 Possible values are `mem`, `swap`, `fs`, `disk`, `net`, `cpu`, `sys`, and `tcp`.
 
 ## S3 multi-part upload
 
-These metrics are only available if the `druid-s3-extensions` module is included and if certain specific features are being used: MSQ export to S3, durable intermediate storage on S3.
+These metrics are only available if the `robux-s3-extensions` module is included and if certain specific features are being used: MSQ export to S3, durable intermediate storage on S3.
 
 |Metric|Description|Dimensions|Normal value|
 |------|-----------|----------|------------|

@@ -25,20 +25,20 @@ set -e
 # Enable for debugging
 #set -x
 
-export DRUID_DEV=$(cd $(dirname $0) && pwd)
+export ROBUX_DEV=$(cd $(dirname $0) && pwd)
 
 function usage
 {
   cat <<EOF
 Usage: $0 cmd [category] [module]
   ci
-      build Druid and the distribution for CI pipelines
+      build Robux and the distribution for CI pipelines
   build
-      Build Druid and the distribution
+      Build Robux and the distribution
   dist
-      Build the Druid distribution (only)
+      Build the Robux distribution (only)
   tools
-      Build druid-it-tools
+      Build robux-it-tools
   image
       Build the test image
   up <category> [<module>]
@@ -72,7 +72,7 @@ Environment:
   OVERRIDE_ENV: optional, name of env file to pass to Docker
   USE_INDEXER: Set to middleManager (default if not set)
       or "indexer". If "indexer", requires docker-compose-indexer.yaml exist.
-  druid_*: passed to the container.
+  robux_*: passed to the container.
   Other, test-specific variables.
 
 See docs for additional details.
@@ -99,7 +99,7 @@ function tail_logs
 # 1. Directly in the environment. (Simplest and best.) We support a fixed set of variables:
 #    <need the list>
 # 2. For ad-hoc use, as var=value pairs in a file with the same name as the
-#    test catagory, in the home folder under ~/druid-it. Example:
+#    test catagory, in the home folder under ~/robux-it. Example:
 #    BatchIndex.env. Use this to hold credentials and other info which you must
 #    pass into tests when running locally.
 # 3. A file given by the OVERRIDE_ENV environment variable. That is, OVERRIDE_ENV holds
@@ -107,7 +107,7 @@ function tail_logs
 #    build environment such as Github Actions. However, it is actually simpler just to use
 #    option 1: just set the values in the environment and let Linux pass them through to
 #    this script.
-# 4. Environment variables of the form "druid_" used to create the Druid config file.
+# 4. Environment variables of the form "robux_" used to create the Robux config file.
 #
 # All of the above are combined into a temporary environment file which is then passed
 # into Docker compose.
@@ -131,14 +131,14 @@ function build_override {
 	fi
 
 	# User-local settings?
-	LOCAL_ENV="$HOME/druid-it/${CATEGORY}.env"
+	LOCAL_ENV="$HOME/robux-it/${CATEGORY}.env"
 	if [ -f "$LOCAL_ENV" ]; then
 		cat "$LOCAL_ENV" >> "$OVERRIDE_FILE"
 	fi
 
-  # Add all environment variables of the form druid_*
+  # Add all environment variables of the form robux_*
   set +e # Grep gives exit status 1 if no lines match. Let's not fail.
-  env | grep "^druid_" >> "$OVERRIDE_FILE"
+  env | grep "^robux_" >> "$OVERRIDE_FILE"
   set -e
 
   # TODO: Add individual env vars that we want to pass from the local
@@ -178,7 +178,7 @@ function require_env_var {
 # ensures we get useful error messages when we forget to set something, rather than
 # some cryptic use-specific error.
 function verify_env_vars {
-  VERIFY_SCRIPT="$MODULE_DIR/cluster/$DRUID_INTEGRATION_TEST_GROUP/verify.sh"
+  VERIFY_SCRIPT="$MODULE_DIR/cluster/$ROBUX_INTEGRATION_TEST_GROUP/verify.sh"
   if [ -f "$VERIFY_SCRIPT" ]; then
     . "$VERIFY_SCRIPT"
   fi
@@ -196,27 +196,27 @@ if [ $# -gt 0 ]; then
 	shift
 fi
 
-# Handle an IT in either the usual druid-it-cases project, or elsewhere,
+# Handle an IT in either the usual robux-it-cases project, or elsewhere,
 # typically in an extension. The Maven module, if needed must be the third
 # parameter in path, not coordinate, form.
 if [ $# -eq 0 ]; then
   # Use the usual project
-  MAVEN_PROJECT=":druid-it-cases"
+  MAVEN_PROJECT=":robux-it-cases"
   # Don't provide a project path to cluster.sh
   unset IT_MODULE_DIR
-  # Generate the override.sh file in the druid-it-cases module
-  MODULE_DIR=$DRUID_DEV/integration-tests-ex/cases
+  # Generate the override.sh file in the robux-it-cases module
+  MODULE_DIR=$ROBUX_DEV/integration-tests-ex/cases
 else
   # The test module is given via the command line argument as a relative path
   MAVEN_PROJECT="$1"
   # Compute the full path to the target module for use by cluster.sh
-  export IT_MODULE_DIR="$DRUID_DEV/$1"
+  export IT_MODULE_DIR="$ROBUX_DEV/$1"
   # Write the override.sh file to the target module
   MODULE_DIR=$IT_MODULE_DIR
   shift
 fi
 
-IT_CASES_DIR="$DRUID_DEV/integration-tests-ex/cases"
+IT_CASES_DIR="$ROBUX_DEV/integration-tests-ex/cases"
 
 # Added -Dcyclonedx.skip=true to avoid ISO-8859-1 [ERROR]s
 # May be fixed in the future
@@ -238,10 +238,10 @@ case $CMD in
     mvn -B install -P dist $MAVEN_IGNORE -pl :distribution
     ;;
   "tools" )
-    mvn -B install -pl :druid-it-tools
+    mvn -B install -pl :robux-it-tools
     ;;
   "image" )
-    cd $DRUID_DEV/integration-tests-ex/image
+    cd $ROBUX_DEV/integration-tests-ex/image
     mvn -B install -P test-image $MAVEN_IGNORE
     ;;
   "gen")

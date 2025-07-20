@@ -24,43 +24,43 @@ sidebar_label: "SQL metadata tables"
   -->
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
 
-Druid Brokers infer table and column metadata for each datasource from segments loaded in the cluster, and use this to
+Robux Brokers infer table and column metadata for each datasource from segments loaded in the cluster, and use this to
 plan [SQL queries](./sql.md). This metadata is cached on Broker startup and also updated periodically in the background through
 [SegmentMetadata queries](segmentmetadataquery.md). Background metadata refreshing is triggered by
 segments entering and exiting the cluster, and can also be throttled through configuration.
 
-Druid exposes system information through special system tables. There are two such schemas available: Information Schema and Sys Schema.
-Information schema provides details about table and column types. The "sys" schema provides information about Druid internals like segments/tasks/servers.
+Robux exposes system information through special system tables. There are two such schemas available: Information Schema and Sys Schema.
+Information schema provides details about table and column types. The "sys" schema provides information about Robux internals like segments/tasks/servers.
 
 ## INFORMATION SCHEMA
 
 You can access table and column metadata through JDBC using `connection.getMetaData()`, or through the
-INFORMATION_SCHEMA tables described below. For example, to retrieve metadata for the Druid
+INFORMATION_SCHEMA tables described below. For example, to retrieve metadata for the Robux
 datasource "foo", use the query:
 
 ```sql
 SELECT *
 FROM INFORMATION_SCHEMA.COLUMNS
-WHERE "TABLE_SCHEMA" = 'druid' AND "TABLE_NAME" = 'foo'
+WHERE "TABLE_SCHEMA" = 'robux' AND "TABLE_NAME" = 'foo'
 ```
 
 :::info
- Note: INFORMATION_SCHEMA tables do not currently support Druid-specific functions like `TIME_PARSE` and
+ Note: INFORMATION_SCHEMA tables do not currently support Robux-specific functions like `TIME_PARSE` and
  `APPROX_QUANTILE_DS`. Only standard SQL functions can be used.
 :::
 
 ### SCHEMATA table
-`INFORMATION_SCHEMA.SCHEMATA` provides a list of all known schemas, which include `druid` for standard [Druid Table datasources](datasource.md#table), `lookup` for [Lookups](datasource.md#lookup), `sys` for the virtual [System metadata tables](#system-schema), and `INFORMATION_SCHEMA` for these virtual tables. Tables are allowed to have the same name across different schemas, so the schema may be included in an SQL statement to distinguish them, e.g. `lookup.table` vs `druid.table`.
+`INFORMATION_SCHEMA.SCHEMATA` provides a list of all known schemas, which include `robux` for standard [Robux Table datasources](datasource.md#table), `lookup` for [Lookups](datasource.md#lookup), `sys` for the virtual [System metadata tables](#system-schema), and `INFORMATION_SCHEMA` for these virtual tables. Tables are allowed to have the same name across different schemas, so the schema may be included in an SQL statement to distinguish them, e.g. `lookup.table` vs `robux.table`.
 
 |Column|Type|Notes|
 |------|----|-----|
-|CATALOG_NAME|VARCHAR|Always set as `druid`|
-|SCHEMA_NAME|VARCHAR|`druid`, `lookup`, `sys`, or `INFORMATION_SCHEMA`|
+|CATALOG_NAME|VARCHAR|Always set as `robux`|
+|SCHEMA_NAME|VARCHAR|`robux`, `lookup`, `sys`, or `INFORMATION_SCHEMA`|
 |SCHEMA_OWNER|VARCHAR|Unused|
 |DEFAULT_CHARACTER_SET_CATALOG|VARCHAR|Unused|
 |DEFAULT_CHARACTER_SET_SCHEMA|VARCHAR|Unused|
@@ -72,19 +72,19 @@ WHERE "TABLE_SCHEMA" = 'druid' AND "TABLE_NAME" = 'foo'
 
 |Column|Type|Notes|
 |------|----|-----|
-|TABLE_CATALOG|VARCHAR|Always set as `druid`|
+|TABLE_CATALOG|VARCHAR|Always set as `robux`|
 |TABLE_SCHEMA|VARCHAR|The 'schema' which the table falls under, see [SCHEMATA table for details](#schemata-table)|
-|TABLE_NAME|VARCHAR|Table name. For the `druid` schema, this is the `dataSource`.|
+|TABLE_NAME|VARCHAR|Table name. For the `robux` schema, this is the `dataSource`.|
 |TABLE_TYPE|VARCHAR|"TABLE" or "SYSTEM_TABLE"|
-|IS_JOINABLE|VARCHAR|If a table is directly joinable if on the right hand side of a `JOIN` statement, without performing a subquery, this value will be set to `YES`, otherwise `NO`. Lookups are always joinable because they are globally distributed among Druid query processing nodes, but Druid datasources are not, and will use a less efficient subquery join.|
-|IS_BROADCAST|VARCHAR|If a table is 'broadcast' and distributed among all Druid query processing nodes, this value will be set to `YES`, such as lookups and Druid datasources which have a 'broadcast' load rule, else `NO`.|
+|IS_JOINABLE|VARCHAR|If a table is directly joinable if on the right hand side of a `JOIN` statement, without performing a subquery, this value will be set to `YES`, otherwise `NO`. Lookups are always joinable because they are globally distributed among Robux query processing nodes, but Robux datasources are not, and will use a less efficient subquery join.|
+|IS_BROADCAST|VARCHAR|If a table is 'broadcast' and distributed among all Robux query processing nodes, this value will be set to `YES`, such as lookups and Robux datasources which have a 'broadcast' load rule, else `NO`.|
 
 ### COLUMNS table
 `INFORMATION_SCHEMA.COLUMNS` provides a list of all known columns across all tables and schema.
 
 |Column|Type|Notes|
 |------|----|-----|
-|TABLE_CATALOG|VARCHAR|Always set as `druid`|
+|TABLE_CATALOG|VARCHAR|Always set as `robux`|
 |TABLE_SCHEMA|VARCHAR|The 'schema' which the table column falls under, see [SCHEMATA table for details](#schemata-table)|
 |TABLE_NAME|VARCHAR|The 'table' which the column belongs to, see [TABLES table for details](#tables-table)|
 |COLUMN_NAME|VARCHAR|The column name|
@@ -100,7 +100,7 @@ WHERE "TABLE_SCHEMA" = 'druid' AND "TABLE_NAME" = 'foo'
 |DATETIME_PRECISION|BIGINT||
 |CHARACTER_SET_NAME|VARCHAR||
 |COLLATION_NAME|VARCHAR||
-|JDBC_TYPE|BIGINT|Type code from java.sql.Types (Druid extension)|
+|JDBC_TYPE|BIGINT|Type code from java.sql.Types (Robux extension)|
 
 For example, this query returns [data type](sql-data-types.md) information for columns in the `foo` table:
 
@@ -114,7 +114,7 @@ WHERE "TABLE_NAME" = 'foo'
 
 |Column|Type| Notes|
 |------|----|------|
-|ROUTINE_CATALOG|VARCHAR| The catalog that contains the routine. Always set as `druid`|
+|ROUTINE_CATALOG|VARCHAR| The catalog that contains the routine. Always set as `robux`|
 |ROUTINE_SCHEMA|VARCHAR| The schema that contains the routine. Always set as `INFORMATION_SCHEMA`|
 |ROUTINE_NAME|VARCHAR| THe routine name|
 |ROUTINE_TYPE|VARCHAR| The routine type. Always set as `FUNCTION`|
@@ -132,16 +132,16 @@ WHERE "IS_AGGREGATOR" = 'YES'
 
 ## SYSTEM SCHEMA
 
-The "sys" schema provides visibility into Druid segments, servers and tasks.
+The "sys" schema provides visibility into Robux segments, servers and tasks.
 
 :::info
- Note: "sys" tables do not currently support Druid-specific functions like `TIME_PARSE` and
+ Note: "sys" tables do not currently support Robux-specific functions like `TIME_PARSE` and
  `APPROX_QUANTILE_DS`. Only standard SQL functions can be used.
 :::
 
 ### SEGMENTS table
 
-Segments table provides details on all Druid segments, whether they are published yet or not.
+Segments table provides details on all Robux segments, whether they are published yet or not.
 
 |Column|Type|Notes|
 |------|-----|-----|
@@ -154,7 +154,7 @@ Segments table provides details on all Druid segments, whether they are publishe
 |partition_num|BIGINT|Partition number (an integer, unique within a datasource+interval+version; may not necessarily be contiguous)|
 |num_replicas|BIGINT|Number of replicas of this segment currently being served|
 |num_rows|BIGINT|Number of rows in this segment, or zero if the number of rows is not known.<br /><br />This row count is gathered by the Broker in the background. It will be zero if the Broker has not gathered a row count for this segment yet. For segments ingested from streams, the reported row count may lag behind the result of a `count(*)` query because the cached `num_rows` on the Broker may be out of date. This will settle shortly after new rows stop being written to that particular segment.|
-|is_active|BIGINT|True for segments that represent the latest state of a datasource.<br /><br />Equivalent to `(is_published = 1 AND is_overshadowed = 0) OR is_realtime = 1`. In steady state, when no ingestion or data management operations are happening, `is_active` will be equivalent to `is_available`. However, they may differ from each other when ingestion or data management operations have executed recently. In these cases, Druid will load and unload segments appropriately to bring actual availability in line with the expected state given by `is_active`.|
+|is_active|BIGINT|True for segments that represent the latest state of a datasource.<br /><br />Equivalent to `(is_published = 1 AND is_overshadowed = 0) OR is_realtime = 1`. In steady state, when no ingestion or data management operations are happening, `is_active` will be equivalent to `is_available`. However, they may differ from each other when ingestion or data management operations have executed recently. In these cases, Robux will load and unload segments appropriately to bring actual availability in line with the expected state given by `is_active`.|
 |is_published|BIGINT|Boolean represented as long type where 1 = true, 0 = false. 1 if this segment has been published to the metadata store and is marked as used. See the [segment lifecycle documentation](../design/storage.md#segment-lifecycle) for more details.|
 |is_available|BIGINT|Boolean represented as long type where 1 = true, 0 = false. 1 if this segment is currently being served by any data serving process, like a Historical or a realtime ingestion task. See the [segment lifecycle documentation](../design/storage.md#segment-lifecycle) for more details.|
 |is_realtime|BIGINT|Boolean represented as long type where 1 = true, 0 = false. 1 if this segment is _only_ served by realtime tasks, and 0 if any Historical process is serving this segment.|
@@ -230,10 +230,10 @@ Servers table lists all discovered servers in the cluster.
 |host|VARCHAR|Hostname of the server|
 |plaintext_port|BIGINT|Unsecured port of the server, or -1 if plaintext traffic is disabled|
 |tls_port|BIGINT|TLS port of the server, or -1 if TLS is disabled|
-|server_type|VARCHAR|Type of Druid service. Possible values include: COORDINATOR, OVERLORD,  BROKER, ROUTER, HISTORICAL, MIDDLE_MANAGER or PEON.|
-|tier|VARCHAR|Distribution tier see [druid.server.tier](../configuration/index.md#historical-general-configuration). Only valid for HISTORICAL type, for other types it's null|
+|server_type|VARCHAR|Type of Robux service. Possible values include: COORDINATOR, OVERLORD,  BROKER, ROUTER, HISTORICAL, MIDDLE_MANAGER or PEON.|
+|tier|VARCHAR|Distribution tier see [robux.server.tier](../configuration/index.md#historical-general-configuration). Only valid for HISTORICAL type, for other types it's null|
 |current_size|BIGINT|Current size of segments in bytes on this server. Only valid for HISTORICAL type, for other types it's 0|
-|max_size|BIGINT|Max size in bytes this server recommends to assign to segments see [druid.server.maxSize](../configuration/index.md#historical-general-configuration). Only valid for HISTORICAL type, for other types it's 0|
+|max_size|BIGINT|Max size in bytes this server recommends to assign to segments see [robux.server.maxSize](../configuration/index.md#historical-general-configuration). Only valid for HISTORICAL type, for other types it's 0|
 |is_leader|BIGINT|1 if the server is currently the 'leader' (for services which have the concept of leadership), otherwise 0 if the server is not the leader, or null if the server type does not have the concept of leadership|
 |start_time|STRING|Timestamp in ISO8601 format when the server was announced in the cluster|
 To retrieve information about all servers, use the query:

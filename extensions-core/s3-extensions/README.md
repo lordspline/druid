@@ -17,5 +17,5 @@
   ~ under the License.
   -->
 
-This extension provides an integration between Druid and S3. For more details read 
+This extension provides an integration between Robux and S3. For more details read 
 the S3 extension docs [here](../../docs/development/extensions-core/s3.md).

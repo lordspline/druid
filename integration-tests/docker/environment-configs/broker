@@ -17,29 +17,29 @@
 # under the License.
 #
 
-DRUID_SERVICE=broker
-DRUID_LOG_PATH=/shared/logs/broker.log
+ROBUX_SERVICE=broker
+ROBUX_LOG_PATH=/shared/logs/broker.log
 
 # JAVA OPTS
-SERVICE_DRUID_JAVA_OPTS=-server -Xms192m -Xmx256m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+SERVICE_ROBUX_JAVA_OPTS=-server -Xms192m -Xmx256m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
-# Druid configs
-druid_host=druid-broker
-druid_processing_buffer_sizeBytes=25000000
-druid_query_groupBy_maxOnDiskStorage=300000000
-druid_server_http_numThreads=40
-druid_processing_numThreads=1
-druid_broker_http_numConnections=20
-druid_broker_http_readTimeout=PT5M
-druid_broker_cache_useCache=true
-druid_broker_cache_populateCache=true
-druid_lookup_namespace_cache_type=onHeap
-druid_cache_sizeInBytes=40000000
-druid_auth_basic_common_cacheDirectory=/tmp/authCache/broker
-druid_sql_avatica_enable=true
-druid_server_https_crlPath=/tls/revocations.crl
-druid_query_scheduler_laning_strategy=manual
-druid_query_scheduler_laning_lanes_one=1
-druid_segmentCache_locations=[{"path":"/shared/druid/brokerIndexCache","maxSize":1000000000}]
-druid_server_maxSize=1000000000
-druid_sql_planner_metadataRefreshPeriod=PT15S
+# Robux configs
+robux_host=robux-broker
+robux_processing_buffer_sizeBytes=25000000
+robux_query_groupBy_maxOnDiskStorage=300000000
+robux_server_http_numThreads=40
+robux_processing_numThreads=1
+robux_broker_http_numConnections=20
+robux_broker_http_readTimeout=PT5M
+robux_broker_cache_useCache=true
+robux_broker_cache_populateCache=true
+robux_lookup_namespace_cache_type=onHeap
+robux_cache_sizeInBytes=40000000
+robux_auth_basic_common_cacheDirectory=/tmp/authCache/broker
+robux_sql_avatica_enable=true
+robux_server_https_crlPath=/tls/revocations.crl
+robux_query_scheduler_laning_strategy=manual
+robux_query_scheduler_laning_lanes_one=1
+robux_segmentCache_locations=[{"path":"/shared/robux/brokerIndexCache","maxSize":1000000000}]
+robux_server_maxSize=1000000000
+robux_sql_planner_metadataRefreshPeriod=PT15S

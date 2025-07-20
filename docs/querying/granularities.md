@@ -24,7 +24,7 @@ sidebar_label: "Granularities"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the native
  language. For information about time functions available in SQL, refer to the
  [SQL documentation](sql-scalar.md#date-and-time-functions).
@@ -41,7 +41,7 @@ You can specify a time period as a [simple](#simple-granularities) string, as a 
 
 Simple granularities are specified as a string and bucket timestamps by their UTC time (e.g., days start at 00:00 UTC).
 
-Druid supports the following granularity strings: 
+Robux supports the following granularity strings: 
   - `all`
   - `none`
   - `second`
@@ -63,14 +63,14 @@ The minimum and maximum granularities are `none` and `all`, described as follows
 * `all` buckets everything into a single bucket.
 * `none` does not mean zero bucketing. It buckets data to millisecond granularity—the granularity of the internal index. You can think of `none` as equivalent to `millisecond`.
 :::info
- Do not use `none` in a [timeseries query](../querying/timeseriesquery.md); Druid fills empty interior time buckets with zeroes, meaning the output will contain results for every single millisecond in the requested interval.
+ Do not use `none` in a [timeseries query](../querying/timeseriesquery.md); Robux fills empty interior time buckets with zeroes, meaning the output will contain results for every single millisecond in the requested interval.
 :::
 
 *Avoid using the `week` granularity for partitioning at ingestion time, because weeks don't align neatly with months and years, making it difficult to partition by coarser granularities later.
 
 #### Example:
 
-Suppose you have data below stored in Apache Druid with millisecond ingestion granularity,
+Suppose you have data below stored in Apache Robux with millisecond ingestion granularity,
 
 ``` json
 {"timestamp": "2013-08-31T01:02:33Z", "page": "AAA", "language" : "en"}
@@ -210,7 +210,7 @@ If you change the granularity to `none`, you will get the same results as settin
 Having a query time `granularity` that is smaller than the `queryGranularity` parameter set at
 [ingestion time](../ingestion/ingestion-spec.md#granularityspec) is unreasonable because information about that
 smaller granularity is not present in the indexed data. So, if the query time granularity is smaller than the ingestion
-time query granularity, Druid produces results that are equivalent to having set `granularity` to `queryGranularity`.
+time query granularity, Robux produces results that are equivalent to having set `granularity` to `queryGranularity`.
 
 
 If you change the granularity to `all`, you will get everything aggregated in 1 bucket,

@@ -211,7 +211,7 @@ metastore:
   <service object>
 ```
 
-Describes the Druid "metadata storage" (metastore) typically
+Describes the Robux "metadata storage" (metastore) typically
 hosted in the offical MySql container. See `MetastoreConfig` for
 configuration options.
 
@@ -233,7 +233,7 @@ connectURI: <url>
 The JDBC connetion URL. Example:
 
 ```text
-jdbc:mysql://<host>:<port>/druid
+jdbc:mysql://<host>:<port>/robux
 ```
 
 The config system supports two special fields: `<host>` and `<port>`.
@@ -275,17 +275,17 @@ zk:
 
 Describes the optional Kafka service.
 
-### `druid`
+### `robux`
 
 ```yaml
-druid:
+robux:
   <service>:
     <service object>
 ```
 
-Describes the set of Druid services using the `ServiceConfig` object.
+Describes the set of Robux services using the `ServiceConfig` object.
 Each service is keyed by the standard service name: the same name used
-by the Druid `server` option.
+by the Robux `server` option.
 
 When using inheritance, overrides replace entire services: it is not possible
 to override individual instances of the service. That is, an include file might
@@ -299,8 +299,8 @@ properties:
   <key>: <value>
 ```
 
-Optional set of properties to use to configuration the Druid components loaded
-by tests. This is the test-specific form of the standard Druid `common.runtime.properties`
+Optional set of properties to use to configuration the Robux components loaded
+by tests. This is the test-specific form of the standard Robux `common.runtime.properties`
 and `runtime.properties` files.  Because the test runs as a client, the server
 files are not available, and might not even make sense. (The client is not
 a "service", for example.) Technically, the properties listed here are added to
@@ -314,7 +314,7 @@ variables via the environment variable "binding" mechanism described in
 
 The "JSON configuration" mechanism wants all properties to be strings. YAML
 will deserialize number-like properties as numbers. To avoid confusion, all
-properties are converted to strings before being passed to Druid.
+properties are converted to strings before being passed to Robux.
 
 When using inheritance, later properties override earlier properties. Environment
 variables, if bound, override the defaults specified in this section. Command-line
@@ -322,8 +322,8 @@ settings, if provided, have the highest priority.
 
 A number of test-specific properties are avilable:
 
-* `druid.test.config.cloudBucket`
-* `druid.test.config.cloudPath`
+* `robux.test.config.cloudBucket`
+* `robux.test.config.cloudPath`
 
 ### `settings`
 
@@ -332,11 +332,11 @@ to properties internally. Settings are a fixed set of values that map to the con
 files used in the prior tests. Keys include:
 
 | Setting | Property | Environment Variable |
-| `druid_storage_type` | - | - |
-| `druid_storage_bucket` | `druid.test.config.cloudBucket` | `DRUID_STORAGE_BUCKET` |
-| `druid_storage_baseKey` | `druid.test.config.cloudPath` | `DRUID_STORAGE_BASEKEY` |
-| `druid_s3_accessKey` | - | `AWS_ACCESS_KEY_ID` |
-| `druid_s3_secretKey` | - | AWS_SECRET_ACCESS_KEY` |
+| `robux_storage_type` | - | - |
+| `robux_storage_bucket` | `robux.test.config.cloudBucket` | `ROBUX_STORAGE_BUCKET` |
+| `robux_storage_baseKey` | `robux.test.config.cloudPath` | `ROBUX_STORAGE_BASEKEY` |
+| `robux_s3_accessKey` | - | `AWS_ACCESS_KEY_ID` |
+| `robux_s3_secretKey` | - | AWS_SECRET_ACCESS_KEY` |
 
 The above replaces the config file mechanism from the older tests. In general, when a
 setting is fixed for a test category, list it in the `docker.yaml` configuration file.
@@ -390,10 +390,10 @@ following behavior:
   notices the results differ, and fails the test.
 
 To work around this, we must change _two_ settings. First, change
-the following Druid configuration for the Coordinator:
+the following Robux configuration for the Coordinator:
 
 ```yaml
-      - druid_manager_segments_pollDuration=PT5S
+      - robux_manager_segments_pollDuration=PT5S
 ```
 
 Second, change the `metastoreInitDelaySec` to be a bit longer:
@@ -462,7 +462,7 @@ then the instance name is `coordinator-one`.
 
 The tag is required when there is more than one instance of a service,
 and is optional if there is only one instance. The tag corresponds to the
-`DRUID_INSTANCE` environment variable passed into the container.
+`ROBUX_INSTANCE` environment variable passed into the container.
 
 #### `container`
 
@@ -517,13 +517,13 @@ The `IntegrationTestingConfig` class, which the above class used to provide,
 is reimplemented to provide the same information
 to tests as before; only the source of the information has changed.
 
-The new framework assumes that each Druid node is configured either for
+The new framework assumes that each Robux node is configured either for
 plain text or for TLS. (If this assumption is wrong, we'll change the config
 file to match.)
 
 Many of the properties are derived from information in the configuration file.
-For example, host names (within Docker) are those given in the `druid` section,
-and ports (within the cluster and for the client) are given in `druid.<service>.intances.port`,
+For example, host names (within Docker) are those given in the `robux` section,
+and ports (within the cluster and for the client) are given in `robux.<service>.intances.port`,
 from which the code computes the URL.
 
 The old system hard-codes the idea that there are two coordinators or overlords. The
@@ -587,8 +587,8 @@ new system allows any number of instances.
 Pre-defined environment bindings:
 
 | Setting | Env. Var. |
-| `cloudBucket` | `DRUID_CLOUD_BUCKET` |
-| `cloudPath` | `DRUID_CLOUD_PATH` |
+| `cloudBucket` | `ROBUX_CLOUD_BUCKET` |
+| `cloudPath` | `ROBUX_CLOUD_PATH` |
 | `s3AccessKey` | `AWS_ACCESS_KEY_ID` |
 | `s3SecretKey` | `AWS_SECRET_ACCESS_KEY` |
 | `azureContainer` | `AZURE_CONTAINER` |

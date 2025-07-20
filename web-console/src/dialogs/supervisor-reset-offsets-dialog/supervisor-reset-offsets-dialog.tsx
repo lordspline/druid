@@ -31,14 +31,14 @@ import React, { useState } from 'react';
 import type { FormJsonTabs } from '../../components';
 import { FormJsonSelector, JsonInput, Loader } from '../../components';
 import { FancyNumericInput } from '../../components/fancy-numeric-input/fancy-numeric-input';
-import type { SupervisorOffsetMap, SupervisorStatus } from '../../druid-models';
+import type { SupervisorOffsetMap, SupervisorStatus } from '../../robux-models';
 import { useQueryManager } from '../../hooks';
 import { Api, AppToaster } from '../../singletons';
 import {
   deepDelete,
   deepGet,
   formatInteger,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   isNumberLike,
 } from '../../utils';
 
@@ -108,7 +108,7 @@ export const SupervisorResetOffsetsDialog = React.memo(function SupervisorResetO
     processQuery: async (supervisorId, cancelToken) => {
       return (
         await Api.instance.get(
-          `/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/status`,
+          `/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/status`,
           { cancelToken },
         )
       ).data;
@@ -127,7 +127,7 @@ export const SupervisorResetOffsetsDialog = React.memo(function SupervisorResetO
 
     try {
       await Api.instance.post(
-        `/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/resetOffsets`,
+        `/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/resetOffsets`,
         {
           type: supervisorType,
           partitions: {
@@ -139,7 +139,7 @@ export const SupervisorResetOffsetsDialog = React.memo(function SupervisorResetO
       );
     } catch (e) {
       AppToaster.show({
-        message: `Failed to set ${offsetLabel}s: ${getDruidErrorMessage(e)}`,
+        message: `Failed to set ${offsetLabel}s: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
       return;

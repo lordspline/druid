@@ -23,9 +23,9 @@ title: "Materialized View"
   -->
 
 
-To use this Apache Druid feature, make sure to load `materialized-view-selection` and `materialized-view-maintenance`. In addition, this feature currently requires a Hadoop cluster.
+To use this Apache Robux feature, make sure to load `materialized-view-selection` and `materialized-view-maintenance`. In addition, this feature currently requires a Hadoop cluster.
 
-This feature enables Druid to greatly improve the query performance, especially when the query dataSource has a very large number of dimensions but the query only required several dimensions. This feature includes two parts. One is `materialized-view-maintenance`, and the other is `materialized-view-selection`.
+This feature enables Robux to greatly improve the query performance, especially when the query dataSource has a very large number of dimensions but the query only required several dimensions. This feature includes two parts. One is `materialized-view-maintenance`, and the other is `materialized-view-selection`.
 
 ## Materialized-view-maintenance
 In materialized-view-maintenance, dataSources user ingested are called "base-dataSource". For each base-dataSource, we can submit `derivativeDataSource` supervisors to create and maintain other dataSources which we called  "derived-dataSource". The dimensions and metrics of derived-dataSources are the subset of base-dataSource's.
@@ -70,12 +70,12 @@ A sample derivativeDataSource supervisor spec is shown below:
 |Field|Description|Required|
 |--------|-----------|---------|
 |Type	|The supervisor type. This should always be `derivativeDataSource`.|yes|
-|baseDataSource	|The name of base dataSource. This dataSource data should be already stored inside Druid, and the dataSource will be used as input data.|yes|
+|baseDataSource	|The name of base dataSource. This dataSource data should be already stored inside Robux, and the dataSource will be used as input data.|yes|
 |dimensionsSpec	|Specifies the dimensions of the data. These dimensions must be the subset of baseDataSource's dimensions.|yes|
 |metricsSpec	|A list of aggregators. These metrics must be the subset of baseDataSource's metrics. See [aggregations](../../querying/aggregations.md).|yes|
 |tuningConfig	|TuningConfig must be HadoopTuningConfig. See [Hadoop tuning config](../../ingestion/hadoop.md#tuningconfig).|yes|
 |dataSource	|The name of this derived dataSource. 	|no(default=baseDataSource-hashCode of supervisor)|
-|hadoopDependencyCoordinates	|A JSON array of Hadoop dependency coordinates that Druid will use, this property will override the default Hadoop coordinates. Once specified, Druid will look for those Hadoop dependencies from the location specified by druid.extensions.hadoopDependenciesDir	|no|
+|hadoopDependencyCoordinates	|A JSON array of Hadoop dependency coordinates that Robux will use, this property will override the default Hadoop coordinates. Once specified, Robux will look for those Hadoop dependencies from the location specified by robux.extensions.hadoopDependenciesDir	|no|
 |classpathPrefix	|Classpath that will be prepended for the Peon process.	|no|
 |context	|See below.	|no|
 
@@ -87,7 +87,7 @@ A sample derivativeDataSource supervisor spec is shown below:
 
 ##  Materialized-view-selection
 
-In materialized-view-selection, we implement a new query type `view`. When we request a view query, Druid will try its best to optimize the query based on query dataSource and intervals.
+In materialized-view-selection, we implement a new query type `view`. When we request a view query, Robux will try its best to optimize the query based on query dataSource and intervals.
 
 A sample view query spec is shown below:
 

@@ -25,10 +25,10 @@ import { DatasourcesOverview } from './component/datasources/overview';
 import { HashedPartitionsSpec } from './component/load-data/config/partition';
 import { saveScreenshotIfError } from './util/debug';
 import {
-  DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
+  ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
   runIndexTask,
   UNIFIED_CONSOLE_URL,
-} from './util/druid';
+} from './util/robux';
 import { createBrowser, createPage } from './util/playwright';
 import { retryIfJestAssertionError } from './util/retry';
 import { waitTillWebConsoleReady } from './util/setup';
@@ -36,7 +36,7 @@ import { waitTillWebConsoleReady } from './util/setup';
 jest.setTimeout(5 * 60 * 1000);
 
 // The workflow in these tests is based on the compaction tutorial:
-// https://druid.apache.org/docs/latest/tutorials/tutorial-compaction.html
+// https://robux.apache.org/docs/latest/tutorials/tutorial-compaction.html
 describe('Auto-compaction', () => {
   let browser: playwright.Browser;
   let page: playwright.Page;
@@ -88,7 +88,7 @@ describe('Auto-compaction', () => {
 
 function loadInitialData(datasourceName: string) {
   const ingestionSpec = path.join(
-    DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
+    ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
     'compaction-init-index.json',
   );
   const setDatasourceName = `s/compaction-tutorial/${datasourceName}/`;

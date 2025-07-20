@@ -23,8 +23,8 @@ title: "Apache Cassandra"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-cassandra-storage` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-cassandra-storage` in the extensions load list.
 
 [Apache Cassandra](http://www.datastax.com/what-we-offer/products-services/datastax-enterprise/apache-cassandra) can also
-be leveraged for deep storage.  This requires some additional Druid configuration as well as setting up the necessary
+be leveraged for deep storage.  This requires some additional Robux configuration as well as setting up the necessary
 schema within a Cassandra keystore.

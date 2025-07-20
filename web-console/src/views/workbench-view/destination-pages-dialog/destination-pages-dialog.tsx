@@ -19,7 +19,7 @@
 import { Button, Classes, Dialog } from '@blueprintjs/core';
 import React from 'react';
 
-import type { Execution } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
 import { DestinationPagesPane } from '../destination-pages-pane/destination-pages-pane';
 
 import './destination-pages-dialog.scss';

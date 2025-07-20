@@ -28,8 +28,8 @@ from pathlib import Path
 
 # Constants used frequently in the template.
 
-DRUID_NETWORK = 'druid-it-net'
-DRUID_SUBNET = '172.172.172'
+ROBUX_NETWORK = 'robux-it-net'
+ROBUX_SUBNET = '172.172.172'
 ZOO_KEEPER = 'zookeeper'
 METADATA = 'metadata'
 MINIO = 'minio'
@@ -101,21 +101,21 @@ class BaseTemplate:
         '''
         self.define_network()
         self.define_support_services()
-        self.define_druid_services()
+        self.define_robux_services()
         self.define_custom_services()
 
     def define_support_services(self):
         '''
         Define support services which run as containers, but are not provided by
-        Druid.
+        Robux.
         '''
         self.define_zk()
         self.define_metadata()
         self.define_kafka()
 
-    def define_druid_services(self):
+    def define_robux_services(self):
         '''
-        Define the set of Druid services. Override this method to provide ad-hoc
+        Define the set of Robux services. Override this method to provide ad-hoc
         services unique to a test. If the test creates multiple versions of a
         service, provide that by overriding the individual service method.
         '''
@@ -182,11 +182,11 @@ class BaseTemplate:
 
     def define_network(self):
         self.cluster['networks'] = {
-            'druid-it-net': {
-                'name': DRUID_NETWORK,
+            'robux-it-net': {
+                'name': ROBUX_NETWORK,
                 'ipam': {
                     'config': [
-                        {'subnet': DRUID_SUBNET + '.0/24'}
+                        {'subnet': ROBUX_SUBNET + '.0/24'}
                     ]
                 }
             }
@@ -216,7 +216,7 @@ class BaseTemplate:
     def add_property(self, service, prop, value):
         '''
         Sets a property for a service. The property is of the same form as the
-        runtime.properties file: druid.some.property.
+        runtime.properties file: robux.some.property.
         This method converts the property to the env var form so you don't have to.
         '''
         var = prop.replace('.', '_')
@@ -245,7 +245,7 @@ class BaseTemplate:
 
     def define_external_service(self, name) -> dict:
         '''
-        Defines a support service external to Druid as a reference to a service
+        Defines a support service external to Robux as a reference to a service
         defined in dependencies.yaml.
         '''
         service = {'extends': {
@@ -280,27 +280,27 @@ class BaseTemplate:
       self.add_depends(service, [ZOO_KEEPER])
       return service
 
-    def define_druid_service(self, name, base) -> dict:
+    def define_robux_service(self, name, base) -> dict:
         '''
-        Defines a Druid service as a reference to the base definition in
-        the druid.yaml file. Used when referencing, and extending, a standard
-        service definition. Cannot be used for a second instance of a Druid
+        Defines a Robux service as a reference to the base definition in
+        the robux.yaml file. Used when referencing, and extending, a standard
+        service definition. Cannot be used for a second instance of a Robux
         service: such services have to be defined from scratch since they
         need unique port mappings and container names.
         '''
         service = {}
         if base is not None:
             service['extends'] = {
-                'file': '../Common/druid.yaml',
+                'file': '../Common/robux.yaml',
                 'service': base
                 }
-        self.extend_druid_service(service)
+        self.extend_robux_service(service)
         self.add_service(name, service)
         return service
 
-    def extend_druid_service(self, service):
+    def extend_robux_service(self, service):
         '''
-        Override this to add options to all Druid services.
+        Override this to add options to all Robux services.
         '''
         pass
 
@@ -323,14 +323,14 @@ class BaseTemplate:
         '''
         Defines a "master" service: one which depends on the metadata service.
         '''
-        service = self.define_druid_service(name, base)
+        service = self.define_robux_service(name, base)
         self.add_depends(service, [ZOO_KEEPER, METADATA])
         return service
 
     def define_std_master_service(self, name) -> dict:
         '''
         Defines a "standard" master service in which the service name is
-        the same as the service defined in druid.yaml.
+        the same as the service defined in robux.yaml.
         '''
         return self.define_master_service(name, name)
 
@@ -350,16 +350,16 @@ class BaseTemplate:
 
     def define_worker_service(self, name, base) -> dict:
         '''
-        Defines a Druid "worker" service: one that depends only on ZooKeeper.
+        Defines a Robux "worker" service: one that depends only on ZooKeeper.
         '''
-        service = self.define_druid_service(name, base)
+        service = self.define_robux_service(name, base)
         self.add_depends(service, [ZOO_KEEPER, METADATA])
         return service
 
     def define_std_worker_service(self, name) -> dict:
         '''
         Define a worker service in which the service name for this cluster is the
-        same as the service name in druid.yaml.
+        same as the service name in robux.yaml.
         '''
         return self.define_worker_service(name, name)
 
@@ -387,7 +387,7 @@ class BaseTemplate:
     def define_std_indexer(self, base) -> dict:
         '''
         Defines a standard indexer service in which the service name in this
-        cluster is the same as the definition in druid.yaml. The service mounts
+        cluster is the same as the definition in robux.yaml. The service mounts
         the standard data directory.
         '''
         service = self.define_worker_service(INDEXER, base)
@@ -439,15 +439,15 @@ class BaseTemplate:
 
     def define_full_service(self, name, base, host_node):
         '''
-        Create a clone of a service as defined in druid.yaml. Use this when
+        Create a clone of a service as defined in robux.yaml. Use this when
         creating a second instance of a service, since the second must use
         distinct host IP and ports.
         '''
         service = {
-            'image': '${DRUID_IT_IMAGE_NAME}',
+            'image': '${ROBUX_IT_IMAGE_NAME}',
             'networks': {
-                DRUID_NETWORK : {
-                    'ipv4_address': DRUID_SUBNET + '.' + str(host_node)
+                ROBUX_NETWORK : {
+                    'ipv4_address': ROBUX_SUBNET + '.' + str(host_node)
                     }
                 },
             'volumes' : [ '${SHARED_DIR}:/shared' ]
@@ -456,6 +456,6 @@ class BaseTemplate:
         if base is not None:
             self.add_env_config(service, base)
         self.add_env_file(service, '${OVERRIDE_ENV}')
-        self.add_env(service, 'DRUID_INTEGRATION_TEST_GROUP', '${DRUID_INTEGRATION_TEST_GROUP}')
+        self.add_env(service, 'ROBUX_INTEGRATION_TEST_GROUP', '${ROBUX_INTEGRATION_TEST_GROUP}')
         self.add_service(name, service)
         return service

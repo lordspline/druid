@@ -10,10 +10,10 @@
       },
       "metadataUpdateSpec": {
         "type": "postgresql",
-        "connectURI": "jdbc:postgresql://localhost/druid",
-        "user" : "druid",
+        "connectURI": "jdbc:postgresql://localhost/robux",
+        "user" : "robux",
         "password" : "asdf",
-        "segmentTable": "druid_segments"
+        "segmentTable": "robux_segments"
       },
       "segmentOutputPath": "/tmp/segments"
     },

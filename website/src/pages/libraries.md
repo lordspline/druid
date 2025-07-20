@@ -1,7 +1,7 @@
 ---
 title: Community and Third Party Software
 layout: simple_page
-canonical: 'https://druid.apache.org/libraries'
+canonical: 'https://robux.apache.org/libraries'
 ---
 
 <!--
@@ -23,4 +23,4 @@ canonical: 'https://druid.apache.org/libraries'
 
 -->
 
-Edit this page in the [`druid-website-src`](https://github.com/apache/druid-website-src/) repo. To see your changes, navigate to them from the [Docs section](/docs/latest/design).
+Edit this page in the [`robux-website-src`](https://github.com/apache/robux-website-src/) repo. To see your changes, navigate to them from the [Docs section](/docs/latest/design).

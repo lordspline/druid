@@ -1772,7 +1772,7 @@ SqlNode SqlInsert() :
     (
         <OVERWRITE>
         {
-            throw org.apache.druid.sql.calcite.parser.DruidSqlParserUtils.problemParsing(
+            throw org.apache.robux.sql.calcite.parser.RobuxSqlParserUtils.problemParsing(
                 "An OVERWRITE clause is not allowed with INSERT statements. Use REPLACE statements if overwriting existing segments is required or remove the OVERWRITE clause."
             );
         }
@@ -1790,11 +1790,11 @@ SqlNode SqlInsert() :
     ]
     {
         sqlInsert = new SqlInsert(s.end(source), keywordList, destination, source, columnList);
-        return DruidSqlInsert.create(sqlInsert, partitionedBy, clusteredBy, exportFileFormat);
+        return RobuxSqlInsert.create(sqlInsert, partitionedBy, clusteredBy, exportFileFormat);
     }
 }
 
-SqlNode DruidSqlInsertEof() :
+SqlNode RobuxSqlInsertEof() :
 {
     SqlNode sqlInsert;
 }
@@ -2065,8 +2065,8 @@ SqlLiteral JoinType() :
 }
 
 /*
- * Druid note: this file is copied from core/src/main/codegen/templates/Parser.jj in Calcite 1.35.0, with changes to
- * to add two elements of Druid syntax to the FROM clause:
+ * Robux note: this file is copied from core/src/main/codegen/templates/Parser.jj in Calcite 1.35.0, with changes to
+ * to add two elements of Robux syntax to the FROM clause:
  *
  * id [ (<args>) ]
  *
@@ -2268,14 +2268,14 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
             tableRef = ImplicitTableFunctionCallArgs(tableName)
         |
             ( tableRef = TableHints(tableName) | { tableRef = tableName; } )
-        // BEGIN: Druid-specific code
+        // BEGIN: Robux-specific code
         [
             paramList = FunctionParameterList(ExprContext.ACCEPT_NONCURSOR)
             {
                 tableRef = ParameterizeOperator.PARAM.createCall(tableRef, paramList);
             }
         ]
-        // END: Druid-specific code
+        // END: Robux-specific code
             tableRef = Over(tableRef)
             [ tableRef = Snapshot(tableRef) ]
             [ tableRef = MatchRecognize(tableRef) ]
@@ -2301,7 +2301,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
     |
         [ <LATERAL> { lateral = true; } ]
         tableRef = TableFunctionCall()
-        // BEGIN: Druid-specific code
+        // BEGIN: Robux-specific code
         [
             [ <EXTEND> ]
             extendList = ExtendList()
@@ -2310,7 +2310,7 @@ SqlNode TableRef3(ExprContext exprContext, boolean lateral) :
                       Span.of(tableRef, extendList).pos(), tableRef, extendList);
             }
         ]
-        // END: Druid-specific code
+        // END: Robux-specific code
         tableRef = addLateral(tableRef, lateral)
     |
         tableRef = ExtendedTableRef()

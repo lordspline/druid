@@ -28,13 +28,13 @@ import org.apache.calcite.plan.RelOptUtil;
 import java.util.Objects;
 
 /**
- * Druid's extension to {@link VolcanoCost}. The difference between the two is in
- * comparing two costs. Druid's cost model gives most weightage to rowCount, then to cpuCost and then lastly ioCost.
+ * Robux's extension to {@link VolcanoCost}. The difference between the two is in
+ * comparing two costs. Robux's cost model gives most weightage to rowCount, then to cpuCost and then lastly ioCost.
  */
-public class DruidVolcanoCost implements RelOptCost
+public class RobuxVolcanoCost implements RelOptCost
 {
 
-  static final DruidVolcanoCost INFINITY = new DruidVolcanoCost(
+  static final RobuxVolcanoCost INFINITY = new RobuxVolcanoCost(
       Double.POSITIVE_INFINITY,
       Double.POSITIVE_INFINITY,
       Double.POSITIVE_INFINITY
@@ -48,7 +48,7 @@ public class DruidVolcanoCost implements RelOptCost
   };
 
   //CHECKSTYLE.OFF: Regexp
-  static final DruidVolcanoCost HUGE = new DruidVolcanoCost(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE) {
+  static final RobuxVolcanoCost HUGE = new RobuxVolcanoCost(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE) {
     @Override
     public String toString()
     {
@@ -57,8 +57,8 @@ public class DruidVolcanoCost implements RelOptCost
   };
   //CHECKSTYLE.ON: Regexp
 
-  static final DruidVolcanoCost ZERO =
-      new DruidVolcanoCost(0.0, 0.0, 0.0)
+  static final RobuxVolcanoCost ZERO =
+      new RobuxVolcanoCost(0.0, 0.0, 0.0)
       {
         @Override
         public String toString()
@@ -67,8 +67,8 @@ public class DruidVolcanoCost implements RelOptCost
         }
       };
 
-  static final DruidVolcanoCost TINY =
-      new DruidVolcanoCost(1.0, 1.0, 0.0)
+  static final RobuxVolcanoCost TINY =
+      new RobuxVolcanoCost(1.0, 1.0, 0.0)
       {
         @Override
         public String toString()
@@ -83,7 +83,7 @@ public class DruidVolcanoCost implements RelOptCost
   final double io;
   final double rowCount;
 
-  DruidVolcanoCost(double rowCount, double cpu, double io)
+  RobuxVolcanoCost(double rowCount, double cpu, double io)
   {
     this.rowCount = rowCount;
     this.cpu = cpu;
@@ -114,7 +114,7 @@ public class DruidVolcanoCost implements RelOptCost
   @Override
   public boolean isLe(RelOptCost other)
   {
-    DruidVolcanoCost that = (DruidVolcanoCost) other;
+    RobuxVolcanoCost that = (RobuxVolcanoCost) other;
     return (this == that)
            || ((this.rowCount < that.rowCount)
                || (this.rowCount == that.rowCount && this.cpu < that.cpu)
@@ -143,17 +143,17 @@ public class DruidVolcanoCost implements RelOptCost
   public boolean equals(RelOptCost other)
   {
     return this == other
-           || other instanceof DruidVolcanoCost
-              && (this.rowCount == ((DruidVolcanoCost) other).rowCount)
-              && (this.cpu == ((DruidVolcanoCost) other).cpu)
-              && (this.io == ((DruidVolcanoCost) other).io);
+           || other instanceof RobuxVolcanoCost
+              && (this.rowCount == ((RobuxVolcanoCost) other).rowCount)
+              && (this.cpu == ((RobuxVolcanoCost) other).cpu)
+              && (this.io == ((RobuxVolcanoCost) other).io);
   }
 
   @Override
   public boolean equals(Object obj)
   {
-    if (obj instanceof DruidVolcanoCost) {
-      return equals((DruidVolcanoCost) obj);
+    if (obj instanceof RobuxVolcanoCost) {
+      return equals((RobuxVolcanoCost) obj);
     }
     return false;
   }
@@ -161,10 +161,10 @@ public class DruidVolcanoCost implements RelOptCost
   @Override
   public boolean isEqWithEpsilon(RelOptCost other)
   {
-    if (!(other instanceof DruidVolcanoCost)) {
+    if (!(other instanceof RobuxVolcanoCost)) {
       return false;
     }
-    DruidVolcanoCost that = (DruidVolcanoCost) other;
+    RobuxVolcanoCost that = (RobuxVolcanoCost) other;
     return (this == that)
            || ((Math.abs(this.rowCount - that.rowCount) < RelOptUtil.EPSILON)
                && (Math.abs(this.cpu - that.cpu) < RelOptUtil.EPSILON)
@@ -177,8 +177,8 @@ public class DruidVolcanoCost implements RelOptCost
     if (this == INFINITY) {
       return this;
     }
-    DruidVolcanoCost that = (DruidVolcanoCost) other;
-    return new DruidVolcanoCost(
+    RobuxVolcanoCost that = (RobuxVolcanoCost) other;
+    return new RobuxVolcanoCost(
         this.rowCount - that.rowCount,
         this.cpu - that.cpu,
         this.io - that.io
@@ -191,7 +191,7 @@ public class DruidVolcanoCost implements RelOptCost
     if (this == INFINITY) {
       return this;
     }
-    return new DruidVolcanoCost(rowCount * factor, cpu * factor, io * factor);
+    return new RobuxVolcanoCost(rowCount * factor, cpu * factor, io * factor);
   }
 
   @Override
@@ -199,7 +199,7 @@ public class DruidVolcanoCost implements RelOptCost
   {
     // Compute the geometric average of the ratios of all of the factors
     // which are non-zero and finite.
-    DruidVolcanoCost that = (DruidVolcanoCost) cost;
+    RobuxVolcanoCost that = (RobuxVolcanoCost) cost;
     double d = 1;
     double n = 0;
     if ((this.rowCount != 0)
@@ -232,11 +232,11 @@ public class DruidVolcanoCost implements RelOptCost
   @Override
   public RelOptCost plus(RelOptCost other)
   {
-    DruidVolcanoCost that = (DruidVolcanoCost) other;
+    RobuxVolcanoCost that = (RobuxVolcanoCost) other;
     if ((this == INFINITY) || (that == INFINITY)) {
       return INFINITY;
     }
-    return new DruidVolcanoCost(
+    return new RobuxVolcanoCost(
         this.rowCount + that.rowCount,
         this.cpu + that.cpu,
         this.io + that.io
@@ -251,38 +251,38 @@ public class DruidVolcanoCost implements RelOptCost
 
   /**
    * Implementation of {@link RelOptCostFactory}
-   * that creates {@link DruidVolcanoCost}s.
+   * that creates {@link RobuxVolcanoCost}s.
    */
   public static class Factory implements RelOptCostFactory
   {
     @Override
     public RelOptCost makeCost(double dRows, double dCpu, double dIo)
     {
-      return new DruidVolcanoCost(dRows, dCpu, dIo);
+      return new RobuxVolcanoCost(dRows, dCpu, dIo);
     }
 
     @Override
     public RelOptCost makeHugeCost()
     {
-      return DruidVolcanoCost.HUGE;
+      return RobuxVolcanoCost.HUGE;
     }
 
     @Override
     public RelOptCost makeInfiniteCost()
     {
-      return DruidVolcanoCost.INFINITY;
+      return RobuxVolcanoCost.INFINITY;
     }
 
     @Override
     public RelOptCost makeTinyCost()
     {
-      return DruidVolcanoCost.TINY;
+      return RobuxVolcanoCost.TINY;
     }
 
     @Override
     public RelOptCost makeZeroCost()
     {
-      return DruidVolcanoCost.ZERO;
+      return RobuxVolcanoCost.ZERO;
     }
   }
 }

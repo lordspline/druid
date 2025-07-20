@@ -24,9 +24,9 @@ sidebar_label: "Load files natively"
   -->
 
 
-This tutorial demonstrates how to load data into Apache Druid from a file using Apache Druid's native batch ingestion feature.
+This tutorial demonstrates how to load data into Apache Robux from a file using Apache Robux's native batch ingestion feature.
 
-You initiate data loading in Druid by submitting an *ingestion task* spec to the Druid Overlord. You can write ingestion 
+You initiate data loading in Robux by submitting an *ingestion task* spec to the Robux Overlord. You can write ingestion 
 specs by hand or using the _data loader_ built into the web console. 
 
 For production environments, it's likely that you'll want to automate data ingestion. This tutorial starts by showing
@@ -35,7 +35,7 @@ lend themselves to automation&mdash;from the command line and from a script.
 
 ## Loading data with a spec (via console)
 
-The Druid package includes the following sample native batch ingestion task spec at `quickstart/tutorial/wikipedia-index.json`, shown here for convenience,
+The Robux package includes the following sample native batch ingestion task spec at `quickstart/tutorial/wikipedia-index.json`, shown here for convenience,
 which has been configured to read the `quickstart/tutorial/wikiticker-2015-09-12-sampled.json.gz` input file:
 
 ```json
@@ -118,11 +118,11 @@ Once the spec is submitted, wait a few moments for the data to load, after which
 
 ## Loading data with a spec (via command line)
 
-For convenience, the Druid package includes a batch ingestion helper script at `bin/post-index-task`.
+For convenience, the Robux package includes a batch ingestion helper script at `bin/post-index-task`.
 
-This script will POST an ingestion task to the Druid Overlord and poll Druid until the data is available for querying.
+This script will POST an ingestion task to the Robux Overlord and poll Robux until the data is available for querying.
 
-Run the following command from Druid package root:
+Run the following command from Robux package root:
 
 ```bash
 bin/post-index-task --file quickstart/tutorial/wikipedia-index.json --url http://localhost:8081
@@ -133,8 +133,8 @@ You should see output like the following:
 ```bash
 Beginning indexing data for wikipedia
 Task started: index_wikipedia_2018-07-27T06:37:44.323Z
-Task log:     http://localhost:8081/druid/indexer/v1/task/index_wikipedia_2018-07-27T06:37:44.323Z/log
-Task status:  http://localhost:8081/druid/indexer/v1/task/index_wikipedia_2018-07-27T06:37:44.323Z/status
+Task log:     http://localhost:8081/robux/indexer/v1/task/index_wikipedia_2018-07-27T06:37:44.323Z/log
+Task status:  http://localhost:8081/robux/indexer/v1/task/index_wikipedia_2018-07-27T06:37:44.323Z/status
 Task index_wikipedia_2018-07-27T06:37:44.323Z still running...
 Task index_wikipedia_2018-07-27T06:37:44.323Z still running...
 Task finished with status: SUCCESS
@@ -149,10 +149,10 @@ Once the spec is submitted, you can follow the same instructions as above to wai
 
 Let's briefly discuss how we would've submitted the ingestion task without using the script. You do not need to run these commands.
 
-To submit the task, POST it to Druid in a new terminal window from the `apache-druid-{{DRUIDVERSION}}` directory:
+To submit the task, POST it to Robux in a new terminal window from the `apache-robux-{{ROBUXVERSION}}` directory:
 
 ```bash
-curl -X 'POST' -H 'Content-Type:application/json' -d @quickstart/tutorial/wikipedia-index.json http://localhost:8081/druid/indexer/v1/task
+curl -X 'POST' -H 'Content-Type:application/json' -d @quickstart/tutorial/wikipedia-index.json http://localhost:8081/robux/indexer/v1/task
 ```
 
 Which will print the ID of the task if the submission was successful:
@@ -171,7 +171,7 @@ Once the data is loaded, please follow the [query tutorial](../tutorials/tutoria
 
 ## Cleanup
 
-If you wish to go through any of the other ingestion tutorials, you will need to shut down the cluster and reset the cluster state by removing the contents of the `var` directory under the druid package, as the other tutorials will write to the same "wikipedia" datasource.
+If you wish to go through any of the other ingestion tutorials, you will need to shut down the cluster and reset the cluster state by removing the contents of the `var` directory under the robux package, as the other tutorials will write to the same "wikipedia" datasource.
 
 
 ## Further reading

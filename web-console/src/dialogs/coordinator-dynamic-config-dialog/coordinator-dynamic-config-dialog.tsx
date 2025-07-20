@@ -22,12 +22,12 @@ import React, { useState } from 'react';
 
 import type { FormJsonTabs } from '../../components';
 import { AutoForm, ExternalLink, FormJsonSelector, JsonInput, Loader } from '../../components';
-import type { CoordinatorDynamicConfig } from '../../druid-models';
-import { COORDINATOR_DYNAMIC_CONFIG_FIELDS } from '../../druid-models';
+import type { CoordinatorDynamicConfig } from '../../robux-models';
+import { COORDINATOR_DYNAMIC_CONFIG_FIELDS } from '../../robux-models';
 import { useQueryManager } from '../../hooks';
 import { getLink } from '../../links';
 import { Api, AppToaster } from '../../singletons';
-import { getApiArray, getDruidErrorMessage } from '../../utils';
+import { getApiArray, getRobuxErrorMessage } from '../../utils';
 import { SnitchDialog } from '..';
 
 import { COORDINATOR_DYNAMIC_CONFIG_COMPLETIONS } from './coordinator-dynamic-config-completions';
@@ -49,7 +49,7 @@ export const CoordinatorDynamicConfigDialog = React.memo(function CoordinatorDyn
   const [historyRecordsState] = useQueryManager<null, any[]>({
     initQuery: null,
     processQuery: async (_, cancelToken) => {
-      return await getApiArray(`/druid/coordinator/v1/config/history?count=100`, cancelToken);
+      return await getApiArray(`/robux/coordinator/v1/config/history?count=100`, cancelToken);
     },
   });
 
@@ -57,13 +57,13 @@ export const CoordinatorDynamicConfigDialog = React.memo(function CoordinatorDyn
     initQuery: null,
     processQuery: async (_, cancelToken) => {
       try {
-        const configResp = await Api.instance.get('/druid/coordinator/v1/config', { cancelToken });
+        const configResp = await Api.instance.get('/robux/coordinator/v1/config', { cancelToken });
         setDynamicConfig(configResp.data || {});
       } catch (e) {
         AppToaster.show({
           icon: IconNames.ERROR,
           intent: Intent.DANGER,
-          message: `Could not load coordinator dynamic config: ${getDruidErrorMessage(e)}`,
+          message: `Could not load coordinator dynamic config: ${getRobuxErrorMessage(e)}`,
         });
         onClose();
       }
@@ -73,17 +73,17 @@ export const CoordinatorDynamicConfigDialog = React.memo(function CoordinatorDyn
 
   async function saveConfig(comment: string) {
     try {
-      await Api.instance.post('/druid/coordinator/v1/config', dynamicConfig, {
+      await Api.instance.post('/robux/coordinator/v1/config', dynamicConfig, {
         headers: {
-          'X-Druid-Author': 'console',
-          'X-Druid-Comment': comment,
+          'X-Robux-Author': 'console',
+          'X-Robux-Comment': comment,
         },
       });
     } catch (e) {
       AppToaster.show({
         icon: IconNames.ERROR,
         intent: Intent.DANGER,
-        message: `Could not save coordinator dynamic config: ${getDruidErrorMessage(e)}`,
+        message: `Could not save coordinator dynamic config: ${getRobuxErrorMessage(e)}`,
       });
     }
 

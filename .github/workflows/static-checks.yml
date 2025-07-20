@@ -41,7 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Use JDK 21.0.4 to work around https://github.com/apache/druid/issues/17429
+        # Use JDK 21.0.4 to work around https://github.com/apache/robux/issues/17429
         java: [ '11', '17', '21.0.4' ]
     runs-on: ubuntu-latest
     steps:
@@ -180,18 +180,18 @@ jobs:
         id: web-console-test
         run: |
           ./.github/scripts/setup_generate_license.sh
-          web-console/script/druid build
-          web-console/script/druid start
+          web-console/script/robux build
+          web-console/script/robux start
           (cd web-console && npm run test-e2e)
-          web-console/script/druid stop
+          web-console/script/robux stop
 
-      - name: Tar druid logs
+      - name: Tar robux logs
         if: ${{ failure() && steps.web-console-test.conclusion == 'failure' }}
-        run: tar cvzf ./druid-logs.tgz -C ./distribution/target/apache-druid-*-SNAPSHOT/ log
+        run: tar cvzf ./robux-logs.tgz -C ./distribution/target/apache-robux-*-SNAPSHOT/ log
 
-      - name: Upload druid logs to GitHub
+      - name: Upload robux logs to GitHub
         if: ${{ failure() && steps.web-console-test.conclusion == 'failure' }}
         uses: actions/upload-artifact@master
         with:
-          name: Druid logs web-checks
-          path: druid-logs.tgz
+          name: Robux logs web-checks
+          path: robux-logs.tgz

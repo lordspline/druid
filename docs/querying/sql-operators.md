@@ -1,6 +1,6 @@
 ---
 id: sql-operators
-title: "Druid SQL Operators"
+title: "Robux SQL Operators"
 sidebar_label: "Operators"
 ---
 
@@ -32,14 +32,14 @@ sidebar_label: "Operators"
 
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
 
-Operators in [Druid SQL](./sql.md) typically operate on one or two values and return a result based on the values. Types of operators in Druid SQL include arithmetic, comparison, logical, and more, as described here. 
+Operators in [Robux SQL](./sql.md) typically operate on one or two values and return a result based on the values. Types of operators in Robux SQL include arithmetic, comparison, logical, and more, as described here. 
 
-When performing math operations, Druid uses 64-bit integer (long) data type unless there are double or float values. If an operation uses float or double values, then the result is a double, which is a 64-bit float. The precision of float and double values is defined by [Java](https://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html) and [the IEEE standard](https://en.wikipedia.org/wiki/IEEE_754).
+When performing math operations, Robux uses 64-bit integer (long) data type unless there are double or float values. If an operation uses float or double values, then the result is a double, which is a 64-bit float. The precision of float and double values is defined by [Java](https://docs.oracle.com/javase/specs/jls/se8/html/jls-5.html) and [the IEEE standard](https://en.wikipedia.org/wiki/IEEE_754).
 
 Keep the following guidelines in mind to help you manage precision issues:
 

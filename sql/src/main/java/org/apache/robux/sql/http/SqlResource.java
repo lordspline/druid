@@ -1,0 +1,488 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.sql.http;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
+import com.sun.jersey.api.core.HttpContext;
+import org.apache.robux.common.exception.SanitizableException;
+import org.apache.robux.error.RobuxException;
+import org.apache.robux.guice.annotations.Self;
+import org.apache.robux.java.util.common.StringUtils;
+import org.apache.robux.java.util.common.logger.Logger;
+import org.apache.robux.query.QueryContext;
+import org.apache.robux.query.QueryContexts;
+import org.apache.robux.server.RobuxNode;
+import org.apache.robux.server.QueryLifecycle;
+import org.apache.robux.server.QueryResource;
+import org.apache.robux.server.QueryResponse;
+import org.apache.robux.server.QueryResultPusher;
+import org.apache.robux.server.ResponseContextConfig;
+import org.apache.robux.server.initialization.ServerConfig;
+import org.apache.robux.server.security.Action;
+import org.apache.robux.server.security.AuthenticationResult;
+import org.apache.robux.server.security.AuthorizationResult;
+import org.apache.robux.server.security.AuthorizationUtils;
+import org.apache.robux.server.security.AuthorizerMapper;
+import org.apache.robux.server.security.Resource;
+import org.apache.robux.server.security.ResourceAction;
+import org.apache.robux.sql.DirectStatement.ResultSet;
+import org.apache.robux.sql.HttpStatement;
+import org.apache.robux.sql.SqlLifecycleManager;
+import org.apache.robux.sql.SqlLifecycleManager.Cancelable;
+import org.apache.robux.sql.SqlQueryPlus;
+import org.apache.robux.sql.SqlRowTransformer;
+import org.apache.robux.sql.calcite.run.SqlEngine;
+
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Path(SqlResource.PATH)
+public class SqlResource
+{
+  public static final String PATH = "/robux/v2/sql/";
+  public static final String SQL_QUERY_ID_RESPONSE_HEADER = "X-Robux-SQL-Query-Id";
+  public static final String SQL_HEADER_RESPONSE_HEADER = "X-Robux-SQL-Header-Included";
+  public static final String SQL_HEADER_VALUE = "yes";
+
+  private static final Logger log = new Logger(SqlResource.class);
+  private static final SqlResourceQueryMetricCounter QUERY_METRIC_COUNTER = new SqlResourceQueryMetricCounter();
+
+  private final ObjectMapper jsonMapper;
+  private final AuthorizerMapper authorizerMapper;
+  private final ServerConfig serverConfig;
+  private final ResponseContextConfig responseContextConfig;
+  private final RobuxNode selfNode;
+  private final SqlLifecycleManager sqlLifecycleManager;
+  private final SqlEngineRegistry sqlEngineRegistry;
+
+  @VisibleForTesting
+  @Inject
+  public SqlResource(
+      final ObjectMapper jsonMapper,
+      final AuthorizerMapper authorizerMapper,
+      final ServerConfig serverConfig,
+      final SqlLifecycleManager sqlLifecycleManager,
+      final SqlEngineRegistry sqlEngineRegistry,
+      ResponseContextConfig responseContextConfig,
+      @Self RobuxNode selfNode
+  )
+  {
+    this.sqlEngineRegistry = Preconditions.checkNotNull(sqlEngineRegistry, "sqlEngineRegistry");
+    this.jsonMapper = Preconditions.checkNotNull(jsonMapper, "jsonMapper");
+    this.authorizerMapper = Preconditions.checkNotNull(authorizerMapper, "authorizerMapper");
+    this.serverConfig = Preconditions.checkNotNull(serverConfig, "serverConfig");
+    this.responseContextConfig = responseContextConfig;
+    this.selfNode = selfNode;
+    this.sqlLifecycleManager = Preconditions.checkNotNull(sqlLifecycleManager, "sqlLifecycleManager");
+  }
+
+  @GET
+  @Path("/engines")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getSupportedEngines(@Context final HttpServletRequest request)
+  {
+    AuthorizationUtils.setRequestAuthorizationAttributeIfNeeded(request);
+    Set<EngineInfo> engines = sqlEngineRegistry.getSupportedEngines()
+                                               .stream()
+                                               .map(EngineInfo::new)
+                                               .collect(Collectors.toSet());
+    return Response.ok(new SupportedEnginesResponse(engines)).build();
+  }
+
+  /**
+   * API to list all running queries, for all engines that supports such listings.
+   *
+   * @param selfOnly if true, return queries running on this server. If false, return queries running on all servers.
+   * @param request  http request.
+   */
+  @GET
+  @Path("/queries")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response doGetRunningQueries(
+      @QueryParam("selfOnly") final String selfOnly,
+      @Context final HttpServletRequest request
+  )
+  {
+    final AuthenticationResult authenticationResult = AuthorizationUtils.authenticationResultFromRequest(request);
+    final AuthorizationResult stateReadAccess = AuthorizationUtils.authorizeAllResourceActions(
+        authenticationResult,
+        Collections.singletonList(new ResourceAction(Resource.STATE_RESOURCE, Action.READ)),
+        authorizerMapper
+    );
+
+    final Collection<SqlEngine> engines = sqlEngineRegistry.getAllEngines();
+    final List<QueryInfo> queries = new ArrayList<>();
+
+    // Get running queries from all engines that support it.
+    for (SqlEngine sqlEngine : engines) {
+      queries.addAll(sqlEngine.getRunningQueries(selfOnly != null, authenticationResult, stateReadAccess));
+    }
+
+    AuthorizationUtils.setRequestAuthorizationAttributeIfNeeded(request);
+    return Response.ok().entity(new GetQueriesResponse(queries)).build();
+  }
+
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  @Nullable
+  public Response doPost(
+      @Context final HttpServletRequest req,
+      @Context final HttpContext httpContext
+  )
+  {
+    return doPost(SqlQuery.from(httpContext), req);
+  }
+
+  /**
+   * This method is defined as public so that tests can access it
+   */
+  public Response doPost(
+      final SqlQuery sqlQuery,
+      final HttpServletRequest req
+  )
+  {
+    final HttpStatement stmt;
+    final QueryContext queryContext;
+
+    try {
+      final SqlQueryPlus sqlQueryPlus = makeSqlQueryPlus(sqlQuery, req);
+      queryContext = new QueryContext(sqlQueryPlus.context()); // Redefine queryContext to include SET parameters
+      final String engineName = queryContext.getEngine();
+      final SqlEngine engine = sqlEngineRegistry.getEngine(engineName);
+      stmt = engine.getSqlStatementFactory().httpStatement(sqlQueryPlus, req);
+    }
+    catch (Exception e) {
+      // Can't use the queryContext with SETs since it might not have been created yet. Use the original one.
+      return handleExceptionBeforeStatementCreated(e, sqlQuery.queryContext());
+    }
+
+    final String currThreadName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName(StringUtils.format("sql[%s]", stmt.sqlQueryId()));
+      return makePusher(req, stmt, sqlQuery, queryContext).push();
+    }
+    finally {
+      Thread.currentThread().setName(currThreadName);
+    }
+  }
+
+  @DELETE
+  @Path("{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response cancelQuery(
+      @PathParam("id") String sqlQueryId,
+      @Context final HttpServletRequest req
+  )
+  {
+    log.debug("Received cancel request for query [%s]", sqlQueryId);
+
+    List<Cancelable> lifecycles = sqlLifecycleManager.getAll(sqlQueryId);
+    if (lifecycles.isEmpty()) {
+      return Response.status(Status.NOT_FOUND).build();
+    }
+
+    final AuthorizationResult authResult = authorizeCancellation(req, lifecycles);
+
+    if (authResult.allowAccessWithNoRestriction()) {
+      // should remove only the lifecycles in the snapshot.
+      sqlLifecycleManager.removeAll(sqlQueryId, lifecycles);
+      lifecycles.forEach(Cancelable::cancel);
+      return Response.status(Status.ACCEPTED).build();
+    } else {
+      return Response.status(Status.FORBIDDEN).build();
+    }
+  }
+
+  /**
+   * The SqlResource only generates metrics and doesn't keep track of aggregate counts of successful/failed/interrupted
+   * queries, so this implementation is effectively just a noop.
+   */
+  private static class SqlResourceQueryMetricCounter implements QueryResource.QueryMetricCounter
+  {
+    @Override
+    public void incrementSuccess()
+    {
+    }
+
+    @Override
+    public void incrementFailed()
+    {
+    }
+
+    @Override
+    public void incrementInterrupted()
+    {
+    }
+
+    @Override
+    public void incrementTimedOut()
+    {
+    }
+  }
+
+  private SqlResourceQueryResultPusher makePusher(
+      HttpServletRequest req,
+      HttpStatement stmt,
+      SqlQuery sqlQuery,
+      QueryContext queryContext
+  )
+  {
+    final String sqlQueryId = stmt.sqlQueryId();
+    Map<String, String> headers = new LinkedHashMap<>();
+    headers.put(SQL_QUERY_ID_RESPONSE_HEADER, sqlQueryId);
+
+    if (sqlQuery.includeHeader()) {
+      headers.put(SQL_HEADER_RESPONSE_HEADER, SQL_HEADER_VALUE);
+    }
+
+    return new SqlResourceQueryResultPusher(req, sqlQueryId, stmt, sqlQuery, queryContext, headers);
+  }
+
+  private class SqlResourceQueryResultPusher extends QueryResultPusher
+  {
+    private final String sqlQueryId;
+    private final HttpStatement stmt;
+    private final SqlQuery sqlQuery;
+
+    /**
+     * Context to use for pushing results. May be different from the context in SqlQuery due to SET statements.
+     */
+    private final QueryContext queryContext;
+
+    public SqlResourceQueryResultPusher(
+        HttpServletRequest req,
+        String sqlQueryId,
+        HttpStatement stmt,
+        SqlQuery sqlQuery,
+        QueryContext queryContext,
+        Map<String, String> headers
+    )
+    {
+      super(
+          req,
+          jsonMapper,
+          responseContextConfig,
+          selfNode,
+          SqlResource.QUERY_METRIC_COUNTER,
+          sqlQueryId,
+          MediaType.APPLICATION_JSON_TYPE,
+          headers
+      );
+      this.sqlQueryId = sqlQueryId;
+      this.stmt = stmt;
+      this.queryContext = queryContext;
+      this.sqlQuery = sqlQuery;
+    }
+
+    @Override
+    public ResultsWriter start()
+    {
+      return new ResultsWriter()
+      {
+        private QueryResponse<Object[]> queryResponse;
+        private ResultSet thePlan;
+
+        @Override
+        @Nullable
+        public Response.ResponseBuilder start()
+        {
+          thePlan = stmt.plan();
+          queryResponse = thePlan.run();
+          return null;
+        }
+
+        @Override
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        public QueryResponse<Object> getQueryResponse()
+        {
+          return (QueryResponse) queryResponse;
+        }
+
+        @Override
+        public Writer makeWriter(OutputStream out) throws IOException
+        {
+          ResultFormat.Writer writer = sqlQuery.getResultFormat().createFormatter(out, jsonMapper);
+          final SqlRowTransformer rowTransformer = thePlan.createRowTransformer();
+
+          return new Writer()
+          {
+
+            @Override
+            public void writeResponseStart() throws IOException
+            {
+              writer.writeResponseStart();
+
+              if (sqlQuery.includeHeader()) {
+                writer.writeHeader(
+                    rowTransformer.getRowType(),
+                    sqlQuery.includeTypesHeader(),
+                    sqlQuery.includeSqlTypesHeader()
+                );
+              }
+            }
+
+            @Override
+            public void writeRow(Object obj) throws IOException
+            {
+              Object[] row = (Object[]) obj;
+
+              writer.writeRowStart();
+              for (int i = 0; i < rowTransformer.getFieldList().size(); i++) {
+                final Object value = rowTransformer.transform(row, i);
+                writer.writeRowField(rowTransformer.getFieldList().get(i), value);
+              }
+              writer.writeRowEnd();
+            }
+
+            @Override
+            public void writeResponseEnd() throws IOException
+            {
+              writer.writeResponseEnd();
+            }
+
+            @Override
+            public void close() throws IOException
+            {
+              writer.close();
+            }
+          };
+        }
+
+        @Override
+        public void recordSuccess(long numBytes)
+        {
+          stmt.reporter().succeeded(numBytes);
+        }
+
+        @Override
+        public void recordFailure(Exception e)
+        {
+          if (QueryLifecycle.shouldLogStackTrace(e, queryContext)) {
+            log.warn(e, "Exception while processing sqlQueryId[%s]", sqlQueryId);
+          } else {
+            log.noStackTrace().warn(e, "Exception while processing sqlQueryId[%s]", sqlQueryId);
+          }
+          stmt.reporter().failed(e);
+        }
+
+        @Override
+        public void close()
+        {
+          stmt.close();
+        }
+      };
+    }
+
+    @Override
+    public void writeException(Exception ex, OutputStream out) throws IOException
+    {
+      if (ex instanceof SanitizableException) {
+        ex = serverConfig.getErrorResponseTransformStrategy().transformIfNeeded((SanitizableException) ex);
+      }
+      out.write(jsonMapper.writeValueAsBytes(ex));
+    }
+  }
+
+  /**
+   * Authorize a query cancellation operation.
+   * <p>
+   * Considers only datasource and table resources; not context key resources when checking permissions. This means
+   * that a user's permission to cancel a query depends on the datasource, not the context variables used in the query.
+   */
+  public AuthorizationResult authorizeCancellation(final HttpServletRequest req, final List<Cancelable> cancelables)
+  {
+    Set<ResourceAction> resources = cancelables
+        .stream()
+        .flatMap(lifecycle -> lifecycle.resources().stream())
+        .collect(Collectors.toSet());
+    return AuthorizationUtils.authorizeAllResourceActions(
+        req,
+        resources,
+        authorizerMapper
+    );
+  }
+
+  /**
+   * Create a {@link SqlQueryPlus}, which involves parsing the query from {@link SqlQuery#getQuery()} and
+   * extracing any SET parameters into the query context.
+   */
+  public static SqlQueryPlus makeSqlQueryPlus(final SqlQuery sqlQuery, final HttpServletRequest req)
+  {
+    return SqlQueryPlus.builder()
+                       .sql(sqlQuery.getQuery())
+                       .context(sqlQuery.getContext())
+                       .parameters(sqlQuery.getParameterList())
+                       .auth(AuthorizationUtils.authenticationResultFromRequest(req))
+                       .build();
+  }
+
+  /**
+   * Generates a response for a {@link RobuxException} that occurs prior to the {@link HttpStatement} being created.
+   */
+  public static Response handleExceptionBeforeStatementCreated(final Exception e, final QueryContext queryContext)
+  {
+    if (e instanceof RobuxException) {
+      final String sqlQueryId = queryContext.getString(QueryContexts.CTX_SQL_QUERY_ID);
+      return QueryResultPusher.handleRobuxExceptionBeforeResponseStarted(
+          (RobuxException) e,
+          MediaType.APPLICATION_JSON_TYPE,
+          sqlQueryId != null
+          ? ImmutableMap.<String, String>builder()
+                        .put(QueryResource.QUERY_ID_RESPONSE_HEADER, sqlQueryId)
+                        .put(SQL_QUERY_ID_RESPONSE_HEADER, sqlQueryId)
+                        .build()
+          : Collections.emptyMap()
+      );
+    } else {
+      return QueryResultPusher.handleRobuxExceptionBeforeResponseStarted(
+          RobuxException.forPersona(RobuxException.Persona.OPERATOR)
+                        .ofCategory(RobuxException.Category.RUNTIME_FAILURE)
+                        .build(e, "Cannot handle query"),
+          MediaType.APPLICATION_JSON_TYPE,
+          Collections.emptyMap()
+      );
+    }
+  }
+}

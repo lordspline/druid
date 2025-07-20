@@ -27,15 +27,15 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-Apache Druid supports directly storing nested data structures in `COMPLEX<json>` columns. `COMPLEX<json>` columns store a copy of the structured data in JSON format and specialized internal columns and indexes for nested primitive values&mdash;STRING, LONG, and DOUBLE types, as well as ARRAY of STRING, LONG, and DOUBLE values. An optimized [virtual column](./virtual-columns.md#nested-field-virtual-column) allows Druid to read and filter these values at speeds consistent with standard Druid LONG, DOUBLE, and STRING columns.
+Apache Robux supports directly storing nested data structures in `COMPLEX<json>` columns. `COMPLEX<json>` columns store a copy of the structured data in JSON format and specialized internal columns and indexes for nested primitive values&mdash;STRING, LONG, and DOUBLE types, as well as ARRAY of STRING, LONG, and DOUBLE values. An optimized [virtual column](./virtual-columns.md#nested-field-virtual-column) allows Robux to read and filter these values at speeds consistent with standard Robux LONG, DOUBLE, and STRING columns.
 
-Druid [SQL JSON functions](./sql-json-functions.md) allow you to extract, transform, and create `COMPLEX<json>` values in SQL queries, using the specialized virtual columns where appropriate. You can use the [JSON nested columns functions](math-expr.md#json-functions) in [native queries](./querying.md) using [expression virtual columns](./virtual-columns.md#expression-virtual-column), and in native ingestion with a [`transformSpec`](../ingestion/ingestion-spec.md#transformspec).
+Robux [SQL JSON functions](./sql-json-functions.md) allow you to extract, transform, and create `COMPLEX<json>` values in SQL queries, using the specialized virtual columns where appropriate. You can use the [JSON nested columns functions](math-expr.md#json-functions) in [native queries](./querying.md) using [expression virtual columns](./virtual-columns.md#expression-virtual-column), and in native ingestion with a [`transformSpec`](../ingestion/ingestion-spec.md#transformspec).
 
 You can use the JSON functions in INSERT and REPLACE statements in SQL-based ingestion, or in a `transformSpec` in native ingestion as an alternative to using a [`flattenSpec`](../ingestion/data-formats.md#flattenspec) object to "flatten" nested data for ingestion.
 
-Columns ingested as `COMPLEX<json>` are automatically optimized to store the most appropriate physical column based on the data processed. For example, if only LONG values are processed, Druid stores a LONG column, ARRAY columns if the data consists of arrays, or `COMPLEX<json>` in the general case if the data is actually nested. This is the same functionality that powers ['type aware' schema discovery](../ingestion/schema-design.md#type-aware-schema-discovery).
+Columns ingested as `COMPLEX<json>` are automatically optimized to store the most appropriate physical column based on the data processed. For example, if only LONG values are processed, Robux stores a LONG column, ARRAY columns if the data consists of arrays, or `COMPLEX<json>` in the general case if the data is actually nested. This is the same functionality that powers ['type aware' schema discovery](../ingestion/schema-design.md#type-aware-schema-discovery).
 
-Druid supports directly ingesting nested data with the following formats: JSON, Parquet, Avro, ORC, Protobuf.
+Robux supports directly ingesting nested data with the following formats: JSON, Parquet, Avro, ORC, Protobuf.
 
 ## Example nested data
 
@@ -73,7 +73,7 @@ For native batch ingestion, you can use the [SQL JSON functions](./sql-json-func
 
 To configure a dimension as a nested data type, specify the `json` type for the dimension in the `dimensions` list in the `dimensionsSpec` property of your ingestion spec.
 
-For example, the following ingestion spec instructs Druid to ingest `shipTo` and `details` as JSON-type nested dimensions:
+For example, the following ingestion spec instructs Robux to ingest `shipTo` and `details` as JSON-type nested dimensions:
 
 ```json
 {
@@ -225,7 +225,7 @@ PARTITIONED BY ALL
 
 ## Streaming ingestion
 
-You can ingest nested data into Druid using the [streaming method](../ingestion/index.md#streaming)&mdash;for example, from a Kafka topic.
+You can ingest nested data into Robux using the [streaming method](../ingestion/index.md#streaming)&mdash;for example, from a Kafka topic.
 
 When you [define your supervisor spec](../ingestion/supervisor.md#start-a-supervisor), include a dimension with type `json` for each nested column. For example, the following supervisor spec from the [Kafka ingestion tutorial](../tutorials/tutorial-kafka.md) contains dimensions for the nested columns `event`, `agent`, and `geo_ip` in datasource `kttm-kafka`.
 
@@ -299,7 +299,7 @@ When you [define your supervisor spec](../ingestion/supervisor.md#start-a-superv
 ```
 
 
-The [Kafka tutorial](../tutorials/tutorial-kafka.md) guides you through the steps to load sample nested data into a Kafka topic, then ingest the data into Druid.
+The [Kafka tutorial](../tutorials/tutorial-kafka.md) guides you through the steps to load sample nested data into a Kafka topic, then ingest the data into Robux.
 
 ### Transform data during SQL-based ingestion
 
@@ -335,7 +335,7 @@ PARTITIONED BY ALL
 If your source data contains serialized JSON strings, you can ingest the data as `COMPLEX<JSON>` as follows:
 - During native batch ingestion, call the `parse_json` function in a `transform` object in the `transformSpec`.
 - During SQL-based ingestion, use the PARSE_JSON keyword within your SELECT statement to transform the string values to JSON.
-- If you are concerned that your data may not contain valid JSON, you can use `try_parse_json` for native batch or `TRY_PARSE_JSON` for SQL-based ingestion. For cases where the column does not contain valid JSON, Druid inserts a null value.
+- If you are concerned that your data may not contain valid JSON, you can use `try_parse_json` for native batch or `TRY_PARSE_JSON` for SQL-based ingestion. For cases where the column does not contain valid JSON, Robux inserts a null value.
 
 If you are using a text input format like `tsv`, you need to use this method to ingest data into a `COMPLEX<json>` column.
 
@@ -437,11 +437,11 @@ PARTITIONED BY DAY
 
 ## Querying nested columns
 
-Once ingested, Druid stores the JSON-typed columns as native JSON objects and presents them as `COMPLEX<json>`.
+Once ingested, Robux stores the JSON-typed columns as native JSON objects and presents them as `COMPLEX<json>`.
 
 See the [Nested columns functions reference](./sql-json-functions.md) for information on the functions in the examples below.
 
-Druid supports a small, simplified subset of the [JSONPath syntax](https://github.com/json-path/JsonPath/blob/master/README.md) operators, primarily limited to extracting individual values from nested data structures. See the [SQL JSON functions](./sql-json-functions.md#jsonpath-syntax) page for details.
+Robux supports a small, simplified subset of the [JSONPath syntax](https://github.com/json-path/JsonPath/blob/master/README.md) operators, primarily limited to extracting individual values from nested data structures. See the [SQL JSON functions](./sql-json-functions.md#jsonpath-syntax) page for details.
 
 ### Displaying data types
 
@@ -465,7 +465,7 @@ Example query results:
 
 ### Retrieving JSON data
 
-You can retrieve JSON data directly from a table. Druid returns the results as a JSON object, so you can't use grouping, aggregation, or filtering operators.
+You can retrieve JSON data directly from a table. Robux returns the results as a JSON object, so you can't use grouping, aggregation, or filtering operators.
 
 #### Example query: Retrieve JSON data
 
@@ -485,9 +485,9 @@ Example query results:
 
 ### Extracting nested data elements
 
-The `JSON_VALUE` function is specially optimized to provide native Druid level performance when processing nested primitive values, as if they were flattened, traditional, Druid column types. It does this by reading from the specialized nested columns and indexes that are built and stored in JSON objects when Druid creates segments.
+The `JSON_VALUE` function is specially optimized to provide native Robux level performance when processing nested primitive values, as if they were flattened, traditional, Robux column types. It does this by reading from the specialized nested columns and indexes that are built and stored in JSON objects when Robux creates segments.
 
-Some operations using `JSON_VALUE` run faster than those using native Druid columns. For example, filtering numeric types uses the indexes built for nested numeric columns, which are not available for Druid DOUBLE, FLOAT, or LONG columns.
+Some operations using `JSON_VALUE` run faster than those using native Robux columns. For example, filtering numeric types uses the indexes built for nested numeric columns, which are not available for Robux DOUBLE, FLOAT, or LONG columns.
 
 `JSON_VALUE` only returns primitive types of `STRING`, `LONG`, `DOUBLE`, and if using `RETURNING` syntax `ARRAY<STRING>`, `ARRAY<LONG>` or `ARRAY<DOUBLE>`. Any paths that reference JSON objects or array types (if not specifying an array type in `RETURNING` clause) return null.
 
@@ -519,7 +519,7 @@ Example query results:
 
 ### Extracting nested data elements as a suggested type
 
-You can use the `RETURNING` keyword to provide type hints to the `JSON_VALUE` function. This way the SQL planner produces the correct native Druid query, leading to expected results. This keyword allows you to specify a SQL type for the `path` value.
+You can use the `RETURNING` keyword to provide type hints to the `JSON_VALUE` function. This way the SQL planner produces the correct native Robux query, leading to expected results. This keyword allows you to specify a SQL type for the `path` value.
 
 #### Example query: Extract nested data elements as suggested types
 
@@ -546,7 +546,7 @@ Query results:
 
 ### Grouping, aggregating, and filtering
 
-You can use `JSON_VALUE` expressions in any context where you can use traditional Druid columns, such as grouping, aggregation, and filtering.
+You can use `JSON_VALUE` expressions in any context where you can use traditional Robux columns, such as grouping, aggregation, and filtering.
 
 #### Example query: Grouping and filtering
 
@@ -573,14 +573,14 @@ Example query results:
 
 ### Transforming JSON object data
 
-In addition to `JSON_VALUE`, Druid offers a number of operators that focus on transforming JSON object data:
+In addition to `JSON_VALUE`, Robux offers a number of operators that focus on transforming JSON object data:
 
 - `JSON_QUERY`
 - `JSON_OBJECT`
 - `PARSE_JSON`
 - `TO_JSON_STRING`
 
-These functions are primarily intended for use with SQL-based ingestion to transform data during insert operations, but they also work in traditional Druid SQL queries. Because most of these functions output JSON objects, they have the same limitations when used in traditional Druid queries as interacting with the JSON objects directly.
+These functions are primarily intended for use with SQL-based ingestion to transform data during insert operations, but they also work in traditional Robux SQL queries. Because most of these functions output JSON objects, they have the same limitations when used in traditional Robux queries as interacting with the JSON objects directly.
 
 #### Example query: Return results in a JSON object
 
@@ -625,7 +625,7 @@ Example query results:
 
 ### Using other transform functions
 
-Druid provides the following additional transform functions:
+Robux provides the following additional transform functions:
 
 - `PARSE_JSON`: Deserializes a string value into a JSON object.
 - `TO_JSON_STRING`: Performs the operation of `TO_JSON` and then serializes the value into a string.
@@ -677,10 +677,10 @@ Example query results:
 
 Before you start using the nested columns feature, consider the following known issues:
 
-- Directly using `COMPLEX<json>` columns and expressions is not well integrated into the Druid query engine. It can result in errors or undefined behavior when grouping and filtering, and when you use `COMPLEX<json>` objects as inputs to aggregators. As a workaround, consider using `TO_JSON_STRING` to coerce the values to strings before you perform these operations.
-- Directly using array-typed outputs from `JSON_KEYS` and `JSON_PATHS` is moderately supported by the Druid query engine. You can group on these outputs, and there are a number of array expressions that can operate on these values, such as `ARRAY_CONCAT_AGG`. However, some operations are not well defined for use outside array-specific functions, such as filtering using `=` or `IS NULL`.
+- Directly using `COMPLEX<json>` columns and expressions is not well integrated into the Robux query engine. It can result in errors or undefined behavior when grouping and filtering, and when you use `COMPLEX<json>` objects as inputs to aggregators. As a workaround, consider using `TO_JSON_STRING` to coerce the values to strings before you perform these operations.
+- Directly using array-typed outputs from `JSON_KEYS` and `JSON_PATHS` is moderately supported by the Robux query engine. You can group on these outputs, and there are a number of array expressions that can operate on these values, such as `ARRAY_CONCAT_AGG`. However, some operations are not well defined for use outside array-specific functions, such as filtering using `=` or `IS NULL`.
 - Input validation for JSON SQL operators is currently incomplete, which sometimes results in undefined behavior or unhelpful error messages.
-- Ingesting data with a very complex nested structure is potentially an expensive operation and may require you to tune ingestion tasks and/or cluster parameters to account for increased memory usage or overall task run time. When you tune your ingestion configuration, treat each nested primitive field inside an object as a flattened top-level Druid column.
+- Ingesting data with a very complex nested structure is potentially an expensive operation and may require you to tune ingestion tasks and/or cluster parameters to account for increased memory usage or overall task run time. When you tune your ingestion configuration, treat each nested primitive field inside an object as a flattened top-level Robux column.
 
 ## Further reading
 

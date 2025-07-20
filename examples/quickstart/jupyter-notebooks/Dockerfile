@@ -18,8 +18,8 @@
 #
 # -------------------------------------------------------------
 # This Dockerfile creates a custom Docker image for Jupyter
-# to use with the Apache Druid Jupyter notebook tutorials.
-# Build using `docker build -t imply/druid-notebook:latest .`
+# to use with the Apache Robux Jupyter notebook tutorials.
+# Build using `docker build -t imply/robux-notebook:latest .`
 # -------------------------------------------------------------
 
 # Use the Jupyter base notebook as the base image
@@ -40,11 +40,11 @@ RUN pip install requests \
     pip install sortedcontainers \
     pip install tqdm
 
-# Install druidapi client from apache/druid
+# Install robuxapi client from apache/robux
 # Local install requires sudo privileges 
 USER root
-ADD druidapi /home/jovyan/druidapi
-WORKDIR /home/jovyan/druidapi
+ADD robuxapi /home/jovyan/robuxapi
+WORKDIR /home/jovyan/robuxapi
 RUN pip install .
 
 # The Jupyter notebooks themselves are mounted into the image's /home/jovyan/notebooks

@@ -1,6 +1,6 @@
 ---
 name: Problem Report
-about: A template for Druid problem reports
+about: A template for Robux problem reports
 title: ""
 labels: Uncategorized problem report
 assignees: ''
@@ -11,7 +11,7 @@ Please provide a detailed title (e.g. "Broker crashes when using TopN query with
 
 ### Affected Version
 
-The Druid version where the problem was encountered.
+The Robux version where the problem was encountered.
 
 ### Description
 

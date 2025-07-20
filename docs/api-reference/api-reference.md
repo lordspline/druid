@@ -24,10 +24,10 @@ sidebar_label: Overview
   -->
 
 
-This topic is an index to the Apache Druid API documentation.
+This topic is an index to the Apache Robux API documentation.
 
 ## HTTP APIs
-* [Druid SQL queries](./sql-api.md) to submit SQL queries using the Druid SQL API.
+* [Robux SQL queries](./sql-api.md) to submit SQL queries using the Robux SQL API.
 * [SQL-based ingestion](./sql-ingestion-api.md) to submit SQL-based batch ingestion requests.
 * [JSON querying](./json-querying-api.md) to submit JSON-based native queries.
 * [Tasks](./tasks-api.md) to manage data ingestion operations.
@@ -36,9 +36,9 @@ This topic is an index to the Apache Druid API documentation.
 * [Data management](./data-management-api.md) to manage data segments.
 * [Automatic compaction](./automatic-compaction-api.md) to optimize segment sizes after ingestion.
 * [Lookups](./lookups-api.md) to manage and modify key-value datasources.
-* [Service status](./service-status-api.md) to monitor components within the Druid cluster. 
+* [Service status](./service-status-api.md) to monitor components within the Robux cluster. 
 * [Dynamic configuration](./dynamic-configuration-api.md) to configure the behavior of the Coordinator and Overlord processes.
 * [Legacy metadata](./legacy-metadata-api.md) to retrieve datasource metadata.
 
 ## Java APIs
-* [SQL JDBC driver](./sql-jdbc.md) to connect to Druid and make Druid SQL queries using the Avatica JDBC driver.
+* [SQL JDBC driver](./sql-jdbc.md) to connect to Robux and make Robux SQL queries using the Avatica JDBC driver.

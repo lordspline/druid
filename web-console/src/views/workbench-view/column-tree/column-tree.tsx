@@ -32,7 +32,7 @@ import {
   Tree,
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { SqlExpression } from 'druid-query-toolkit';
+import type { SqlExpression } from 'robux-query-toolkit';
 import {
   C,
   F,
@@ -43,7 +43,7 @@ import {
   SqlQuery,
   SqlTable,
   T,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 import type { ChangeEvent } from 'react';
 import React from 'react';
 
@@ -128,7 +128,7 @@ function handleColumnShow(options: HandleColumnClickOptions): void {
     from = parsedQuery.getFirstFromExpression()!;
     where = parsedQuery.getWhereExpression();
     aggregates = parsedQuery.getAggregateSelectExpressions();
-  } else if (columnSchema === 'druid') {
+  } else if (columnSchema === 'robux') {
     from = T(columnTable);
     where = defaultWhere;
   } else {
@@ -141,7 +141,7 @@ function handleColumnShow(options: HandleColumnClickOptions): void {
 
   const column = C(columnName);
   let query: SqlQuery;
-  if (columnSchema === 'druid' && columnType === 'TIMESTAMP') {
+  if (columnSchema === 'robux' && columnType === 'TIMESTAMP') {
     query = TIME_QUERY.fillPlaceholders([column, from]) as SqlQuery;
   } else {
     query = STRING_QUERY.fillPlaceholders([column, from]) as SqlQuery;
@@ -270,7 +270,7 @@ export class ColumnTree extends React.PureComponent<ColumnTreeProps, ColumnTreeS
                           return SqlQuery.selectStarFrom(
                             SqlTable.create(
                               tableName,
-                              schemaName === 'druid' ? undefined : schemaName,
+                              schemaName === 'robux' ? undefined : schemaName,
                             ),
                           );
                         };
@@ -278,7 +278,7 @@ export class ColumnTree extends React.PureComponent<ColumnTreeProps, ColumnTreeS
                         const getWhere = (defaultToAllTime = false) => {
                           if (parsedQuery && parsedQuery.getFirstTableName() === tableName) {
                             return parsedQuery.getWhereExpression();
-                          } else if (schemaName === 'druid') {
+                          } else if (schemaName === 'robux') {
                             return defaultToAllTime ? undefined : defaultWhere;
                           } else {
                             return;

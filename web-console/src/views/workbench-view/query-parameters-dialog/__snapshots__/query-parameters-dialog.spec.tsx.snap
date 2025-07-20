@@ -12,7 +12,7 @@ exports[`QueryParametersDialog matches snapshot 1`] = `
     className="bp5-dialog-body"
   >
     <p>
-      Druid SQL supports dynamic parameters using question mark 
+      Robux SQL supports dynamic parameters using question mark 
       <ForwardRef>
         ?
       </ForwardRef>

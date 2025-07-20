@@ -19,7 +19,7 @@
 
 package /*CHECKSTYLE.OFF: PackageName*/org.testng/*CHECKSTYLE.ON: PackageName*/;
 
-import org.apache.druid.testing.utils.SuiteListener;
+import org.apache.robux.testing.utils.SuiteListener;
 import org.testng.internal.IConfiguration;
 import org.testng.internal.Systematiser;
 import org.testng.internal.annotations.IAnnotationFinder;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * This class must be in package org.testng to access protected methods like TestNG.getDefault().getConfiguration()
  */
-public class DruidTestRunnerFactory implements ITestRunnerFactory
+public class RobuxTestRunnerFactory implements ITestRunnerFactory
 {
   private static final SuiteListener SUITE_LISTENER = new SuiteListener();
 
@@ -45,7 +45,7 @@ public class DruidTestRunnerFactory implements ITestRunnerFactory
     String outputDirectory = suite.getOutputDirectory();
     IAnnotationFinder annotationFinder = configuration.getAnnotationFinder();
     Boolean skipFailedInvocationCounts = suite.getXmlSuite().skipFailedInvocationCounts();
-    return new DruidTestRunner(
+    return new RobuxTestRunner(
         configuration,
         suite,
         test,
@@ -57,9 +57,9 @@ public class DruidTestRunnerFactory implements ITestRunnerFactory
     );
   }
 
-  private static class DruidTestRunner extends TestRunner
+  private static class RobuxTestRunner extends TestRunner
   {
-    DruidTestRunner(
+    RobuxTestRunner(
         IConfiguration configuration,
         ISuite suite,
         XmlTest test,

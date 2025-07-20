@@ -96,7 +96,7 @@ these technologies are still frequently selected as serving layers. Solutions
 that involve these broad-focus technologies can be inflexible once tailored to
 the analytics use case, or suffer from architecture drawbacks that prevent them
 from returning queries fast enough to power interactive, user-facing
-applications \cite{tschetter2011druid}.
+applications \cite{tschetter2011robux}.
 
 An ideal data serving layer alone is often not sufficient as a complete analytics
 solution. In most real-world use cases, raw data cannot be directly stored in
@@ -136,19 +136,19 @@ low-latency analytic queries on near real-time data. The solution combines the
 low latency guarantees of stream processors and the correctness and flexibility
 guarantees of batch processors. It also introduces a serving layer specifically
 designed for interactive analytics. The stack’s main building blocks are Apache
-Kafka\cite{kreps2011kafka}, Apache Samza, Apache Hadoop, and Druid
-\cite{yang2014druid}, and we have found that the combination of technologies is
+Kafka\cite{kreps2011kafka}, Apache Samza, Apache Hadoop, and Robux
+\cite{yang2014robux}, and we have found that the combination of technologies is
 flexible enough to handle a wide variety of processing requirements and query
 loads. Each piece of the stack is designed to do a specific set of things very
 well. This paper will cover the details and design principles of the RADStack.
 Our contributions are around the architecture of the stack itself, the
-introduction of Druid as a serving layer, and our model for unifying real-time
+introduction of Robux as a serving layer, and our model for unifying real-time
 and historical workflows.
 
 The structure of the paper is as follows: Section \ref{sec:background}
 describes the problems and use cases that led to the creation of the RADStack.
-Section \ref{sec:serving} describes Druid, the serving layer of the stack, and
-how Druid is built for real-time and batch data ingestion, as well as
+Section \ref{sec:serving} describes Robux, the serving layer of the stack, and
+how Robux is built for real-time and batch data ingestion, as well as
 exploratory analytics. Section \ref{sec:processing} covers the role of Samza
 and Hadoop for data processing, and Section \ref{sec:delivery} describes the
 role of Kafka for event delivery. In Section \ref{sec:performance}, we present
@@ -202,25 +202,25 @@ network failure.
 \includegraphics[width = 2.6in]{radstack}
 \caption{
 The components of the RADStack. Kafka acts as the event delivery
-endpoints. Samza and Hadoop process data to load data into Druid. Druid acts as
+endpoints. Samza and Hadoop process data to load data into Robux. Robux acts as
 the endpoint for queries.
 }
 \label{fig:radstack}
 \end{figure}
 
 To address these requirements of scale, stability, and performance, we created
-Druid. Druid was designed from the ground up to provide arbitrary data
-exploration, low latency aggregations, and fast data ingestion.  Druid was also
+Robux. Robux was designed from the ground up to provide arbitrary data
+exploration, low latency aggregations, and fast data ingestion.  Robux was also
 designed to accept fully denormalized data, and moves away from the traditional
 relational model. Since most raw data is not denormalized, it must be processed
 before it can be ingested and queried. Multiple streams of data had to be
-joined, cleaned up, and transformed before it was usable in Druid, but that was
+joined, cleaned up, and transformed before it was usable in Robux, but that was
 the trade-off we were willing to make in order to get the performance necessary
 to power an interactive data application. We introduced stream processing to
 our stack to provide the processing required before raw data could be loaded
-into Druid. Our stream processing jobs range from simple data transformations,
+into Robux. Our stream processing jobs range from simple data transformations,
 such as id to name lookups, up to complex operations such as multi-stream
-joins.  Pairing Druid with a stream processor enabled flexible data processing
+joins.  Pairing Robux with a stream processor enabled flexible data processing
 and querying, but we still had problems with event delivery.  Our events were
 delivered from many different locations and sources, and peaked at several
 million events per second. We required a high throughput message bus that could
@@ -243,31 +243,31 @@ can entirely fail without impacting the services of the other components.
 \begin{figure*}
 \centering
 \includegraphics[width = 4.5in]{cluster}
-\caption{An overview of a Druid cluster and the flow of data through the cluster.}
+\caption{An overview of a Robux cluster and the flow of data through the cluster.}
 \label{fig:cluster}
 \end{figure*}
 
 \section{The Serving Layer}
 \label{sec:serving}
-Druid is a column-oriented data store designed for exploratory analytics and is
-the serving layer in the RADStack. A Druid cluster consists of different types
+Robux is a column-oriented data store designed for exploratory analytics and is
+the serving layer in the RADStack. A Robux cluster consists of different types
 of nodes and, similar to the overall design of the RADStack, each node type is
 instrumented to perform a specific set of things well. We believe this design
 separates concerns and simplifies the complexity of the overall system. To
 solve complex data analysis problems, the different node types come together to
-form a fully working system. The composition of and flow of data in a Druid
+form a fully working system. The composition of and flow of data in a Robux
 cluster are shown in Figure~\ref{fig:cluster}.
 
 \subsection{Segments}
 \label{sec:segments}
-Data tables in Druid (called "data sources") are collections of timestamped
+Data tables in Robux (called "data sources") are collections of timestamped
 events and partitioned into a set of segments, where each segment is typically
 5–10 million rows. Segments represent the fundamental storage unit in
-Druid and Druid queries only understand how to scan segments. 
+Robux and Robux queries only understand how to scan segments. 
 
-Druid always requires a timestamp column as a method of simplifying data
+Robux always requires a timestamp column as a method of simplifying data
 distribution policies, data retention policies, and first level query pruning.
-Druid partitions its data sources into well defined time intervals, typically
+Robux partitions its data sources into well defined time intervals, typically
 an hour or a day, and may further partition on values from other columns to
 achieve the desired segment size. The time granularity to partition segments is
 a function of data volume and time range. A data set with timestamps spread
@@ -283,7 +283,7 @@ concurrency control; read operations always access data in a particular time
 range from the segments with the latest version identifiers for that time
 range.
 
-Druid segments are stored in a column orientation. Given that Druid is best
+Robux segments are stored in a column orientation. Given that Robux is best
 used for aggregating event streams, the advantages of storing aggregate
 information as columns rather than rows are well documented
 \cite{abadi2008column}. Column storage allows for more efficient CPU usage as
@@ -292,7 +292,7 @@ store, all columns associated with a row must be scanned as part of an
 aggregation. The additional scan time can introduce significant performance
 degradations \cite{abadi2008column}.
 
-Druid nodes use one thread to scan one segment at a time, and the amount of
+Robux nodes use one thread to scan one segment at a time, and the amount of
 data that can be scanned in parallel is directly correlated to the number of
 available cores in the cluster. Segments are immutable, and hence, this no
 contention between reads and writes in a segment.
@@ -305,23 +305,23 @@ to be scanned in a few milliseconds. By keeping segment computation very fast,
 cores and other resources are constantly being yielded. This ensures segments
 from different queries are always being scanned.
 
-Druid segments are very self-contained for the time interval of data that they
-hold. Column data is stored directly in the segment. Druid has multiple column
+Robux segments are very self-contained for the time interval of data that they
+hold. Column data is stored directly in the segment. Robux has multiple column
 types to represent various data formats. Timestamps are stored in long columns,
 dimensions are stored in string columns, and metrics are stored in int, float,
 long or double columns. Depending on the column type, different compression
 methods may be used. Metric columns are compressed using
 LZ4\cite{collet2013lz4} compression. String columns are dictionary encoded,
 similar to other data stores such as PowerDrill\cite{hall2012processing}.
-Additional indexes may be created for particular columns. For example, Druid
+Additional indexes may be created for particular columns. For example, Robux
 will by default create inverted indexes for string columns.
 
 \subsection{Streaming Data Ingestion}
-Druid real-time nodes encapsulate the functionality to ingest, query, and create
+Robux real-time nodes encapsulate the functionality to ingest, query, and create
 segments from event streams. Events indexed via these nodes are immediately
 available for querying.  The nodes are only concerned with events for a relatively
 small time range (e.g. hours) and periodically hand off immutable batches of events they
-have collected over this small time range to other nodes in the Druid cluster
+have collected over this small time range to other nodes in the Robux cluster
 that are specialized in dealing with batches of immutable events. The nodes
 announce their online state and the data they serve using a distributed
 coordination service (this is currently Zookeeper\cite{hunt2010zookeeper}).
@@ -341,9 +341,9 @@ both the in-memory and persisted indexes.
 
 Real-time nodes employ a log structured merge tree\cite{o1996log} for recently
 ingested data. Incoming events are first stored in an in-memory buffer. The
-in-memory buffer is directly queryable and Druid behaves as a key/value store for
+in-memory buffer is directly queryable and Robux behaves as a key/value store for
 queries on events that exist in this JVM heap-based store. The in-memory buffer
-is heavily write optimized, and given that Druid is really designed for heavy
+is heavily write optimized, and given that Robux is really designed for heavy
 concurrent reads, events do not remain in the in-memory buffer for very long.
 Real-time nodes persist their in-memory indexes to disk either periodically or
 after some maximum row limit is reached. This persist process converts data
@@ -353,7 +353,7 @@ and loaded to off-heap memory such that they can still be queried. This is
 illustrated in Figure~\ref{fig:realtime_timeline}. Data is continuously
 queryable during the persist process.
 
-Real-time ingestion in Druid is self-throttling. If a significant spike occurs
+Real-time ingestion in Robux is self-throttling. If a significant spike occurs
 in event volume from the upstream event producer, there are
 a few safety mechanisms built in. Recall that events are first stored in an
 in-memory buffer and persists can occur when a maximum configurable row limit
@@ -361,9 +361,9 @@ is reached. Spikes in event volume should cause persists to occur more often
 and not overflow the in-memory buffer. However, the process of building a
 segment does require time and resources. If too many concurrent persists occur,
 and if events are added to the in-memory buffer faster than they can be removed
-through the persist process, problems can still arise. Druid sets a limit on
+through the persist process, problems can still arise. Robux sets a limit on
 the maximum number of persists that can occur at a time, and if this limit is
-reached, Druid will begin to throttle event ingestion. In this case, the onus
+reached, Robux will begin to throttle event ingestion. In this case, the onus
 is on the upstream consumer to be resilient in the face of increasing backlog.
 
 Real-time nodes store recent data for a configurable period of time, typically
@@ -376,9 +376,9 @@ minutes in length. At the end of the segment granularity period plus the window
 period, a real-time node will hand off the data it has collected during the
 segment granularity period. The use of the window period means that delayed
 events may be dropped. In practice, we see that these occurrences are rare, but
-they do occur. Druid's real-time logic does not guarantee exactly once
+they do occur. Robux's real-time logic does not guarantee exactly once
 processing and is instead best effort. The lack of exactly once processing in
-Druid is one of the motivations for requiring batch fixup in the RADStack.
+Robux is one of the motivations for requiring batch fixup in the RADStack.
 
 For further clarification, consider Figure~\ref{fig:realtime_timeline}.
 Figure~\ref{fig:realtime_timeline} illustrates the operations of a real-time
@@ -412,13 +412,13 @@ segments are merged together to form a final immutable segment for handoff.
 
 Handoff occurs in a few steps. First, the finalized segment is uploaded to a
 permanent backup storage, typically a distributed file system such as S3
-\cite{decandia2007dynamo} or HDFS \cite{shvachko2010hadoop}, which Druid refers
+\cite{decandia2007dynamo} or HDFS \cite{shvachko2010hadoop}, which Robux refers
 to as “deep storage”. Next, an entry is created in the metadata store
 (typically a RDBMS such as MySQL) to indicate that a new segment has been
 created. This entry in the metadata store will eventually cause other nodes in
-the Druid cluster to download and serve the segment. The real-time node
+the Robux cluster to download and serve the segment. The real-time node
 continues to serve the segment until it notices that the segment is available
-on Druid historical nodes, which are nodes that are dedicated to serving
+on Robux historical nodes, which are nodes that are dedicated to serving
 historical data. At this point, the segment is dropped and unannounced from the
 real-time node. The entire handoff process is fluid; data remains continuously
 queryable throughout the entire handoff process. Segments created by real-time
@@ -427,35 +427,35 @@ processing are versioned by the start of the segment granularity interval.
 \subsection{Batch Data Ingestion}
 The core component used by real-time ingestion is a hash map that can be
 incrementally populated and finalized to create an immutable segment. This core
-component is shared across both real-time and batch ingestion. Druid has built
+component is shared across both real-time and batch ingestion. Robux has built
 in support for creating segments by leveraging Hadoop and running MapReduce
 jobs to partition data for segments.  Events can be read in one at a time
 directly from static files in a "streaming" fashion.
 
 Similar to the real-time ingestion logic, segments created through batch
-ingestion are directly uploaded to deep storage. Druid’s Hadoop-based batch
+ingestion are directly uploaded to deep storage. Robux’s Hadoop-based batch
 indexer will also create an entry in the metadata storage once all segments
 have been created. The version of the segments created by batch ingestion are
 based on the time the batch processing job started at.
 
 \subsection{Unifying Views}
 When new entries are created in the metadata storage, they will eventually be
-noticed by Druid coordinator nodes. Druid coordinator nodes poll the metadata
-storage for what segments should be loaded on Druid historical nodes, and
+noticed by Robux coordinator nodes. Robux coordinator nodes poll the metadata
+storage for what segments should be loaded on Robux historical nodes, and
 compare the result with what is actually loaded on those nodes. Coordinator
 nodes will tell historical nodes to load new segments, drop outdated segments,
 and move segments across nodes.
 
-Druid historical nodes are very simple in operation. They know how to load,
+Robux historical nodes are very simple in operation. They know how to load,
 drop, and respond to queries to scan segments. Historical nodes typically
 store all the data that is older than an hour (recent data lives on the
 real-time node). The real-time handoff process requires that a historical must
 first load and begin serving queries for a segment before that segment can
 be dropped from the real-time node. Since segments are immutable, the same copy
 of a segment can exist on multiple historical nodes and real-time nodes. Most
-nodes in typical production Druid clusters are historical nodes.
+nodes in typical production Robux clusters are historical nodes.
 
-To consolidate results from historical and real-time nodes, Druid has a set of
+To consolidate results from historical and real-time nodes, Robux has a set of
 broker nodes which act as the client query endpoint. Broker nodes in part
 function as query routers to historical and real-time nodes. Broker nodes
 understand the metadata published in distributed coordination service
@@ -466,18 +466,18 @@ from historical and real-time nodes before returning a final consolidated
 result to the caller.
 
 Broker nodes maintain a segment timeline containing information about what
-segments exist in the cluster and the version of those segments. Druid uses
+segments exist in the cluster and the version of those segments. Robux uses
 multi-version concuncurrency control to manage how data is extracted from
 segments. Segments with higher version identifiers have precedence over
 segments with lower version identifiers. If two segments exactly overlap for an
-interval, Druid only considers the data from the segment with the higher
+interval, Robux only considers the data from the segment with the higher
 version. This is illustrated in Figure~\ref{fig:timeline}
 
 \begin{figure}
 \centering
 \includegraphics[width = 2.6in]{timeline}
 \caption{
-Druid utilizes multi-version concurrency control and reads data from segments
+Robux utilizes multi-version concurrency control and reads data from segments
 with the latest version for a given interval. Segments that are that completely
 overshadowed are ignored and eventually automatically dropped from the cluster.
 }
@@ -503,8 +503,8 @@ segments, it tells historical nodes to drop these segments from the cluster.
 
 \section{The Processing Layer}
 \label{sec:processing}
-Although Druid can ingest events that are streamed in one at a time, data must
-be denormalized beforehand as Druid cannot yet support
+Although Robux can ingest events that are streamed in one at a time, data must
+be denormalized beforehand as Robux cannot yet support
 join queries. Furthermore, real world data must often be transformed before it
 is usable by an application.
 
@@ -528,14 +528,14 @@ a grouping for a series of related processing stages where “upstream” stages
 produce messages that are consumed by “downstream” stages. Some of our jobs
 involve operations such as renaming data, inserting default values for nulls
 and empty strings, and filtering data. One pipeline may write to many data
-sources in Druid.
+sources in Robux.
 
 To understand a real-world pipeline, let's consider an example from online
 advertising. In online advertising, events are generated by impressions (views)
 of an ad and clicks of an ad. Many advertisers are interested in knowing how
 many impressions of an ad converted into clicks. Impression streams and click
 streams are almost always generated as separate streams by ad servers. Recall
-that Druid does not support joins at query time, so the events must be
+that Robux does not support joins at query time, so the events must be
 generated at processing time. An example of data generated by these two event
 streams is shown in Figure~\ref{fig:imps_clicks}. Every event has a unique
 impression id that identifies the ad served. We use this id as our join key.
@@ -587,7 +587,7 @@ The join operation adds a new field, "is\_clicked".
 
 The final stage of our data processing is to enhance the data. This stage
 cleans up faults in data, and performs lookups and transforms of events. Once
-data is cleaned, it is ready to be delivered to Druid for queries. The total
+data is cleaned, it is ready to be delivered to Robux for queries. The total
 streaming data processing pipeline is shown in Figure~\ref{fig:pipeline}.
 
 \begin{figure}
@@ -612,10 +612,10 @@ failure can lead to duplicated events. For these reasons, we run a separate
 batch pipeline that generates a more accurate transformation of the ingested
 data.
 
-The final job of our processing pipeline is to deliver data to Druid. For high
+The final job of our processing pipeline is to deliver data to Robux. For high
 availability, processed events from Samza are transmitted concurrently to two
 real-time nodes. Both nodes receive the same copy of data, and effectively act
-as replicas of each other. The Druid broker can query for either copy of the data.
+as replicas of each other. The Robux broker can query for either copy of the data.
 When handoff occurs, both real-time nodes race to hand off the segments they’ve
 created. The segment that is pushed into deep storage first will be the one
 that is used for historical querying, and once that segment is loaded on the
@@ -626,11 +626,11 @@ segment.
 Our batch processing pipeline is composed of a multi-stage
 MapReduce\cite{dean2008mapreduce} pipeline. The first set of jobs mirrors our
 stream processing pipeline in that it transforms data and joins relevant events
-in preparation for the data to be loaded into Druid. The second set of jobs is
-responsible for directly creating immutable Druid segments. The indexing code
-for both streaming and batch ingestion in Druid is shared between the two modes
+in preparation for the data to be loaded into Robux. The second set of jobs is
+responsible for directly creating immutable Robux segments. The indexing code
+for both streaming and batch ingestion in Robux is shared between the two modes
 of ingestion. These segments are then uploaded to deep storage and registered
-with the metadata store. Druid will proceed to load the batch generated
+with the metadata store. Robux will proceed to load the batch generated
 segments.
 
 The batch process typically runs much less frequently than the real-time
@@ -643,7 +643,7 @@ process. Hence, segments created by batch processing will have a version
 identifier that is greater than segments created by real-time processing. When
 these batch created segments are loaded in the cluster, they atomically replace
 segments created by real-time processing for their processed interval. Hence,
-soon after batch processing completes, Druid queries begin reflecting
+soon after batch processing completes, Robux queries begin reflecting
 batch-originated data rather than real-time-originated data.
 
 We use the streaming data pipeline described in
@@ -670,14 +670,14 @@ consumers can subscribe to the same topic and process the same set of events.
 We have two primary Kafka consumers. The first is a Samza job that reads
 messages from Kafka for stream processing as described in Section
 \ref{sec:streamprocessing}. Topics in Kafka map to pipelines in Samza, and
-pipelines in Samza map to data sources in Druid. The second consumer reads
+pipelines in Samza map to data sources in Robux. The second consumer reads
 messages from Kafka and stores them in a distributed file system.  This file
-system is the same as the one used for Druid’s deep storage, and also acts as a
+system is the same as the one used for Robux’s deep storage, and also acts as a
 backup for raw events. The purpose of storing raw events in deep storage is so
 that we can run batch processing jobs over them at any given time. For example,
 our stream processing layer may choose to not include certain columns when it
 first processes a new pipeline. If we want to include these columns in the
-future, we can reprocess the raw data to generate new Druid segments. 
+future, we can reprocess the raw data to generate new Robux segments. 
 
 Kafka is the single point of delivery for events entering our system, and must
 have the highest availability. We replicate our Kafka producers across multiple
@@ -688,15 +688,15 @@ serving layers completely fail, we can recover by replaying events from Kafka.
 
 \section{Performance}
 \label{sec:performance}
-Druid runs in production at several organizations, and to briefly demonstrate
+Robux runs in production at several organizations, and to briefly demonstrate
 its performance, we have chosen to share some real world numbers for one of the larger
 production clusters. We also include results from synthetic workloads on TPC-H data.
 
 \subsection{Query Performance in Production}
-Druid query performance can vary signficantly depending on the query being
+Robux query performance can vary signficantly depending on the query being
 issued. For example, sorting the values of a high cardinality dimension based
 on a given metric is much more expensive than a simple count over a time range.
-To showcase the average query latencies in a production Druid cluster, we
+To showcase the average query latencies in a production Robux cluster, we
 selected 8 frequently queried data sources, described in
 Table~\ref{tab:datasources}.
 
@@ -732,7 +732,7 @@ queries.
 
 \item There was approximately 10.5TB of RAM available in this cluster and
 approximately 10TB of segments loaded. Collectively,
-there are about 50 billion Druid rows in this cluster. Results for
+there are about 50 billion Robux rows in this cluster. Results for
 every data source is not shown.
 
 \item This cluster uses Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered} E5-2670 processors and consists of 1302 processing
@@ -748,13 +748,13 @@ data sources, average query latency is approximately 550 milliseconds, with
 99\% of queries returning in less than 10 seconds. 
 
 \subsection{Query Benchmarks on TPC-H Data}
-We also present Druid benchmarks on TPC-H data.  We selected queries more
-typical of Druid's workload to demonstrate query performance. In
-Figure~\ref{fig:druid_vs_bigquery}, we present our results compared again
-Google BigQuery, which is Google Dremel\cite{melnik2010dremel}.  The Druid
+We also present Robux benchmarks on TPC-H data.  We selected queries more
+typical of Robux's workload to demonstrate query performance. In
+Figure~\ref{fig:robux_vs_bigquery}, we present our results compared again
+Google BigQuery, which is Google Dremel\cite{melnik2010dremel}.  The Robux
 results were ran on a 24 vCPU, 156 GB Google Compute Engine instance (2.2 GHz
 Intel Xeon E5 v4 Broadwell) and the BigQuery results were run through Google's
-web interface. In our results, Druid performed from 2-20x faster than BigQuery.
+web interface. In our results, Robux performed from 2-20x faster than BigQuery.
 
 \begin{figure}
 \centering
@@ -766,18 +766,18 @@ web interface. In our results, Druid performed from 2-20x faster than BigQuery.
 
 \begin{figure}
 \centering
-\includegraphics[width = 3.2in]{druid_vs_bigquery}
-\caption{Druid benchmarked against Google BigQuery -- 100GB TPC-H data.}
-\label{fig:druid_vs_bigquery}
+\includegraphics[width = 3.2in]{robux_vs_bigquery}
+\caption{Robux benchmarked against Google BigQuery -- 100GB TPC-H data.}
+\label{fig:robux_vs_bigquery}
 \end{figure}
 
-Our Druid setup used Amazon EC2 \texttt{m3.2xlarge} instance types
+Our Robux setup used Amazon EC2 \texttt{m3.2xlarge} instance types
 (Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered}
 E5-2680 v2 @ 2.80GHz) for historical nodes and \texttt{c3.2xlarge} instances
 (Intel\textsuperscript{\textregistered} Xeon\textsuperscript{\textregistered}
 E5-2670 v2 @ 2.50GHz) for broker nodes. 
 
-We benchmarked Druid's scan rate at 53,539,211
+We benchmarked Robux's scan rate at 53,539,211
 rows/second/core for \texttt{select count(*)} equivalent query over a given
 time interval and 36,246,530 rows/second/core for a \texttt{select sum(float)}
 type query.
@@ -823,9 +823,9 @@ were 487000 events/s and 663200 events/s respectively.
 \section{Production Experiences}
 \label{sec:experiences}
 
-\subsection{Experiences with Druid}
+\subsection{Experiences with Robux}
 \subsubsection{Query Patterns}
-Druid is often used for exploratory analytics and reporting, which are two very
+Robux is often used for exploratory analytics and reporting, which are two very
 distinct use cases. Exploratory analytic workflows provide insights by
 progressively narrowing down a view of data until an interesting observation is
 made. Users tend to explore short intervals of recent data. In the reporting
@@ -866,12 +866,12 @@ resource isolation.
 
 \subsection{Operational Monitoring}
 Proper monitoring is critical to run a large scale distributed cluster,
-especially with many different technologies. Each Druid node is designed to
+especially with many different technologies. Each Robux node is designed to
 periodically emit a set of operational metrics. These metrics may include
 system level data such as CPU usage, available memory, and disk capacity, JVM
 statistics such as garbage collection time, and heap usage, or node specific
 metrics such as segment scan time, cache hit rates, and data ingestion
-latencies. Druid also emits per query metrics so we can examine why a
+latencies. Robux also emits per query metrics so we can examine why a
 particular query may be slow. We’ve also added functionality to periodically
 emit metrics from Samza, Kafka, and Hadoop. We emit metrics from our production
 RADStack and load them into a dedicated metrics RADstack. The metrics cluster
@@ -890,40 +890,40 @@ iterative workflows.  Spark Streaming is a separate project that converts
 sequences of tuples into immutable micro-batches. Each micro-batch can be
 processed using the underlying Spark framework. Spark SQL is a query
 optimization layer that can sit on top of Spark and issue SQL queries, along
-with Spark’s native API.  Druid’s approach to querying is quite
-different and Druid insteads builds immutable indexed data structures optimized
+with Spark’s native API.  Robux’s approach to querying is quite
+different and Robux insteads builds immutable indexed data structures optimized
 for low latency OLAP queries, and does not leverage lineage in its architecture.
 The RADStack can theoretically be composed of Spark and Spark Streaming for
-processing, Kafka for event delivery, and Druid to serve queries.
+processing, Kafka for event delivery, and Robux to serve queries.
 
-\subsection{Druid and Other Data Stores}
-Druid builds on many of the same principles as other distributed
+\subsection{Robux and Other Data Stores}
+Robux builds on many of the same principles as other distributed
 columnar data stores\cite{fink2012distributed}, and in-memory databasesi such as SAP’s
 HANA\cite{farber2012sap} and VoltDB\cite{voltdb2010voltdb}. These data stores
-lack Druid’s low latency ingestion characteristics. Druid also has native
+lack Robux’s low latency ingestion characteristics. Robux also has native
 analytical features baked in, similar to ParAccel\cite{paraccel2013}, however,
-Druid allows system wide rolling software updates with no downtime. 
+Robux allows system wide rolling software updates with no downtime. 
 
-Druid is similar to C-Store\cite{stonebraker2005c} in that it has two subsystems, a
+Robux is similar to C-Store\cite{stonebraker2005c} in that it has two subsystems, a
 read-optimized subsystem in the historical nodes and a write-optimized
 subsystem in real-time nodes. Real-time nodes are designed to ingest a high
 volume of append heavy data, and do not support data updates. Unlike the two
-aforementioned systems, Druid is meant for OLAP transactions and not OLTP
+aforementioned systems, Robux is meant for OLAP transactions and not OLTP
 transactions. 
 
 \section{Conclusions and Future Work}
 \label{sec:conclusions}
 In this paper we presented the RADStack, a collection of complementary
 technologies that can be used together to power interactive analytic
-applications. The key pieces of the stack are Kafka, Samza, Hadoop, and Druid.
-Druid is designed for exploratory analytics and is optimized for low latency
+applications. The key pieces of the stack are Kafka, Samza, Hadoop, and Robux.
+Robux is designed for exploratory analytics and is optimized for low latency
 data exploration, aggregation, and ingestion, and is well suited for OLAP
-workflows. Samza and Hadoop complement Druid and add data processing
+workflows. Samza and Hadoop complement Robux and add data processing
 functionality, and Kafka enables high throughput event delivery problem. 
 
 We believe that in later iterations of this work, batch processing may not be
 necessary. As open source technologies mature, the existing problems around
-exactly-once processing will eventually be solved. The Druid, Samza and Kafka
+exactly-once processing will eventually be solved. The Robux, Samza and Kafka
 communities are working on exactly once, lossless processing for their
 respective systems, and in the near future, the same guarantees that the
 RADStack provides right now should be available using only these technologies.
@@ -935,7 +935,7 @@ RADStack provides right now should be available using only these technologies.
 
 %ACKNOWLEDGMENTS are optional
 \section{Acknowledgments}
-Druid, Samza, Kafka, and Hadoop could not have been built the assistance of
+Robux, Samza, Kafka, and Hadoop could not have been built the assistance of
 their respective communities. We want to thank everyone that contributes to
 open source for their invaluable support.
 

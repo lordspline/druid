@@ -118,7 +118,7 @@ export const INGESTION_SPEC_COMPLETIONS: JsonCompletionRule[] = [
     path: '$.spec.dataSchema.timestampSpec.column',
     completions: [
       { value: 'timestamp', documentation: 'Default timestamp column name' },
-      { value: '__time', documentation: 'Druid internal timestamp column' },
+      { value: '__time', documentation: 'Robux internal timestamp column' },
       { value: 'time', documentation: 'Common timestamp column name' },
       { value: 'event_time', documentation: 'Common event time column name' },
       { value: 'created_at', documentation: 'Common creation time column name' },
@@ -476,7 +476,7 @@ export const INGESTION_SPEC_COMPLETIONS: JsonCompletionRule[] = [
       { value: 'gs', documentation: 'Google Cloud Storage' },
       { value: 'azure', documentation: 'Azure Blob Storage' },
       { value: 'hdfs', documentation: 'Hadoop Distributed File System' },
-      { value: 'druid', documentation: 'Re-index from existing Druid datasource' },
+      { value: 'robux', documentation: 'Re-index from existing Robux datasource' },
       { value: 'inline', documentation: 'Inline data in the spec' },
       { value: 'combining', documentation: 'Combine multiple input sources' },
     ],

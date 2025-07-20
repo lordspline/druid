@@ -23,7 +23,7 @@ title: "Sorting and limiting (groupBy)"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the native
  language. For information about sorting in SQL, refer to the [SQL documentation](sql.md#order-by).
 :::
@@ -45,7 +45,7 @@ The default limit spec takes a limit and the list of columns to do an orderBy op
 
 The "limit" parameter is the maximum number of rows to return.
 
-The "offset" parameter tells Druid to skip this many rows when returning results. If both "limit" and "offset" are
+The "offset" parameter tells Robux to skip this many rows when returning results. If both "limit" and "offset" are
 provided, then "offset" will be applied first, followed by "limit". For example, a spec with limit 100 and offset 10
 will return 100 rows starting from row number 10. Internally, the query is executed by extending the limit by the offset
 and then discarding a number of rows equal to the offset. This means that raising the offset will increase resource

@@ -31,10 +31,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=integration-test@druid.apache.org
+emailAddress=integration-test@robux.apache.org
 CN = thisisprobablynottherighthostname
 
 [ req_ext ]
@@ -51,6 +51,6 @@ openssl req -new -out invalid_hostname_client.csr -key invalid_hostname_client.k
 openssl x509 -req -days 3650 -in invalid_hostname_client.csr -CA root.pem -CAkey root.key -set_serial 0x11111112 -out invalid_hostname_client.pem -sha256 -extfile invalid_hostname_csr.conf -extensions req_ext
 
 # Create a Java keystore containing the generated certificate
-openssl pkcs12 -export -in invalid_hostname_client.pem -inkey invalid_hostname_client.key -out invalid_hostname_client.p12 -name invalid_hostname_client -CAfile root.pem -caname druid-it-root -password pass:druid123
-keytool -importkeystore -srckeystore invalid_hostname_client.p12 -srcstoretype PKCS12 -destkeystore invalid_hostname_client.jks -deststoretype pkcs12 -srcstorepass druid123 -deststorepass druid123
+openssl pkcs12 -export -in invalid_hostname_client.pem -inkey invalid_hostname_client.key -out invalid_hostname_client.p12 -name invalid_hostname_client -CAfile root.pem -caname robux-it-root -password pass:robux123
+keytool -importkeystore -srckeystore invalid_hostname_client.p12 -srcstoretype PKCS12 -destkeystore invalid_hostname_client.jks -deststoretype pkcs12 -srcstorepass robux123 -deststorepass robux123
 

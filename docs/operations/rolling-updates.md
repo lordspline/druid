@@ -23,7 +23,7 @@ title: "Rolling updates"
   -->
 
 
-For rolling Apache Druid cluster updates with no downtime, we recommend updating Druid processes in the
+For rolling Apache Robux cluster updates with no downtime, we recommend updating Robux processes in the
 following order:
 
 1. Historical
@@ -35,7 +35,7 @@ following order:
 
 If you need to do a rolling downgrade, reverse the order and start with the Coordinator processes.
 
-For information about the latest release, see [Druid releases](https://github.com/apache/druid/releases).
+For information about the latest release, see [Robux releases](https://github.com/apache/robux/releases).
 
 ## Historical
 
@@ -58,7 +58,7 @@ doing that.
 ### Rolling restart (restore-based)
 
 Middle Managers can be updated one at a time in a rolling fashion when you set
-`druid.indexer.task.restoreTasksOnRestart=true`. In this case, indexing tasks that support restoring
+`robux.indexer.task.restoreTasksOnRestart=true`. In this case, indexing tasks that support restoring
 will restore their state on Middle Manager restart, and will not fail.
 
 Currently, only realtime tasks support restoring, so non-realtime indexing tasks will fail and will
@@ -70,23 +70,23 @@ Middle Managers can be gracefully terminated using the "disable" API. This works
 even tasks that are not restorable.
 
 To prepare a Middle Manager for update, send a POST request to
-`<Middle_Manager_IP:PORT>/druid/worker/v1/disable`. The Overlord will now no longer send tasks to
+`<Middle_Manager_IP:PORT>/robux/worker/v1/disable`. The Overlord will now no longer send tasks to
 this Middle Manager. Tasks that have already started will run to completion. Current state can be checked
-using `<Middle_Manager_IP:PORT>/druid/worker/v1/enabled` .
+using `<Middle_Manager_IP:PORT>/robux/worker/v1/enabled` .
 
-To view all existing tasks, send a GET request to `<Middle_Manager_IP:PORT>/druid/worker/v1/tasks`.
+To view all existing tasks, send a GET request to `<Middle_Manager_IP:PORT>/robux/worker/v1/tasks`.
 When this list is empty, you can safely update the Middle Manager. After the Middle Manager starts
 back up, it is automatically enabled again. You can also manually enable Middle Managers by POSTing
-to `<Middle_Manager_IP:PORT>/druid/worker/v1/enable`.
+to `<Middle_Manager_IP:PORT>/robux/worker/v1/enable`.
 
 ### Autoscaling-based replacement
 
 If autoscaling is enabled on your Overlord, then Overlord processes can launch new Middle Manager processes
 en masse and then gracefully terminate old ones as their tasks finish. This process is configured by
-setting `druid.indexer.runner.minWorkerVersion=#{VERSION}`. Each time you update your Overlord process,
+setting `robux.indexer.runner.minWorkerVersion=#{VERSION}`. Each time you update your Overlord process,
 the `VERSION` value should be increased, which will trigger a mass launch of new Middle Managers.
 
-The config `druid.indexer.autoscale.workerVersion=#{VERSION}` also needs to be set.
+The config `robux.indexer.autoscale.workerVersion=#{VERSION}` also needs to be set.
 
 ## Standalone Real-time
 

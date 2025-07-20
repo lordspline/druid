@@ -23,13 +23,13 @@ sidebar_label: "Hadoop-based"
   ~ under the License.
   -->
 
-Apache Hadoop-based batch ingestion in Apache Druid is supported via a Hadoop-ingestion task. These tasks can be posted to a running
-instance of a Druid [Overlord](../design/overlord.md). Please refer to our [Hadoop-based vs. native batch comparison table](index.md#batch) for
+Apache Hadoop-based batch ingestion in Apache Robux is supported via a Hadoop-ingestion task. These tasks can be posted to a running
+instance of a Robux [Overlord](../design/overlord.md). Please refer to our [Hadoop-based vs. native batch comparison table](index.md#batch) for
 comparisons between Hadoop-based, native batch (simple), and native batch (parallel) ingestion.
 
 To run a Hadoop-based ingestion task, write an ingestion spec as specified below. Then POST it to the
-[`/druid/indexer/v1/task`](../api-reference/tasks-api.md) endpoint on the Overlord, or use the
-`bin/post-index-task` script included with Druid.
+[`/robux/indexer/v1/task`](../api-reference/tasks-api.md) endpoint on the Overlord, or use the
+`bin/post-index-task` script included with Robux.
 
 ## Tutorial
 
@@ -108,10 +108,10 @@ A sample task is shown below:
 |--------|-----------|---------|
 |type|The task type, this should always be "index_hadoop".|yes|
 |spec|A Hadoop Index Spec. See [Ingestion](../ingestion/index.md)|yes|
-|hadoopDependencyCoordinates|A JSON array of Hadoop dependency coordinates that Druid will use, this property will override the default Hadoop coordinates. Once specified, Druid will look for those Hadoop dependencies from the location specified by `druid.extensions.hadoopDependenciesDir`|no|
+|hadoopDependencyCoordinates|A JSON array of Hadoop dependency coordinates that Robux will use, this property will override the default Hadoop coordinates. Once specified, Robux will look for those Hadoop dependencies from the location specified by `robux.extensions.hadoopDependenciesDir`|no|
 |classpathPrefix|Classpath that will be prepended for the Peon process.|no|
 
-Also note that Druid automatically computes the classpath for Hadoop job containers that run in the Hadoop cluster. But in case of conflicts between Hadoop and Druid's dependencies, you can manually specify the classpath by setting `druid.extensions.hadoopContainerDruidClasspath` property. See the extensions config in [base druid configuration](../configuration/index.md#extensions).
+Also note that Robux automatically computes the classpath for Hadoop job containers that run in the Hadoop cluster. But in case of conflicts between Hadoop and Robux's dependencies, you can manually specify the classpath by setting `robux.extensions.hadoopContainerRobuxClasspath` property. See the extensions config in [base robux configuration](../configuration/index.md#extensions).
 
 ## `dataSchema`
 
@@ -127,7 +127,7 @@ This field is required.
 |type|String|This should always be 'hadoop'.|yes|
 |inputSpec|Object|A specification of where to pull the data in from. See below.|yes|
 |segmentOutputPath|String|The path to dump segments into.|Only used by the [Command-line Hadoop indexer](#cli). This field must be null otherwise.|
-|metadataUpdateSpec|Object|A specification of how to update the metadata for the druid cluster these segments belong to.|Only used by the [Command-line Hadoop indexer](#cli). This field must be null otherwise.|
+|metadataUpdateSpec|Object|A specification of how to update the metadata for the robux cluster these segments belong to.|Only used by the [Command-line Hadoop indexer](#cli). This field must be null otherwise.|
 
 ### `inputSpec`
 
@@ -140,7 +140,7 @@ A type of inputSpec where a static path to the data files is provided.
 |Field|Type|Description|Required|
 |-----|----|-----------|--------|
 |inputFormat|String|Specifies the Hadoop InputFormat class to use. e.g. `org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat` |no|
-|paths|String|Comma-separated input paths to the raw data. Druid ingests data only from the configured paths. It does not search recursively for data in subdirectories. |yes|
+|paths|String|Comma-separated input paths to the raw data. Robux ingests data only from the configured paths. It does not search recursively for data in subdirectories. |yes|
 
 For example, using the static input paths:
 
@@ -149,12 +149,12 @@ For example, using the static input paths:
 ```
 
 You can also read from cloud storage such as Amazon S3 or Google Cloud Storage.
-To do so, you need to install the necessary library under Druid's classpath in _all Middle Manager or Indexer processes_.
+To do so, you need to install the necessary library under Robux's classpath in _all Middle Manager or Indexer processes_.
 For S3, you can run the below command to install the [Hadoop AWS module](https://hadoop.apache.org/docs/stable/hadoop-aws/tools/hadoop-aws/).
 
 ```bash
-java -classpath "${DRUID_HOME}lib/*" org.apache.druid.cli.Main tools pull-deps -h "org.apache.hadoop:hadoop-aws:${HADOOP_VERSION}";
-cp ${DRUID_HOME}/hadoop-dependencies/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar ${DRUID_HOME}/extensions/druid-hdfs-storage/
+java -classpath "${ROBUX_HOME}lib/*" org.apache.robux.cli.Main tools pull-deps -h "org.apache.hadoop:hadoop-aws:${HADOOP_VERSION}";
+cp ${ROBUX_HOME}/hadoop-dependencies/hadoop-aws/${HADOOP_VERSION}/hadoop-aws-${HADOOP_VERSION}.jar ${ROBUX_HOME}/extensions/robux-hdfs-storage/
 ```
 
 Once you install the Hadoop AWS module in all Middle Manager and Indexer processes, you can put
@@ -175,7 +175,7 @@ For more configurations, see the [Hadoop AWS module](https://hadoop.apache.org/d
 ```
 
 For Google Cloud Storage, you need to install [GCS connector jar](https://github.com/GoogleCloudPlatform/bigdata-interop/blob/master/gcs/INSTALL.md)
-under `${DRUID_HOME}/hadoop-dependencies` in _all Middle Manager or Indexer processes_.
+under `${ROBUX_HOME}/hadoop-dependencies` in _all Middle Manager or Indexer processes_.
 Once you install the GCS Connector jar in all Middle Manager and Indexer processes, you can put
 your Google Cloud Storage paths in the inputSpec with the below job properties.
 For more configurations, see the [instructions to configure Hadoop](https://github.com/GoogleCloudPlatform/bigdata-interop/blob/master/gcs/INSTALL.md#configure-hadoop),
@@ -216,22 +216,22 @@ s3n://billy-bucket/the/data/is/here/y=2012/m=06/d=01/H=23
 
 #### `dataSource`
 
-This is a type of `inputSpec` that reads data already stored inside Druid. This is used to allow "re-indexing" data and for "delta-ingestion" described later in `multi` type inputSpec.
+This is a type of `inputSpec` that reads data already stored inside Robux. This is used to allow "re-indexing" data and for "delta-ingestion" described later in `multi` type inputSpec.
 
 |Field|Type|Description|Required|
 |-----|----|-----------|--------|
 |type|String.|This should always be 'dataSource'.|yes|
-|ingestionSpec|JSON object.|Specification of Druid segments to be loaded. See below.|yes|
-|maxSplitSize|Number|Enables combining multiple segments into single Hadoop InputSplit according to size of segments. With -1, druid calculates max split size based on user specified number of map task(mapred.map.tasks or mapreduce.job.maps). By default, one split is made for one segment. maxSplitSize is specified in bytes.|no|
+|ingestionSpec|JSON object.|Specification of Robux segments to be loaded. See below.|yes|
+|maxSplitSize|Number|Enables combining multiple segments into single Hadoop InputSplit according to size of segments. With -1, robux calculates max split size based on user specified number of map task(mapred.map.tasks or mapreduce.job.maps). By default, one split is made for one segment. maxSplitSize is specified in bytes.|no|
 |useNewAggs|Boolean|If "false", then list of aggregators in "metricsSpec" of hadoop indexing task must be same as that used in original indexing task while ingesting raw data. Default value is "false". This field can be set to "true" when "inputSpec" type is "dataSource" and not "multi" to enable arbitrary aggregators while reindexing. See below for "multi" type support for delta-ingestion.|no|
 
 Here is what goes inside `ingestionSpec`:
 
 |Field|Type|Description|Required|
 |-----|----|-----------|--------|
-|dataSource|String|Druid dataSource name from which you are loading the data.|yes|
+|dataSource|String|Robux dataSource name from which you are loading the data.|yes|
 |intervals|List|A list of strings representing ISO-8601 Intervals.|yes|
-|segments|List|List of segments from which to read data from, by default it is obtained automatically. You can obtain list of segments to put here by making a POST query to Coordinator at url /druid/coordinator/v1/metadata/datasources/segments?full with list of intervals specified in the request payload, e.g. ["2012-01-01T00:00:00.000/2012-01-03T00:00:00.000", "2012-01-05T00:00:00.000/2012-01-07T00:00:00.000"]. You may want to provide this list manually in order to ensure that segments read are exactly same as they were at the time of task submission, task would fail if the list provided by the user does not match with state of database when the task actually runs.|no|
+|segments|List|List of segments from which to read data from, by default it is obtained automatically. You can obtain list of segments to put here by making a POST query to Coordinator at url /robux/coordinator/v1/metadata/datasources/segments?full with list of intervals specified in the request payload, e.g. ["2012-01-01T00:00:00.000/2012-01-03T00:00:00.000", "2012-01-05T00:00:00.000/2012-01-07T00:00:00.000"]. You may want to provide this list manually in order to ensure that segments read are exactly same as they were at the time of task submission, task would fail if the list provided by the user does not match with state of database when the task actually runs.|no|
 |filter|JSON|See [Filters](../querying/filters.md)|no|
 |dimensions|Array of String|Name of dimension columns to load. By default, the list will be constructed from parseSpec. If parseSpec does not have an explicit list of dimensions then all the dimension columns present in stored data will be read.|no|
 |metrics|Array of String|Name of metric columns to load. By default, the list will be constructed from the "name" of all the configured aggregators.|no|
@@ -307,7 +307,7 @@ For example:
 ```
 
 It is STRONGLY RECOMMENDED to provide list of segments in `dataSource` inputSpec explicitly so that your delta ingestion task is idempotent. You can obtain that list of segments by making following call to the Coordinator.
-POST `/druid/coordinator/v1/metadata/datasources/{dataSourceName}/segments?full`
+POST `/robux/coordinator/v1/metadata/datasources/{dataSourceName}/segments?full`
 Request Body: [interval1, interval2,...] for example ["2012-01-01T00:00:00.000/2012-01-03T00:00:00.000", "2012-01-05T00:00:00.000/2012-01-07T00:00:00.000"]
 
 ## `tuningConfig`
@@ -316,7 +316,7 @@ The tuningConfig is optional and default parameters will be used if no tuningCon
 
 |Field|Type|Description|Required|
 |-----|----|-----------|--------|
-|workingPath|String|The working path to use for intermediate results (results between Hadoop jobs).|Only used by the [Command-line Hadoop indexer](#cli). The default is '/tmp/druid-indexing'. This field must be null otherwise.|
+|workingPath|String|The working path to use for intermediate results (results between Hadoop jobs).|Only used by the [Command-line Hadoop indexer](#cli). The default is '/tmp/robux-indexing'. This field must be null otherwise.|
 |version|String|The version of created segments. Ignored for HadoopIndexTask unless useExplicitVersion is set to true|no (default == datetime that indexing starts at)|
 |partitionsSpec|Object|A specification of how to partition each time bucket into segments. Absence of this property means no partitioning will occur. See [`partitionsSpec`](#partitionsspec) below.|no (default == 'hashed')|
 |maxRowsInMemory|Integer|The number of rows to aggregate before persisting. Note that this is the number of post-aggregation rows which may not be equal to the number of input events due to roll-up. This is used to manage the required JVM heap size. Normally user does not need to set this, but depending on the nature of data, if rows are short in terms of bytes, user may not want to store a million rows in memory and this value should be set.|no (default == 1000000)|
@@ -359,7 +359,7 @@ for more details.
 ## `partitionsSpec`
 
 Segments are always partitioned based on timestamp (according to the granularitySpec) and may be further partitioned in
-some other way depending on partition type. Druid supports two types of partitioning strategies: `hashed` (based on the
+some other way depending on partition type. Robux supports two types of partitioning strategies: `hashed` (based on the
 hash of all dimensions in each row), and `single_dim` (based on ranges of a single dimension).
 
 Hashed partitioning is recommended in most cases, as it will improve indexing performance and create more uniformly
@@ -395,7 +395,7 @@ The configuration options are:
 In hash partitioning, the partition function is used to compute hash of partition dimensions. The partition dimension
 values are first serialized into a byte array as a whole, and then the partition function is applied to compute hash of
 the byte array.
-Druid currently supports only one partition function.
+Robux currently supports only one partition function.
 
 |name|description|
 |----|-----------|
@@ -430,9 +430,9 @@ The configuration options are:
 
 ## Remote Hadoop clusters
 
-If you have a remote Hadoop cluster, make sure to include the folder holding your configuration `*.xml` files in your Druid `_common` configuration folder.
+If you have a remote Hadoop cluster, make sure to include the folder holding your configuration `*.xml` files in your Robux `_common` configuration folder.
 
-If you are having dependency problems with your version of Hadoop and the version compiled with Druid, please see [these docs](../operations/other-hadoop.md).
+If you are having dependency problems with your version of Hadoop and the version compiled with Robux, please see [these docs](../operations/other-hadoop.md).
 
 ## Elastic MapReduce
 
@@ -453,16 +453,16 @@ on your EMR master.
 
 ## Kerberized Hadoop clusters
 
-By default druid can use the existing TGT kerberos ticket available in local kerberos key cache.
+By default robux can use the existing TGT kerberos ticket available in local kerberos key cache.
 Although TGT ticket has a limited life cycle,
 therefore you need to call `kinit` command periodically to ensure validity of TGT ticket.
 To avoid this extra external cron job script calling `kinit` periodically,
- you can provide the principal name and keytab location and druid will do the authentication transparently at startup and job launching time.
+ you can provide the principal name and keytab location and robux will do the authentication transparently at startup and job launching time.
 
 |Property|Possible Values|Description|Default|
 |--------|---------------|-----------|-------|
-|`druid.hadoop.security.kerberos.principal`|`druid@EXAMPLE.COM`| Principal user name |empty|
-|`druid.hadoop.security.kerberos.keytab`|`/etc/security/keytabs/druid.headlessUser.keytab`|Path to keytab file|empty|
+|`robux.hadoop.security.kerberos.principal`|`robux@EXAMPLE.COM`| Principal user name |empty|
+|`robux.hadoop.security.kerberos.keytab`|`/etc/security/keytabs/robux.headlessUser.keytab`|Path to keytab file|empty|
 
 ### Loading from S3 with EMR
 
@@ -482,16 +482,16 @@ To avoid this extra external cron job script calling `kinit` periodically,
 
 Note that this method uses Hadoop's built-in S3 filesystem rather than Amazon's EMRFS, and is not compatible
 with Amazon-specific features such as S3 encryption and consistent views. If you need to use these
-features, you will need to make the Amazon EMR Hadoop JARs available to Druid through one of the
+features, you will need to make the Amazon EMR Hadoop JARs available to Robux through one of the
 mechanisms described in the [Using other Hadoop distributions](#using-other-hadoop-distributions) section.
 
 ## Using other Hadoop distributions
 
-Druid works out of the box with many Hadoop distributions.
+Robux works out of the box with many Hadoop distributions.
 
-If you are having dependency conflicts between Druid and your version of Hadoop, you can try
-searching for a solution in the [Druid user groups](https://groups.google.com/forum/#!forum/druid-user), or reading the
-Druid [Different Hadoop Versions](../operations/other-hadoop.md) documentation.
+If you are having dependency conflicts between Robux and your version of Hadoop, you can try
+searching for a solution in the [Robux user groups](https://groups.google.com/forum/#!forum/robux-user), or reading the
+Robux [Different Hadoop Versions](../operations/other-hadoop.md) documentation.
 
 <a name="cli"></a>
 
@@ -500,12 +500,12 @@ Druid [Different Hadoop Versions](../operations/other-hadoop.md) documentation.
 To run:
 
 ```
-java -Xmx256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -classpath lib/*:<hadoop_config_dir> org.apache.druid.cli.Main index hadoop <spec_file>
+java -Xmx256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -classpath lib/*:<hadoop_config_dir> org.apache.robux.cli.Main index hadoop <spec_file>
 ```
 
 ### Options
 
-- "--coordinate" - provide a version of Apache Hadoop to use. This property will override the default Hadoop coordinates. Once specified, Apache Druid will look for those Hadoop dependencies from the location specified by `druid.extensions.hadoopDependenciesDir`.
+- "--coordinate" - provide a version of Apache Hadoop to use. This property will override the default Hadoop coordinates. Once specified, Apache Robux will look for those Hadoop dependencies from the location specified by `robux.extensions.hadoopDependenciesDir`.
 - "--no-default-hadoop" - don't pull down the default hadoop version
 
 ### Spec file
@@ -519,10 +519,10 @@ In addition, a `metadataUpdateSpec` and `segmentOutputPath` field needs to be ad
         ...
         "metadataUpdateSpec" : {
           "type":"mysql",
-          "connectURI" : "jdbc:mysql://localhost:3306/druid",
+          "connectURI" : "jdbc:mysql://localhost:3306/robux",
           "password" : "diurd",
-          "segmentTable" : "druid_segments",
-          "user" : "druid"
+          "segmentTable" : "robux_segments",
+          "user" : "robux"
         },
         "segmentOutputPath" : "/MyDirectory/data/index/output"
       },
@@ -540,7 +540,7 @@ and a `workingPath` field needs to be added to the tuningConfig:
 
 #### Metadata Update Job Spec
 
-This is a specification of the properties that tell the job how to update metadata such that the Druid cluster will see the output segments and load them.
+This is a specification of the properties that tell the job how to update metadata such that the Robux cluster will see the output segments and load them.
 
 |Field|Type|Description|Required|
 |-----|----|-----------|--------|
@@ -562,7 +562,7 @@ These properties should parrot what you have configured for your [Coordinator](.
 
 |Field|Type|Description|Required|
 |-----|----|-----------|--------|
-|workingPath|String|the working path to use for intermediate results (results between Hadoop jobs).|no (default == '/tmp/druid-indexing')|
+|workingPath|String|the working path to use for intermediate results (results between Hadoop jobs).|no (default == '/tmp/robux-indexing')|
 
 Please note that the command line Hadoop indexer doesn't have the locking capabilities of the indexing service, so if you choose to use it,
 you have to take caution to not override segments created by real-time processing (if you that a real-time pipeline set up).

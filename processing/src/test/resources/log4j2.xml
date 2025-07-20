@@ -43,7 +43,7 @@
     <Root level="info">
       <AppenderRef ref="RoutingAppender"/>
     </Root>
-    <Logger level="info" name="org.apache.druid" additivity="false">
+    <Logger level="info" name="org.apache.robux" additivity="false">
       <AppenderRef ref="RoutingAppender"/>
     </Logger>
     <Logger level="debug" name="org.apache.calcite.plan.AbstractRelOptPlanner.rule_execution_summary" additivity="false">

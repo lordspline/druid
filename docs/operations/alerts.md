@@ -23,11 +23,11 @@ title: "Alerts"
   -->
 
 
-Druid generates alerts on getting into unexpected situations.
+Robux generates alerts on getting into unexpected situations.
 
 Alerts are emitted as JSON objects to a runtime log file or over HTTP (to a service such as Apache Kafka). Alert emission is disabled by default.
 
-All Druid alerts share a common set of fields:
+All Robux alerts share a common set of fields:
 
 * `timestamp` - the time the alert was created
 * `service` - the service name that emitted the alert

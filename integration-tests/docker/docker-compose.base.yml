@@ -27,56 +27,56 @@ version: "2.2"
 # 172.172.172.70-79: routers
 # 172.172.172.101+:  hadoop, other supporting infra
 networks:
-  druid-it-net:
-    name: druid-it-net
+  robux-it-net:
+    name: robux-it-net
     ipam:
       config:
         - subnet: 172.172.172.0/24
 
 services:
 ### always there supporting infra:
-  druid-zookeeper-kafka:
-    image: druid/cluster
-    container_name: druid-zookeeper-kafka
+  robux-zookeeper-kafka:
+    image: robux/cluster
+    container_name: robux-zookeeper-kafka
     ports:
       - 2181:2181
       - 9092:9092
       - 9093:9093
     networks:
-      druid-it-net:
+      robux-it-net:
         ## Dockerfile depends on this address for this container it seems...
         ipv4_address: 172.172.172.2
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/zookeeper.conf:/usr/lib/druid/conf/zookeeper.conf
-      - ./service-supervisords/kafka.conf:/usr/lib/druid/conf/kafka.conf
+      - ./service-supervisords/zookeeper.conf:/usr/lib/robux/conf/zookeeper.conf
+      - ./service-supervisords/kafka.conf:/usr/lib/robux/conf/kafka.conf
     env_file:
       - ./environment-configs/common
 
-  druid-metadata-storage:
-    image: druid/cluster
-    container_name: druid-metadata-storage
+  robux-metadata-storage:
+    image: robux/cluster
+    container_name: robux-metadata-storage
     ports:
       - 13306:3306
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.3
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/metadata-storage.conf:/usr/lib/druid/conf/metadata-storage.conf
+      - ./service-supervisords/metadata-storage.conf:/usr/lib/robux/conf/metadata-storage.conf
     env_file:
       - ./environment-configs/common
 
 
 ### overlords
-  druid-overlord:
-    image: druid/cluster
-    container_name: druid-overlord
-    hostname: druid-overlord
+  robux-overlord:
+    image: robux/cluster
+    container_name: robux-overlord
+    hostname: robux-overlord
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.10
     ports:
       - 8090:8090
@@ -85,18 +85,18 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/overlord
       - ${OVERRIDE_ENV}
 
-  druid-overlord-two:
-    image: druid/cluster
-    container_name: druid-overlord-two
-    hostname: druid-overlord-two
+  robux-overlord-two:
+    image: robux/cluster
+    container_name: robux-overlord-two
+    hostname: robux-overlord-two
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.11
     ports:
       - 8590:8090
@@ -105,19 +105,19 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/overlord
       - ${OVERRIDE_ENV}
 
 ### coordinators
-  druid-coordinator:
-    image: druid/cluster
-    container_name: druid-coordinator
-    hostname: druid-coordinator
+  robux-coordinator:
+    image: robux/cluster
+    container_name: robux-coordinator
+    hostname: robux-coordinator
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.20
     ports:
       - 8081:8081
@@ -126,18 +126,18 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/coordinator
       - ${OVERRIDE_ENV}
 
-  druid-coordinator-two:
-    image: druid/cluster
-    container_name: druid-coordinator-two
-    hostname: druid-coordinator-two
+  robux-coordinator-two:
+    image: robux/cluster
+    container_name: robux-coordinator-two
+    hostname: robux-coordinator-two
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.21
     ports:
       - 8581:8081
@@ -146,19 +146,19 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/coordinator
       - ${OVERRIDE_ENV}
 
 ### historicals
-  druid-historical:
-    image: druid/cluster
-    container_name: druid-historical
-    hostname: druid-historical
+  robux-historical:
+    image: robux/cluster
+    container_name: robux-historical
+    hostname: robux-historical
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.30
     ports:
       - 8083:8083
@@ -167,19 +167,19 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/historical
       - ${OVERRIDE_ENV}
 
 ### middle managers
-  druid-middlemanager:
-    image: druid/cluster
-    container_name: druid-middlemanager
-    hostname: druid-middlemanager
+  robux-middlemanager:
+    image: robux/cluster
+    container_name: robux-middlemanager
+    hostname: robux-middlemanager
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.40
     ports:
       - 5008:5008
@@ -201,19 +201,19 @@ services:
     volumes:
       - ./../src/test/resources:/resources
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/middlemanager
       - ${OVERRIDE_ENV}
 
 ### indexers
-  druid-indexer:
-    image: druid/cluster
-    container_name: druid-indexer
-    hostname: druid-indexer
+  robux-indexer:
+    image: robux/cluster
+    container_name: robux-indexer
+    hostname: robux-indexer
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.50
     ports:
       - 5008:5008
@@ -223,19 +223,19 @@ services:
     volumes:
       - ./../src/test/resources:/resources
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/indexer
       - ${OVERRIDE_ENV}
 
 ### brokers
-  druid-broker:
-    image: druid/cluster
-    hostname: druid-broker
-    container_name: druid-broker
+  robux-broker:
+    image: robux/cluster
+    hostname: robux-broker
+    container_name: robux-broker
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.60
     ports:
       - 5005:5005
@@ -244,19 +244,19 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/broker
       - ${OVERRIDE_ENV}
 
 ### routers
-  druid-router:
-    image: druid/cluster
-    container_name: druid-router
-    hostname: druid-router
+  robux-router:
+    image: robux/cluster
+    container_name: robux-router
+    hostname: robux-router
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.70
     ports:
       - 5004:5004
@@ -265,17 +265,17 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/router
       - ${OVERRIDE_ENV}
 
-  druid-router-permissive-tls:
-    image: druid/cluster
-    container_name: druid-router-permissive-tls
+  robux-router-permissive-tls:
+    image: robux/cluster
+    container_name: robux-router-permissive-tls
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.71
     ports:
       - 5001:5001
@@ -284,17 +284,17 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/router-permissive-tls
       - ${OVERRIDE_ENV}
 
-  druid-router-no-client-auth-tls:
-    image: druid/cluster
-    container_name: druid-router-no-client-auth-tls
+  robux-router-no-client-auth-tls:
+    image: robux/cluster
+    container_name: robux-router-no-client-auth-tls
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.72
     ports:
       - 5002:5002
@@ -303,17 +303,17 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/router-no-client-auth-tls
       - ${OVERRIDE_ENV}
 
-  druid-router-custom-check-tls:
-    image: druid/cluster
-    container_name: druid-router-custom-check-tls
+  robux-router-custom-check-tls:
+    image: robux/cluster
+    container_name: robux-router-custom-check-tls
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.73
     ports:
       - 5003:5003
@@ -322,7 +322,7 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/router-custom-check-tls
@@ -330,10 +330,10 @@ services:
 
 ### optional supporting infra
 
-  druid-it-hadoop:
+  robux-it-hadoop:
     ## Giving fake version
-    image: druid-it/hadoop:9.9.9
-    container_name: druid-it-hadoop
+    image: robux-it/hadoop:9.9.9
+    container_name: robux-it-hadoop
     ports:
       - 2049:2049
       - 2122:2122
@@ -360,23 +360,23 @@ services:
       - 50090:50090
       - 51111:51111
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.101
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
       - ./../src/test/resources:/resources
-    hostname: "druid-it-hadoop"
-    command: "bash -c 'echo Start druid-it-hadoop container... && \
+    hostname: "robux-it-hadoop"
+    command: "bash -c 'echo Start robux-it-hadoop container... && \
                 /etc/bootstrap.sh && \
                 tail -f /dev/null'"
 
 
-  druid-openldap:
+  robux-openldap:
     image: osixia/openldap:1.4.0
-    container_name: druid-openldap
+    container_name: robux-openldap
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.102
     ports:
       - 8389:389
@@ -396,18 +396,18 @@ services:
     ports:
       - 8085:8085
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.103
     volumes:
       - ${HOME}/shared:/shared
-      - ./schema-registry/jaas_config.file:/usr/lib/druid/conf/jaas_config.file
-      - ./schema-registry/password-file:/usr/lib/druid/conf/password-file
+      - ./schema-registry/jaas_config.file:/usr/lib/robux/conf/jaas_config.file
+      - ./schema-registry/password-file:/usr/lib/robux/conf/password-file
     privileged: true
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8085"
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: druid-zookeeper-kafka:9092
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: robux-zookeeper-kafka:9092
       SCHEMA_REGISTRY_AUTHENTICATION_METHOD: BASIC
-      SCHEMA_REGISTRY_AUTHENTICATION_REALM: druid
+      SCHEMA_REGISTRY_AUTHENTICATION_REALM: robux
       SCHEMA_REGISTRY_AUTHENTICATION_ROLES: users
-      SCHEMA_REGISTRY_OPTS: -Djava.security.auth.login.config=/usr/lib/druid/conf/jaas_config.file -Xmx32m
+      SCHEMA_REGISTRY_OPTS: -Djava.security.auth.login.config=/usr/lib/robux/conf/jaas_config.file -Xmx32m

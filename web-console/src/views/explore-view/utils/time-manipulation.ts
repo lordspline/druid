@@ -29,7 +29,7 @@ import {
   SqlFunction,
   SqlLiteral,
   SqlMulti,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 
 import { partition } from '../../../utils';
 
@@ -88,7 +88,7 @@ function expressionUsesTime(expression: SqlExpression): boolean {
 export function decomposeTimeInInterval(expression: SqlExpression): SqlExpression {
   return expression.walk(ex => {
     if (ex instanceof SqlFunction && ex.getEffectiveFunctionName() === 'TIME_IN_INTERVAL') {
-      // Ideally we could rewrite it to TIME_IN_INTERVAL(TIME_SHIFT(__time, period, 1), '<interval>') but that would be slow in the current Druid
+      // Ideally we could rewrite it to TIME_IN_INTERVAL(TIME_SHIFT(__time, period, 1), '<interval>') but that would be slow in the current Robux
       // return ex.changeArgs(ex.args!.change(0, F('TIME_SHIFT', ex.getArg(0), period, 1)));a
 
       const interval = ex.getArgAsString(1);

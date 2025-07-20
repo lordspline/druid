@@ -17,16 +17,16 @@
 # under the License.
 #
 
-DRUID_SERVICE=historical-for-query-error-test
-DRUID_LOG_PATH=/shared/logs/historical-for-query-error-test.log
+ROBUX_SERVICE=historical-for-query-error-test
+ROBUX_LOG_PATH=/shared/logs/historical-for-query-error-test.log
 
 # JAVA OPTS
-SERVICE_DRUID_JAVA_OPTS=-server -Xmx512m -Xms512m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5010
+SERVICE_ROBUX_JAVA_OPTS=-server -Xmx512m -Xms512m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5010
 
-# Druid configs
-druid_processing_buffer_sizeBytes=25000000
-druid_processing_numThreads=2
-druid_query_groupBy_maxOnDiskStorage=300000000
-druid_segmentCache_locations=[{"path":"/shared/druid/indexCache-query-error-test","maxSize":5000000000}]
-druid_auth_basic_common_cacheDirectory=/tmp/authCache/historical-query-error-test
-druid_server_https_crlPath=/tls/revocations.crl
+# Robux configs
+robux_processing_buffer_sizeBytes=25000000
+robux_processing_numThreads=2
+robux_query_groupBy_maxOnDiskStorage=300000000
+robux_segmentCache_locations=[{"path":"/shared/robux/indexCache-query-error-test","maxSize":5000000000}]
+robux_auth_basic_common_cacheDirectory=/tmp/authCache/historical-query-error-test
+robux_server_https_crlPath=/tls/revocations.crl

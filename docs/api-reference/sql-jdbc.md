@@ -24,11 +24,11 @@ sidebar_label: SQL JDBC driver
   -->
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](../querying/querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](../querying/querying.md).
  This document describes the SQL language.
 :::
 
-You can make [Druid SQL](../querying/sql.md) queries using the [Avatica JDBC driver](https://calcite.apache.org/avatica/downloads/).
+You can make [Robux SQL](../querying/sql.md) queries using the [Avatica JDBC driver](https://calcite.apache.org/avatica/downloads/).
 We recommend using Avatica JDBC driver version 1.23.0 or later. Note that starting with Avatica 1.21.0, you may need to set the [`transparent_reconnection`](https://calcite.apache.org/avatica/docs/client_reference.html#transparent_reconnection) property to `true` if you notice intermittent query failures.
 
 Once you've downloaded the Avatica client jar, add it to your classpath.
@@ -36,16 +36,16 @@ Once you've downloaded the Avatica client jar, add it to your classpath.
 Example connection string:
 
 ```
-jdbc:avatica:remote:url=http://localhost:8888/druid/v2/sql/avatica/;transparent_reconnection=true
+jdbc:avatica:remote:url=http://localhost:8888/robux/v2/sql/avatica/;transparent_reconnection=true
 ```
 
 Or, to use the protobuf protocol instead of JSON:
 
 ```
-jdbc:avatica:remote:url=http://localhost:8888/druid/v2/sql/avatica-protobuf/;transparent_reconnection=true;serialization=protobuf
+jdbc:avatica:remote:url=http://localhost:8888/robux/v2/sql/avatica-protobuf/;transparent_reconnection=true;serialization=protobuf
 ```
 
-The `url` is the `/druid/v2/sql/avatica/` endpoint on the Router, which routes JDBC connections to a consistent Broker.
+The `url` is the `/robux/v2/sql/avatica/` endpoint on the Router, which routes JDBC connections to a consistent Broker.
 For more information, see [Connection stickiness](#connection-stickiness).
 
 Set `transparent_reconnection` to `true` so your connection is not interrupted if the pool of Brokers changes membership,
@@ -54,21 +54,21 @@ or if a Broker is restarted.
 Set `serialization` to `protobuf` if using the protobuf endpoint.
 
 Note that as of the time of this writing, Avatica 1.23.0, the latest version, does not support passing
-[connection context parameters](../querying/sql-query-context.md) from the JDBC connection string to Druid. These context parameters
+[connection context parameters](../querying/sql-query-context.md) from the JDBC connection string to Robux. These context parameters
 must be passed using a `Properties` object instead. Refer to the Java code below for an example.
 
 Example Java code:
 
 ```java
-// Connect to /druid/v2/sql/avatica/ on your Broker.
-String url = "jdbc:avatica:remote:url=http://localhost:8888/druid/v2/sql/avatica/;transparent_reconnection=true";
+// Connect to /robux/v2/sql/avatica/ on your Broker.
+String url = "jdbc:avatica:remote:url=http://localhost:8888/robux/v2/sql/avatica/;transparent_reconnection=true";
 
 // Set any connection context parameters you need here.
-// Any property from https://druid.apache.org/docs/latest/querying/sql-query-context.html can go here.
+// Any property from https://robux.apache.org/docs/latest/querying/sql-query-context.html can go here.
 Properties connectionProperties = new Properties();
 connectionProperties.setProperty("sqlTimeZone", "Etc/UTC");
-//To connect to a Druid deployment protected by basic authentication,
-//you can incorporate authentication details from https://druid.apache.org/docs/latest/operations/security-overview   
+//To connect to a Robux deployment protected by basic authentication,
+//you can incorporate authentication details from https://robux.apache.org/docs/latest/operations/security-overview   
 connectionProperties.setProperty("user", "admin");                
 connectionProperties.setProperty("password", "password1");     
 
@@ -86,11 +86,11 @@ try (Connection connection = DriverManager.getConnection(url, connectionProperti
 
 For a runnable example that includes a query that you might run, see [Examples](#examples).
 
-It is also possible to use a protocol buffers JDBC connection with Druid, this offer reduced bloat and potential performance
+It is also possible to use a protocol buffers JDBC connection with Robux, this offer reduced bloat and potential performance
 improvements for larger result sets. To use it apply the following connection URL instead, everything else remains the same
 
 ```
-String url = "jdbc:avatica:remote:url=http://localhost:8888/druid/v2/sql/avatica-protobuf/;transparent_reconnection=true;serialization=protobuf";
+String url = "jdbc:avatica:remote:url=http://localhost:8888/robux/v2/sql/avatica-protobuf/;transparent_reconnection=true;serialization=protobuf";
 ```
 
 :::info
@@ -102,9 +102,9 @@ Table metadata is available over JDBC using `connection.getMetaData()` or by que
 
 ## Connection stickiness
 
-Druid's JDBC server does not share connection state between Brokers. This means that if you're using JDBC and have
-multiple Druid Brokers, you should either connect to a specific Broker or use a load balancer with sticky sessions
-enabled. The Druid Router process provides connection stickiness when balancing JDBC requests, and can be used to achieve
+Robux's JDBC server does not share connection state between Brokers. This means that if you're using JDBC and have
+multiple Robux Brokers, you should either connect to a specific Broker or use a load balancer with sticky sessions
+enabled. The Robux Router process provides connection stickiness when balancing JDBC requests, and can be used to achieve
 the necessary stickiness even with a normal non-sticky load balancer. Please see the
 [Router](../design/router.md) documentation for more details.
 
@@ -115,7 +115,7 @@ Note that the non-JDBC [JSON over HTTP](sql-api.md#submit-a-query) API is statel
 You can use [parameterized queries](../querying/sql.md#dynamic-parameters) in JDBC code, as in this example:
 
 ```java
-PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS cnt FROM druid.foo WHERE dim1 = ? OR dim1 = ?");
+PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) AS cnt FROM robux.foo WHERE dim1 = ? OR dim1 = ?");
 statement.setString(1, "abc");
 statement.setString(2, "def");
 final ResultSet resultSet = statement.executeQuery();
@@ -162,9 +162,9 @@ Make sure you meet the following requirements before trying these examples:
 
 - [Avatica JDBC driver](https://calcite.apache.org/avatica/downloads/). You can add the JAR  to your `CLASSPATH` directly or manage it externally, such as through Maven and a `pom.xml` file.
 
-- An available Druid instance. You can use the `micro-quickstart` configuration described in [Quickstart (local)](../tutorials/index.md). The examples assume that you are using the quickstart, so no authentication or authorization is expected unless explicitly mentioned. 
+- An available Robux instance. You can use the `micro-quickstart` configuration described in [Quickstart (local)](../tutorials/index.md). The examples assume that you are using the quickstart, so no authentication or authorization is expected unless explicitly mentioned. 
 
-- The example `wikipedia` datasource from the quickstart is loaded on your Druid instance. If you have a different datasource loaded, you can still try these examples. You'll have to update the table name and column names to match your datasource.
+- The example `wikipedia` datasource from the quickstart is loaded on your Robux instance. If you have a different datasource loaded, you can still try these examples. You'll have to update the table name and column names to match your datasource.
 
 ### Get the metadata for a datasource
 
@@ -178,14 +178,14 @@ public class JdbcListColumns {
 
     public static void main(String[] args)
     {
-        // Connect to /druid/v2/sql/avatica/ on your Router. 
+        // Connect to /robux/v2/sql/avatica/ on your Router. 
         // You can connect to a Broker but must configure connection stickiness if you do. 
-        String url = "jdbc:avatica:remote:url=http://localhost:8888/druid/v2/sql/avatica/;transparent_reconnection=true";
+        String url = "jdbc:avatica:remote:url=http://localhost:8888/robux/v2/sql/avatica/;transparent_reconnection=true";
 
-        String query = "SELECT COLUMN_NAME,* FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'wikipedia' and TABLE_SCHEMA='druid'";
+        String query = "SELECT COLUMN_NAME,* FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'wikipedia' and TABLE_SCHEMA='robux'";
 
         // Set any connection context parameters you need here.
-        // Any property from https://druid.apache.org/docs/latest/querying/sql-query-context.html can go here.
+        // Any property from https://robux.apache.org/docs/latest/querying/sql-query-context.html can go here.
         Properties connectionProperties = new Properties();
 
         try (Connection connection = DriverManager.getConnection(url, connectionProperties)) {
@@ -218,15 +218,15 @@ public class JdbcCountryAndTime {
 
     public static void main(String[] args)
     {
-        // Connect to /druid/v2/sql/avatica/ on your Router. 
+        // Connect to /robux/v2/sql/avatica/ on your Router. 
         // You can connect to a Broker but must configure connection stickiness if you do. 
-        String url = "jdbc:avatica:remote:url=http://localhost:8888/druid/v2/sql/avatica/;transparent_reconnection=true";
+        String url = "jdbc:avatica:remote:url=http://localhost:8888/robux/v2/sql/avatica/;transparent_reconnection=true";
 
         //The query you want to run.
         String query = "SELECT __time, isRobot, countryName, comment FROM wikipedia WHERE countryName='Japan'";
 
         // Set any connection context parameters you need here.
-        // Any property from https://druid.apache.org/docs/latest/querying/sql-query-context.html can go here.
+        // Any property from https://robux.apache.org/docs/latest/querying/sql-query-context.html can go here.
         Properties connectionProperties = new Properties();
         connectionProperties.setProperty("sqlTimeZone", "America/Los_Angeles");
 

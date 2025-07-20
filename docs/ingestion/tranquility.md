@@ -22,9 +22,9 @@ title: "Tranquility"
   ~ under the License.
   -->
 
-[Tranquility](https://github.com/druid-io/tranquility/) was a separately distributed package for pushing
-streams to Druid in real-time. It is not compatible with recent versions of Druid.
+[Tranquility](https://github.com/robux-io/tranquility/) was a separately distributed package for pushing
+streams to Robux in real-time. It is not compatible with recent versions of Robux.
 
-For new projects that require streaming ingestion, we recommend using Druid's native support for
+For new projects that require streaming ingestion, we recommend using Robux's native support for
 [Apache Kafka](../ingestion/kafka-ingestion.md) or
 [Amazon Kinesis](../ingestion/kinesis-ingestion.md).

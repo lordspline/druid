@@ -22,8 +22,8 @@ import type { RowRenderProps } from 'react-table';
 import ReactTable from 'react-table';
 
 import { TableCell } from '../../../components';
-import type { DruidFilter } from '../../../druid-models';
-import { getFilterDimension, TIME_COLUMN } from '../../../druid-models';
+import type { RobuxFilter } from '../../../robux-models';
+import { getFilterDimension, TIME_COLUMN } from '../../../robux-models';
 import {
   DEFAULT_TABLE_CLASS_NAME,
   STANDARD_TABLE_PAGE_SIZE,
@@ -37,7 +37,7 @@ import './filter-table.scss';
 
 export function filterTableSelectedColumnName(
   sampleResponse: SampleResponse,
-  selectedFilter: Partial<DruidFilter> | undefined,
+  selectedFilter: Partial<RobuxFilter> | undefined,
 ): string | undefined {
   if (!selectedFilter) return;
   const selectedFilterName = selectedFilter.dimension;
@@ -48,9 +48,9 @@ export function filterTableSelectedColumnName(
 export interface FilterTableProps {
   sampleResponse: SampleResponse;
   columnFilter: string;
-  dimensionFilters: DruidFilter[];
+  dimensionFilters: RobuxFilter[];
   selectedFilterName: string | undefined;
-  onFilterSelect: (filter: DruidFilter, index: number) => void;
+  onFilterSelect: (filter: RobuxFilter, index: number) => void;
 }
 
 export const FilterTable = React.memo(function FilterTable(props: FilterTableProps) {

@@ -22,5 +22,5 @@ spec:
           port: 8100
           path: /status/health
       env:
-        - name: "druid_monitoring_monitors"
-          value: '["org.apache.druid.java.util.metrics.JvmMonitor", "org.apache.druid.server.metrics.TaskCountStatsMonitor"]'
+        - name: "robux_monitoring_monitors"
+          value: '["org.apache.robux.java.util.metrics.JvmMonitor", "org.apache.robux.server.metrics.TaskCountStatsMonitor"]'

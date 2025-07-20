@@ -18,40 +18,40 @@ set -e
 
 . $(dirname "$0")/docker_compose_args.sh
 
-if [ -z "$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH" ]
+if [ -z "$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH" ]
 then
-    echo "\$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH is not set. No override config file provided"
-    if [ "$DRUID_INTEGRATION_TEST_GROUP" = "s3-deep-storage" ] || \
-    [ "$DRUID_INTEGRATION_TEST_GROUP" = "gcs-deep-storage" ] || \
-    [ "$DRUID_INTEGRATION_TEST_GROUP" = "azure-deep-storage" ] || \
-    [ "$DRUID_INTEGRATION_TEST_GROUP" = "hdfs-deep-storage" ] || \
-    [ "$DRUID_INTEGRATION_TEST_GROUP" = "s3-ingestion" ] || \
-    [ "$DRUID_INTEGRATION_TEST_GROUP" = "kinesis-index" ] || \
-    [ "$DRUID_INTEGRATION_TEST_GROUP" = "kinesis-data-format" ]; then
-      echo "Test group $DRUID_INTEGRATION_TEST_GROUP requires override config file. Stopping test..."
+    echo "\$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH is not set. No override config file provided"
+    if [ "$ROBUX_INTEGRATION_TEST_GROUP" = "s3-deep-storage" ] || \
+    [ "$ROBUX_INTEGRATION_TEST_GROUP" = "gcs-deep-storage" ] || \
+    [ "$ROBUX_INTEGRATION_TEST_GROUP" = "azure-deep-storage" ] || \
+    [ "$ROBUX_INTEGRATION_TEST_GROUP" = "hdfs-deep-storage" ] || \
+    [ "$ROBUX_INTEGRATION_TEST_GROUP" = "s3-ingestion" ] || \
+    [ "$ROBUX_INTEGRATION_TEST_GROUP" = "kinesis-index" ] || \
+    [ "$ROBUX_INTEGRATION_TEST_GROUP" = "kinesis-data-format" ]; then
+      echo "Test group $ROBUX_INTEGRATION_TEST_GROUP requires override config file. Stopping test..."
       exit 1
     fi
 else
-    echo "\$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH is set with value ${DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH}"
+    echo "\$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH is set with value ${ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH}"
 fi
 
-# Start docker containers for all Druid processes and dependencies
+# Start docker containers for all Robux processes and dependencies
 {
   # Start Hadoop docker if needed
-  if [ -n "$DRUID_INTEGRATION_TEST_START_HADOOP_DOCKER" ] && [ "$DRUID_INTEGRATION_TEST_START_HADOOP_DOCKER" == true ]
+  if [ -n "$ROBUX_INTEGRATION_TEST_START_HADOOP_DOCKER" ] && [ "$ROBUX_INTEGRATION_TEST_START_HADOOP_DOCKER" == true ]
   then
     # Start Hadoop docker container
-    docker compose -f ${DOCKERDIR}/docker-compose.druid-hadoop.yml up -d
+    docker compose -f ${DOCKERDIR}/docker-compose.robux-hadoop.yml up -d
   fi
 
-  if [ -z "$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH" ]
+  if [ -z "$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH" ]
   then
-    # Start Druid cluster
+    # Start Robux cluster
     echo "Starting cluster with empty config"
     OVERRIDE_ENV=environment-configs/empty-config docker compose $(getComposeArgs) up -d
   else
-    # run druid cluster with override config
-    echo "Starting cluster with a config file at $DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH"
-    OVERRIDE_ENV=$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH docker compose $(getComposeArgs) up -d
+    # run robux cluster with override config
+    echo "Starting cluster with a config file at $ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH"
+    OVERRIDE_ENV=$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH docker compose $(getComposeArgs) up -d
   fi
 }

@@ -30,10 +30,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=integration-test@druid.apache.org
+emailAddress=integration-test@robux.apache.org
 CN = localhost
 
 [ req_ext ]
@@ -64,7 +64,7 @@ default_md = sha256
 preserve = no
 policy = policy_match
 serial = certs.seq
-email_in_dn=integration-test@druid.apache.org
+email_in_dn=integration-test@robux.apache.org
 
 [req]
 default_bits = 4096
@@ -76,10 +76,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=integration-test@druid.apache.org
+emailAddress=integration-test@robux.apache.org
 CN = itroot
 
 [ v3_ca ]
@@ -123,5 +123,5 @@ openssl req -new -out expired_client.csr -key expired_client.key -reqexts req_ex
 openssl ca -batch -config root_for_expired_client.cnf -policy policy_loose -out expired_client.pem -outdir . -startdate 101010000000Z -enddate 101011000000Z -extensions v3_ca -cert root.pem -keyfile root.key -infiles expired_client.csr
 
 # Create a Java keystore containing the generated certificate
-openssl pkcs12 -export -in expired_client.pem -inkey expired_client.key -out expired_client.p12 -name expired_client -CAfile root.pem -caname druid-it-root -password pass:druid123
-keytool -importkeystore -srckeystore expired_client.p12 -srcstoretype PKCS12 -destkeystore expired_client.jks -deststoretype pkcs12 -srcstorepass druid123 -deststorepass druid123
+openssl pkcs12 -export -in expired_client.pem -inkey expired_client.key -out expired_client.p12 -name expired_client -CAfile root.pem -caname robux-it-root -password pass:robux123
+keytool -importkeystore -srckeystore expired_client.p12 -srcstoretype PKCS12 -destkeystore expired_client.jks -deststoretype pkcs12 -srcstorepass robux123 -deststorepass robux123

@@ -19,8 +19,8 @@
 import { Button, Icon, Intent, Menu, MenuItem, Popover } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import type { Column, QueryResult, SqlExpression, SqlQuery } from 'druid-query-toolkit';
-import { C, F, SqlAlias, SqlFunction, SqlLiteral, SqlStar, SqlType } from 'druid-query-toolkit';
+import type { Column, QueryResult, SqlExpression, SqlQuery } from 'robux-query-toolkit';
+import { C, F, SqlAlias, SqlFunction, SqlLiteral, SqlStar, SqlType } from 'robux-query-toolkit';
 import * as JSONBig from 'json-bigint-native';
 import type { JSX } from 'react';
 import React, { useEffect, useState } from 'react';
@@ -32,9 +32,9 @@ import { CellFilterMenu } from '../../../components/cell-filter-menu/cell-filter
 import { ShowValueDialog } from '../../../dialogs/show-value-dialog/show-value-dialog';
 import {
   computeFlattenExprsForData,
-  possibleDruidFormatForValues,
+  possibleRobuxFormatForValues,
   TIME_COLUMN,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import { SMALL_TABLE_PAGE_SIZE, SMALL_TABLE_PAGE_SIZE_OPTIONS } from '../../../react-table';
 import type { Pagination, QueryAction } from '../../../utils';
 import {
@@ -418,8 +418,8 @@ export const ResultTablePane = React.memo(function ResultTablePane(props: Result
         } else {
           // Not a time column -------------------------------------------
           const values = queryResult.rows.map(row => row[headerIndex]);
-          const possibleDruidFormat = possibleDruidFormatForValues(values);
-          const formatSql = possibleDruidFormat ? timeFormatToSql(possibleDruidFormat) : undefined;
+          const possibleRobuxFormat = possibleRobuxFormatForValues(values);
+          const formatSql = possibleRobuxFormat ? timeFormatToSql(possibleRobuxFormat) : undefined;
 
           if (formatSql) {
             const newSelectExpression = formatSql.fillPlaceholders([
@@ -430,7 +430,7 @@ export const ResultTablePane = React.memo(function ResultTablePane(props: Result
               <MenuItem
                 key="parse_time"
                 icon={IconNames.TIME}
-                text={`Time parse as '${possibleDruidFormat}' and use as the primary time column`}
+                text={`Time parse as '${possibleRobuxFormat}' and use as the primary time column`}
                 onClick={() => {
                   handleQueryAction(q =>
                     q.changeSelect(headerIndex, newSelectExpression.as(TIME_COLUMN)),

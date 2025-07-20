@@ -157,13 +157,13 @@ describe('sql-completions', () => {
     it('does not include column references after keywords that cannot be followed by refs', () => {
       const columnMetadata: ColumnMetadata[] = [
         {
-          TABLE_SCHEMA: 'druid',
+          TABLE_SCHEMA: 'robux',
           TABLE_NAME: 'wikipedia',
           COLUMN_NAME: 'page',
           DATA_TYPE: 'VARCHAR',
         },
         {
-          TABLE_SCHEMA: 'druid',
+          TABLE_SCHEMA: 'robux',
           TABLE_NAME: 'wikipedia',
           COLUMN_NAME: 'user',
           DATA_TYPE: 'VARCHAR',
@@ -186,13 +186,13 @@ describe('sql-completions', () => {
     it('includes column references after keywords that can be followed by refs', () => {
       const columnMetadata: ColumnMetadata[] = [
         {
-          TABLE_SCHEMA: 'druid',
+          TABLE_SCHEMA: 'robux',
           TABLE_NAME: 'wikipedia',
           COLUMN_NAME: 'page',
           DATA_TYPE: 'VARCHAR',
         },
         {
-          TABLE_SCHEMA: 'druid',
+          TABLE_SCHEMA: 'robux',
           TABLE_NAME: 'wikipedia',
           COLUMN_NAME: 'user',
           DATA_TYPE: 'VARCHAR',

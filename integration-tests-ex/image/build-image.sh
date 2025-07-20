@@ -15,7 +15,7 @@
 # limitations under the License.
 #--------------------------------------------------------------------
 
-# Prepare the image contents and build the Druid image.
+# Prepare the image contents and build the Robux image.
 # Since Docker requires all contents to be in or below the
 # working directory, we assemble the contents in target/docker.
 
@@ -36,13 +36,13 @@ SCRIPT_DIR=$(cd $(dirname $0) && pwd)
 cat > $TARGET_DIR/env.sh << EOF
 export ZK_VERSION=$ZK_VERSION
 export KAFKA_VERSION=$KAFKA_VERSION
-export DRUID_VERSION=$DRUID_VERSION
+export ROBUX_VERSION=$ROBUX_VERSION
 export MYSQL_VERSION=$MYSQL_VERSION
 export MYSQL_IMAGE_VERSION=$MYSQL_IMAGE_VERSION
 export CONFLUENT_VERSION=$CONFLUENT_VERSION
 export MARIADB_VERSION=$MARIADB_VERSION
 export HADOOP_VERSION=$HADOOP_VERSION
-export DRUID_IT_IMAGE_NAME=$DRUID_IT_IMAGE_NAME
+export ROBUX_IT_IMAGE_NAME=$ROBUX_IT_IMAGE_NAME
 EOF
 
 exec bash $SCRIPT_DIR/docker-build.sh

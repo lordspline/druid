@@ -22,7 +22,7 @@ import { LearnMore } from './learn-more';
 
 describe('LearnMore', () => {
   it('matches snapshot', () => {
-    const learnMore = <LearnMore href="https://druid.apache.org/docs" />;
+    const learnMore = <LearnMore href="https://robux.apache.org/docs" />;
 
     const { container } = render(learnMore);
     expect(container.firstChild).toMatchSnapshot();

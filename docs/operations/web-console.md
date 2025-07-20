@@ -22,12 +22,12 @@ title: "Web console"
   ~ under the License.
   -->
 
-Druid includes a web console for loading data, managing datasources and tasks, and viewing server status and segment information.
-You can also run SQL and native Druid queries in the console.
+Robux includes a web console for loading data, managing datasources and tasks, and viewing server status and segment information.
+You can also run SQL and native Robux queries in the console.
 
 Enable the following cluster settings to use the web console. Note that these settings are enabled by default.
 - Enable the Router's [management proxy](../design/router.md#enable-the-management-proxy).
-- Enable [Druid SQL](../configuration/index.md#sql) for the Broker processes in the cluster.
+- Enable [Robux SQL](../configuration/index.md#sql) for the Broker processes in the cluster.
 
 The [Router](../design/router.md) service hosts the web console.
 Access the web console at the following address:
@@ -36,9 +36,9 @@ http://<ROUTER_IP>:<ROUTER_PORT>
 ```
 
 :::info
- **Security note:** Without [Druid user permissions](../operations/security-overview.md) configured, any user of the
+ **Security note:** Without [Robux user permissions](../operations/security-overview.md) configured, any user of the
 API or web console has effectively the same level of access to local files and network services as the user under which
-Druid runs. It is a best practice to avoid running Druid as the root user, and to use Druid permissions or network
+Robux runs. It is a best practice to avoid running Robux as the root user, and to use Robux permissions or network
 firewalls to restrict which users have access to potentially sensitive resources.
 :::
 
@@ -51,7 +51,7 @@ Each card is clickable and links to the appropriate view.
 
 The **Home** view displays the following cards:
 
-* __Status__. Click this card for information on the Druid version and any extensions loaded on the cluster.
+* __Status__. Click this card for information on the Robux version and any extensions loaded on the cluster.
 * [Datasources](#datasources)
 * [Segments](#segments)
 * [Supervisors](#supervisors)
@@ -65,7 +65,7 @@ You can access the [data loader](#data-loader) and [lookups view](#lookups) from
 
 ## Query
 
-SQL-based ingestion and the multi-stage query task engine use the **Query** view, which provides you with a UI to edit and use SQL queries. You should see this UI automatically in Druid 24.0 and later since the multi-stage query extension is loaded by default. 
+SQL-based ingestion and the multi-stage query task engine use the **Query** view, which provides you with a UI to edit and use SQL queries. You should see this UI automatically in Robux 24.0 and later since the multi-stage query extension is loaded by default. 
 
 The following screenshot shows a populated enhanced **Query** view along with a description of its parts:
 
@@ -74,7 +74,7 @@ The following screenshot shows a populated enhanced **Query** view along with a 
 1. The multi-stage, tab-enabled, **Query** view is where you can issue queries and see results.
 All other views are unchanged from the non-enhanced version. You can still access the original **Query** view by navigating to `#query` in the URL.
 You can tell that you're looking at the updated **Query** view by the presence of the tabs (3).
-2. The **druid** panel shows the available schemas, datasources, and columns.
+2. The **robux** panel shows the available schemas, datasources, and columns.
 3. Query tabs allow you to manage and run several queries at once.
 Click the plus icon to open a new tab.
 To manipulate existing tabs, click the tab name.
@@ -127,7 +127,7 @@ From the **Datasources** view, you can edit the retention rules, configure autom
 A datasource is partitioned into one or more segments organized by time chunks.
 To display a timeline of segments, toggle the option for **Show segment timeline**.
 
-Like any view that is powered by a Druid SQL query, you can click **View SQL query for table** from the ellipsis menu to run the underlying SQL query directly.
+Like any view that is powered by a Robux SQL query, you can click **View SQL query for table** from the ellipsis menu to run the underlying SQL query directly.
 
 ![Datasources](../assets/web-console-04-datasources.png)
 

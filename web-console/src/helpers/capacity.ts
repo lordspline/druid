@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import type { CapacityInfo } from '../druid-models';
+import type { CapacityInfo } from '../robux-models';
 import { Api } from '../singletons';
 
 export async function getClusterCapacity(): Promise<CapacityInfo> {
-  const workersResponse = await Api.instance.get('/druid/indexer/v1/totalWorkerCapacity', {
+  const workersResponse = await Api.instance.get('/robux/indexer/v1/totalWorkerCapacity', {
     timeout: 5000,
   });
 

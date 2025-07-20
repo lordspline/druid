@@ -28,7 +28,7 @@ Historical services cache data segments on local disk and serve queries from tha
 
 ## Configuration
 
-For Apache Druid Historical service configuration, see [Historical configuration](../configuration/index.md#historical).
+For Apache Robux Historical service configuration, see [Historical configuration](../configuration/index.md#historical).
 
 For basic tuning guidance for the Historical service, see [Basic cluster tuning](../operations/basic-cluster-tuning.md#historical).
 
@@ -39,21 +39,21 @@ For a list of API endpoints supported by the Historical, please see the [Service
 ## Running
 
 ```
-org.apache.druid.cli.Main server historical
+org.apache.robux.cli.Main server historical
 ```
 
 ## Loading and serving segments
 
-Each Historical service copies or pulls segment files from deep storage to local disk in an area called the segment cache. To configure the size and location of the segment cache on each Historical service, set the `druid.segmentCache.locations`.
+Each Historical service copies or pulls segment files from deep storage to local disk in an area called the segment cache. To configure the size and location of the segment cache on each Historical service, set the `robux.segmentCache.locations`.
 For more information, see [Segment cache size](../operations/basic-cluster-tuning.md#segment-cache-size).
 
 The [Coordinator](../design/coordinator.md) controls the assignment of segments to Historicals and the balance of segments between Historicals. Historical services do not communicate directly with each other, nor do they communicate directly with the Coordinator. Instead, the Coordinator creates ephemeral entries in ZooKeeper in a [load queue path](../configuration/index.md#path-configuration). Each Historical service maintains a connection to ZooKeeper, watching those paths for segment information.
 
 When a Historical service detects a new entry in the ZooKeeper load queue, it checks its own segment cache. If no information about the segment exists there, the Historical service first retrieves metadata from ZooKeeper about the segment, including where the segment is located in deep storage and how it needs to decompress and process it.
 
-For more information about segment metadata and Druid segments in general, see [Segments](../design/segments.md).
+For more information about segment metadata and Robux segments in general, see [Segments](../design/segments.md).
 
-After a Historical service pulls down and processes a segment from deep storage, Druid advertises the segment as being available for queries from the Broker. This announcement by the Historical is made via ZooKeeper, in a [served segments path](../configuration/index.md#path-configuration).
+After a Historical service pulls down and processes a segment from deep storage, Robux advertises the segment as being available for queries from the Broker. This announcement by the Historical is made via ZooKeeper, in a [served segments path](../configuration/index.md#path-configuration).
 
 For more information about how the Broker determines what data is available for queries, see [Broker](broker.md).
 
@@ -63,7 +63,7 @@ To make data from the segment cache available for querying as soon as possible, 
 
 The segment cache uses [memory mapping](https://en.wikipedia.org/wiki/Mmap). The cache consumes memory from the underlying operating system so Historicals can hold parts of segment files in memory to increase query performance at the data level. The in-memory segment cache is affected by the size of the Historical JVM, heap / direct memory buffers, and other services on the operating system itself.
 
-At query time, if the required part of a segment file is available in the memory mapped cache or "page cache", the Historical re-uses it and reads it directly from memory. If it is not in the memory-mapped cache, the Historical reads that part of the segment from disk. In this case, there is potential for new data to flush other segment data from memory. This means that if free operating system memory is close to `druid.server.maxSize`, the more likely that segment data will be available in memory and reduce query times. Conversely, the lower the free operating system memory, the more likely a Historical is to read segments from disk.
+At query time, if the required part of a segment file is available in the memory mapped cache or "page cache", the Historical re-uses it and reads it directly from memory. If it is not in the memory-mapped cache, the Historical reads that part of the segment from disk. In this case, there is potential for new data to flush other segment data from memory. This means that if free operating system memory is close to `robux.server.maxSize`, the more likely that segment data will be available in memory and reduce query times. Conversely, the lower the free operating system memory, the more likely a Historical is to read segments from disk.
 
 Note that this memory-mapped segment cache is in addition to other [query-level caches](../querying/caching.md).
 

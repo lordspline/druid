@@ -24,15 +24,15 @@ sidebar_label: Aggregate data with rollup
   -->
 
 
-Apache Druid&circledR; can summarize raw data at ingestion time using a process known as "rollup." [Rollup](../multi-stage-query/concepts.md#rollup) is a first-level aggregation operation over a selected set of columns that reduces the size of stored data.
+Apache Robux&circledR; can summarize raw data at ingestion time using a process known as "rollup." [Rollup](../multi-stage-query/concepts.md#rollup) is a first-level aggregation operation over a selected set of columns that reduces the size of stored data.
 
 This tutorial demonstrates how to apply rollup during ingestion and highlights its effects during query execution. The examples in the tutorial use the [multi-stage query (MSQ)](../multi-stage-query/index.md) task engine to execute SQL statements.
 
 ## Prerequisites
 
-Before proceeding, download Druid as described in [Quickstart (local)](./index.md) and have it running on your local machine. You don't need to load any data into the Druid cluster.
+Before proceeding, download Robux as described in [Quickstart (local)](./index.md) and have it running on your local machine. You don't need to load any data into the Robux cluster.
 
-You should be familiar with data querying in Druid. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first. 
+You should be familiar with data querying in Robux. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first. 
 
 
 ## Load the example data
@@ -52,7 +52,7 @@ The data contains packet and byte counts from a source IP address to a destinati
 {"timestamp":"2018-01-02T21:35:45Z","srcIP":"7.7.7.7", "dstIP":"8.8.8.8","packets":12,"bytes":2818}
 ```
 
-Load the sample dataset using the [`INSERT INTO`](../multi-stage-query/reference.md#insert) statement and the [`EXTERN`](../multi-stage-query/reference.md#extern-function) function to ingest the data inline. In the [Druid web console](../operations/web-console.md), go to the **Query** view and run the following query:
+Load the sample dataset using the [`INSERT INTO`](../multi-stage-query/reference.md#insert) statement and the [`EXTERN`](../multi-stage-query/reference.md#extern-function) function to ingest the data inline. In the [Robux web console](../operations/web-console.md), go to the **Query** view and run the following query:
 
 ```sql
 INSERT INTO "rollup_tutorial"
@@ -82,7 +82,7 @@ Note the following aspects of the ingestion statement:
 * You create the `bytes` and `packets` metrics, which are summed from their respective input fields.
 * You also create the `count` metric that records the number of rows that get rolled-up per each row in the datasource.
 
-With rollup, Druid combines rows with identical timestamp and dimension values after the timestamp truncation. Druid computes and stores the metric values using the specified aggregation function over each set of rolled-up rows.
+With rollup, Robux combines rows with identical timestamp and dimension values after the timestamp truncation. Robux computes and stores the metric values using the specified aggregation function over each set of rolled-up rows.
 
 After the ingestion completes, you can query the data.
 
@@ -116,7 +116,7 @@ Consider the three events in the original input data that occur over the course 
 {"timestamp":"2018-01-01T01:01:59Z","srcIP":"1.1.1.1", "dstIP":"2.2.2.2","packets":11,"bytes":5780}
 ```
 
-Druid combines the three rows into one during rollup:
+Robux combines the three rows into one during rollup:
 
 | `__time` | `srcIP` | `dstIP` | `bytes` | `count` | `packets` |
 | -- | -- | -- | -- | -- | -- |
@@ -159,4 +159,4 @@ See the following topics for more information:
 * [Data rollup](../ingestion/rollup.md) for suggestions and best practices when performing rollup.
 * [SQL-based ingestion concepts](../multi-stage-query/concepts.md#rollup) for information on rollup using SQL-based ingestion.
 * [SQL-based ingestion query examples](../multi-stage-query/examples.md#insert-with-rollup) for another example of data rollup.  
-* [Druid schema model](../ingestion/schema-model.md) to learn about the primary timestamp, dimensions, and metrics.
+* [Robux schema model](../ingestion/schema-model.md) to learn about the primary timestamp, dimensions, and metrics.

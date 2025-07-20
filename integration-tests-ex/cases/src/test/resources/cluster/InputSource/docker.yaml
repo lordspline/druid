@@ -19,7 +19,7 @@
 include:
   - /cluster/Common/zk-metastore.yaml
 
-druid:
+robux:
   coordinator:
     instances:
       - port: 8081
@@ -44,7 +44,7 @@ druid:
 # The fancy formatting is for human consumption, it is compacted internally
 metastoreInit:
   - sql: |
-      create table if not exists druid.wikipedia_index_data1(
+      create table if not exists robux.wikipedia_index_data1(
           timestamp VARCHAR(100) NOT NULL,
           page VARCHAR(100),
           language VARCHAR(40),
@@ -65,7 +65,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data1 (
+      REPLACE INTO robux.wikipedia_index_data1 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -75,7 +75,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data1 (
+      REPLACE INTO robux.wikipedia_index_data1 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -85,7 +85,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data1 (
+      REPLACE INTO robux.wikipedia_index_data1 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -95,7 +95,7 @@ metastoreInit:
       );
 
   - sql: |
-      create table if not exists druid.wikipedia_index_data2(
+      create table if not exists robux.wikipedia_index_data2(
           timestamp VARCHAR(100) NOT NULL,
           page VARCHAR(100),
           language VARCHAR(40),
@@ -116,7 +116,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data2 (
+      REPLACE INTO robux.wikipedia_index_data2 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -126,7 +126,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data2 (
+      REPLACE INTO robux.wikipedia_index_data2 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -136,7 +136,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data2 (
+      REPLACE INTO robux.wikipedia_index_data2 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -146,7 +146,7 @@ metastoreInit:
       );
 
   - sql: |
-      create table if not exists druid.wikipedia_index_data3(
+      create table if not exists robux.wikipedia_index_data3(
           timestamp VARCHAR(100) NOT NULL,
           page VARCHAR(100),
           language VARCHAR(40),
@@ -167,7 +167,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data3 (
+      REPLACE INTO robux.wikipedia_index_data3 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -177,7 +177,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data3 (
+      REPLACE INTO robux.wikipedia_index_data3 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -187,7 +187,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data3 (
+      REPLACE INTO robux.wikipedia_index_data3 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -197,7 +197,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data3 (
+      REPLACE INTO robux.wikipedia_index_data3 (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -207,7 +207,7 @@ metastoreInit:
       );
 
   - sql: |
-      create table if not exists druid.wikipedia_index_data_all(
+      create table if not exists robux.wikipedia_index_data_all(
           timestamp VARCHAR(100) NOT NULL,
           page VARCHAR(100),
           language VARCHAR(40),
@@ -228,7 +228,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -238,7 +238,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -248,7 +248,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -258,7 +258,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -268,7 +268,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -278,7 +278,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -288,7 +288,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -298,7 +298,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -308,7 +308,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (
@@ -318,7 +318,7 @@ metastoreInit:
       );
 
   - sql: |
-      REPLACE INTO druid.wikipedia_index_data_all (
+      REPLACE INTO robux.wikipedia_index_data_all (
         timestamp, page, language, user, unpatrolled, newPage, robot, anonymous, namespace, continent, country, region, city, added, deleted, delta
       )
       VALUES (

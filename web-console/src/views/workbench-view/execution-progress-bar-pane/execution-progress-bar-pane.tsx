@@ -19,7 +19,7 @@
 import { Intent, Label, ProgressBar } from '@blueprintjs/core';
 import React, { useState } from 'react';
 
-import { Execution } from '../../../druid-models';
+import { Execution } from '../../../robux-models';
 import { CancelQueryDialog } from '../cancel-query-dialog/cancel-query-dialog';
 
 import './execution-progress-bar-pane.scss';

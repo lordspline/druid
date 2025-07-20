@@ -21,9 +21,9 @@ class Template(BaseTemplate):
     def define_coordinator(self):
         service_name = COORDINATOR
         service = self.define_master_service(service_name, COORDINATOR)
-        self.add_env(service, 'druid_host', service_name)
-        self.add_env(service, 'druid_manager_segments_pollDuration', 'PT5S')
-        self.add_env(service, 'druid_coordinator_period', 'PT10S')
+        self.add_env(service, 'robux_host', service_name)
+        self.add_env(service, 'robux_manager_segments_pollDuration', 'PT5S')
+        self.add_env(service, 'robux_coordinator_period', 'PT10S')
 
     def define_indexer(self):
       '''

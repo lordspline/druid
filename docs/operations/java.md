@@ -22,15 +22,15 @@ title: "Java runtime"
   ~ under the License.
   -->
 
-Apache Druid is written in Java and requires a Java runtime. This page provides details about obtaining and configuring
-a Java runtime for Druid.
+Apache Robux is written in Java and requires a Java runtime. This page provides details about obtaining and configuring
+a Java runtime for Robux.
 
 ## Selecting a Java runtime
 
-Druid fully supports Java 11 and Java 17. The project team recommends Java 17.
+Robux fully supports Java 11 and Java 17. The project team recommends Java 17.
 
 :::info
-Note: Starting with Apache Druid 32.0.0, support for Java 8 has been removed.
+Note: Starting with Apache Robux 32.0.0, support for Java 8 has been removed.
 :::
 
 The project team recommends using an OpenJDK-based Java distribution. There are many free and actively-supported
@@ -40,8 +40,8 @@ distributions available, including
 [Eclipse Temurin](https://adoptium.net/temurin/releases?version=17).
 The project team does not recommend any specific distribution over any other.
 
-Druid relies on the environment variables `JAVA_HOME` or `DRUID_JAVA_HOME` to find Java on the machine. You can set
-`DRUID_JAVA_HOME` if there is more than one instance of Java. To verify Java requirements for your environment, run the
+Robux relies on the environment variables `JAVA_HOME` or `ROBUX_JAVA_HOME` to find Java on the machine. You can set
+`ROBUX_JAVA_HOME` if there is more than one instance of Java. To verify Java requirements for your environment, run the
 `bin/verify-java` script.
 
 ## Garbage collection
@@ -56,7 +56,7 @@ not need to stray away from G1 with default settings.
 ## Strong encapsulation
 
 Java 9 and beyond (including Java 11 and 17) include the capability for
-[strong encapsulation](https://dev.java/learn/strong-encapsulation-\(of-jdk-internals\)/) of internal JDK APIs. Druid
+[strong encapsulation](https://dev.java/learn/strong-encapsulation-\(of-jdk-internals\)/) of internal JDK APIs. Robux
 uses certain internal JDK APIs, which must be added to `--add-exports` and `--add-opens` on the Java command line.
 
 On Java 11, if these parameters are not included, you will see warnings like the following:
@@ -73,20 +73,20 @@ On Java 17, if these parameters are not included, you will see errors on startup
 Exception in thread "main" java.lang.ExceptionInInitializerError
 ```
 
-Druid's out-of-box configuration adds these parameters transparently when you use the bundled `bin/start-druid` or
+Robux's out-of-box configuration adds these parameters transparently when you use the bundled `bin/start-robux` or
 similar commands. In this case, there is nothing special you need to do to run successfully on Java 11 or 17. However,
-if you have customized your Druid service launching system, you will need to ensure the required Java parameters are
+if you have customized your Robux service launching system, you will need to ensure the required Java parameters are
 added. There are many ways of doing this. Choose the one that works best for you.
 
-1. The simplest approach: use Druid's bundled `bin/start-druid` script to launch Druid.
+1. The simplest approach: use Robux's bundled `bin/start-robux` script to launch Robux.
 
-2. If you launch Druid using `bin/supervise -c <config>`, ensure your config file uses `bin/run-druid`. This
+2. If you launch Robux using `bin/supervise -c <config>`, ensure your config file uses `bin/run-robux`. This
    script uses `bin/run-java` internally, and automatically adds the proper flags.
 
-3. If you launch Druid using a `java` command, replace `java` with `bin/run-java`. Druid's bundled
+3. If you launch Robux using a `java` command, replace `java` with `bin/run-java`. Robux's bundled
    `bin/run-java` script automatically adds the proper flags.
 
-4. If you launch Druid without using its bundled scripts, ensure the following parameters are added to your Java
+4. If you launch Robux without using its bundled scripts, ensure the following parameters are added to your Java
    command line:
 
 ```

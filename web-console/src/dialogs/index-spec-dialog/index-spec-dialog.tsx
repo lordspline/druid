@@ -21,8 +21,8 @@ import React, { useState } from 'react';
 
 import type { FormJsonTabs } from '../../components';
 import { AutoForm, FormJsonSelector, JsonInput } from '../../components';
-import type { IndexSpec } from '../../druid-models';
-import { INDEX_SPEC_FIELDS } from '../../druid-models';
+import type { IndexSpec } from '../../robux-models';
+import { INDEX_SPEC_FIELDS } from '../../robux-models';
 
 import { INDEX_SPEC_COMPLETIONS } from './index-spec-completions';
 

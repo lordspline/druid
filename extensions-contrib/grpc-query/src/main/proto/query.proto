@@ -15,11 +15,11 @@
 
 syntax = "proto3";
 
-option java_package = "org.apache.druid.grpc.proto";
+option java_package = "org.apache.robux.grpc.proto";
 
 import "google/protobuf/timestamp.proto";
 
-package druidGrpc;
+package robuxGrpc;
 
 service Query {
   rpc SubmitQuery (QueryRequest) returns (QueryResponse) {}
@@ -103,7 +103,7 @@ enum QueryStatus {
   RUNTIME_ERROR = 5;
 }
 
-enum DruidType {
+enum RobuxType {
   UNKNOWN_TYPE = 0; // Default value for unknown, or for future new values
                     // as seen by old clients.
   STRING = 1;
@@ -120,7 +120,7 @@ enum DruidType {
 message ColumnSchema {
   string name = 1;
   string sqlType = 2;
-  DruidType druidType = 3;
+  RobuxType robuxType = 3;
 }
 
 message QueryResponse {

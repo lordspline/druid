@@ -23,15 +23,15 @@ title: "Thrift"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-thrift-extensions` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-thrift-extensions` in the extensions load list.
 
-This extension enables Druid to ingest thrift compact data online (`ByteBuffer`) and offline (SequenceFile of type `<Writable, BytesWritable>` or LzoThriftBlock File).
+This extension enables Robux to ingest thrift compact data online (`ByteBuffer`) and offline (SequenceFile of type `<Writable, BytesWritable>` or LzoThriftBlock File).
 
 You may want to use another version of thrift, change the dependency in pom and compile yourself.
 
 ## LZO Support
 
-If you plan to read LZO-compressed Thrift files, you will need to download version 0.4.19 of the [hadoop-lzo JAR](https://mvnrepository.com/artifact/com.hadoop.gplcompression/hadoop-lzo/0.4.19) and place it in your `extensions/druid-thrift-extensions` directory.
+If you plan to read LZO-compressed Thrift files, you will need to download version 0.4.19 of the [hadoop-lzo JAR](https://mvnrepository.com/artifact/com.hadoop.gplcompression/hadoop-lzo/0.4.19) and place it in your `extensions/robux-thrift-extensions` directory.
 
 ## Thrift Parser
 
@@ -45,7 +45,7 @@ If you plan to read LZO-compressed Thrift files, you will need to download versi
 
 - Batch Ingestion example - `inputFormat` and `tmpjars` should be set.
 
-This is for batch ingestion using the HadoopDruidIndexer. The inputFormat of inputSpec in ioConfig could be one of `"org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat"` and `com.twitter.elephantbird.mapreduce.input.LzoThriftBlockInputFormat`. Be careful, when `LzoThriftBlockInputFormat` is used, thrift class must be provided twice.
+This is for batch ingestion using the HadoopRobuxIndexer. The inputFormat of inputSpec in ioConfig could be one of `"org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat"` and `com.twitter.elephantbird.mapreduce.input.LzoThriftBlockInputFormat`. Be careful, when `LzoThriftBlockInputFormat` is used, thrift class must be provided twice.
 
 ```json
 {
@@ -56,7 +56,7 @@ This is for batch ingestion using the HadoopDruidIndexer. The inputFormat of inp
       "parser": {
         "type": "thrift",
         "jarPath": "book.jar",
-        "thriftClass": "org.apache.druid.data.input.thrift.Book",
+        "thriftClass": "org.apache.robux.data.input.thrift.Book",
         "protocol": "compact",
         "parseSpec": {
           "format": "json",
@@ -78,7 +78,7 @@ This is for batch ingestion using the HadoopDruidIndexer. The inputFormat of inp
     "tuningConfig": {
       "type": "hadoop",
       "jobProperties": {
-        "tmpjars":"/user/h_user_profile/du00/druid/test/book.jar",
+        "tmpjars":"/user/h_user_profile/du00/robux/test/book.jar",
         // "elephantbird.class.for.MultiInputFormat" : "${YOUR_THRIFT_CLASS_NAME}"
       }
     }

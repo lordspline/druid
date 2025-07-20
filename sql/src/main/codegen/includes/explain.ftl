@@ -18,15 +18,15 @@
  */
 
 /**
- * Parses an EXPLAIN PLAN statement. Allows for custom druid's statements as well.
+ * Parses an EXPLAIN PLAN statement. Allows for custom robux's statements as well.
  * The main change from SqlExplain() rule is that the statements that can occur in front of the explain's can now be
- * custom druid statements as well reflected in the DruidQueryOrSqlQueryOrDml() production rule
+ * custom robux statements as well reflected in the RobuxQueryOrSqlQueryOrDml() production rule
  *
  * Since this copies directly from SqlExplain(), this would need to be modified while updating Calcite to allow for
  * any changes and improvements (e.g. adding another format apart from json or xml in which one can
  * specify the explain plan output)
  */
-SqlNode DruidSqlExplain() :
+SqlNode RobuxSqlExplain() :
 {
   SqlNode stmt;
   SqlExplainLevel detailLevel = SqlExplainLevel.EXPPLAN_ATTRIBUTES;
@@ -45,7 +45,7 @@ SqlNode DruidSqlExplain() :
   |
     { format = SqlExplainFormat.TEXT; }
   )
-  <FOR> stmt = DruidQueryOrSqlQueryOrDml() {
+  <FOR> stmt = RobuxQueryOrSqlQueryOrDml() {
     return new SqlExplain(getPos(),
       stmt,
       detailLevel.symbol(SqlParserPos.ZERO),
@@ -55,15 +55,15 @@ SqlNode DruidSqlExplain() :
   }
 }
 
-SqlNode DruidQueryOrSqlQueryOrDml() :
+SqlNode RobuxQueryOrSqlQueryOrDml() :
 {
   SqlNode stmt;
 }
 {
   (
-    stmt = DruidSqlInsertEof()
+    stmt = RobuxSqlInsertEof()
   |
-    stmt = DruidSqlReplaceEof()
+    stmt = RobuxSqlReplaceEof()
   |
     stmt = SqlQueryOrDml()
   )

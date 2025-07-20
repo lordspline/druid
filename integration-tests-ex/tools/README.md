@@ -20,20 +20,20 @@
 # Testing Tools
 
 `it-tools` is a copy of `extensions-core/testing-tools` (module
-name `druid-testing-tools`.)
+name `robux-testing-tools`.)
 
-The testing tools are added to the Druid test Docker image. The
-`druid-testing-tools` module defines most such additions. However,
+The testing tools are added to the Robux test Docker image. The
+`robux-testing-tools` module defines most such additions. However,
 `integration-tests` defines a custom node role which also must be
 added to the image. `integration-tests` uses a different mechanism
 to do that addition.
 
 Here, we want a single extension for all the testing gizmos.
-This is a direct copy of the `druid-testing-tools`
+This is a direct copy of the `robux-testing-tools`
 extension, along with a copy of the custom node role from
 `integration-tests`.
 
-The reason this is a copy, rather than fixing up `druid-testing-tools`
+The reason this is a copy, rather than fixing up `robux-testing-tools`
 is that the existing `integration-tests` must continue to run and it
 is very difficult to change or test them. (Which is the reason for
 this parallel approach.) To keep backward compatibility, and to avoid
@@ -41,8 +41,8 @@ changing `integration-tests`, we keep the prior approach and make
 copies here for the new approach.
 
 The names should never clash: `it-tools` is only ever used
-within the `docker-test` project, and the `druid-testing-tools` is
+within the `docker-test` project, and the `robux-testing-tools` is
 *not* included as a dependency.
 
 Over time, once `integration-tests` are converted, then the
-`druid-testing-tools` module can be deprecated in favor of this one.
+`robux-testing-tools` module can be deprecated in favor of this one.

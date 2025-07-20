@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { T } from 'druid-query-toolkit';
+import { T } from 'robux-query-toolkit';
 import type * as playwright from 'playwright-chromium';
 
 import { DatasourcesOverview } from './component/datasources/overview';
@@ -29,7 +29,7 @@ import { LocalFileDataConnector } from './component/load-data/data-connector/loc
 import { DataLoader } from './component/load-data/data-loader';
 import { QueryOverview } from './component/query/overview';
 import { saveScreenshotIfError } from './util/debug';
-import { DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR, UNIFIED_CONSOLE_URL } from './util/druid';
+import { ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR, UNIFIED_CONSOLE_URL } from './util/robux';
 import { createBrowser, createPage } from './util/playwright';
 import { retryIfJestAssertionError } from './util/retry';
 import { waitTillWebConsoleReady } from './util/setup';
@@ -62,7 +62,7 @@ describe('Tutorial: Loading a file', () => {
       page: page,
       unifiedConsoleUrl: UNIFIED_CONSOLE_URL,
       connector: new LocalFileDataConnector(page, {
-        baseDirectory: DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
+        baseDirectory: ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
         fileFilter: 'wikiticker-2015-09-12-sampled.json.gz',
       }),
       connectValidator: validateConnectLocalData,

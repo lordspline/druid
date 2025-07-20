@@ -17,7 +17,7 @@
  */
 
 import { Button, ButtonGroup, Callout, FormGroup } from '@blueprintjs/core';
-import type { TimeRelativeFilterPattern } from 'druid-query-toolkit';
+import type { TimeRelativeFilterPattern } from 'robux-query-toolkit';
 import React from 'react';
 
 import { prettyFormatIsoDateWithMsIfNeeded } from '../../../../../../utils';

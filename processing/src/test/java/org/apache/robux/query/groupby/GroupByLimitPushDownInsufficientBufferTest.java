@@ -1,0 +1,642 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.query.groupby;
+
+import com.fasterxml.jackson.databind.InjectableValues;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.ListenableFuture;
+import org.apache.robux.data.input.InputRow;
+import org.apache.robux.data.input.MapBasedInputRow;
+import org.apache.robux.data.input.impl.DimensionsSpec;
+import org.apache.robux.data.input.impl.LongDimensionSchema;
+import org.apache.robux.data.input.impl.StringDimensionSchema;
+import org.apache.robux.jackson.DefaultObjectMapper;
+import org.apache.robux.java.util.common.FileUtils;
+import org.apache.robux.java.util.common.HumanReadableBytes;
+import org.apache.robux.java.util.common.Intervals;
+import org.apache.robux.java.util.common.concurrent.Execs;
+import org.apache.robux.java.util.common.granularity.Granularities;
+import org.apache.robux.java.util.common.guava.Sequence;
+import org.apache.robux.java.util.common.guava.Sequences;
+import org.apache.robux.java.util.common.io.Closer;
+import org.apache.robux.math.expr.ExprMacroTable;
+import org.apache.robux.query.BySegmentQueryRunner;
+import org.apache.robux.query.DirectQueryProcessingPool;
+import org.apache.robux.query.RobuxProcessingConfig;
+import org.apache.robux.query.FinalizeResultsQueryRunner;
+import org.apache.robux.query.Query;
+import org.apache.robux.query.QueryPlus;
+import org.apache.robux.query.QueryRunner;
+import org.apache.robux.query.QueryRunnerFactory;
+import org.apache.robux.query.QueryToolChest;
+import org.apache.robux.query.QueryWatcher;
+import org.apache.robux.query.TestBufferPool;
+import org.apache.robux.query.aggregation.LongSumAggregatorFactory;
+import org.apache.robux.query.context.ResponseContext;
+import org.apache.robux.query.dimension.DefaultDimensionSpec;
+import org.apache.robux.query.groupby.orderby.DefaultLimitSpec;
+import org.apache.robux.query.groupby.orderby.OrderByColumnSpec;
+import org.apache.robux.query.ordering.StringComparators;
+import org.apache.robux.query.spec.MultipleIntervalSegmentSpec;
+import org.apache.robux.query.spec.QuerySegmentSpec;
+import org.apache.robux.segment.IndexIO;
+import org.apache.robux.segment.IndexMergerV9;
+import org.apache.robux.segment.IndexSpec;
+import org.apache.robux.segment.QueryableIndex;
+import org.apache.robux.segment.QueryableIndexSegment;
+import org.apache.robux.segment.Segment;
+import org.apache.robux.segment.TestHelper;
+import org.apache.robux.segment.column.ColumnConfig;
+import org.apache.robux.segment.incremental.IncrementalIndex;
+import org.apache.robux.segment.incremental.IncrementalIndexSchema;
+import org.apache.robux.segment.incremental.OnheapIncrementalIndex;
+import org.apache.robux.segment.writeout.OffHeapMemorySegmentWriteOutMediumFactory;
+import org.apache.robux.testing.InitializedNullHandlingTest;
+import org.apache.robux.timeline.SegmentId;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
+
+public class GroupByLimitPushDownInsufficientBufferTest extends InitializedNullHandlingTest
+{
+  public static final ObjectMapper JSON_MAPPER;
+
+  private static final IndexMergerV9 INDEX_MERGER_V9;
+  private static final IndexIO INDEX_IO;
+
+  private File tmpDir;
+  private QueryRunnerFactory<ResultRow, GroupByQuery> groupByFactory;
+  private QueryRunnerFactory<ResultRow, GroupByQuery> tooSmallGroupByFactory;
+  private List<IncrementalIndex> incrementalIndices = new ArrayList<>();
+  private List<QueryableIndex> groupByIndices = new ArrayList<>();
+  private ExecutorService executorService;
+  private Closer resourceCloser;
+
+  static {
+    JSON_MAPPER = new DefaultObjectMapper();
+    JSON_MAPPER.setInjectableValues(
+        new InjectableValues.Std().addValue(
+            ExprMacroTable.class,
+            ExprMacroTable.nil()
+        )
+    );
+    INDEX_IO = new IndexIO(
+        JSON_MAPPER,
+        new ColumnConfig()
+        {
+        }
+    );
+    INDEX_MERGER_V9 = new IndexMergerV9(JSON_MAPPER, INDEX_IO, OffHeapMemorySegmentWriteOutMediumFactory.instance());
+  }
+
+
+  private IncrementalIndex makeIncIndex(boolean withRollup)
+  {
+    return new OnheapIncrementalIndex.Builder()
+        .setIndexSchema(
+            new IncrementalIndexSchema.Builder()
+                .withDimensionsSpec(
+                    new DimensionsSpec(
+                        Arrays.asList(
+                            new StringDimensionSchema("dimA"),
+                            new LongDimensionSchema("metA")
+                        )
+                    )
+                )
+                .withRollup(withRollup)
+                .build()
+        )
+        .setMaxRowCount(1000)
+        .build();
+  }
+
+  @Before
+  public void setup() throws Exception
+  {
+    tmpDir = FileUtils.createTempDir();
+
+    InputRow row;
+    List<String> dimNames = Arrays.asList("dimA", "metA");
+    Map<String, Object> event;
+
+    final IncrementalIndex indexA = makeIncIndex(false);
+    incrementalIndices.add(indexA);
+
+    event = new HashMap<>();
+    event.put("dimA", "hello");
+    event.put("metA", 100);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "mango");
+    event.put("metA", 95);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "world");
+    event.put("metA", 75);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "fubaz");
+    event.put("metA", 75);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "zortaxx");
+    event.put("metA", 999);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "blarg");
+    event.put("metA", 125);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "blerg");
+    event.put("metA", 130);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexA.add(row);
+
+
+    final File fileA = INDEX_MERGER_V9.persist(
+        indexA,
+        new File(tmpDir, "A"),
+        IndexSpec.DEFAULT,
+        OffHeapMemorySegmentWriteOutMediumFactory.instance()
+    );
+    QueryableIndex qindexA = INDEX_IO.loadIndex(fileA);
+
+
+    final IncrementalIndex indexB = makeIncIndex(false);
+    incrementalIndices.add(indexB);
+
+    event = new HashMap<>();
+    event.put("dimA", "foo");
+    event.put("metA", 200);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexB.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "world");
+    event.put("metA", 75);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexB.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "mango");
+    event.put("metA", 95);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexB.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "zebra");
+    event.put("metA", 180);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexB.add(row);
+
+    event = new HashMap<>();
+    event.put("dimA", "blorg");
+    event.put("metA", 120);
+    row = new MapBasedInputRow(1000, dimNames, event);
+    indexB.add(row);
+
+    final File fileB = INDEX_MERGER_V9.persist(
+        indexB,
+        new File(tmpDir, "B"),
+        IndexSpec.DEFAULT,
+        OffHeapMemorySegmentWriteOutMediumFactory.instance()
+    );
+    QueryableIndex qindexB = INDEX_IO.loadIndex(fileB);
+
+    groupByIndices = Arrays.asList(qindexA, qindexB);
+    resourceCloser = Closer.create();
+    setupGroupByFactory();
+  }
+
+  private void setupGroupByFactory()
+  {
+    executorService = Execs.multiThreaded(3, "GroupByThreadPool[%d]");
+
+    final TestBufferPool bufferPool = TestBufferPool.offHeap(10_000_000, Integer.MAX_VALUE);
+    final TestBufferPool bufferPool2 = TestBufferPool.offHeap(10_000_000, Integer.MAX_VALUE);
+
+    // Since the test has nested 'mergeResults' calls, we require 2 merge buffers for each mergeResults call.
+    final TestBufferPool mergePool = TestBufferPool.offHeap(10_000_000, 2);
+    final TestBufferPool tooSmallMergePool = TestBufferPool.onHeap(255, 2);
+
+    resourceCloser.register(() -> {
+      // Verify that all objects have been returned to the pools.
+      Assert.assertEquals(0, mergePool.getOutstandingObjectCount());
+      Assert.assertEquals(0, tooSmallMergePool.getOutstandingObjectCount());
+    });
+
+    final GroupByQueryConfig config = new GroupByQueryConfig()
+    {
+
+      @Override
+      public int getBufferGrouperInitialBuckets()
+      {
+        return -1;
+      }
+
+      @Override
+      public HumanReadableBytes getMaxOnDiskStorage()
+      {
+        return HumanReadableBytes.valueOf(1_000_000_000L);
+      }
+    };
+    config.setSingleThreaded(false);
+    RobuxProcessingConfig robuxProcessingConfig = new RobuxProcessingConfig()
+    {
+      @Override
+      public int getNumThreads()
+      {
+        // Used by "v2" strategy for concurrencyHint
+        return 2;
+      }
+
+      @Override
+      public String getFormatString()
+      {
+        return null;
+      }
+    };
+
+    RobuxProcessingConfig tooSmallRobuxProcessingConfig = new RobuxProcessingConfig()
+    {
+      @Override
+      public int intermediateComputeSizeBytes()
+      {
+        return 255;
+      }
+
+      @Override
+      public int getNumThreads()
+      {
+        // Used by "v2" strategy for concurrencyHint
+        return 2;
+      }
+
+      @Override
+      public String getFormatString()
+      {
+        return null;
+      }
+    };
+
+    final Supplier<GroupByQueryConfig> configSupplier = Suppliers.ofInstance(config);
+
+    final GroupByStatsProvider groupByStatsProvider = new GroupByStatsProvider();
+
+    final GroupByResourcesReservationPool groupByResourcesReservationPool = new GroupByResourcesReservationPool(
+        mergePool,
+        config
+    );
+    final GroupByResourcesReservationPool tooSmallGroupByResourcesReservationPool = new GroupByResourcesReservationPool(
+        tooSmallMergePool,
+        config
+    );
+    final GroupingEngine groupingEngine = new GroupingEngine(
+        robuxProcessingConfig,
+        configSupplier,
+        groupByResourcesReservationPool,
+        TestHelper.makeJsonMapper(),
+        new ObjectMapper(new SmileFactory()),
+        NOOP_QUERYWATCHER,
+        groupByStatsProvider
+    );
+
+    final GroupingEngine tooSmallEngine = new GroupingEngine(
+        tooSmallRobuxProcessingConfig,
+        configSupplier,
+        tooSmallGroupByResourcesReservationPool,
+        TestHelper.makeJsonMapper(),
+        new ObjectMapper(new SmileFactory()),
+        NOOP_QUERYWATCHER,
+        groupByStatsProvider
+    );
+
+    groupByFactory = new GroupByQueryRunnerFactory(
+        groupingEngine,
+        new GroupByQueryQueryToolChest(groupingEngine, groupByResourcesReservationPool),
+        bufferPool
+    );
+
+    tooSmallGroupByFactory = new GroupByQueryRunnerFactory(
+        tooSmallEngine,
+        new GroupByQueryQueryToolChest(tooSmallEngine, tooSmallGroupByResourcesReservationPool),
+        bufferPool2
+    );
+  }
+
+  @After
+  public void tearDown() throws Exception
+  {
+    for (IncrementalIndex incrementalIndex : incrementalIndices) {
+      incrementalIndex.close();
+    }
+
+    for (QueryableIndex queryableIndex : groupByIndices) {
+      queryableIndex.close();
+    }
+
+    resourceCloser.close();
+
+    if (tmpDir != null) {
+      FileUtils.deleteDirectory(tmpDir);
+    }
+  }
+
+  @Test
+  public void testPartialLimitPushDownMerge()
+  {
+    // one segment's results use limit push down, the other doesn't because of insufficient buffer capacity
+
+    QueryToolChest<ResultRow, GroupByQuery> toolChest = groupByFactory.getToolchest();
+    QueryToolChest<ResultRow, GroupByQuery> tooSmallToolChest = tooSmallGroupByFactory.getToolchest();
+    QueryRunner<ResultRow> theRunner = new FinalizeResultsQueryRunner<>(
+        toolChest.mergeResults(
+            groupByFactory.mergeRunners(DirectQueryProcessingPool.INSTANCE, getRunner1()),
+            true
+        ),
+        (QueryToolChest) toolChest
+    );
+
+    QueryRunner<ResultRow> theRunner2 = new FinalizeResultsQueryRunner<>(
+        tooSmallToolChest.mergeResults(
+            tooSmallGroupByFactory.mergeRunners(DirectQueryProcessingPool.INSTANCE, getRunner2()),
+            true
+        ),
+        (QueryToolChest) toolChest
+    );
+
+    QueryRunner<ResultRow> theRunner3 = new FinalizeResultsQueryRunner<>(
+        toolChest.mergeResults(
+            new QueryRunner<>()
+            {
+              @Override
+              public Sequence<ResultRow> run(QueryPlus<ResultRow> queryPlus, ResponseContext responseContext)
+              {
+                return Sequences
+                    .simple(
+                        ImmutableList.of(
+                            Sequences.simple(
+                                theRunner.run(
+                                    GroupByQueryRunnerTestHelper.populateResourceId(queryPlus),
+                                    responseContext
+                                ).toList()
+                            ),
+                            Sequences.simple(
+                                theRunner2.run(
+                                    GroupByQueryRunnerTestHelper.populateResourceId(queryPlus),
+                                    responseContext
+                                ).toList()
+                            )
+                        )
+                    )
+                    .flatMerge(Function.identity(), queryPlus.getQuery().getResultOrdering());
+              }
+            },
+            true
+        ),
+        (QueryToolChest) toolChest
+    );
+
+    QuerySegmentSpec intervalSpec = new MultipleIntervalSegmentSpec(
+        Collections.singletonList(Intervals.utc(0, 1000000))
+    );
+
+    GroupByQuery query = GroupByQuery
+        .builder()
+        .setDataSource("blah")
+        .setQuerySegmentSpec(intervalSpec)
+        .setDimensions(new DefaultDimensionSpec("dimA", null))
+        .setAggregatorSpecs(new LongSumAggregatorFactory("metA", "metA"))
+        .setLimitSpec(
+            new DefaultLimitSpec(
+                Collections.singletonList(new OrderByColumnSpec("dimA", OrderByColumnSpec.Direction.DESCENDING)),
+                3
+            )
+        )
+        .setGranularity(Granularities.ALL)
+        .build();
+
+    Sequence<ResultRow> queryResult = theRunner3.run(
+        QueryPlus.wrap(GroupByQueryRunnerTestHelper.populateResourceId(query)),
+        ResponseContext.createEmpty()
+    );
+    List<ResultRow> results = queryResult.toList();
+
+    ResultRow expectedRow0 = GroupByQueryRunnerTestHelper.createExpectedRow(
+        query,
+        "1970-01-01T00:00:00.000Z",
+        "dimA", "zortaxx",
+        "metA", 999L
+    );
+    ResultRow expectedRow1 = GroupByQueryRunnerTestHelper.createExpectedRow(
+        query,
+        "1970-01-01T00:00:00.000Z",
+        "dimA", "zebra",
+        "metA", 180L
+    );
+    ResultRow expectedRow2 = GroupByQueryRunnerTestHelper.createExpectedRow(
+        query,
+        "1970-01-01T00:00:00.000Z",
+        "dimA", "world",
+        "metA", 150L
+    );
+
+    Assert.assertEquals(3, results.size());
+    Assert.assertEquals(expectedRow0, results.get(0));
+    Assert.assertEquals(expectedRow1, results.get(1));
+    Assert.assertEquals(expectedRow2, results.get(2));
+  }
+
+  @Test
+  public void testPartialLimitPushDownMergeForceAggs()
+  {
+    // one segment's results use limit push down, the other doesn't because of insufficient buffer capacity
+
+    QueryToolChest<ResultRow, GroupByQuery> toolChest = groupByFactory.getToolchest();
+    QueryRunner<ResultRow> theRunner = new FinalizeResultsQueryRunner<ResultRow>(
+        (queryPlus, responseContext) -> toolChest.mergeResults(
+            groupByFactory.mergeRunners(executorService, getRunner1())
+        ).run(GroupByQueryRunnerTestHelper.populateResourceId(queryPlus), responseContext),
+        (QueryToolChest) toolChest
+    );
+
+    QueryToolChest<ResultRow, GroupByQuery> tooSmalltoolChest = tooSmallGroupByFactory.getToolchest();
+    QueryRunner<ResultRow> theRunner2 = new FinalizeResultsQueryRunner<ResultRow>(
+        (queryPlus, responseContext) -> tooSmalltoolChest.mergeResults(
+            tooSmallGroupByFactory.mergeRunners(executorService, getRunner2())
+        ).run(GroupByQueryRunnerTestHelper.populateResourceId(queryPlus), responseContext),
+        (QueryToolChest) tooSmalltoolChest
+    );
+
+    QueryRunner<ResultRow> theRunner3 = new FinalizeResultsQueryRunner<>(
+        toolChest.mergeResults(
+            new QueryRunner<>()
+            {
+              @Override
+              public Sequence<ResultRow> run(QueryPlus<ResultRow> queryPlus, ResponseContext responseContext)
+              {
+                return Sequences
+                    .simple(
+                        ImmutableList.of(
+                            Sequences.simple(theRunner.run(queryPlus, responseContext).toList()),
+                            Sequences.simple(theRunner2.run(queryPlus, responseContext).toList())
+                        )
+                    )
+                    .flatMerge(Function.identity(), queryPlus.getQuery().getResultOrdering());
+              }
+            },
+            true
+        ),
+        (QueryToolChest) toolChest
+    );
+
+    QuerySegmentSpec intervalSpec = new MultipleIntervalSegmentSpec(
+        Collections.singletonList(Intervals.utc(0, 1000000))
+    );
+
+    GroupByQuery query = GroupByQuery
+        .builder()
+        .setDataSource("blah")
+        .setQuerySegmentSpec(intervalSpec)
+        .setDimensions(new DefaultDimensionSpec("dimA", null))
+        .setAggregatorSpecs(new LongSumAggregatorFactory("metA", "metA"))
+        .setLimitSpec(
+            new DefaultLimitSpec(
+                Collections.singletonList(
+                    new OrderByColumnSpec("metA", OrderByColumnSpec.Direction.DESCENDING, StringComparators.NUMERIC)
+                ),
+                3
+            )
+        )
+        .setGranularity(Granularities.ALL)
+        .setContext(
+            ImmutableMap.of(
+                GroupByQueryConfig.CTX_KEY_FORCE_LIMIT_PUSH_DOWN,
+                true
+            )
+        )
+        .build();
+
+    Sequence<ResultRow> queryResult = theRunner3.run(
+        QueryPlus.wrap(GroupByQueryRunnerTestHelper.populateResourceId(query)),
+        ResponseContext.createEmpty()
+    );
+    List<ResultRow> results = queryResult.toList();
+
+    ResultRow expectedRow0 = GroupByQueryRunnerTestHelper.createExpectedRow(
+        query,
+        "1970-01-01T00:00:00.000Z",
+        "dimA", "zortaxx",
+        "metA", 999L
+    );
+    ResultRow expectedRow1 = GroupByQueryRunnerTestHelper.createExpectedRow(
+        query,
+        "1970-01-01T00:00:00.000Z",
+        "dimA", "foo",
+        "metA", 200L
+    );
+    ResultRow expectedRow2 = GroupByQueryRunnerTestHelper.createExpectedRow(
+        query,
+        "1970-01-01T00:00:00.000Z",
+        "dimA", "mango",
+        "metA", 190L
+    );
+
+    Assert.assertEquals(3, results.size());
+    Assert.assertEquals(expectedRow0, results.get(0));
+    Assert.assertEquals(expectedRow1, results.get(1));
+    Assert.assertEquals(expectedRow2, results.get(2));
+  }
+
+  private List<QueryRunner<ResultRow>> getRunner1()
+  {
+    List<QueryRunner<ResultRow>> runners = new ArrayList<>();
+    QueryableIndex index = groupByIndices.get(0);
+    QueryRunner<ResultRow> runner = makeQueryRunner(
+        groupByFactory,
+        SegmentId.dummy(index.toString()),
+        new QueryableIndexSegment(index, SegmentId.dummy(index.toString()))
+    );
+    runners.add(groupByFactory.getToolchest().preMergeQueryDecoration(runner));
+    return runners;
+  }
+
+  private List<QueryRunner<ResultRow>> getRunner2()
+  {
+    List<QueryRunner<ResultRow>> runners = new ArrayList<>();
+    QueryableIndex index2 = groupByIndices.get(1);
+    QueryRunner<ResultRow> tooSmallRunner = makeQueryRunner(
+        tooSmallGroupByFactory,
+        SegmentId.dummy(index2.toString()),
+        new QueryableIndexSegment(index2, SegmentId.dummy(index2.toString()))
+    );
+    runners.add(tooSmallGroupByFactory.getToolchest().preMergeQueryDecoration(tooSmallRunner));
+    return runners;
+  }
+
+  public static <T, QueryType extends Query<T>> QueryRunner<T> makeQueryRunner(
+      QueryRunnerFactory<T, QueryType> factory,
+      SegmentId segmentId,
+      Segment adapter
+  )
+  {
+    return new FinalizeResultsQueryRunner<>(
+        new BySegmentQueryRunner<>(segmentId, adapter.getDataInterval().getStart(), factory.createRunner(adapter)),
+        (QueryToolChest<T, Query<T>>) factory.getToolchest()
+    );
+  }
+
+  public static final QueryWatcher NOOP_QUERYWATCHER = new QueryWatcher()
+  {
+    @Override
+    public void registerQueryFuture(Query query, ListenableFuture future)
+    {
+
+    }
+  };
+}

@@ -19,7 +19,7 @@
 import type { IconName } from '@blueprintjs/icons';
 import type { CancelToken } from 'axios';
 import type { Timezone } from 'chronoshift';
-import type { QueryResult, SqlExpression, SqlQuery } from 'druid-query-toolkit';
+import type { QueryResult, SqlExpression, SqlQuery } from 'robux-query-toolkit';
 
 import type { Stage } from '../../../utils';
 import type { ParameterDefinition, QuerySource } from '../models';

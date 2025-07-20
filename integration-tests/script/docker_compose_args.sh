@@ -20,20 +20,20 @@ set -e
 # for a given test group
 getComposeArgs()
 {
-  # Sanity check: DRUID_INTEGRATION_TEST_INDEXER must be "indexer" or "middleManager"
-  if [ "$DRUID_INTEGRATION_TEST_INDEXER" != "indexer" ] && [ "$DRUID_INTEGRATION_TEST_INDEXER" != "middleManager" ]
+  # Sanity check: ROBUX_INTEGRATION_TEST_INDEXER must be "indexer" or "middleManager"
+  if [ "$ROBUX_INTEGRATION_TEST_INDEXER" != "indexer" ] && [ "$ROBUX_INTEGRATION_TEST_INDEXER" != "middleManager" ]
   then
-    echo "DRUID_INTEGRATION_TEST_INDEXER must be 'indexer' or 'middleManager' (is '$DRUID_INTEGRATION_TEST_INDEXER')"
+    echo "ROBUX_INTEGRATION_TEST_INDEXER must be 'indexer' or 'middleManager' (is '$ROBUX_INTEGRATION_TEST_INDEXER')"
     exit 1
   fi
-  if [ "$DRUID_INTEGRATION_TEST_INDEXER" = "indexer" ]
+  if [ "$ROBUX_INTEGRATION_TEST_INDEXER" = "indexer" ]
   then
     # Sanity check: cannot combine CliIndexer tests with security, query-retry tests
-    if [ "$DRUID_INTEGRATION_TEST_GROUP" = "security" ] || [ "$DRUID_INTEGRATION_TEST_GROUP" = "ldap-security" ] || [ "$DRUID_INTEGRATION_TEST_GROUP" = "query-retry" ] || [ "$DRUID_INTEGRATION_TEST_GROUP" = "query-error" ] || [ "$DRUID_INTEGRATION_TEST_GROUP" = "high-availability" ]
+    if [ "$ROBUX_INTEGRATION_TEST_GROUP" = "security" ] || [ "$ROBUX_INTEGRATION_TEST_GROUP" = "ldap-security" ] || [ "$ROBUX_INTEGRATION_TEST_GROUP" = "query-retry" ] || [ "$ROBUX_INTEGRATION_TEST_GROUP" = "query-error" ] || [ "$ROBUX_INTEGRATION_TEST_GROUP" = "high-availability" ]
     then
-      echo "Cannot run test group '$DRUID_INTEGRATION_TEST_GROUP' with CliIndexer"
+      echo "Cannot run test group '$ROBUX_INTEGRATION_TEST_GROUP' with CliIndexer"
       exit 1
-    elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "kafka-data-format" ]
+    elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "kafka-data-format" ]
     then
       # Replace MiddleManager with Indexer + schema registry container
       echo "-f ${DOCKERDIR}/docker-compose.cli-indexer.yml -f ${DOCKERDIR}/docker-compose.schema-registry-indexer.yml"
@@ -41,45 +41,45 @@ getComposeArgs()
       # Replace MiddleManager with Indexer
       echo "-f ${DOCKERDIR}/docker-compose.cli-indexer.yml"
     fi
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "security" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "security" ]
   then
-    # default + additional druid router (custom-check-tls, permissive-tls, no-client-auth-tls)
+    # default + additional robux router (custom-check-tls, permissive-tls, no-client-auth-tls)
     echo "-f ${DOCKERDIR}/docker-compose.yml -f ${DOCKERDIR}/docker-compose.security.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "ldap-security" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "ldap-security" ]
   then
-    # default + additional druid router (custom-check-tls, permissive-tls, no-client-auth-tls)
+    # default + additional robux router (custom-check-tls, permissive-tls, no-client-auth-tls)
     echo "-f ${DOCKERDIR}/docker-compose.yml -f ${DOCKERDIR}/docker-compose.ldap-security.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "query-retry" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "query-retry" ]
   then
     # default + additional historical modified for query retry test
     # See CliHistoricalForQueryRetryTest.
     echo "-f ${DOCKERDIR}/docker-compose.query-retry-test.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "query-error" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "query-error" ]
   then
     # default + additional historical modified for query error test
     # See CliHistoricalForQueryRetryTest.
     echo "-f ${DOCKERDIR}/docker-compose.query-error-test.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "high-availability" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "high-availability" ]
   then
     # the 'high availability' test cluster with multiple coordinators and overlords
     echo "-f ${DOCKERDIR}/docker-compose.high-availability.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "kafka-data-format" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "kafka-data-format" ]
   then
     # default + schema registry container
     echo "-f ${DOCKERDIR}/docker-compose.yml -f ${DOCKERDIR}/docker-compose.schema-registry.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "kinesis-data-format" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "kinesis-data-format" ]
       then
         # default + with override config + schema registry container
         echo "-f ${DOCKERDIR}/docker-compose.yml -f ${DOCKERDIR}/docker-compose.schema-registry.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "centralized-datasource-schema" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "centralized-datasource-schema" ]
       then
         # cluster with overriden properties for broker and coordinator
         echo "-f ${DOCKERDIR}/docker-compose.centralized-datasource-schema.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "cds-task-schema-publish-disabled" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "cds-task-schema-publish-disabled" ]
       then
         # cluster with overriden properties for broker and coordinator
         echo "-f ${DOCKERDIR}/docker-compose.cds-task-schema-publish-disabled.yml"
-  elif [ "$DRUID_INTEGRATION_TEST_GROUP" = "cds-coordinator-metadata-query-disabled" ]
+  elif [ "$ROBUX_INTEGRATION_TEST_GROUP" = "cds-coordinator-metadata-query-disabled" ]
       then
         # cluster with overriden properties for broker and coordinator
         echo "-f ${DOCKERDIR}/docker-compose.cds-coordinator-metadata-query-disabled.yml"

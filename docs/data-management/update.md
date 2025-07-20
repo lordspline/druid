@@ -24,7 +24,7 @@ title: "Data updates"
 
 ## Overwrite
 
-Apache Druid stores data [partitioned by time chunk](../design/storage.md) and supports
+Apache Robux stores data [partitioned by time chunk](../design/storage.md) and supports
 overwriting existing data using time ranges. Data outside the replacement time range is not touched. Overwriting of
 existing data is done using the same mechanisms as [batch ingestion](../ingestion/index.md#batch).
 
@@ -35,7 +35,7 @@ For example:
 - [SQL `REPLACE <table> OVERWRITE [ALL | WHERE ...]`](../multi-stage-query/reference.md#replace) overwrites data for
   the entire table or for a specified time range.
 
-In both cases, Druid's atomic update mechanism ensures that queries will flip seamlessly from the old data to the new
+In both cases, Robux's atomic update mechanism ensures that queries will flip seamlessly from the old data to the new
 data on a time-chunk-by-time-chunk basis.
 
 Ingestion and overwriting cannot run concurrently for the same time range of the same datasource. While an overwrite job
@@ -44,7 +44,7 @@ other time ranges proceed as normal. Read-only queries also proceed as normal, u
 data.
 
 :::info
- Druid does not support single-record updates by primary key.
+ Robux does not support single-record updates by primary key.
 :::
 
 ## Reindex
@@ -53,13 +53,13 @@ Reindexing is an [overwrite of existing data](#overwrite) where the source of ne
 is used to perform schema changes, repartition data, filter out unwanted data, enrich existing data, and so on. This
 behaves just like any other [overwrite](#overwrite) with regard to atomic updates and locking.
 
-With [native batch](../ingestion/native-batch.md), use the [`druid` input
-source](../ingestion/input-sources.md#druid-input-source). If needed,
+With [native batch](../ingestion/native-batch.md), use the [`robux` input
+source](../ingestion/input-sources.md#robux-input-source). If needed,
 [`transformSpec`](../ingestion/ingestion-spec.md#transformspec) can be used to filter or modify data during the
 reindexing job.
 
 With SQL, use [`REPLACE <table> OVERWRITE`](../multi-stage-query/reference.md#replace) with `SELECT ... FROM <table>`.
-(Druid does not have `UPDATE` or `ALTER TABLE` statements.) Any SQL SELECT query can be used to filter,
+(Robux does not have `UPDATE` or `ALTER TABLE` statements.) Any SQL SELECT query can be used to filter,
 modify, or enrich the data during the reindexing job.
 
 ## Rolled-up datasources
@@ -74,5 +74,5 @@ matching rows together later on, by rewriting segments in the background.
 ## Lookups
 
 If you have a dimension where values need to be updated frequently, try first using [lookups](../querying/lookups.md). A
-classic use case of lookups is when you have an ID dimension stored in a Druid segment, and want to map the ID dimension to a
+classic use case of lookups is when you have an ID dimension stored in a Robux segment, and want to map the ID dimension to a
 human-readable string that may need to be updated periodically.

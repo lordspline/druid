@@ -25,12 +25,12 @@ description: Introduces multi-stage query architecture and its task engine
   -->
 
 :::info
- This page describes SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md)
- extension, new in Druid 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
+ This page describes SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md)
+ extension, new in Robux 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
  ingestion method is right for you.
 :::
 
-Apache Druid supports SQL-based ingestion using the bundled [`druid-multi-stage-query` extension](#load-the-extension).
+Apache Robux supports SQL-based ingestion using the bundled [`robux-multi-stage-query` extension](#load-the-extension).
 This extension adds a [multi-stage query task engine for SQL](concepts.md#multi-stage-query-task-engine) that allows running SQL
 [INSERT](concepts.md#load-data-with-insert) and [REPLACE](concepts.md#overwrite-data-with-replace) statements as batch tasks. As an experimental feature,
 the task engine also supports running `SELECT` queries as batch tasks.
@@ -47,21 +47,21 @@ transformation: creating new tables based on queries of other tables.
 
 - **Worker**: Indexing service tasks of type `query_worker` that execute a
   query. There can be multiple worker tasks per query. Internally,
-  the tasks process items in parallel using their processing pools (up to `druid.processing.numThreads` of execution parallelism
+  the tasks process items in parallel using their processing pools (up to `robux.processing.numThreads` of execution parallelism
   within a worker task).
 
 - **Stage**: A stage of query execution that is parallelized across
   worker tasks. Workers exchange data with each other between stages.
 
 - **Partition**: A slice of data output by worker tasks. In INSERT or REPLACE
-  queries, the partitions of the final stage become Druid segments.
+  queries, the partitions of the final stage become Robux segments.
 
 - **Shuffle**: Workers exchange data between themselves on a per-partition basis in a process called
   shuffling. During a shuffle, each output partition is sorted by a clustering key.
 
 ## Load the extension
 
-To add the extension to an existing cluster, add `druid-multi-stage-query` to `druid.extensions.loadlist` in your
+To add the extension to an existing cluster, add `robux-multi-stage-query` to `robux.extensions.loadlist` in your
 `common.runtime.properties` file.
 
 For more information about how to load an extension, see [Loading extensions](../configuration/extensions.md#loading-extensions).

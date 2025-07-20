@@ -18,8 +18,8 @@
 
 import { MenuItem } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { SqlExpression } from 'druid-query-toolkit';
-import { F, SqlFunction } from 'druid-query-toolkit';
+import type { SqlExpression } from 'robux-query-toolkit';
+import { F, SqlFunction } from 'robux-query-toolkit';
 
 import { oneOf, tickIcon } from '../../../utils';
 

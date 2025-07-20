@@ -24,9 +24,9 @@ sidebar_label: "SegmentMetadata"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes a query
- type that is only available in the native language. However, Druid SQL contains similar functionality in
+ type that is only available in the native language. However, Robux SQL contains similar functionality in
  its [metadata tables](sql-metadata-tables.md).
 :::
 
@@ -57,15 +57,15 @@ There are several main parts to a segment metadata query:
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "segmentMetadata"; this is the first thing Apache Druid looks at to figure out how to interpret the query|yes|
+|queryType|This String should always be "segmentMetadata"; this is the first thing Apache Robux looks at to figure out how to interpret the query|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../querying/datasource.md) for more information.|yes|
 |intervals|A JSON Object representing ISO-8601 Intervals. This defines the time ranges to run the query over.|no|
 |toInclude|A JSON Object representing what columns should be included in the result. Defaults to "all".|no|
 |merge|Merge all individual segment metadata results into a single result|no|
 |context|See [Context](../querying/query-context.md)|no|
 |analysisTypes|A list of Strings specifying what column properties (e.g. cardinality, size) should be calculated and returned in the result. Defaults to ["cardinality", "interval", "minmax"], but can be overridden with using the [segment metadata query config](../configuration/index.md#segmentmetadata-query-config). See section [analysisTypes](#analysistypes) for more details.|no|
-|aggregatorMergeStrategy| The strategy Druid uses to merge aggregators across segments. If true and if the `aggregators` analysis type is enabled, `aggregatorMergeStrategy` defaults to `strict`. Possible values include `strict`, `lenient`, `earliest`, and `latest`. See [`aggregatorMergeStrategy`](#aggregatormergestrategy) for details.|no|
-|lenientAggregatorMerge|Deprecated. Use `aggregatorMergeStrategy` property instead. If true, and if the `aggregators` analysis type is enabled, Druid merges aggregators leniently.|no|
+|aggregatorMergeStrategy| The strategy Robux uses to merge aggregators across segments. If true and if the `aggregators` analysis type is enabled, `aggregatorMergeStrategy` defaults to `strict`. Possible values include `strict`, `lenient`, `earliest`, and `latest`. See [`aggregatorMergeStrategy`](#aggregatormergestrategy) for details.|no|
+|lenientAggregatorMerge|Deprecated. Use `aggregatorMergeStrategy` property instead. If true, and if the `aggregators` analysis type is enabled, Robux merges aggregators leniently.|no|
 
 The format of the result is:
 
@@ -90,7 +90,7 @@ The format of the result is:
 } ]
 ```
 
-All columns contain a `typeSignature` that Druid uses to represent the column type information internally. The `typeSignature` is typically the same value used to identify the JSON type information at query or ingest time. One of: `STRING`, `FLOAT`, `DOUBLE`, `LONG`, or `COMPLEX<typeName>`, e.g. `COMPLEX<hyperUnique>`.
+All columns contain a `typeSignature` that Robux uses to represent the column type information internally. The `typeSignature` is typically the same value used to identify the JSON type information at query or ingest time. One of: `STRING`, `FLOAT`, `DOUBLE`, `LONG`, or `COMPLEX<typeName>`, e.g. `COMPLEX<hyperUnique>`.
 
 Columns also have a legacy `type` name. For some column types, the value may match the `typeSignature`  (`STRING`, `FLOAT`, `DOUBLE`, or `LONG`). For `COMPLEX` columns, the `type` only contains the name of the underlying complex type such as `hyperUnique`.
 
@@ -106,7 +106,7 @@ Only columns which are dictionary encoded (i.e., have type `STRING`) will have a
 If an interval is not specified, the query will use a default interval that spans a configurable period before the end time of the most recent segment.
 
 The length of this default time period is set in the Broker configuration via:
-  druid.query.segmentMetadata.defaultHistory
+  robux.query.segmentMetadata.defaultHistory
 
 ## toInclude
 
@@ -143,7 +143,7 @@ This is a list of properties that determines the amount of information returned 
 By default, the "cardinality", "interval", and "minmax" types will be used. If a property is not needed, omitting it from this list will result in a more efficient query.
 
 The default analysis types can be set in the Broker configuration via:
-  `druid.query.segmentMetadata.defaultAnalysisTypes`
+  `robux.query.segmentMetadata.defaultAnalysisTypes`
 
 Types of column analyses are described below:
 
@@ -151,7 +151,7 @@ Types of column analyses are described below:
 
 * `cardinality` is the number of unique values present in string columns. It is null for other column types.
 
-Druid examines the size of string column dictionaries to compute the cardinality value. There is one dictionary per column per
+Robux examines the size of string column dictionaries to compute the cardinality value. There is one dictionary per column per
 segment. If `merge` is off (false), this reports the cardinality of each column of each segment individually. If
 `merge` is on (true), this reports the highest cardinality encountered for a particular column across all relevant
 segments.
@@ -163,7 +163,7 @@ segments.
 ### size
 
 * `size` is the estimated total byte size as if the data were stored in text format. This is _not_ the actual storage
-size of the column in Druid. If you want the actual storage size in bytes of a segment, look elsewhere. Some pointers:
+size of the column in Robux. If you want the actual storage size in bytes of a segment, look elsewhere. Some pointers:
 
 - To get the storage size in bytes of an entire segment, check the `size` field in the
 [`sys.segments` table](sql-metadata-tables.md#segments-table). This is the size of the memory-mappable content.
@@ -206,15 +206,15 @@ null if the aggregators are unknown or unmergeable (if merging is enabled).
 
 Conflicts between aggregator metadata across segments can occur if some segments have unknown aggregators, or if
 two segments use incompatible aggregators for the same column, such as `longSum` changed to `doubleSum`.
-Druid supports the following aggregator merge strategies:
+Robux supports the following aggregator merge strategies:
 
 - `strict`: If there are any segments with unknown aggregators or any conflicts of any kind, the merged aggregators
   list is `null`.
-- `lenient`: Druid ignores segments with unknown aggregators. Conflicts between aggregators set the aggregator for
+- `lenient`: Robux ignores segments with unknown aggregators. Conflicts between aggregators set the aggregator for
   that particular column to null.
-- `earliest`: In the event of conflicts between segments, Druid selects the aggregator from the earliest segment
+- `earliest`: In the event of conflicts between segments, Robux selects the aggregator from the earliest segment
   for that particular column.
-- `latest`: In the event of conflicts between segments, Druid selects the aggregator from the most recent segment
+- `latest`: In the event of conflicts between segments, Robux selects the aggregator from the most recent segment
    for that particular column.
 
 

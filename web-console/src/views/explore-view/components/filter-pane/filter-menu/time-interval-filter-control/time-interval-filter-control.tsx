@@ -17,7 +17,7 @@
  */
 
 import { FormGroup } from '@blueprintjs/core';
-import type { TimeIntervalFilterPattern } from 'druid-query-toolkit';
+import type { TimeIntervalFilterPattern } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 
 import type { QuerySource } from '../../../../models';

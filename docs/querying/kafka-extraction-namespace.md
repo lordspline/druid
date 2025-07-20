@@ -22,7 +22,7 @@ title: "Apache Kafka Lookups"
   ~ under the License.
   -->
 
-To use this Apache Druid extension, [include](../configuration/extensions.md#loading-extensions) `druid-lookups-cached-global` and `druid-kafka-extraction-namespace` in the extensions load list.
+To use this Apache Robux extension, [include](../configuration/extensions.md#loading-extensions) `robux-lookups-cached-global` and `robux-kafka-extraction-namespace` in the extensions load list.
 
 If you need updates to populate as promptly as possible, it is possible to plug into a Kafka topic whose key is the old value and message is the desired new value (both in UTF-8) as a LookupExtractorFactory.
 
@@ -51,7 +51,7 @@ The extractor works by consuming the configured Kafka topic from the beginning, 
 
 The extractor remains subscribed to the topic, so new records are added to the lookup map as they appear. This allows for lookup values to be updated in near-realtime. If two records are added to the topic with the same key, the record with the larger offset will replace the previous record in the lookup map. A record with a `null` payload will be treated as a tombstone record, and the associated key will be removed from the lookup map.
 
-The extractor treats the input topic much like a [KTable](https://kafka.apache.org/23/javadoc/org/apache/kafka/streams/kstream/KTable.html). As such, it is best to create your Kafka topic using a [log compaction](https://kafka.apache.org/documentation/#compaction) strategy, so that the most-recent version of a key is always preserved in Kafka. Without properly configuring retention and log compaction, older keys that are automatically removed from Kafka will not be available and will be lost when Druid services are restarted.
+The extractor treats the input topic much like a [KTable](https://kafka.apache.org/23/javadoc/org/apache/kafka/streams/kstream/KTable.html). As such, it is best to create your Kafka topic using a [log compaction](https://kafka.apache.org/documentation/#compaction) strategy, so that the most-recent version of a key is always preserved in Kafka. Without properly configuring retention and log compaction, older keys that are automatically removed from Kafka will not be available and will be lost when Robux services are restarted.
 
 ### Example
 
@@ -81,7 +81,7 @@ The Kafka lookup extractor treats `null` Kafka messages as tombstones. This mean
 
 ## Limitations
 
-The consumer properties `group.id`, `auto.offset.reset` and `enable.auto.commit` cannot be set in `kafkaProperties` as they are set by the extension as `UUID.randomUUID().toString()`, `earliest` and `false` respectively. This is because the entire topic must be consumed by the Druid service from the very beginning so that a complete map of lookup values can be built. Setting any of these consumer properties will cause the extractor to not start.
+The consumer properties `group.id`, `auto.offset.reset` and `enable.auto.commit` cannot be set in `kafkaProperties` as they are set by the extension as `UUID.randomUUID().toString()`, `earliest` and `false` respectively. This is because the entire topic must be consumed by the Robux service from the very beginning so that a complete map of lookup values can be built. Setting any of these consumer properties will cause the extractor to not start.
 
 Currently, the Kafka lookup extractor feeds the entire Kafka topic into a local cache. If you are using on-heap caching, this can easily clobber your java heap if the Kafka stream spews a lot of unique keys. Off-heap caching should alleviate these concerns, but there is still a limit to the quantity of data that can be stored.  There is currently no eviction policy.
 

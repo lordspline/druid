@@ -37,8 +37,8 @@ import {
   ViewControlBar,
 } from '../../components';
 import { AsyncActionDialog } from '../../dialogs';
-import type { QueryWithContext } from '../../druid-models';
-import { getConsoleViewIcon } from '../../druid-models';
+import type { QueryWithContext } from '../../robux-models';
+import { getConsoleViewIcon } from '../../robux-models';
 import type { Capabilities, CapabilitiesMode } from '../../helpers';
 import {
   STANDARD_TABLE_PAGE_SIZE,
@@ -62,7 +62,7 @@ import {
   oneOf,
   pluralIfNeeded,
   prettyFormatIsoDateWithMsIfNeeded,
-  queryDruidSql,
+  queryRobuxSql,
   QueryManager,
   QueryState,
   ResultWithAuxiliaryWork,
@@ -270,9 +270,9 @@ ORDER BY
       processQuery: async ({ capabilities, visibleColumns }, cancelToken) => {
         let services: ServiceResultRow[];
         if (capabilities.hasSql()) {
-          services = await queryDruidSql({ query: ServicesView.SERVICE_SQL }, cancelToken);
+          services = await queryRobuxSql({ query: ServicesView.SERVICE_SQL }, cancelToken);
         } else if (capabilities.hasCoordinatorAccess()) {
-          services = (await getApiArray('/druid/coordinator/v1/servers?simple', cancelToken)).map(
+          services = (await getApiArray('/robux/coordinator/v1/servers?simple', cancelToken)).map(
             (s: any): ServiceResultRow => {
               const hostParts = s.host.split(':');
               const port = parseInt(hostParts[1], 10);
@@ -301,7 +301,7 @@ ORDER BY
             try {
               const loadQueueInfos = (
                 await Api.instance.get<Record<string, LoadQueueInfo>>(
-                  '/druid/coordinator/v1/loadqueue?simple',
+                  '/robux/coordinator/v1/loadqueue?simple',
                   { cancelToken },
                 )
               ).data;
@@ -324,7 +324,7 @@ ORDER BY
           auxiliaryQueries.push(async (servicesWithAuxiliaryInfo, cancelToken) => {
             try {
               const workerInfos = await getApiArray<WorkerInfo>(
-                '/druid/indexer/v1/workers',
+                '/robux/indexer/v1/workers',
                 cancelToken,
               );
 
@@ -737,7 +737,7 @@ ORDER BY
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/worker/${Api.encodePath(middleManagerDisableWorkerHost)}/disable`,
+            `/robux/indexer/v1/worker/${Api.encodePath(middleManagerDisableWorkerHost)}/disable`,
             {},
           );
           return resp.data;
@@ -774,7 +774,7 @@ ORDER BY
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/worker/${Api.encodePath(middleManagerEnableWorkerHost)}/enable`,
+            `/robux/indexer/v1/worker/${Api.encodePath(middleManagerEnableWorkerHost)}/enable`,
             {},
           );
           return resp.data;

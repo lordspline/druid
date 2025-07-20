@@ -35,7 +35,7 @@ If you are trying this feature on an existing cluster, make sure query from deep
 
 ## Load example data
 
-Use the **Load data** wizard or the following SQL query to ingest the `wikipedia` sample datasource bundled with Druid. If you use the wizard, make sure you change the partitioning to be by hour.
+Use the **Load data** wizard or the following SQL query to ingest the `wikipedia` sample datasource bundled with Robux. If you use the wizard, make sure you change the partitioning to be by hour.
 
 Partitioning by hour provides more segment granularity, so you can selectively load segments onto Historicals or keep them in deep storage.
 
@@ -47,7 +47,7 @@ REPLACE INTO "wikipedia" OVERWRITE ALL
 WITH "ext" AS (SELECT *
 FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}'
   )
 ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR, "flags" VARCHAR, "isUnpatrolled" VARCHAR, "page" VARCHAR, "diffUrl" VARCHAR, "added" BIGINT, "comment" VARCHAR, "commentLength" BIGINT, "isNew" VARCHAR, "isMinor" VARCHAR, "delta" BIGINT, "isAnonymous" VARCHAR, "user" VARCHAR, "deltaBucket" BIGINT, "deleted" BIGINT, "namespace" VARCHAR, "cityName" VARCHAR, "countryName" VARCHAR, "regionIsoCode" VARCHAR, "metroCode" BIGINT, "countryIsoCode" VARCHAR, "regionName" VARCHAR))
@@ -84,7 +84,7 @@ PARTITIONED BY HOUR
 
 ## Configure a load rule
 
-The load rule configures Druid to keep any segments that fall within the following interval only in deep storage:
+The load rule configures Robux to keep any segments that fall within the following interval only in deep storage:
 
 ```
 2016-06-27T00:00:00.000Z/2016-06-27T02:59:00.000Z
@@ -105,22 +105,22 @@ The JSON form of the rule is as follows:
 
 The rest of the segments use the default load rules for the cluster. For the quickstart, that means all the other segments get loaded onto Historical processes.
 
-You can configure the load rules through the API or the Druid console. To configure the load rules through the Druid console, go to **Datasources > ... in the Actions column > Edit retention rules**. Then, paste the provided JSON into the JSON tab:
+You can configure the load rules through the API or the Robux console. To configure the load rules through the Robux console, go to **Datasources > ... in the Actions column > Edit retention rules**. Then, paste the provided JSON into the JSON tab:
 
 ![](../assets/tutorial-query-deepstorage-retention-rule.png)
 
 
 ### Verify the replication factor
 
-Segments that are only available from deep storage have a `replication_factor` of 0 in the Druid system table. You can verify that your load rule worked as intended using the following query:
+Segments that are only available from deep storage have a `replication_factor` of 0 in the Robux system table. You can verify that your load rule worked as intended using the following query:
 
 ```sql
 SELECT "segment_id", "replication_factor", "num_replicas"  FROM sys."segments" WHERE datasource = 'wikipedia'
 ```
 
-You can also verify it through the Druid console by checking the **Replication factor** column in the **Segments** view.
+You can also verify it through the Robux console by checking the **Replication factor** column in the **Segments** view.
 
-Note that the number of replicas and replication factor may differ temporarily as Druid processes your retention rules.
+Note that the number of replicas and replication factor may differ temporarily as Robux processes your retention rules.
 
 ## Query from deep storage
 
@@ -136,7 +136,7 @@ Apply the query context parameter before the query using a SET statement.
 For example, run the following curl command:
 
 ```
-curl --location 'http://localhost:8888/druid/v2/sql/statements' \
+curl --location 'http://localhost:8888/robux/v2/sql/statements' \
 --header 'Content-Type: application/json' \
 --data '{
   "query": "SET executionMode = '\''ASYNC'\''; SELECT page FROM wikipedia WHERE __time < TIMESTAMP '\''2016-06-27 00:10:00'\'' LIMIT 10"
@@ -170,10 +170,10 @@ Make sure you note the `queryID`. You'll need it to interact with the query.
 
 </details>
 
-Compare this to if you were to submit the query to Druid SQL's regular endpoint, `POST /sql`: 
+Compare this to if you were to submit the query to Robux SQL's regular endpoint, `POST /sql`: 
 
 ```
-curl --location 'http://localhost:8888/druid/v2/sql/' \
+curl --location 'http://localhost:8888/robux/v2/sql/' \
 --header 'Content-Type: application/json' \
 --data '{
   "query": "SET executionMode = '\''ASYNC'\''; SELECT page FROM wikipedia WHERE __time < TIMESTAMP '\''2016-06-27 00:10:00'\'' LIMIT 10"
@@ -187,7 +187,7 @@ The response you get back is an empty response cause there are no records on the
 Replace `:queryId` with the ID for your query and run the following curl command to get your query status:
 
 ```
-curl --location --request GET 'http://localhost:8888/druid/v2/sql/statements/:queryId' \
+curl --location --request GET 'http://localhost:8888/robux/v2/sql/statements/:queryId' \
 --header 'Content-Type: application/json' \
 ```
 
@@ -254,7 +254,7 @@ Note that `sampleRecords` has been truncated for brevity.
 Replace `:queryId` with the ID for your query and run the following curl command to get your query results:
 
 ```
-curl --location 'http://ROUTER:PORT/druid/v2/sql/statements/:queryId'
+curl --location 'http://ROUTER:PORT/robux/v2/sql/statements/:queryId'
 ```
 
 Note that the response has been truncated for brevity.

@@ -23,62 +23,62 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache.druid.integration-tests</groupId>
-	<artifactId>druid-it-tools</artifactId>
-	<name>druid-it-tools</name>
+    <groupId>org.apache.robux.integration-tests</groupId>
+	<artifactId>robux-it-tools</artifactId>
+	<name>robux-it-tools</name>
 	<description>Server-side integration testing tools</description>
 
 	<parent>
-		<groupId>org.apache.druid</groupId>
-        <artifactId>druid</artifactId>
+		<groupId>org.apache.robux</groupId>
+        <artifactId>robux</artifactId>
 		<version>35.0.0-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-processing</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-processing</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-services</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-services</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-sql</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-sql</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-server</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-server</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<!-- Test Dependencies -->
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-processing</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-processing</artifactId>
 			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-server</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-server</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>test</scope>
 			<type>test-jar</type>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.druid</groupId>
-			<artifactId>druid-sql</artifactId>
+			<groupId>org.apache.robux</groupId>
+			<artifactId>robux-sql</artifactId>
 			<version>${project.parent.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>

@@ -22,7 +22,7 @@ title: "Globally Cached Lookups"
   ~ under the License.
   -->
 
-To use this Apache Druid extension, [include](../configuration/extensions.md#loading-extensions) `druid-lookups-cached-global` in the extensions load list.
+To use this Apache Robux extension, [include](../configuration/extensions.md#loading-extensions) `robux-lookups-cached-global` in the extensions load list.
 
 ## Configuration
 :::info
@@ -31,7 +31,7 @@ To use this Apache Druid extension, [include](../configuration/extensions.md#loa
 :::
 
 Globally cached lookups are appropriate for lookups which are not possible to pass at query time due to their size,
-or are not desired to be passed at query time because the data is to reside in and be handled by the Druid servers,
+or are not desired to be passed at query time because the data is to reside in and be handled by the Robux servers,
 and are small enough to reasonably populate in-memory. This usually means tens to tens of thousands of entries per lookup.
 
 Globally cached lookups all draw from the same cache pool, allowing each process to have a fixed cache pool that can be used by cached lookups.
@@ -63,8 +63,8 @@ Globally cached lookups can be specified as part of the [cluster wide config for
     "extractionNamespace": {
        "type": "jdbc",
        "connectorConfig": {
-         "connectURI": "jdbc:mysql:\/\/localhost:3306\/druid",
-         "user": "druid",
+         "connectURI": "jdbc:mysql:\/\/localhost:3306\/robux",
+         "user": "robux",
          "password": "diurd"
        },
        "table": "lookupTable",
@@ -86,10 +86,10 @@ The parameters are as follows
 |`firstCacheTimeout`|How long to wait (in ms) for the first run of the cache to populate. 0 indicates to not wait|No|`0` (do not wait)|
 |`injective`|If the underlying map is [injective](./lookups.md#query-rewrites) (keys and values are unique) then optimizations can occur internally by setting this to `true`|No|`false`|
 
-If `firstCacheTimeout` is set to a non-zero value, it should be less than `druid.manager.lookups.hostUpdateTimeout`. If `firstCacheTimeout` is NOT set, then management is essentially asynchronous and does not know if a lookup succeeded or failed in starting. In such a case logs from the processes using lookups should be monitored for repeated failures.
+If `firstCacheTimeout` is set to a non-zero value, it should be less than `robux.manager.lookups.hostUpdateTimeout`. If `firstCacheTimeout` is NOT set, then management is essentially asynchronous and does not know if a lookup succeeded or failed in starting. In such a case logs from the processes using lookups should be monitored for repeated failures.
 
 Proper functionality of globally cached lookups requires the following extension to be loaded on the Broker, Peon, and Historical processes:
-`druid-lookups-cached-global`
+`robux-lookups-cached-global`
 
 ## Example configuration
 
@@ -105,8 +105,8 @@ In a simple case where only one [tier](./lookups.md#dynamic-configuration) exist
         "extractionNamespace": {
           "type": "jdbc",
           "connectorConfig": {
-            "connectURI": "jdbc:mysql:\/\/localhost:3306\/druid",
-            "user": "druid",
+            "connectURI": "jdbc:mysql:\/\/localhost:3306\/robux",
+            "user": "robux",
             "password": "diurd"
           },
           "table": "lookupValues",
@@ -123,7 +123,7 @@ In a simple case where only one [tier](./lookups.md#dynamic-configuration) exist
 }
 ```
 
-Where the Coordinator endpoint `/druid/coordinator/v1/lookups/realtime_customer2/country_code` should return
+Where the Coordinator endpoint `/robux/coordinator/v1/lookups/realtime_customer2/country_code` should return
 
 ```json
 {
@@ -133,8 +133,8 @@ Where the Coordinator endpoint `/druid/coordinator/v1/lookups/realtime_customer2
     "extractionNamespace": {
       "type": "jdbc",
       "connectorConfig": {
-        "connectURI": "jdbc:mysql://localhost:3306/druid",
-        "user": "druid",
+        "connectURI": "jdbc:mysql://localhost:3306/robux",
+        "user": "robux",
         "password": "diurd"
       },
       "table": "lookupValues",
@@ -156,9 +156,9 @@ setting namespaces (Broker, Peon, Historical)
 
 |Property|Description|Default|
 |--------|-----------|-------|
-|`druid.lookup.namespace.cache.type`|Specifies the type of caching to be used by the namespaces. May be one of [`offHeap`, `onHeap`]. `offHeap` uses a temporary file for off-heap storage of the namespace (memory mapped files). `onHeap` stores all cache on the heap in standard java map types.|`onHeap`|
-|`druid.lookup.namespace.numExtractionThreads`|The number of threads in the thread pool dedicated for lookup extraction and updates. This number may need to be scaled up, if you have a lot of lookups and they take long time to extract, to avoid timeouts.|2|
-|`druid.lookup.namespace.numBufferedEntries`|If using off-heap caching, the number of records to be stored on an on-heap buffer.|100,000|
+|`robux.lookup.namespace.cache.type`|Specifies the type of caching to be used by the namespaces. May be one of [`offHeap`, `onHeap`]. `offHeap` uses a temporary file for off-heap storage of the namespace (memory mapped files). `onHeap` stores all cache on the heap in standard java map types.|`onHeap`|
+|`robux.lookup.namespace.numExtractionThreads`|The number of threads in the thread pool dedicated for lookup extraction and updates. This number may need to be scaled up, if you have a lot of lookups and they take long time to extract, to avoid timeouts.|2|
+|`robux.lookup.namespace.numBufferedEntries`|If using off-heap caching, the number of records to be stored on an on-heap buffer.|100,000|
 
 The cache is populated in different ways depending on the settings below. In general, most namespaces employ
 a `pollPeriod` at the end of which time they poll the remote resource of interest for updates.
@@ -166,7 +166,7 @@ a `pollPeriod` at the end of which time they poll the remote resource of interes
 `onHeap` uses `ConcurrentMap`s in the java heap, and thus affects garbage collection and heap sizing.
 `offHeap` uses an on-heap buffer and MapDB using memory-mapped files in the java temporary directory.
 So if total number of entries in the `cachedNamespace` is in excess of the buffer's configured capacity, the extra will be kept in memory as page cache, and paged in and out by general OS tunings.
-It's highly recommended that `druid.lookup.namespace.numBufferedEntries` is set when using `offHeap`, the value should be chosen from the range between 10% and 50% of the number of entries in the lookup.
+It's highly recommended that `robux.lookup.namespace.numBufferedEntries` is set when using `offHeap`, the value should be chosen from the range between 10% and 50% of the number of entries in the lookup.
 
 ## Supported lookups
 
@@ -235,7 +235,7 @@ Only ONE file which matches the search will be used. For most implementations, t
 |`skipHeaderRows`|Number of header rows to be skipped|no|0|
 
 If both `skipHeaderRows` and `hasHeaderRow` options are set, `skipHeaderRows` is first applied. For example, if you set
-`skipHeaderRows` to 2 and `hasHeaderRow` to true, Druid will skip the first two lines and then extract column information
+`skipHeaderRows` to 2 and `hasHeaderRow` to true, Robux will skip the first two lines and then extract column information
 from the third line.
 
 *example input*
@@ -269,7 +269,7 @@ truck,something3,buck
 |`skipHeaderRows`|Number of header rows to be skipped|no|0|
 
 If both `skipHeaderRows` and `hasHeaderRow` options are set, `skipHeaderRows` is first applied. For example, if you set
-`skipHeaderRows` to 2 and `hasHeaderRow` to true, Druid will skip the first two lines and then extract column information
+`skipHeaderRows` to 2 and `hasHeaderRow` to true, Robux will skip the first two lines and then extract column information
 from the third line.
 
 *example input*
@@ -360,8 +360,8 @@ The JDBC lookups will poll a database to populate its local cache. If the `tsCol
 {
   "type":"jdbc",
   "connectorConfig":{
-    "connectURI":"jdbc:mysql://localhost:3306/druid",
-    "user":"druid",
+    "connectURI":"jdbc:mysql://localhost:3306/robux",
+    "user":"robux",
     "password":"diurd"
   },
   "table":"some_lookup_table",
@@ -378,7 +378,7 @@ The JDBC lookups will poll a database to populate its local cache. If the `tsCol
  If using JDBC, you will need to add your database's client JAR files to the extension's directory.
  For Postgres, the connector JAR is already included.
  See the MySQL extension documentation for instructions to obtain [MySQL](../development/extensions-core/mysql.md#install-mysql-connectorj) or [MariaDB](../development/extensions-core/mysql.md#install-mariadb-connectorj) connector libraries.
- The connector JAR should reside in the classpath of Druid's main class loader.
+ The connector JAR should reside in the classpath of Robux's main class loader.
  To add the connector JAR to the classpath, you can copy the downloaded file to `lib/` under the distribution root directory. Alternatively, create a symbolic link to the connector in the `lib` directory.
 :::
 

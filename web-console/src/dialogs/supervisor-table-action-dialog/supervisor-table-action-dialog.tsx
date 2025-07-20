@@ -19,7 +19,7 @@
 import React, { useState } from 'react';
 
 import { ShowJson, SupervisorHistoryPanel } from '../../components';
-import { cleanSpec } from '../../druid-models';
+import { cleanSpec } from '../../robux-models';
 import { Api } from '../../singletons';
 import { deepGet } from '../../utils';
 import type { BasicAction } from '../../utils/basic-action';
@@ -69,7 +69,7 @@ export const SupervisorTableActionDialog = React.memo(function SupervisorTableAc
     },
   ];
 
-  const supervisorEndpointBase = `/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}`;
+  const supervisorEndpointBase = `/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}`;
   return (
     <TableActionDialog
       sideButtonMetadata={supervisorTableSideButtonMetadata}

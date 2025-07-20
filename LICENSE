@@ -201,9 +201,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   APACHE DRUID SUBCOMPONENTS:
+   APACHE ROBUX SUBCOMPONENTS:
 
-   Apache Druid includes a number of subcomponents with
+   Apache Robux includes a number of subcomponents with
    separate copyright notices and license terms. Your use of the source
    code for these subcomponents is subject to the terms and
    conditions of the following licenses.
@@ -215,23 +215,23 @@ Apache License version 2.0
 SOURCE/JAVA-CORE
     This product contains conjunctive normal form conversion code, a variance aggregator algorithm, and Bloom filter
      adapted from Apache Hive.
-      * processing/src/main/java/org/apache/druid/segment/filter/cnf/HiveCnfHelper.java
-      * extensions-core/stats/src/main/java/io/druid/query/aggregation/variance/VarianceAggregatorCollector.java
-      * extensions-core/druid-bloom-filter/src/main/java/org/apache/druid/query/filter/BloomKFilter.java
+      * processing/src/main/java/org/apache/robux/segment/filter/cnf/HiveCnfHelper.java
+      * extensions-core/stats/src/main/java/io/robux/query/aggregation/variance/VarianceAggregatorCollector.java
+      * extensions-core/robux-bloom-filter/src/main/java/org/apache/robux/query/filter/BloomKFilter.java
 
     This product contains variable length long deserialization code adapted from Apache Lucene.
-      * processing/src/main/java/org/apache/druid/segment/data/VSizeLongSerde.java
+      * processing/src/main/java/org/apache/robux/segment/data/VSizeLongSerde.java
 
     This product contains SQL query planning code adapted from Apache Calcite.
-      * sql/src/main/java/org/apache/druid/sql/calcite/
-      * processing/src/main/java/org/apache/druid/segment/filter/cnf/CalciteCnfHelper.java
+      * sql/src/main/java/org/apache/robux/sql/calcite/
+      * processing/src/main/java/org/apache/robux/segment/filter/cnf/CalciteCnfHelper.java
 
     This product contains Kerberos authentication code adapted from Apache Hadoop.
-      * extensions-core/druid-kerberos/src/main/java/org/apache/druid/security/kerberos/
+      * extensions-core/robux-kerberos/src/main/java/org/apache/robux/security/kerberos/
 
     This product contains a modified version of the java-alphanum library,
      copyright Andrew Duffy (https://github.com/amjjd/java-alphanum).
-      * processing/src/main/java/org/apache/druid/query/ordering/StringComparators.java
+      * processing/src/main/java/org/apache/robux/query/ordering/StringComparators.java
 
     This product contains a modified version of the Metamarkets java-util library,
      copyright Metamarkets Group Inc. (https://github.com/metamx/java-util).
@@ -239,7 +239,7 @@ SOURCE/JAVA-CORE
 
     This product contains a modified version of the Metamarkets bytebuffer-collections library,
      copyright Metamarkets Group Inc. (https://github.com/metamx/bytebuffer-collections)
-      * processing/src/main/java/org/apache/druid/collections/
+      * processing/src/main/java/org/apache/robux/collections/
 
     This product contains a modified version of the Metamarkets extendedset library,
      copyright Metamarkets Group Inc. (https://github.com/metamx/extendedset)
@@ -248,18 +248,18 @@ SOURCE/JAVA-CORE
     This product contains a modified version of the CONCISE (COmpressed 'N' Composable Integer SEt) library,
      copyright Alessandro Colantonio (https://sourceforge.net/projects/concise/), extending the functionality of
      ConciseSet to use IntBuffers.
-      * extendedset/src/main/java/org/apache/druid/extendedset/intset/
+      * extendedset/src/main/java/org/apache/robux/extendedset/intset/
 
     This product contains modified portions of the Guava library,
      copyright The Guava Authors (https://github.com/google/guava).
       Closer class:
-      * processing/src/main/java/org/apache/druid/java/util/common/io/Closer.java
+      * processing/src/main/java/org/apache/robux/java/util/common/io/Closer.java
       Splitter.splitToList() method:
-      * processing/src/main/java/org/apache/druid/java/util/common/parsers/DelimitedParser.java
+      * processing/src/main/java/org/apache/robux/java/util/common/parsers/DelimitedParser.java
       DirectExecutorService class:
-      * processing/src/main/java/org/apache/druid/java/util/common/concurrent/DirectExecutorService.java
+      * processing/src/main/java/org/apache/robux/java/util/common/concurrent/DirectExecutorService.java
       CartesianList class:
-      * processing/src/main/java/org/apache/druid/math/expr/CartesianList.java
+      * processing/src/main/java/org/apache/robux/math/expr/CartesianList.java
 
     This product contains modified versions of the Dockerfile, scripts, and related configuration files
      used for building SequenceIQ's Hadoop Docker image, copyright SequenceIQ, Inc. (https://github.com/sequenceiq/hadoop-docker/)
@@ -267,20 +267,20 @@ SOURCE/JAVA-CORE
 
     This product contains fixed bins histogram percentile computation code adapted from Netflix Spectator,
      copyright Netflix, Inc. (https://github.com/Netflix/spectator)
-      * extensions-core/histogram/src/main/java/org/apache/druid/query/aggregation/histogram/FixedBucketsHistogram.java
+      * extensions-core/histogram/src/main/java/org/apache/robux/query/aggregation/histogram/FixedBucketsHistogram.java
 
     This product contains ByteBuffer unmapping code adapted from Apache Kafka
-      * processing/src/main/java/org/apache/druid/java/util/common/ByteBufferUtils.java
+      * processing/src/main/java/org/apache/robux/java/util/common/ByteBufferUtils.java
 
     This product contains s3 directory place holder check code adapted from JetS3t (https://bitbucket.org/jmurty/jets3t/wiki/Home).
-      * extensions-core/s3-extensions/src/main/java/org/apache/druid/storage/s3/S3Utils.java
-      * extensions-contrib/aliyun-oss-extensions/src/main/java/org/apache/druid/storage/aliyun/OssObjectSummaryIterator.java
+      * extensions-core/s3-extensions/src/main/java/org/apache/robux/storage/s3/S3Utils.java
+      * extensions-contrib/aliyun-oss-extensions/src/main/java/org/apache/robux/storage/aliyun/OssObjectSummaryIterator.java
 
     This product contains lpad and rpad methods adapted from Apache Flink.
-      * processing/src/main/java/org/apache/druid/java/util/common/StringUtils.java
+      * processing/src/main/java/org/apache/robux/java/util/common/StringUtils.java
 
     This product contains SystemInfo methods adapted from oshi
-      * processing/src/main/java/org/apache/druid/java/util/metrics/OshiSysMonitor.java
+      * processing/src/main/java/org/apache/robux/java/util/metrics/OshiSysMonitor.java
 
     This product contains test cases adapted from Test Framework for Apache Drill (https://github.com/apache/drill-test-framework).
       * sql/src/test/resources/drill/window
@@ -317,13 +317,13 @@ SOURCE/WEB-CONSOLE
 SOURCE/JAVA-CORE
     This product contains Porter stemmer adapted from a Javascript Porter Stemmer (https://github.com/kristopolous/Porter-Stemmer)
      which is available under a BSD-3-Clause License. For details, see licenses/src/porter-stemmer.BSD3.
-      * processing/src/test/java/org/apache/druid/query/extraction/JavaScriptExtractionFnTest.java
+      * processing/src/test/java/org/apache/robux/query/extraction/JavaScriptExtractionFnTest.java
 
-SOURCE/EXTENSIONS/druid-basic-security
+SOURCE/EXTENSIONS/robux-basic-security
     This product contains an LDAP string encoding function from OWASP ESAPI, copyright The OWASP Foundation
      (https://github.com/ESAPI/esapi-java-legacy) which is available under the BSD-3-Clause License. For details, see
      licenses/src/esapi.BSD3.
-      * extensions-core/druid-basic-security/src/main/java/org/apache/druid/security/basic/authentication/validator/LDAPCredentialsValidator.java
+      * extensions-core/robux-basic-security/src/main/java/org/apache/robux/security/basic/authentication/validator/LDAPCredentialsValidator.java
 
 
 Public Domain
@@ -332,7 +332,7 @@ Public Domain
 SOURCE/JAVA-CORE
     This product uses a smear function adapted from MurmurHash3, written by Austin Appleby who has placed
      MurmurHash3 in the public domain (https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp).
-      * processing/src/main/java/org/apache/druid/query/groupby/epinephelinae/Groupers.java
+      * processing/src/main/java/org/apache/robux/query/groupby/epinephelinae/Groupers.java
 
 
 Creative Commons Attribution-ShareAlike 3.0 Unported License

@@ -29,7 +29,7 @@ import { IconNames } from '@blueprintjs/icons';
 import type { JSX } from 'react';
 import React, { useState } from 'react';
 
-import type { Execution } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
 import type { FileFormat } from '../../../utils';
 import {
   copyAndAlert,

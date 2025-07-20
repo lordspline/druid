@@ -22,15 +22,15 @@ title: Concurrent append and replace
   ~ under the License.
   -->
 
-Concurrent append and replace safely replaces the existing data in an interval of a datasource while new data is being appended to that interval. One of the most common applications of this feature is appending new data (such as with streaming ingestion) to an interval while compaction of that interval is already in progress. Druid partitions the data ingested during this time using `dynamic` partitioning. The subsequent compaction run would partition the data into the granularity you specified in the compaction config.
+Concurrent append and replace safely replaces the existing data in an interval of a datasource while new data is being appended to that interval. One of the most common applications of this feature is appending new data (such as with streaming ingestion) to an interval while compaction of that interval is already in progress. Robux partitions the data ingested during this time using `dynamic` partitioning. The subsequent compaction run would partition the data into the granularity you specified in the compaction config.
 
-To set up concurrent append and replace, use the context flag `useConcurrentLocks`. Druid will then determine the correct lock type for you, either append or replace. Although you can set the type of lock manually, we don't recommend it. 
+To set up concurrent append and replace, use the context flag `useConcurrentLocks`. Robux will then determine the correct lock type for you, either append or replace. Although you can set the type of lock manually, we don't recommend it. 
 
 ## Update compaction config to use concurrent locks
 
 If you want to append data to a datasource while compaction is running, you need to enable concurrent append and replace for the datasource by updating the compaction settings.
 
-### Update compaction config from the Druid web-console
+### Update compaction config from the Robux web-console
 
 In the **Compaction config** for a datasource, enable  **Use concurrent locks**.
 
@@ -41,7 +41,7 @@ For details on accessing the compaction config in the UI, see [Enable automatic 
 Add the `taskContext` like you would any other automatic compaction setting through the API:
 
 ```shell
-curl --location --request POST 'http://localhost:8081/druid/coordinator/v1/config/compaction' \
+curl --location --request POST 'http://localhost:8081/robux/coordinator/v1/config/compaction' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "dataSource": "YOUR_DATASOURCE",
@@ -57,7 +57,7 @@ You also need to configure the ingestion job to allow concurrent locks.
 
 You can provide the context parameter like any other parameter for ingestion jobs through the API or the UI.
 
-### Use concurrent locks in the Druid web-console
+### Use concurrent locks in the Robux web-console
 
 As part of the  **Load data** wizard for classic batch (JSON-based) ingestion and streaming ingestion, enable the following config on the **Publish** step: **Use concurrent locks**.
 
@@ -76,17 +76,17 @@ Add the following JSON snippet to your supervisor or ingestion spec if you're us
 Updating the compaction config and ingestion job for each data source can be cumbersome if you have several data sources in your cluster. You can instead set the following config in the `runtime.properties` of the Overlord service to use concurrent locks across all ingestion and compaction jobs.
 
 ```bash
-druid.indexer.task.default.context={"useConcurrentLocks":true}
+robux.indexer.task.default.context={"useConcurrentLocks":true}
 ```
 
 ## Task lock types
 
-We recommend that you use the `useConcurrentLocks` context parameter so that Druid automatically determines the task lock types for you. If, for some reason, you need to manually set the task lock types explicitly, you can read more about them in this section.
+We recommend that you use the `useConcurrentLocks` context parameter so that Robux automatically determines the task lock types for you. If, for some reason, you need to manually set the task lock types explicitly, you can read more about them in this section.
 
 <details>
 <summary>Click here to read more about the lock types.</summary>
 
-Druid uses task locks to make sure that multiple conflicting operations don't happen at once.
+Robux uses task locks to make sure that multiple conflicting operations don't happen at once.
 There are two task lock types: `APPEND` and `REPLACE`. The type of lock you use is determined by what you're trying to accomplish.
 
 When setting task lock types manually, be aware of the following:
@@ -104,7 +104,7 @@ You configure the task lock type for your ingestion job as follows:
  
 You can provide the context parameter through the API like any other parameter for ingestion job or through the UI.
 
-##### Add a task lock using the Druid console
+##### Add a task lock using the Robux console
 
 As part of the  **Load data** wizard for classic batch (JSON-based ingestion) and streaming ingestion, you can configure the task lock type for the ingestion during the **Publish** step:
 

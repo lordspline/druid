@@ -27,7 +27,7 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-This topic describes the status and configuration API endpoints for [automatic compaction using Coordinator duties](../data-management/automatic-compaction.md#auto-compaction-using-coordinator-duties) in Apache Druid. You can configure automatic compaction in the Druid web console or API.
+This topic describes the status and configuration API endpoints for [automatic compaction using Coordinator duties](../data-management/automatic-compaction.md#auto-compaction-using-coordinator-duties) in Apache Robux. You can configure automatic compaction in the Robux web console or API.
 
 :::info[Experimental]
 
@@ -43,13 +43,13 @@ In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router s
 
 Creates or updates the automatic compaction configuration for a datasource. Pass the automatic compaction as a JSON object in the request body.
 
-The automatic compaction configuration requires only the `dataSource` property. Druid fills all other properties with default values if not specified. See [Automatic compaction dynamic configuration](../configuration/index.md#automatic-compaction-dynamic-configuration) for configuration details.
+The automatic compaction configuration requires only the `dataSource` property. Robux fills all other properties with default values if not specified. See [Automatic compaction dynamic configuration](../configuration/index.md#automatic-compaction-dynamic-configuration) for configuration details.
 
 Note that this endpoint returns an HTTP `200 OK` message code even if the datasource name does not exist.
 
 #### URL
 
-`POST` `/druid/coordinator/v1/config/compaction`
+`POST` `/robux/coordinator/v1/config/compaction`
 
 #### Responses
 
@@ -72,7 +72,7 @@ In this example:
 
 * `wikipedia_hour` is a datasource with `HOUR` segment granularity.
 * `skipOffsetFromLatest` is set to `PT0S`, meaning that no data is skipped.
-* `partitionsSpec` is set to the default `dynamic`, allowing Druid to dynamically determine the optimal partitioning strategy.
+* `partitionsSpec` is set to the default `dynamic`, allowing Robux to dynamically determine the optimal partitioning strategy.
 * `type` is set to `index_parallel`, meaning that parallel indexing is used.
 * `segmentGranularity` is set to `DAY`, meaning that each compacted segment is a day of data.
 
@@ -82,7 +82,7 @@ In this example:
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction"\
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction"\
 --header 'Content-Type: application/json' \
 --data '{
     "dataSource": "wikipedia_hour",
@@ -104,7 +104,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction"\
 
 
 ```HTTP
-POST /druid/coordinator/v1/config/compaction HTTP/1.1
+POST /robux/coordinator/v1/config/compaction HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 281
@@ -138,7 +138,7 @@ Removes the automatic compaction configuration for a datasource. This updates th
 
 #### URL
 
-`DELETE` `/druid/coordinator/v1/config/compaction/{dataSource}`
+`DELETE` `/robux/coordinator/v1/config/compaction/{dataSource}`
 
 #### Responses
 
@@ -169,7 +169,7 @@ Removes the automatic compaction configuration for a datasource. This updates th
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/wikipedia_hour"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction/wikipedia_hour"
 ```
 
 </TabItem>
@@ -177,7 +177,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/
 
 
 ```HTTP
-DELETE /druid/coordinator/v1/config/compaction/wikipedia_hour HTTP/1.1
+DELETE /robux/coordinator/v1/config/compaction/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -200,7 +200,7 @@ Note that while the max compaction tasks can theoretically be set to 2147483647,
 
 #### URL
 
-`POST` `/druid/coordinator/v1/config/compaction/taskslots`
+`POST` `/robux/coordinator/v1/config/compaction/taskslots`
 
 #### Query parameters
 
@@ -243,7 +243,7 @@ To limit the maximum number of compaction tasks, use the optional query paramete
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/taskslots?ratio=0.2&max=250000"
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction/taskslots?ratio=0.2&max=250000"
 ```
 
 </TabItem>
@@ -251,7 +251,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/co
 
 
 ```HTTP
-POST /druid/coordinator/v1/config/compaction/taskslots?ratio=0.2&max=250000 HTTP/1.1
+POST /robux/coordinator/v1/config/compaction/taskslots?ratio=0.2&max=250000 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -272,7 +272,7 @@ You can use this endpoint to retrieve `compactionTaskSlotRatio` and `maxCompacti
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config/compaction`
+`GET` `/robux/coordinator/v1/config/compaction`
 
 #### Responses
 
@@ -296,7 +296,7 @@ You can use this endpoint to retrieve `compactionTaskSlotRatio` and `maxCompacti
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction"
 ```
 
 </TabItem>
@@ -304,7 +304,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction"
 
 
 ```HTTP
-GET /druid/coordinator/v1/config/compaction HTTP/1.1
+GET /robux/coordinator/v1/config/compaction HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -421,7 +421,7 @@ Retrieves the automatic compaction configuration for a datasource.
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config/compaction/{dataSource}`
+`GET` `/robux/coordinator/v1/config/compaction/{dataSource}`
 
 #### Responses
 
@@ -453,7 +453,7 @@ The following example retrieves the automatic compaction configuration for datas
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/wikipedia_hour"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction/wikipedia_hour"
 ```
 
 </TabItem>
@@ -461,7 +461,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/wikipe
 
 
 ```HTTP
-GET /druid/coordinator/v1/config/compaction/wikipedia_hour HTTP/1.1
+GET /robux/coordinator/v1/config/compaction/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -533,7 +533,7 @@ The response contains a list of objects with the following keys:
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config/compaction/{dataSource}/history`
+`GET` `/robux/coordinator/v1/config/compaction/{dataSource}/history`
 
 #### Query parameters
 * `interval` (optional)
@@ -571,7 +571,7 @@ The response contains a list of objects with the following keys:
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/wikipedia_hour/history"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction/wikipedia_hour/history"
 ```
 
 </TabItem>
@@ -579,7 +579,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/wikipe
 
 
 ```HTTP
-GET /druid/coordinator/v1/config/compaction/wikipedia_hour/history HTTP/1.1
+GET /robux/coordinator/v1/config/compaction/wikipedia_hour/history HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -702,7 +702,7 @@ Returns the total size of segments awaiting compaction for a given datasource. R
 
 #### URL
 
-`GET` `/druid/coordinator/v1/compaction/progress?dataSource={dataSource}`
+`GET` `/robux/coordinator/v1/compaction/progress?dataSource={dataSource}`
 
 #### Query parameter
 * `dataSource` (required)
@@ -739,7 +739,7 @@ The following example retrieves the remaining segments to be compacted for datas
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/compaction/progress?dataSource=wikipedia_hour"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/compaction/progress?dataSource=wikipedia_hour"
 ```
 
 </TabItem>
@@ -747,7 +747,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/compaction/progress?data
 
 
 ```HTTP
-GET /druid/coordinator/v1/compaction/progress?dataSource=wikipedia_hour HTTP/1.1
+GET /robux/coordinator/v1/compaction/progress?dataSource=wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -788,7 +788,7 @@ The `latestStatus` object has the following properties:
 
 #### URL
 
-`GET` `/druid/coordinator/v1/compaction/status`
+`GET` `/robux/coordinator/v1/compaction/status`
 
 #### Query parameters
 * `dataSource` (optional)
@@ -816,7 +816,7 @@ The `latestStatus` object has the following properties:
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/compaction/status"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/compaction/status"
 ```
 
 </TabItem>
@@ -824,7 +824,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/compaction/status"
 
 
 ```HTTP
-GET /druid/coordinator/v1/compaction/status HTTP/1.1
+GET /robux/coordinator/v1/compaction/status HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -900,7 +900,7 @@ This includes the following fields:
 
 #### URL
 
-`POST` `/druid/indexer/v1/compaction/config/cluster`
+`POST` `/robux/indexer/v1/compaction/config/cluster`
 
 #### Responses
 
@@ -930,7 +930,7 @@ This includes the following fields:
 
 
 ```shell
-curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/compaction/cluster" \
+curl --request POST "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/compaction/cluster" \
 --header 'Content-Type: application/json' \
 --data '{
     "compactionTaskSlotRatio": 0.5,
@@ -950,7 +950,7 @@ curl --request POST "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/co
 
 
 ```HTTP
-POST /druid/indexer/v1/compaction/config/cluster HTTP/1.1
+POST /robux/indexer/v1/compaction/config/cluster HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 
@@ -980,7 +980,7 @@ This includes all the fields listed in [Update cluster-level compaction config](
 
 #### URL
 
-`GET` `/druid/indexer/v1/compaction/config/cluster`
+`GET` `/robux/indexer/v1/compaction/config/cluster`
 
 #### Responses
 
@@ -1002,14 +1002,14 @@ This includes all the fields listed in [Update cluster-level compaction config](
 <TabItem value="10" label="cURL">
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/cluster"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/config/cluster"
 ```
 </TabItem>
 
 <TabItem value="11" label="HTTP">
 
 ```HTTP
-GET /druid/indexer/v1/compaction/config/cluster HTTP/1.1
+GET /robux/indexer/v1/compaction/config/cluster HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1042,7 +1042,7 @@ Retrieves all datasource compaction configurations.
 
 #### URL
 
-`GET` `/druid/indexer/v1/compaction/config/datasources`
+`GET` `/robux/indexer/v1/compaction/config/datasources`
 
 #### Responses
 
@@ -1066,7 +1066,7 @@ Retrieves all datasource compaction configurations.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasources"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/config/datasources"
 ```
 
 </TabItem>
@@ -1074,7 +1074,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasource
 
 
 ```HTTP
-GET /druid/indexer/v1/compaction/config/datasources HTTP/1.1
+GET /robux/indexer/v1/compaction/config/datasources HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1188,7 +1188,7 @@ Retrieves the automatic compaction configuration for a datasource.
 
 #### URL
 
-`GET` `/druid/indexer/v1/compaction/config/datasources/{dataSource}`
+`GET` `/robux/indexer/v1/compaction/config/datasources/{dataSource}`
 
 #### Responses
 
@@ -1220,7 +1220,7 @@ The following example retrieves the automatic compaction configuration for datas
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasources/wikipedia_hour"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/config/datasources/wikipedia_hour"
 ```
 
 </TabItem>
@@ -1228,7 +1228,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasource
 
 
 ```HTTP
-GET /druid/indexer/v1/compaction/config/datasources/wikipedia_hour HTTP/1.1
+GET /robux/indexer/v1/compaction/config/datasources/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1292,13 +1292,13 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 Creates or updates the automatic compaction configuration for a datasource. Pass the automatic compaction as a JSON object in the request body.
 
-The automatic compaction configuration requires only the `dataSource` property. Druid fills all other properties with default values if not specified. See [Automatic compaction dynamic configuration](../configuration/index.md#automatic-compaction-dynamic-configuration) for configuration details.
+The automatic compaction configuration requires only the `dataSource` property. Robux fills all other properties with default values if not specified. See [Automatic compaction dynamic configuration](../configuration/index.md#automatic-compaction-dynamic-configuration) for configuration details.
 
 Note that this endpoint returns an HTTP `200 OK` message code even if the datasource name does not exist.
 
 #### URL
 
-`POST` `/druid/indexer/v1/compaction/config/datasources/wikipedia_hour`
+`POST` `/robux/indexer/v1/compaction/config/datasources/wikipedia_hour`
 
 #### Responses
 
@@ -1321,7 +1321,7 @@ In this example:
 
 * `wikipedia_hour` is a datasource with `HOUR` segment granularity.
 * `skipOffsetFromLatest` is set to `PT0S`, meaning that no data is skipped.
-* `partitionsSpec` is set to the default `dynamic`, allowing Druid to dynamically determine the optimal partitioning strategy.
+* `partitionsSpec` is set to the default `dynamic`, allowing Robux to dynamically determine the optimal partitioning strategy.
 * `type` is set to `index_parallel`, meaning that parallel indexing is used.
 * `segmentGranularity` is set to `DAY`, meaning that each compacted segment is a day of data.
 
@@ -1331,7 +1331,7 @@ In this example:
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasources/wikipedia_hour"\
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/config/datasources/wikipedia_hour"\
 --header 'Content-Type: application/json' \
 --data '{
     "dataSource": "wikipedia_hour",
@@ -1353,7 +1353,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasource
 
 
 ```HTTP
-POST /druid/indexer/v1/compaction/config/datasources/wikipedia_hour HTTP/1.1
+POST /robux/indexer/v1/compaction/config/datasources/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 281
@@ -1387,7 +1387,7 @@ Removes the automatic compaction configuration for a datasource. This updates th
 
 #### URL
 
-`DELETE` `/druid/indexer/v1/compaction/config/datasources/{dataSource}`
+`DELETE` `/robux/indexer/v1/compaction/config/datasources/{dataSource}`
 
 #### Responses
 
@@ -1418,7 +1418,7 @@ Removes the automatic compaction configuration for a datasource. This updates th
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/config/datasources/wikipedia_hour"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/config/datasources/wikipedia_hour"
 ```
 
 </TabItem>
@@ -1426,7 +1426,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/
 
 
 ```HTTP
-DELETE /druid/indexer/v1/compaction/config/wikipedia_hour HTTP/1.1
+DELETE /robux/indexer/v1/compaction/config/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1444,7 +1444,7 @@ The response payload is in the same format as [Compaction status response](#comp
 
 #### URL
 
-`GET` `/druid/indexer/v1/compaction/status/datasources`
+`GET` `/robux/indexer/v1/compaction/status/datasources`
 
 #### Responses
 
@@ -1467,7 +1467,7 @@ The response payload is in the same format as [Compaction status response](#comp
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/status/datasources"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/status/datasources"
 ```
 
 </TabItem>
@@ -1475,7 +1475,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/status/datasource
 
 
 ```HTTP
-GET /druid/indexer/v1/compaction/status/datasources HTTP/1.1
+GET /robux/indexer/v1/compaction/status/datasources HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1527,7 +1527,7 @@ Retrieves the latest status from the latest automatic compaction run for a datas
 
 #### URL
 
-`GET` `/druid/indexer/v1/compaction/status/datasources/{dataSource}`
+`GET` `/robux/indexer/v1/compaction/status/datasources/{dataSource}`
 
 #### Responses
 
@@ -1550,7 +1550,7 @@ Retrieves the latest status from the latest automatic compaction run for a datas
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/status/datasources/wikipedia_hour"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/compaction/status/datasources/wikipedia_hour"
 ```
 
 </TabItem>
@@ -1558,7 +1558,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/compaction/status/datasource
 
 
 ```HTTP
-GET /druid/indexer/v1/compaction/status/datasources/wikipedia_hour HTTP/1.1
+GET /robux/indexer/v1/compaction/status/datasources/wikipedia_hour HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 

@@ -18,8 +18,8 @@
 
 import { Button, Callout, FormGroup, Icon, Intent, Tag } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { SqlExpression } from 'druid-query-toolkit';
-import { C, SqlColumnDeclaration, SqlType } from 'druid-query-toolkit';
+import type { SqlExpression } from 'robux-query-toolkit';
+import { C, SqlColumnDeclaration, SqlType } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 
 import {
@@ -29,7 +29,7 @@ import {
   LearnMore,
   Loader,
 } from '../../../components';
-import type { ArrayIngestMode, InputFormat, InputSource } from '../../../druid-models';
+import type { ArrayIngestMode, InputFormat, InputSource } from '../../../robux-models';
 import {
   BATCH_INPUT_FORMAT_FIELDS,
   chooseByBestTimestamp,
@@ -38,9 +38,9 @@ import {
   getPossibleSystemFieldsForInputSource,
   guessColumnTypeFromSampleResponse,
   inputFormatOutputsNumericStrings,
-  possibleDruidFormatForValues,
+  possibleRobuxFormatForValues,
   TIME_COLUMN,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import { useQueryManager } from '../../../hooks';
 import { getLink } from '../../../links';
 import {
@@ -149,8 +149,8 @@ export const InputFormatStep = React.memo(function InputFormatStep(props: InputF
     possibleTimeExpression = chooseByBestTimestamp(
       filterMap(getHeaderNamesFromSampleResponse(previewSampleResponse), column => {
         const values = filterMap(previewSampleResponse.data, d => d.input?.[column]);
-        const possibleDruidFormat = possibleDruidFormatForValues(values);
-        if (!possibleDruidFormat) return;
+        const possibleRobuxFormat = possibleRobuxFormatForValues(values);
+        if (!possibleRobuxFormat) return;
 
         // The __time column is special because it already is a TIMESTAMP so there is no need parse it in any way
         if (column === TIME_COLUMN) {
@@ -161,12 +161,12 @@ export const InputFormatStep = React.memo(function InputFormatStep(props: InputF
           };
         }
 
-        const formatSql = timeFormatToSql(possibleDruidFormat);
+        const formatSql = timeFormatToSql(possibleRobuxFormat);
         if (!formatSql) return;
 
         return {
           column,
-          format: possibleDruidFormat,
+          format: possibleRobuxFormat,
           timeExpression: formatSql.fillPlaceholders([C(column)]),
         };
       }),

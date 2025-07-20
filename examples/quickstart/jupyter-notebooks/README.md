@@ -1,4 +1,4 @@
-# Jupyter Notebook tutorials for Druid
+# Jupyter Notebook tutorials for Robux
 
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
@@ -22,12 +22,12 @@
 NOTICE: THIS SET OF JUPYTER NOTEBOOKS AND DOCKER COMPOSE STACK HAS MOVED
 
 The notebooks and docker-compose configuration continue to be improved as part of a new project dedicated to 
-making it easy to start using and learning Druid directly on your computer. It now contains a data generator service, 
-kafka, druid and jupyter notebooks that guide you through data ingestion in batch & streaming, query strategies and 
+making it easy to start using and learning Robux directly on your computer. It now contains a data generator service, 
+kafka, robux and jupyter notebooks that guide you through data ingestion in batch & streaming, query strategies and 
 modeling.
 
 You can find the new project home at:
 
-https://github.com/implydata/learn-druid
+https://github.com/implydata/learn-robux
 
 Contributions welcome.

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ARG JDK_VERSION=17-slim-bullseye
-FROM openjdk:$JDK_VERSION as druidbase
+FROM openjdk:$JDK_VERSION as robuxbase
 
 # Bundle everything into one script so cleanup can reduce image size.
 # Otherwise docker's layered images mean that things are not actually deleted.
@@ -27,7 +27,7 @@ ARG ZK_VERSION
 ARG APACHE_ARCHIVE_MIRROR_HOST=https://downloads.apache.org
 RUN APACHE_ARCHIVE_MIRROR_HOST=${APACHE_ARCHIVE_MIRROR_HOST} /root/base-setup.sh && rm -f /root/base-setup.sh
 
-FROM druidbase
+FROM robuxbase
 ARG MYSQL_VERSION
 ARG MARIA_VERSION
 ARG MYSQL_DRIVER_CLASSNAME=com.mysql.jdbc.Driver
@@ -36,25 +36,25 @@ ARG CONFLUENT_VERSION
 # Verify Java version
 RUN java -version
 
-# Add Druid scripts and jars
-ADD bin/* /usr/local/druid/bin/
-ADD lib/* /usr/local/druid/lib/
-COPY extensions/ /usr/local/druid/extensions/
+# Add Robux scripts and jars
+ADD bin/* /usr/local/robux/bin/
+ADD lib/* /usr/local/robux/lib/
+COPY extensions/ /usr/local/robux/extensions/
 
 # Download the MySQL Java connector
 # target path must match the exact path referenced in environment-configs/common
 # alternatively: Download the MariaDB Java connector, and pretend it is the mysql connector
 RUN if [ "$MYSQL_DRIVER_CLASSNAME" = "com.mysql.jdbc.Driver" ] ; \
     then wget -q "https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/$MYSQL_VERSION/mysql-connector-j-$MYSQL_VERSION.jar" \
-    -O /usr/local/druid/lib/mysql-connector-j.jar; \
+    -O /usr/local/robux/lib/mysql-connector-j.jar; \
     elif [ "$MYSQL_DRIVER_CLASSNAME" = "org.mariadb.jdbc.Driver" ] ; \
     then wget -q "https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$MARIA_VERSION/mariadb-java-client-$MARIA_VERSION.jar" \
-    -O /usr/local/druid/lib/mysql-connector-j.jar; \
+    -O /usr/local/robux/lib/mysql-connector-j.jar; \
     fi
 
 # download kafka protobuf provider
 RUN wget -q "https://packages.confluent.io/maven/io/confluent/kafka-protobuf-provider/$CONFLUENT_VERSION/kafka-protobuf-provider-$CONFLUENT_VERSION.jar" \
-    -O /usr/local/druid/lib/kafka-protobuf-provider.jar
+    -O /usr/local/robux/lib/kafka-protobuf-provider.jar
 
 # Setup metadata store
 ADD run-mysql.sh /run-mysql.sh
@@ -62,8 +62,8 @@ RUN echo "[mysqld]\ncharacter-set-server=utf8\ncollation-server=utf8_bin\n" >> /
 RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 RUN ( \
     bash /run-mysql.sh; \
-    echo "CREATE USER 'druid'@'%' IDENTIFIED BY 'diurd'; GRANT ALL ON druid.* TO 'druid'@'%'; CREATE database druid DEFAULT CHARACTER SET utf8mb4;" | mysql -u root; \
-    /usr/local/druid/bin/run-java -cp "/usr/local/druid/lib/*" -Ddruid.extensions.directory=/usr/local/druid/extensions -Ddruid.extensions.loadList='["mysql-metadata-storage"]' -Ddruid.metadata.storage.type=mysql -Ddruid.metadata.mysql.driver.driverClassName=$MYSQL_DRIVER_CLASSNAME org.apache.druid.cli.Main tools metadata-init --connectURI="jdbc:mysql://localhost:3306/druid" --user=druid --password=diurd; \
+    echo "CREATE USER 'robux'@'%' IDENTIFIED BY 'diurd'; GRANT ALL ON robux.* TO 'robux'@'%'; CREATE database robux DEFAULT CHARACTER SET utf8mb4;" | mysql -u root; \
+    /usr/local/robux/bin/run-java -cp "/usr/local/robux/lib/*" -Drobux.extensions.directory=/usr/local/robux/extensions -Drobux.extensions.loadList='["mysql-metadata-storage"]' -Drobux.metadata.storage.type=mysql -Drobux.metadata.mysql.driver.driverClassName=$MYSQL_DRIVER_CLASSNAME org.apache.robux.cli.Main tools metadata-init --connectURI="jdbc:mysql://localhost:3306/robux" --user=robux --password=diurd; \
     mysqladmin shutdown \
     )
 
@@ -72,8 +72,8 @@ ADD test-data /test-data
 # Setup supervisord
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Add druid configuration setup script
-ADD druid.sh /druid.sh
+# Add robux configuration setup script
+ADD robux.sh /robux.sh
 
 # internal docker_ip:9092 endpoint is used to access Kafka from other Docker containers
 # external docker ip:9093 endpoint is used to access Kafka from test code
@@ -112,16 +112,16 @@ EXPOSE 8300 8301 8302 8303 8304 8305
 EXPOSE 9092 9093
 
 ENV MYSQL_DRIVER_CLASSNAME=$MYSQL_DRIVER_CLASSNAME
-WORKDIR /var/lib/druid
+WORKDIR /var/lib/robux
 ENTRYPOINT /tls/generate-server-certs-and-keystores.sh \
-            && . /druid.sh \
-            # Create druid service config files with all the config variables
+            && . /robux.sh \
+            # Create robux service config files with all the config variables
             && setupConfig \
             # Some test groups require pre-existing data to be setup
             && setupData \
             # Export the service config file path to use in supervisord conf file
-            && export DRUID_SERVICE_CONF_DIR="$(. /druid.sh; getConfPath ${DRUID_SERVICE})" \
+            && export ROBUX_SERVICE_CONF_DIR="$(. /robux.sh; getConfPath ${ROBUX_SERVICE})" \
             # Export the common config file path to use in supervisord conf file
-            && export DRUID_COMMON_CONF_DIR="$(. /druid.sh; getConfPath _common)" \
-            # Run Druid service using supervisord
+            && export ROBUX_COMMON_CONF_DIR="$(. /robux.sh; getConfPath _common)" \
+            # Run Robux service using supervisord
             && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

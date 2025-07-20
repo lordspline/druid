@@ -24,19 +24,19 @@ description: How to use LATEST_BY or deltas for up-to-date values.
   ~ under the License.
   -->
 
-This tutorial describes strategies in Apache Druid for use cases that might be handled by UPSERT in other databases. You can use the LATEST_BY aggregation at query time or "deltas" for numeric dimensions at insert time.
+This tutorial describes strategies in Apache Robux for use cases that might be handled by UPSERT in other databases. You can use the LATEST_BY aggregation at query time or "deltas" for numeric dimensions at insert time.
 
 The [Update data](./tutorial-update-data.md) tutorial demonstrates how to use batch operations to update data according to the timestamp, including UPSERT cases. However, with streaming data, you can potentially use LATEST_BY or deltas to satisfy requirements otherwise handled with updates.
 
 ## Prerequisites
 
-Before you follow the steps in this tutorial, download Druid as described in the [Local quickstart](index.md) and have it running on your local machine. You don't need to load any data into the Druid cluster.
+Before you follow the steps in this tutorial, download Robux as described in the [Local quickstart](index.md) and have it running on your local machine. You don't need to load any data into the Robux cluster.
 
-You should be familiar with data querying in Druid. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
+You should be familiar with data querying in Robux. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
 
 ## Use LATEST_BY to retrieve updated values
 
-Sometimes, you want to read the latest value of one dimension or measure in relation to another dimension. In a transactional database, you might maintain dimensions or measures using UPSERT, but in Druid you can append all updates or changes during ingestion. The LATEST_BY function lets you get the most recent value for the dimension with the following type of query:
+Sometimes, you want to read the latest value of one dimension or measure in relation to another dimension. In a transactional database, you might maintain dimensions or measures using UPSERT, but in Robux you can append all updates or changes during ingestion. The LATEST_BY function lets you get the most recent value for the dimension with the following type of query:
 
 ```sql
 SELECT dimension,
@@ -61,7 +61,7 @@ For example, consider the following table of events that log the total number of
 <details>
 <summary>Insert sample data</summary>
 
-In the Druid web console, navigate to the **Query** view and run the following query to insert sample data:
+In the Robux web console, navigate to the **Query** view and run the following query to insert sample data:
 
 ```sql
 REPLACE INTO "latest_by_tutorial1" OVERWRITE ALL
@@ -103,7 +103,7 @@ In the example, the values increase each time, but this method works even if the
 
 You can use this query shape as a subquery for additional processing. However, if there are many values for `user_id`, the query can be expensive.
 
-If you want to track the latest value at different times within a larger granularity time frame, you need an additional timestamp to record update times. This allows Druid to track the latest version. Consider the following data that represents points for various users updated within an hour time frame. `__time` is hour granularity, but `updated_timestamp` is minute granularity:
+If you want to track the latest value at different times within a larger granularity time frame, you need an additional timestamp to record update times. This allows Robux to track the latest version. Consider the following data that represents points for various users updated within an hour time frame. `__time` is hour granularity, but `updated_timestamp` is minute granularity:
 
 | `__time` | `updated_timestamp` | `user_id`| `points`|
 | --- | --- | --- | --- |
@@ -160,7 +160,7 @@ The results are as follows:
 |`2024-01-01T02:00:00.000Z`|`silly_monkey2`|25|
 |`2024-01-01T03:00:00.000Z`|`funny_bunny1`|10|
 
-LATEST_BY is an aggregation function. While it's very efficient when there are not many update rows matching a dimension, such as `user_id`, it scans all matching rows with the same dimension. For dimensions with numerous updates, such as when a user plays a game a million times, and the updates don't arrive in a timely order, Druid processes all rows matching the `user_id` to find the row with the max timestamp to provide the latest data. 
+LATEST_BY is an aggregation function. While it's very efficient when there are not many update rows matching a dimension, such as `user_id`, it scans all matching rows with the same dimension. For dimensions with numerous updates, such as when a user plays a game a million times, and the updates don't arrive in a timely order, Robux processes all rows matching the `user_id` to find the row with the max timestamp to provide the latest data. 
 
 For instance, if updates constitute 1-5 percent of your data, you'll get good query performance. If updates constitute 50 percent or more of your data, your queries will be slow.
 
@@ -172,7 +172,7 @@ Alternatively, you can perform ingestion-time aggregation using LATEST_BY and ap
 
 Instead of appending the latest total value in your events, you can log the change in value with each event and use the aggregator you usually use. This method may allow you to avoid a level of aggregation and grouping in your queries.
 
-For most applications, you can send the event data directly to Druid without pre-processing. For example, when sending impression counts to Druid, don't send the total impression count since yesterday, send just the recent impression count. You can then aggregate the total in Druid during query. Druid is optimized for adding up a lot of rows, so this might be counterintuitive to people who are familiar with batching or pre-aggregating data.
+For most applications, you can send the event data directly to Robux without pre-processing. For example, when sending impression counts to Robux, don't send the total impression count since yesterday, send just the recent impression count. You can then aggregate the total in Robux during query. Robux is optimized for adding up a lot of rows, so this might be counterintuitive to people who are familiar with batching or pre-aggregating data.
 
 For example, consider a datasource with a measure column `y` that you aggregate with SUM, grouped by another dimension `x`. If you want to update the value of `y` from 3 to 2, then insert -1 for `y`. This way the aggregation `SUM(y)` is correct for any queries grouped by `x`. This may offer a significant performance advantage but the trade off is that the aggregation has to always be a SUM.
 
@@ -229,5 +229,5 @@ GROUP BY 1,2
 
 See the following topics for more information:
 
-* [Update data](./tutorial-update-data.md) for a tutorial on updating data in Druid.
-* [Data updates](../data-management/update.md) for an overview of updating data in Druid.
+* [Update data](./tutorial-update-data.md) for a tutorial on updating data in Robux.
+* [Data updates](../data-management/update.md) for an overview of updating data in Robux.

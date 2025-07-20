@@ -18,7 +18,7 @@
  */
 
 // Taken from syntax of SqlInsert statement from calcite parser, edited for replace syntax
-SqlNode DruidSqlReplaceEof() :
+SqlNode RobuxSqlReplaceEof() :
 {
     final SqlIdentifier destination;
     SqlNode source;
@@ -80,13 +80,13 @@ SqlNode DruidSqlReplaceEof() :
 
     }
     // EOF is also present in SqlStmtEof but EOF is a special case and a single EOF can be consumed multiple times.
-    // The reason for adding EOF here is to ensure that we create a DruidSqlReplace node after the syntax has been
-    // validated and throw SQL syntax errors before performing validations in the DruidSqlReplace which can overshadow the
+    // The reason for adding EOF here is to ensure that we create a RobuxSqlReplace node after the syntax has been
+    // validated and throw SQL syntax errors before performing validations in the RobuxSqlReplace which can overshadow the
     // actual error message.
     <EOF>
     {
       sqlInsert = new SqlInsert(s.end(source), SqlNodeList.EMPTY, destination, source, columnList);
-      return DruidSqlReplace.create(sqlInsert, partitionedBy, clusteredBy, exportFileFormat, replaceTimeQuery);
+      return RobuxSqlReplace.create(sqlInsert, partitionedBy, clusteredBy, exportFileFormat, replaceTimeQuery);
     }
 }
 

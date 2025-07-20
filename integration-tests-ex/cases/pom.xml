@@ -23,14 +23,14 @@
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache.druid.integration-tests</groupId>
-    <artifactId>druid-it-cases</artifactId>
-    <name>druid-it-cases</name>
+    <groupId>org.apache.robux.integration-tests</groupId>
+    <artifactId>robux-it-cases</artifactId>
+    <name>robux-it-cases</name>
     <description>New Integration Tests</description>
 
     <parent>
-        <groupId>org.apache.druid</groupId>
-        <artifactId>druid</artifactId>
+        <groupId>org.apache.robux</groupId>
+        <artifactId>robux</artifactId>
         <version>35.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -41,42 +41,42 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-integration-tests</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-integration-tests</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <!-- See https://maven.apache.org/plugins/maven-jar-plugin/examples/create-test-jar.html -->
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-integration-tests</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-integration-tests</artifactId>
             <version>${project.parent.version}</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-processing</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-processing</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-server</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-server</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-services</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-services</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-indexing-service</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-indexing-service</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-kafka-indexing-service</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-kafka-indexing-service</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -195,13 +195,13 @@
             <artifactId>jdbi</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
+            <groupId>org.apache.robux.extensions</groupId>
             <artifactId>mysql-metadata-storage</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-azure-extensions</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-azure-extensions</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -212,14 +212,14 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-s3-extensions</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-s3-extensions</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-hdfs-storage</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-hdfs-storage</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -230,32 +230,32 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-google-extensions</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-google-extensions</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
          <dependency>
-             <groupId>org.apache.druid</groupId>
-             <artifactId>druid-gcp-common</artifactId>
+             <groupId>org.apache.robux</groupId>
+             <artifactId>robux-gcp-common</artifactId>
              <version>${project.parent.version}</version>
              <scope>provided</scope>
          </dependency>
 
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-sql</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-sql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-multi-stage-query</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-multi-stage-query</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid.extensions</groupId>
-            <artifactId>druid-catalog</artifactId>
+            <groupId>org.apache.robux.extensions</groupId>
+            <artifactId>robux-catalog</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -488,7 +488,7 @@
                                 <!-- Turning on logs so that travis does not time out tests for not providing any output.  -->
                                 <redirectTestOutputToFile>False</redirectTestOutputToFile>
                                 <!-- Can run only one test category per Maven run. -->
-                                <groups>org.apache.druid.testsEx.categories.${it.category}</groups>
+                                <groups>org.apache.robux.testsEx.categories.${it.category}</groups>
                              </configuration>
                           </execution>
                           <execution>

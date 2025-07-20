@@ -1,6 +1,6 @@
 ---
 id: tutorial-jdbc
-title: Use the JDBC driver to query Druid
+title: Use the JDBC driver to query Robux
 sidebar_label: JDBC connector tutorial
 ---
 
@@ -28,7 +28,7 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 Redirecting you to the JDBC driver API...
 <BrowserOnly>
       {() => {
-        window.location.replace("https://druid.apache.org/docs/latest/api-reference/sql-jdbc.html");
+        window.location.replace("https://robux.apache.org/docs/latest/api-reference/sql-jdbc.html");
         return null;
       }}
     </BrowserOnly>

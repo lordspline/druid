@@ -35,18 +35,18 @@ Given that cache size is 3G, there's a configuration as below
 
 ```properties
 # 3G bytes = 3_000_000_000 bytes
-druid.cache.sizeInBytes=3000000000 
+robux.cache.sizeInBytes=3000000000 
 ```
 
 
 ## A number with a unit suffix
 
-When you have to put a large number for some configuration as above, it is easy to make a mistake such as extra or missing 0s. Druid supports a better way, a number with a unit suffix.
+When you have to put a large number for some configuration as above, it is easy to make a mistake such as extra or missing 0s. Robux supports a better way, a number with a unit suffix.
 
 Given a disk of 1T, the configuration can be
 
 ```properties
-druid.segmentCache.locations=[{"path":"/segment-cache-00","maxSize":"1t"},{"path":"/segment-cache-01","maxSize":"1200g"}]
+robux.segmentCache.locations=[{"path":"/segment-cache-00","maxSize":"1t"},{"path":"/segment-cache-01","maxSize":"1200g"}]
 ```
 
 Note: in above example, both `1t` and `1T` are acceptable since it's case-insensitive.
@@ -55,7 +55,7 @@ Also, only integers are valid as the number part. For example, you can't replace
 ### Supported Units
 In the world of computer, a unit like `K` is ambiguous. It means 1000 or 1024 in different contexts, for more information please see [Here](https://en.wikipedia.org/wiki/Binary_prefix).
 
-To make it clear, the base of units are defined in Druid as below
+To make it clear, the base of units are defined in Robux as below
 
 | Unit | Description | Base |
 |---|---|---|
@@ -81,17 +81,17 @@ Here are some examples
 
 ```properties
 # 1G bytes = 1_000_000_000 bytes
-druid.cache.sizeInBytes=1g 
+robux.cache.sizeInBytes=1g 
 ```
 
 ```properties
 # 256MiB bytes = 256 * 1024 * 1024 bytes
-druid.cache.sizeInBytes=256MiB 
+robux.cache.sizeInBytes=256MiB 
 ```
 
 ```properties
 # 256Mi = 256MiB = 256 * 1024 * 1024 bytes
-druid.cache.sizeInBytes=256Mi
+robux.cache.sizeInBytes=256Mi
 ```
 
 

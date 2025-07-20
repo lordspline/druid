@@ -28,11 +28,11 @@ This extension allows you to do 2 things:
 * [Ingest data](#reading-data-from-google-cloud-storage) from files stored in Google Cloud Storage.
 * Write segments to [deep storage](#deep-storage) in GCS.
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-google-extensions` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-google-extensions` in the extensions load list.
 
 ### Required Configuration
 
-To configure connectivity to google cloud, run druid processes with `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account_keyfile` in the environment.
+To configure connectivity to google cloud, run robux processes with `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account_keyfile` in the environment.
 
 ### Reading data from Google Cloud Storage
 
@@ -42,15 +42,15 @@ you can read data from Google Cloud Storage by specifying the paths in your [`in
 
 ### Deep Storage
 
-Deep storage can be written to Google Cloud Storage either via this extension or the [druid-hdfs-storage extension](../extensions-core/hdfs.md).
+Deep storage can be written to Google Cloud Storage either via this extension or the [robux-hdfs-storage extension](../extensions-core/hdfs.md).
 
 #### Configuration
 
-To configure connectivity to google cloud, run druid processes with `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account_keyfile` in the environment.
+To configure connectivity to google cloud, run robux processes with `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service_account_keyfile` in the environment.
 
 |Property|Description|Possible Values|Default|
 |--------|---------------|-----------|-------|
-|`druid.storage.type`|google||Must be set.|
-|`druid.google.bucket`||Google Storage bucket name.|Must be set.|
-|`druid.google.prefix`|A prefix string that will be prepended to the blob names for the segments published to Google deep storage| |""|
-|`druid.google.maxListingLength`|maximum number of input files matching a given prefix to retrieve at a time| |1024|
+|`robux.storage.type`|google||Must be set.|
+|`robux.google.bucket`||Google Storage bucket name.|Must be set.|
+|`robux.google.prefix`|A prefix string that will be prepended to the blob names for the segments published to Google deep storage| |""|
+|`robux.google.maxListingLength`|maximum number of input files matching a given prefix to retrieve at a time| |1024|

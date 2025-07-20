@@ -19,7 +19,7 @@
 
 # Revised Integration Tests
 
-This directory builds a Docker image for Druid, then uses that image, along
+This directory builds a Docker image for Robux, then uses that image, along
 with test configuration to run tests. This version greatly evolves the
 integration tests from the earlier form. See the [History](docs/history.md)
 section for details.
@@ -30,7 +30,7 @@ List of the most common commands once you're familiar with the framework.
 If you are new to the framework, see [Quickstart](docs/quickstart.md) for
 an explanation.
 
-### Build Druid
+### Build Robux
 
 ```bash
 ./it.sh build
@@ -42,7 +42,7 @@ an explanation.
 ./it.sh image
 ```
 
-Note: If you are running it on Apple Silicon processors, you would also need to uncomment all occurrences of `platform: linux/x86_64` in [dependencies.yaml](https://github.com/apache/druid/blob/master/integration-tests-ex/cases/cluster/Common/dependencies.yaml).
+Note: If you are running it on Apple Silicon processors, you would also need to uncomment all occurrences of `platform: linux/x86_64` in [dependencies.yaml](https://github.com/apache/robux/blob/master/integration-tests-ex/cases/cluster/Common/dependencies.yaml).
 
 ### Run an IT from the Command Line
 
@@ -50,7 +50,7 @@ Note: If you are running it on Apple Silicon processors, you would also need to 
 ./it.sh test <category>
 ```
 
-Where `<category>` is one of the test categories. You can see the list of test categories at [`src/test/java/org/apache/druid/testsEx/categories`](https://github.com/apache/druid/tree/master/integration-tests-ex/cases/src/test/java/org/apache/druid/testsEx/categories). The corresponding test classes are also annotated with `@Category` like `@Category(HighAvailability.class)`.
+Where `<category>` is one of the test categories. You can see the list of test categories at [`src/test/java/org/apache/robux/testsEx/categories`](https://github.com/apache/robux/tree/master/integration-tests-ex/cases/src/test/java/org/apache/robux/testsEx/categories). The corresponding test classes are also annotated with `@Category` like `@Category(HighAvailability.class)`.
 
 For example, a sample command for running IT for `@Category(HighAvailability.class)` would be:
 ```bash
@@ -75,7 +75,7 @@ test as a JUnit test.
 * [Create a new test](docs/guide.md)
 * [Maven configuration](docs/maven.md)
 * [Docker image](docs/docker.md)
-* [Druid configuration](docs/druid-config.md)
+* [Robux configuration](docs/robux-config.md)
 * [Docker Compose configuration](docs/compose.md)
 * [Test configuration](docs/test-config.md)
 * [Test structure](docs/tests.md)
@@ -94,7 +94,7 @@ Background information
 
 The goal of the present version is to simplify development.
 
-* Speed up the Druid test image build by avoiding download of
+* Speed up the Robux test image build by avoiding download of
   dependencies. (Instead, any such dependencies are managed by
   Maven and reside in the local build cache.)
 * Use official images for dependencies to avoid the need to
@@ -102,21 +102,21 @@ The goal of the present version is to simplify development.
 * Make it is easy to manually build the image, launch
   a cluster, and run a test against the cluster.
 * Convert tests to JUnit so that they will easily run in your
-  favorite IDE, just like other Druid tests.
-* Use the actual Druid build from `distribution` so we know
+  favorite IDE, just like other Robux tests.
+* Use the actual Robux build from `distribution` so we know
   what is tested.
 * Leverage, don't fight, Maven.
 * Run the integration tests easily on a typical development machine.
 
 By meeting these goals, you can quickly:
 
-* Build the Druid distribution.
-* Build the Druid image. (< 1 minute)
+* Build the Robux distribution.
+* Build the Robux image. (< 1 minute)
 * Launch the cluster for the particular test. (a few seconds)
 * Run the test any number of times in your debugger.
 * Clean up the test artifacts.
 
-The result is that the fastest path to develop a Druid patch or
+The result is that the fastest path to develop a Robux patch or
 feature is:
 
 * Create a normal unit test and run it to verify your code.

@@ -80,7 +80,7 @@ export const StatusDialog = React.memo(function StatusDialog(props: StatusDialog
     return (
       <div className="main-container">
         <div className="version">
-          Druid version: <strong>{response.version}</strong>
+          Robux version: <strong>{response.version}</strong>
         </div>
         <ReactTable
           data={response.modules}

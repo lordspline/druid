@@ -17,9 +17,9 @@
  */
 
 import type { CancelToken } from 'axios';
-import type { QueryResult } from 'druid-query-toolkit';
+import type { QueryResult } from 'robux-query-toolkit';
 
-import type { Execution } from '../../druid-models';
+import type { Execution } from '../../robux-models';
 import { IntermediateQueryState } from '../../utils';
 
 import { updateExecutionWithTaskIfNeeded } from './sql-task-execution';

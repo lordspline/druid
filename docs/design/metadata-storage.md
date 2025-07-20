@@ -23,9 +23,9 @@ title: "Metadata storage"
   -->
 
 
-Apache Druid relies on an external dependency for metadata storage.
-Druid uses the metadata store to house various metadata about the system, but not to store the actual data.
-The metadata store retains all metadata essential for a Druid cluster to work.
+Apache Robux relies on an external dependency for metadata storage.
+Robux uses the metadata store to house various metadata about the system, but not to store the actual data.
+The metadata store retains all metadata essential for a Robux cluster to work.
 
 The metadata store includes the following:
 - Segments records
@@ -34,7 +34,7 @@ The metadata store includes the following:
 - Task-related tables
 - Audit records
 
-Derby is the default metadata store for Druid, however, it is not suitable for production.
+Derby is the default metadata store for Robux, however, it is not suitable for production.
 [MySQL](../development/extensions-core/mysql.md) and [PostgreSQL](../development/extensions-core/postgresql.md) are more production suitable metadata stores.
 See [Metadata storage configuration](../configuration/index.md#metadata-storage) for the default configuration settings.
 
@@ -44,7 +44,7 @@ See [Metadata storage configuration](../configuration/index.md#metadata-storage)
 
 ## Available metadata stores
 
-Druid supports Derby, MySQL, and PostgreSQL for storing metadata. Note that your metadata store must be ACID-compliant. If it isn't ACID-compliant, you can encounter issues, such as tasks failing sporadically.
+Robux supports Derby, MySQL, and PostgreSQL for storing metadata. Note that your metadata store must be ACID-compliant. If it isn't ACID-compliant, you can encounter issues, such as tasks failing sporadically.
 
 To avoid issues with upgrades that require schema changes to a large metadata table, consider a metadata store version that supports instant ADD COLUMN semantics.
 See the database-specific docs for guidance on versions.
@@ -64,25 +64,25 @@ See [postgresql-metadata-storage](../development/extensions-core/postgresql.md).
  For production clusters, consider using MySQL or PostgreSQL instead of Derby.
 :::
 
-Configure metadata storage with Derby by setting the following properties in your Druid configuration.
+Configure metadata storage with Derby by setting the following properties in your Robux configuration.
 
 ```properties
-druid.metadata.storage.type=derby
-druid.metadata.storage.connector.connectURI=jdbc:derby://localhost:1527//opt/var/druid_state/derby;create=true
+robux.metadata.storage.type=derby
+robux.metadata.storage.connector.connectURI=jdbc:derby://localhost:1527//opt/var/robux_state/derby;create=true
 ```
 
 ## Adding custom DBCP properties
 
 You can add custom properties to customize the database connection pool (DBCP) for connecting to the metadata store.
-Define these properties with a `druid.metadata.storage.connector.dbcp.` prefix.
+Define these properties with a `robux.metadata.storage.connector.dbcp.` prefix.
 For example:
 
 ```properties
-druid.metadata.storage.connector.dbcp.maxConnLifetimeMillis=1200000
-druid.metadata.storage.connector.dbcp.defaultQueryTimeout=30000
+robux.metadata.storage.connector.dbcp.maxConnLifetimeMillis=1200000
+robux.metadata.storage.connector.dbcp.defaultQueryTimeout=30000
 ```
 
-Certain properties cannot be set through `druid.metadata.storage.connector.dbcp.` and must be set with the prefix `druid.metadata.storage.connector.`:
+Certain properties cannot be set through `robux.metadata.storage.connector.dbcp.` and must be set with the prefix `robux.metadata.storage.connector.`:
 * `username`
 * `password`
 * `connectURI`
@@ -97,7 +97,7 @@ This section describes the various tables in metadata storage.
 
 ### Segments table
 
-This is dictated by the `druid.metadata.storage.tables.segments` property.
+This is dictated by the `robux.metadata.storage.tables.segments` property.
 
 This table stores metadata about the segments that should be available in the system. (This set of segments is called
 "used segments" elsewhere in the documentation and throughout the project.) The table is polled by the

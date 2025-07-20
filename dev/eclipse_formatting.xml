@@ -19,7 +19,7 @@
   -->
 
 <profiles version="12">
-<profile kind="CodeFormatterProfile" name="druid" version="12">
+<profile kind="CodeFormatterProfile" name="robux" version="12">
 <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags" value="insert"/>
 <setting id="org.eclipse.jdt.core.formatter.disabling_tag" value="@formatter:off"/>
 <setting id="org.eclipse.jdt.core.formatter.insert_space_after_comma_in_annotation" value="insert"/>

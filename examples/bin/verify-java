@@ -28,28 +28,28 @@ sub fail_check {
     : "No Java runtime was detected on your system.";
 
   print STDERR <<"EOT";
-Druid requires Java 11 or 17. $current_version_text
+Robux requires Java 11 or 17. $current_version_text
 
 If you believe this check is in error, or you want to proceed with a potentially
 unsupported Java runtime, you can skip this check using an environment variable:
 
-  export DRUID_SKIP_JAVA_CHECK=1
+  export ROBUX_SKIP_JAVA_CHECK=1
 
 Otherwise, install Java 11 or 17 in one of the following locations.
 
-  * DRUID_JAVA_HOME
+  * ROBUX_JAVA_HOME
   * JAVA_HOME
   * java (installed on PATH)
 
 Other versions of Java versions may work, but are not officially supported.
 
 For more information about selecting a Java runtime visit:
-https://druid.apache.org/docs/latest/operations/java.html
+https://robux.apache.org/docs/latest/operations/java.html
 EOT
   exit 1;
 }
 
-my $skip_var = $ENV{'DRUID_SKIP_JAVA_CHECK'};
+my $skip_var = $ENV{'ROBUX_SKIP_JAVA_CHECK'};
 if ($skip_var && $skip_var ne "0" && $skip_var ne "false" && $skip_var ne "f") {
   exit 0;
 }

@@ -75,7 +75,7 @@
             "filter": "wikipedia_combining_index_data.json"
           },
           {
-            "type": "druid",
+            "type": "robux",
             "dataSource": "%%COMBINING_DATASOURCE%%",
             "interval": "2013-08-31/2013-09-02"
           }

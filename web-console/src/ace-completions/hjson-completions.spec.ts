@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { NATIVE_JSON_QUERY_COMPLETIONS } from '../druid-models';
+import { NATIVE_JSON_QUERY_COMPLETIONS } from '../robux-models';
 
 import type { GetHjsonCompletionsOptions } from './hjson-completions';
 import { getHjsonCompletions } from './hjson-completions';

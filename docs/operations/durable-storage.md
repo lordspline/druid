@@ -33,7 +33,7 @@ Durable storage for queries from deep storage provides a location where you can 
 
 Enabling durable storage also enables the use of local disk to store temporary files, such as the intermediate files produced
 while sorting the data. Tasks will use whatever has been configured for their temporary usage as described in [Configuring task storage sizes](../ingestion/tasks.md#configuring-task-storage-sizes).
-If the configured limit is too low, Druid may throw the error, `NotEnoughTemporaryStorageFault`.
+If the configured limit is too low, Robux may throw the error, `NotEnoughTemporaryStorageFault`.
 
 ## Enable durable storage
 
@@ -42,43 +42,43 @@ To enable durable storage, you need to set the following common service properti
 For S3:
 
 ```
-druid.msq.intermediate.storage.enable=true
-druid.msq.intermediate.storage.type=s3
+robux.msq.intermediate.storage.enable=true
+robux.msq.intermediate.storage.type=s3
 
 # Remote storage location
-druid.msq.intermediate.storage.bucket=YOUR_BUCKET
-druid.msq.intermediate.storage.prefix=YOUR_PREFIX
+robux.msq.intermediate.storage.bucket=YOUR_BUCKET
+robux.msq.intermediate.storage.prefix=YOUR_PREFIX
 
-# Local temporary directory (on each Druid server)
-druid.msq.intermediate.storage.tempDir=/path/to/your/temp/dir
+# Local temporary directory (on each Robux server)
+robux.msq.intermediate.storage.tempDir=/path/to/your/temp/dir
 ```
 
 For Google Storage:
 
 ```
-druid.msq.intermediate.storage.enable=true
-druid.msq.intermediate.storage.type=google
+robux.msq.intermediate.storage.enable=true
+robux.msq.intermediate.storage.type=google
 
 # Remote storage location
-druid.msq.intermediate.storage.bucket=YOUR_BUCKET
-druid.msq.intermediate.storage.prefix=YOUR_PREFIX
+robux.msq.intermediate.storage.bucket=YOUR_BUCKET
+robux.msq.intermediate.storage.prefix=YOUR_PREFIX
 
-# Local temporary directory (on each Druid server)
-druid.msq.intermediate.storage.tempDir=/path/to/your/temp/dir
+# Local temporary directory (on each Robux server)
+robux.msq.intermediate.storage.tempDir=/path/to/your/temp/dir
 ```
 
 For Azure Blob Storage:
 
 ```
-druid.msq.intermediate.storage.enable=true
-druid.msq.intermediate.storage.type=azure
+robux.msq.intermediate.storage.enable=true
+robux.msq.intermediate.storage.type=azure
 
 # Remote storage location
-druid.msq.intermediate.storage.container=YOUR_CONTAINER
-druid.msq.intermediate.storage.prefix=YOUR_PREFIX
+robux.msq.intermediate.storage.container=YOUR_CONTAINER
+robux.msq.intermediate.storage.prefix=YOUR_PREFIX
 
-# Local temporary directory (on each Druid server)
-druid.msq.intermediate.storage.tempDir=/path/to/your/temp/dir
+# Local temporary directory (on each Robux server)
+robux.msq.intermediate.storage.tempDir=/path/to/your/temp/dir
 ```
 
 For detailed information about these and additional settings related to durable storage, see [Durable storage configurations](../multi-stage-query/reference.md#durable-storage-configurations).
@@ -94,7 +94,7 @@ For queries where you want to use fault tolerance for workers,  set `faultTolera
 
 Depending on the size of the results you're expecting, saving the final results for queries from deep storage to durable storage might be needed.
 
-By default, Druid saves the final results for queries from deep storage to task reports. Generally, this is acceptable for smaller result sets but may lead to timeouts for larger result sets. 
+By default, Robux saves the final results for queries from deep storage to task reports. Generally, this is acceptable for smaller result sets but may lead to timeouts for larger result sets. 
 
 When you run a query, include the context parameter `selectDestination` and set it to `durableStorage`:
 
@@ -116,7 +116,7 @@ cleaner can be scheduled to clean the directories corresponding to which there i
 the storage connector to work upon the durable storage. The durable storage location should only be utilized to store the output
 for the cluster's MSQ tasks. If the location contains other files or directories, then they will get cleaned up as well.
 
-Use `druid.msq.intermediate.storage.cleaner.enabled` and `druid.msq.intermediate.storage.cleaner.delaySeconds` to configure the cleaner. For more information, see [Durable storage configurations](../multi-stage-query/reference.md#durable-storage-configurations).
+Use `robux.msq.intermediate.storage.cleaner.enabled` and `robux.msq.intermediate.storage.cleaner.delaySeconds` to configure the cleaner. For more information, see [Durable storage configurations](../multi-stage-query/reference.md#durable-storage-configurations).
 
 Note that if you choose to write query results to durable storage,the results are cleaned up when the task is removed from the metadata store.
 

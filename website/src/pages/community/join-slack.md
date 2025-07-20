@@ -1,6 +1,6 @@
 ---
 layout: redirect_page
-redirect_target: https://join.slack.com/t/apachedruidworkspace/shared_invite/zt-143m5afbr-4ebnAPJPaQfNOUu_g1MvSw
+redirect_target: https://join.slack.com/t/apacherobuxworkspace/shared_invite/zt-143m5afbr-4ebnAPJPaQfNOUu_g1MvSw
 ---
 <!--
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,4 +21,4 @@ redirect_target: https://join.slack.com/t/apachedruidworkspace/shared_invite/zt-
 
 -->
 
-Edit this page in the [`druid-website-src`](https://github.com/apache/druid-website-src/) repo. To see your changes, navigate to them from the [Docs section](/docs/latest/design).
+Edit this page in the [`robux-website-src`](https://github.com/apache/robux-website-src/) repo. To see your changes, navigate to them from the [Docs section](/docs/latest/design).

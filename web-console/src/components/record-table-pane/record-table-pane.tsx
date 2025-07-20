@@ -19,7 +19,7 @@
 import { Button, Icon, Popover } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import type { Column, QueryResult } from 'druid-query-toolkit';
+import type { Column, QueryResult } from 'robux-query-toolkit';
 import React, { useEffect, useState } from 'react';
 import type { RowRenderProps } from 'react-table';
 import ReactTable from 'react-table';

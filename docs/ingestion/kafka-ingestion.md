@@ -2,7 +2,7 @@
 id: kafka-ingestion
 title: "Apache Kafka ingestion"
 sidebar_label: "Apache Kafka ingestion"
-description: "Overview of the Kafka indexing service for Druid. Includes example supervisor specs to help you get started."
+description: "Overview of the Kafka indexing service for Robux. Includes example supervisor specs to help you get started."
 ---
 
 <!--
@@ -32,15 +32,15 @@ If you are using an older version, refer to the [Apache Kafka upgrade guide](htt
 When you enable the Kafka indexing service, you can configure supervisors on the Overlord to manage the creation and lifetime of Kafka indexing tasks.
 Kafka indexing tasks read events using Kafka partition and offset mechanism to guarantee exactly-once ingestion. The supervisor oversees the state of the indexing tasks to coordinate handoffs, manage failures, and ensure that scalability and replication requirements are maintained.
 
-This topic contains configuration information for the Kafka indexing service supervisor for Apache Druid.
+This topic contains configuration information for the Kafka indexing service supervisor for Apache Robux.
 
 ## Setup
 
-To use the Kafka indexing service, you must first load the `druid-kafka-indexing-service` extension on both the Overlord and the Middle Manager. See [Loading extensions](../configuration/extensions.md) for more information.
+To use the Kafka indexing service, you must first load the `robux-kafka-indexing-service` extension on both the Overlord and the Middle Manager. See [Loading extensions](../configuration/extensions.md) for more information.
 
 ## Supervisor spec configuration
 
-This section outlines the configuration properties that are specific to the Apache Kafka streaming ingestion method. For configuration properties shared across all streaming ingestion methods supported by Druid, see [Supervisor spec](supervisor.md#supervisor-spec).
+This section outlines the configuration properties that are specific to the Apache Kafka streaming ingestion method. For configuration properties shared across all streaming ingestion methods supported by Robux, see [Supervisor spec](supervisor.md#supervisor-spec).
 
 The following example shows a supervisor spec for the Kafka indexing service:
 
@@ -143,11 +143,11 @@ You can force the migration by doing the following:
 :::
 
 You can ingest data from one or multiple topics.
-When ingesting data from multiple topics, Druid assigns partitions based on the hashcode of the topic name and the ID of the partition within that topic. The partition assignment might not be uniform across all the tasks. Druid assumes that partitions across individual topics have similar load. If you want to ingest from both high and low load topics in the same supervisor, it is recommended that you have a higher number of partitions for a high load topic and a lower number of partitions for a low load topic.
+When ingesting data from multiple topics, Robux assigns partitions based on the hashcode of the topic name and the ID of the partition within that topic. The partition assignment might not be uniform across all the tasks. Robux assumes that partitions across individual topics have similar load. If you want to ingest from both high and low load topics in the same supervisor, it is recommended that you have a higher number of partitions for a high load topic and a lower number of partitions for a low load topic.
 
 To ingest data from multiple topics, use the `topicPattern` property instead of `topic`.
 You pass multiple topics as a regex pattern. For example, to ingest data from clicks and impressions, set `topicPattern` to `clicks|impressions`.
-Similarly, you can use `metrics-.*` as the value for `topicPattern` if you want to ingest from all the topics that start with `metrics-`. If you add a new topic that matches the regex to the cluster, Druid automatically starts ingesting from the new topic. Topic names that match partially, such as `my-metrics-12`, are not included for ingestion.
+Similarly, you can use `metrics-.*` as the value for `topicPattern` if you want to ingest from all the topics that start with `metrics-`. If you add a new topic that matches the regex to the cluster, Robux automatically starts ingesting from the new topic. Topic names that match partially, such as `my-metrics-12`, are not included for ingestion.
 
 #### Consumer properties
 
@@ -156,11 +156,11 @@ Consumer properties control how a supervisor reads and processes event messages 
 You must include `bootstrap.servers` in consumer properties with a list of Kafka brokers in the format `<BROKER_1>:<PORT_1>,<BROKER_2>:<PORT_2>,...`.
 In some cases, you may need to retrieve consumer properties at runtime. For example, when `bootstrap.servers` is unknown or not static.
 
-The `isolation.level` property in `consumerProperties` determines how Druid reads messages written transactionally.
-If you use older versions of Kafka servers without transaction support or you don't want Druid to consume only committed transactions, set `isolation.level` to `read_uncommitted`.
-With `read_uncommitted`, which is the default setting, Druid reads all messages, including aborted transactional messages.
-Make sure offsets are sequential, since there is no offset gap check in Druid.
-For Druid to consume only committed transactional messages, set `isolation.level` to `read_committed`.
+The `isolation.level` property in `consumerProperties` determines how Robux reads messages written transactionally.
+If you use older versions of Kafka servers without transaction support or you don't want Robux to consume only committed transactions, set `isolation.level` to `read_uncommitted`.
+With `read_uncommitted`, which is the default setting, Robux reads all messages, including aborted transactional messages.
+Make sure offsets are sequential, since there is no offset gap check in Robux.
+For Robux to consume only committed transactional messages, set `isolation.level` to `read_committed`.
 
 If your Kafka cluster enables consumer group ACLs, you can set `group.id` in `consumerProperties` to override the default auto generated group ID.
 
@@ -168,7 +168,7 @@ To enable SSL connections, you must provide passwords for `keystore`, `truststor
 To protect sensitive information, use the [environment variable dynamic config provider](../operations/dynamic-config-provider.md#environment-variable-dynamic-config-provider) to store credentials in system environment variables instead of plain text.
 Although you can also use the [password provider](../operations/password-provider.md) interface to specify SSL configuration for Kafka ingestion, consider using the dynamic config provider as this feature is deprecated.
 
-For example, when using SASL and SSL with Kafka, set the following environment variables for the Druid user on machines running the Overlord and Peon services. Replace the values to match your environment configurations.
+For example, when using SASL and SSL with Kafka, set the following environment variables for the Robux user on machines running the Overlord and Peon services. Replace the values to match your environment configurations.
 
 ```
 export KAFKA_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username='accesskey' password='secret key';"
@@ -186,7 +186,7 @@ When you define the consumer properties in the supervisor spec, use the dynamic 
   "sasl.mechanism": "PLAIN", 
   "ssl.keystore.location": "/opt/kafka/config/kafka01.keystore.jks",
   "ssl.truststore.location": "/opt/kafka/config/kafka.truststore.jks",
-  "druid.dynamic.config.provider": {
+  "robux.dynamic.config.provider": {
     "type": "environment",
     "variables": {
       "sasl.jaas.config": "KAFKA_JAAS_CONFIG",
@@ -198,7 +198,7 @@ When you define the consumer properties in the supervisor spec, use the dynamic 
 }
 ```
 
-When connecting to Kafka, Druid replaces the environment variables with their corresponding values.
+When connecting to Kafka, Robux replaces the environment variables with their corresponding values.
 
 #### Idle configuration
 
@@ -301,8 +301,8 @@ To parse the Kafka metadata in addition to the payload, use the `kafka` input fo
 You configure it as follows:
 
 - `valueFormat`: Define how to parse the payload value. Set this to the payload parsing input format (`{ "type": "json" }`).
-- `timestampColumnName`: Supply a custom name for the Kafka timestamp in the Druid schema to avoid conflicts with columns from the payload. The default is `kafka.timestamp`.
-- `topicColumnName`: Supply a custom name for the Kafka topic in the Druid schema to avoid conflicts with columns from the payload. The default is `kafka.topic`. This field is useful when ingesting data from multiple topics into the same datasource.
+- `timestampColumnName`: Supply a custom name for the Kafka timestamp in the Robux schema to avoid conflicts with columns from the payload. The default is `kafka.timestamp`.
+- `topicColumnName`: Supply a custom name for the Kafka topic in the Robux schema to avoid conflicts with columns from the payload. The default is `kafka.topic`. This field is useful when ingesting data from multiple topics into the same datasource.
 - `headerFormat`: The default value `string` decodes strings in UTF-8 encoding from the Kafka header.  
    Other supported encoding formats include the following:
    - `ISO-8859-1`: ISO Latin Alphabet No. 1, that is, ISO-LATIN-1.
@@ -311,7 +311,7 @@ You configure it as follows:
    - `UTF-16BE`: Sixteen-bit UCS Transformation Format, big-endian byte order.
    - `UTF-16LE`: Sixteen-bit UCS Transformation Format, little-endian byte order.
 - `headerColumnPrefix`: Supply a prefix to the Kafka headers to avoid any conflicts with columns from the payload. The default is `kafka.header.`.
-  Considering the header from the example, Druid maps the headers to the following columns: `kafka.header.env`, `kafka.header.zone`.
+  Considering the header from the example, Robux maps the headers to the following columns: `kafka.header.env`, `kafka.header.zone`.
 - `keyFormat`: Supply an input format to parse the key. Only the first value is used.
   If, as in the example, your key values are simple strings, then you can use the `tsv` format to parse them.
   ```json
@@ -362,7 +362,7 @@ It parses the example message as follows:
 
 Finally, add these Kafka metadata columns to the `dimensionsSpec` or set your `dimensionsSpec` to auto-detect columns.
      
-The following supervisor spec demonstrates how to ingest the Kafka header, key, timestamp, and topic into Druid dimensions:
+The following supervisor spec demonstrates how to ingest the Kafka header, key, timestamp, and topic into Robux dimensions:
 
 <details>
   <summary>Click to view the example</summary>
@@ -417,7 +417,7 @@ The following supervisor spec demonstrates how to ingest the Kafka header, key, 
 ```
 </details>
 
-After Druid ingests the data, you can query the Kafka metadata columns as follows:
+After Robux ingests the data, you can query the Kafka metadata columns as follows:
 
 ```sql
 SELECT
@@ -443,9 +443,9 @@ For configuration properties shared across all streaming ingestion methods, refe
 |--------|----|-----------|--------|-------|
 |`numPersistThreads`|Integer|The number of threads to use to create and persist incremental segments on the disk. Higher ingestion data throughput results in a larger number of incremental segments, causing significant CPU time to be spent on the creation of the incremental segments on the disk. For datasources with number of columns running into hundreds or thousands, creation of the incremental segments may take up significant time, in the order of multiple seconds. In both of these scenarios, ingestion can stall or pause frequently, causing it to fall behind. You can use additional threads to parallelize the segment creation without blocking ingestion as long as there are sufficient CPU resources available.|No|1|
 
-## Deployment notes on Kafka partitions and Druid segments
+## Deployment notes on Kafka partitions and Robux segments
 
-Druid assigns Kafka partitions to each Kafka indexing task. A task writes the events it consumes from Kafka into a single segment for the segment granularity interval until it reaches one of the following limits: `maxRowsPerSegment`, `maxTotalRows`, or `intermediateHandoffPeriod`. At this point, the task creates a new partition for this segment granularity to contain subsequent events.
+Robux assigns Kafka partitions to each Kafka indexing task. A task writes the events it consumes from Kafka into a single segment for the segment granularity interval until it reaches one of the following limits: `maxRowsPerSegment`, `maxTotalRows`, or `intermediateHandoffPeriod`. At this point, the task creates a new partition for this segment granularity to contain subsequent events.
 
 The Kafka indexing task also does incremental hand-offs. Therefore, segments become available as they are ready and you don't have to wait for all segments until the end of the task duration. When the task reaches one of `maxRowsPerSegment`, `maxTotalRows`, or `intermediateHandoffPeriod`, it hands off all the segments and creates a new set of segments for further events. This allows the task to run for longer durations without accumulating old segments locally on Middle Manager services.
 
@@ -453,7 +453,7 @@ The Kafka indexing service may still produce some small segments. For example, c
 - Task duration is 4 hours.
 - Segment granularity is set to an HOUR.
 - The supervisor was started at 9:10.
-After 4 hours at 13:10, Druid starts a new set of tasks. The events for the interval 13:00 - 14:00 may be split across existing tasks and the new set of tasks which could result in small segments. To merge them together into new segments of an ideal size (in the range of ~500-700 MB per segment), you can schedule re-indexing tasks, optionally with a different segment granularity.
+After 4 hours at 13:10, Robux starts a new set of tasks. The events for the interval 13:00 - 14:00 may be split across existing tasks and the new set of tasks which could result in small segments. To merge them together into new segments of an ideal size (in the range of ~500-700 MB per segment), you can schedule re-indexing tasks, optionally with a different segment granularity.
 
 For information on how to optimize the segment size, see [Segment size optimization](../operations/segment-optimization.md).
 

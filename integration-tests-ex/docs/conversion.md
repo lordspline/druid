@@ -22,7 +22,7 @@
 Here is the process to convert an existing `integration-test`
 group to this new structure.
 
-The tests all go into the `druid-integration-test-cases` module
+The tests all go into the `robux-integration-test-cases` module
 (sub-directory `test-cases`). Move the tests into the existing
 `testsEx` name space so they do not collide with the existing
 integration test namespace.
@@ -40,7 +40,7 @@ to map from your category name to the shared cluster definition
 name.
 
 To create a new defnition,
-create a `druid-cluster/docker-compose.yaml` file by converting the
+create a `robux-cluster/docker-compose.yaml` file by converting the
 previous `docker/docker-compose-<group>.yml` file. Carefully review
 each service. Use existing files as a guide.
 
@@ -57,17 +57,17 @@ Determine if the test group populates the metadata store using queries
 run in the Docker container. If so, copy those queries into the
 `docker.yaml` file in the `metadataInit` section. (In the new structure,
 these setup queries run in the test client, not in each Docker service.)
-See the former `druid.sh` script to see what SQL was used previously.
+See the former `robux.sh` script to see what SQL was used previously.
 
 ###
 
 ## Test Runner
 
 ITs require a large amount of setup. All that code is encapsulated in the
-`DruidTestRunner` class:
+`RobuxTestRunner` class:
 
 ```java
-@RunWith(DruidTestRunner.class)
+@RunWith(RobuxTestRunner.class)
 @Category(MyCategory.class)
 public class ITMyTest
 ```
@@ -79,11 +79,11 @@ It is helpful to know what the test runner does:
 * Builds up the set of Guice modules needed for the test.
 * Creates the Guice injector.
 * Uses the injector to inject dependencies into your test class.
-* Starts the Druid lifecycle.
-* Waits for each Druid service defined in `docker.yaml` to become
+* Starts the Robux lifecycle.
+* Waits for each Robux service defined in `docker.yaml` to become
   available.
 * Runs your test methods.
-* Ends the Druid lifecycle.
+* Ends the Robux lifecycle.
 
 You can customize the configuration for non-standard cases. See
 [tests](tests.md) for details.
@@ -95,22 +95,22 @@ Convert the individual tests.
 ### Basics
 
 Copy the existing tests for the target group into the
-`druid-it-cases`. For sanity, you may want to do one by one.
+`robux-it-cases`. For sanity, you may want to do one by one.
 
 When adding tests, leave the original tests in `integration-tests` for
 now. (Until we have the new system running in Travis.) Once Travis
 runs, you can move, rather than copy, the tests.
 
-While we are copying, copy to the `org.apache.druid.testsEx` package to
-prevent name conficts with `org.apache.druid.tests`.
+While we are copying, copy to the `org.apache.robux.testsEx` package to
+prevent name conficts with `org.apache.robux.tests`.
 
 ### Maven Dependencies
 
 You may need to add dependencies to `pom.xml`.
 
 The `docker-tests/pom.xml` file includes Maven dependencies for the most
-common Druid modules, which transitiviely include the third-party modules
-which the Druid modules reference. You test sub-project may need addition
+common Robux modules, which transitiviely include the third-party modules
+which the Robux modules reference. You test sub-project may need addition
 dependencies. To find them, review `integration-tests/pom.xml`. Careful,
 however, as that file is a bit of a "kitchen sink" that includes every
 possible dependency, even those already available transitively.
@@ -162,12 +162,12 @@ from `/shared/data`, since `/shared` is already mounted.
 
 You may see build or other code that passes a list of extensions to an old
 integration test. Such configuration represents a misunderstanding of how tests (as
-clients) actually work. Tests nave no visibility to a Druid installation directory.
+clients) actually work. Tests nave no visibility to a Robux installation directory.
 As a result, the "extension" concept does not apply. Instead, tests are run from
 Maven, and are subject to the usual Maven process for locating jar files. That
 means that any extensions which the test wants to use should be listed as dependencies
 in the `pom.xml` file, and will be available on the class path. There is no need for,
-or use of, the `druid_extensions_loadList` for tests (or, indeed, for any client.)
+or use of, the `robux_extensions_loadList` for tests (or, indeed, for any client.)
 
 ### Starter Test (Optional)
 
@@ -180,7 +180,7 @@ be a JUnit test.
 Define your test class like this:
 
 ```java
-@RunWith(DruidTestRunner.class)
+@RunWith(RobuxTestRunner.class)
 public class StarterTest
 ```
 
@@ -200,7 +200,7 @@ As an alternative, they can be put in `base-test` which is already
 available to all tests.)
 
 Run the one test. This will find bugs in the above. It will also likely
-point out that you need Druid modules not in the base set defined by
+point out that you need Robux modules not in the base set defined by
 `Initialization`. Add these modules via the `Builder.modules()` method.
 Resolve the other issues which will inevitably appear.
 
@@ -210,18 +210,18 @@ issues are resolved.
 ### Revised Helper Classes
 
 The new test structure adopted shorter container and host names:
-`coordinator` instead of `druid-coordinator` etc. This is safe because the
+`coordinator` instead of `robux-coordinator` etc. This is safe because the
 Docker application runs in isolation, we don't have to worry about a
 potential `coordinator` from application X.
 
 To handle these changes, there are new versions of several helper classes.
 Modify the tests to use the new versions:
 
-* `DruidClusterAdminClient` - interfaces with Docker using hard-coded
+* `RobuxClusterAdminClient` - interfaces with Docker using hard-coded
   container names.
 
-The old versions are in `org.apache.druid.testing.utils` in
-`integration-tests`, the new versions in `org.apache.druid.testing2.utils`
+The old versions are in `org.apache.robux.testing.utils` in
+`integration-tests`, the new versions in `org.apache.robux.testing2.utils`
 in this project.
 
 ### Test Classes
@@ -236,7 +236,7 @@ One-by-one, convert existing classes:
 The test class definition should look like this:
 
 ```java
-@RunWith(DruidTestRunner.class)
+@RunWith(RobuxTestRunner.class)
 public class ITIndexerTest ...
 {
 ```

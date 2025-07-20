@@ -23,7 +23,7 @@ import type { RowRenderProps } from 'react-table';
 import ReactTable from 'react-table';
 
 import { TableCell, TableCellUnparseable } from '../../../components';
-import type { FlattenField } from '../../../druid-models';
+import type { FlattenField } from '../../../robux-models';
 import {
   DEFAULT_TABLE_CLASS_NAME,
   STANDARD_TABLE_PAGE_SIZE,

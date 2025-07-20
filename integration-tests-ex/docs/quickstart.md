@@ -34,7 +34,7 @@ one that runs for the shortest time (on the order of a minute or two.)
 To work with tests for development and debugging, you can break the
 above all-in-one step into a number of sub-steps.
 
-* [Build Druid](#Build Druid).
+* [Build Robux](#Build Robux).
 * [Build the Docker image](#Build the Docker Image).
 * [Start a cluster](#Start a Cluster).
 * [Run a test from the command line](#Run a Test from the Command Line).
@@ -42,13 +42,13 @@ above all-in-one step into a number of sub-steps.
 * [Stop the cluster](#Stop the Cluster).
 * [Clean up](#Clean Up).
 
-## Build Druid
+## Build Robux
 
-The integration tests start with a Druid distribution in `distribution/target`,
+The integration tests start with a Robux distribution in `distribution/target`,
 which you can build using your preferred Maven command line. Simplest:
 
 ```
-cd $DRUID_DEV
+cd $ROBUX_DEV
 ./it.sh dist
 ```
 
@@ -66,7 +66,7 @@ mvn clean package -P dist $MAVEN_IGNORE -T1.0C
 ```
 
 Hint: put this into a script somewhere, such as a `~/bin` directory and
-add that to your `PATH`. A good name is `bdru` (Build DRUid).
+add that to your `PATH`. A good name is `brob` (Build RObux).
 Here is the full script:
 
 ```bash
@@ -76,7 +76,7 @@ mvn clean package -P dist,skip-static-checks,skip-tests \
     -Dmaven.javadoc.skip=true -T1.0C $*
 ```
 
-Now you can run the any Druid build with the above script. To resume a
+Now you can run the any Robux build with the above script. To resume a
 build:
 
 ```bash
@@ -85,7 +85,7 @@ build:
 
 ## Build the Docker Image
 
-You must rebuild the Docker image whenever you rebuild the Druid distribution,
+You must rebuild the Docker image whenever you rebuild the Robux distribution,
 since the image includes the distribution. You also will want to rebuild the
 image if you change the `it-image` project which contains the build scripts.
 
@@ -93,11 +93,11 @@ image if you change the `it-image` project which contains the build scripts.
 ./it.sh image
 ```
 
-In detail, and assuming `DRUID_DEV` points to your Druid build directory,
+In detail, and assuming `ROBUX_DEV` points to your Robux build directory,
 to build the image (only):
 
 ```bash
-cd $DRUID_DEV/integration-tests-ex/image
+cd $ROBUX_DEV/integration-tests-ex/image
 mvn install -P test-image $MAVEN_IGNORE
 ```
 
@@ -115,7 +115,7 @@ See [this page](docker.md) for more information.
 Or, in detail:
 
 ```bash
-mvn verify -P docker-tests,IT-<category> -pl :druid-it-cases \
+mvn verify -P docker-tests,IT-<category> -pl :robux-it-cases \
     -P skip-static-checks,skip-tests -Dmaven.javadoc.skip=true -DskipUTs=true
 ```
 
@@ -124,13 +124,13 @@ Where `<category>` is one of the test categories.
 Or
 
 ```bash
-cd $DRUID_DEV/integration-tests-ex/cases
+cd $ROBUX_DEV/integration-tests-ex/cases
 mvn verify -P skip-static-checks,docker-tests,IT-<category> \
     -Dmaven.javadoc.skip=true -DskipUTs=true \
-    -pl :druid-it-cases
+    -pl :robux-it-cases
 ```
 
-If the test fails, find the Druid logs in `target/shared/logs` within the
+If the test fails, find the Robux logs in `target/shared/logs` within the
 test group project.
 
 ## Start a Cluster
@@ -149,7 +149,7 @@ So, to start a cluster, you have to pick a group to run. See
 Or, in detail:
 
 ```bash
-cd $DRUID_DEV/integration-tests-ex/cases
+cd $ROBUX_DEV/integration-tests-ex/cases
 ./cluster.sh <category> up
 ```
 
@@ -157,7 +157,7 @@ You can use Docker Desktop to monitor the cluster. Give things about 30 seconds
 or a minute: if something is going to fail, it will happen during starup and you'll
 see that one or more containers exited unexpectedly.
 
-Remember to first shut down any Druid cluster you may already be running on
+Remember to first shut down any Robux cluster you may already be running on
 your machine.
 
 See [this page](docker.md) for more information.
@@ -184,7 +184,7 @@ Once you are done with your cluster, you can stop it as follows:
 Or, in detail:
 
 ```bash
-cd $DRUID_DEV/integration-tests-ex/<group>
+cd $ROBUX_DEV/integration-tests-ex/<group>
 ./cluster.sh <category> down
 ```
 
@@ -193,7 +193,7 @@ cd $DRUID_DEV/integration-tests-ex/<group>
 You can remove the Docker image when you no longer need it:
 
 ```bash
-cd $DRUID_DEV
+cd $ROBUX_DEV
 mvn clean -P test-image
 ```
 

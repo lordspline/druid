@@ -36,14 +36,14 @@ import type {
   SimpleWideCounter,
   StageDefinition,
   StageInput,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import {
   CPUS_COUNTER_FIELDS,
   cpusCounterFieldTitle,
   formatClusterBy,
   Stages,
   summarizeInputSource,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import { DEFAULT_TABLE_CLASS_NAME } from '../../../react-table';
 import {
   assemble,

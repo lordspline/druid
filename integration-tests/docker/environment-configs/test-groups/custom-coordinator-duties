@@ -18,14 +18,14 @@
 #
 
 # If you are making a change in load list below, make the necessary changes in github actions too
-druid_extensions_loadList=["druid-kafka-indexing-service","mysql-metadata-storage","druid-s3-extensions","druid-basic-security","simple-client-sslcontext","druid-testing-tools","druid-lookups-cached-global","druid-histogram","druid-datasketches"]
+robux_extensions_loadList=["robux-kafka-indexing-service","mysql-metadata-storage","robux-s3-extensions","robux-basic-security","simple-client-sslcontext","robux-testing-tools","robux-lookups-cached-global","robux-histogram","robux-datasketches"]
 
-druid_coordinator_period_metadataStoreManagementPeriod=PT5S
-druid_sql_planner_authorizeSystemTablesDirectly=false
+robux_coordinator_period_metadataStoreManagementPeriod=PT5S
+robux_sql_planner_authorizeSystemTablesDirectly=false
 
 #Testing kill supervisor custom coordinator duty
-druid_coordinator_kill_supervisor_on=false
-druid_coordinator_dutyGroups=["cleanupMetadata"]
-druid_coordinator_cleanupMetadata_duties=["killSupervisors"]
-druid_coordinator_cleanupMetadata_duty_killSupervisors_durationToRetain=PT0M
-druid_coordinator_cleanupMetadata_period=PT10S
+robux_coordinator_kill_supervisor_on=false
+robux_coordinator_dutyGroups=["cleanupMetadata"]
+robux_coordinator_cleanupMetadata_duties=["killSupervisors"]
+robux_coordinator_cleanupMetadata_duty_killSupervisors_durationToRetain=PT0M
+robux_coordinator_cleanupMetadata_period=PT10S

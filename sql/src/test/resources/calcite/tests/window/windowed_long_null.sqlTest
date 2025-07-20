@@ -5,7 +5,7 @@ sql: |
      l2,l1,
      MIN(l2) OVER(partition by l2),
      MIN(l2) OVER(partition by l2 order by l1)
-   FROM druid.numfoo
+   FROM robux.numfoo
    WHERE (l2 is null or l2 = -1111 or l2 = 0) and (l1 is null or l1 != 7)
 
 

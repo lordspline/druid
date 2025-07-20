@@ -17,7 +17,7 @@
   ~ under the License.
   -->
 
-## Druid's Checklist for Concurrency Code
+## Robux's Checklist for Concurrency Code
 
 Design
  - [Concurrency is rationalized in the PR description?](
@@ -151,7 +151,7 @@ Improving scalability
  https://github.com/code-review-checklists/java-concurrency#long-adder-for-hot-fields)
  - [Considered queues from JCTools instead of the standard concurrent queues?](
  https://github.com/code-review-checklists/java-concurrency#jctools)
- - [Caffeine cache is used instead of Guava?](https://github.com/apache/druid/issues/8399)
+ - [Caffeine cache is used instead of Guava?](https://github.com/apache/robux/issues/8399)
  - [Can apply speculation (optimistic concurrency) technique?](
  https://github.com/code-review-checklists/java-concurrency#speculation)
 
@@ -235,7 +235,7 @@ Thread safety of Cleaners and native code
 <hr>
 
 <a name="use-lifecycle-lock"></a>
-[#](#use-lifecycle-lock) Lk.D1. Is it possible to use Druid's `LifecycleLock` utility instead of a standard lock and
+[#](#use-lifecycle-lock) Lk.D1. Is it possible to use Robux's `LifecycleLock` utility instead of a standard lock and
 "started" flag in lifecycled objects with `start()` and `stop()` methods? See the Javadoc comment for `LifecycleLock`
 for more details.
 
@@ -245,6 +245,6 @@ for more details.
 daemon threads already.
 
 <a name="use-execs"></a>
-[#](#use-execs) TE.D2. Is it possible to use one of the static factory methods in Druid's `Execs` utility class to
+[#](#use-execs) TE.D2. Is it possible to use one of the static factory methods in Robux's `Execs` utility class to
 create an `ExecutorService` instead of Java's standard `ExecutorServices`? This is recommended because `Execs` configure
 ThreadFactories to create daemon threads by default, as required by the previous item.

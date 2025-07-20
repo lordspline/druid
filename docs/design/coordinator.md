@@ -43,7 +43,7 @@ the Historical service loads the segment and begins servicing it.
 
 ## Configuration
 
-For Apache Druid Coordinator service configuration, see [Coordinator configuration](../configuration/index.md#coordinator).
+For Apache Robux Coordinator service configuration, see [Coordinator configuration](../configuration/index.md#coordinator).
 
 For basic tuning guidance for the Coordinator service, see [Basic cluster tuning](../operations/basic-cluster-tuning.md#coordinator).
 
@@ -54,7 +54,7 @@ For a list of API endpoints supported by the Coordinator, see [Service status AP
 ## Running
 
 ```
-org.apache.druid.cli.Main server coordinator
+org.apache.robux.cli.Main server coordinator
 ```
 
 ## Rules
@@ -83,7 +83,7 @@ If a Historical service restarts or becomes unavailable for any reason, the Coor
 
 ## Balancing segments in a tier
 
-Druid queries perform optimally when segments are distributed evenly across Historical services. An ideal distribution would ensure that all Historicals participate equally in the query load thus avoiding hot-spots in the system. To some extent, this can be achieved by keeping multiple replicas of a segment in a cluster.
+Robux queries perform optimally when segments are distributed evenly across Historical services. An ideal distribution would ensure that all Historicals participate equally in the query load thus avoiding hot-spots in the system. To some extent, this can be achieved by keeping multiple replicas of a segment in a cluster.
 But in a tier with several Historicals (or a low replication factor), segment replication is not sufficient to attain balance.
 Thus, the Coordinator constantly monitors the set of segments present on each Historical in a tier and employs one of the following strategies to identify segments that may be moved from one Historical to another to retain balance.
 
@@ -115,9 +115,9 @@ Once a compaction task fails, the Coordinator simply checks the segments in the 
 
 Note that Compacting Segments Coordinator Duty is automatically enabled and run as part of the Indexing Service Duties group. However, Compacting Segments Coordinator Duty can be configured to run in isolation as a separate Coordinator duty group. This allows changing the period of Compacting Segments Coordinator Duty without impacting the period of other Indexing Service Duties. This can be done by setting the following properties. For more details, see [custom pluggable Coordinator Duty](../development/modules.md#adding-your-own-custom-pluggable-coordinator-duty).
 ```
-druid.coordinator.dutyGroups=[<SOME_GROUP_NAME>]
-druid.coordinator.<SOME_GROUP_NAME>.duties=["compactSegments"]
-druid.coordinator.<SOME_GROUP_NAME>.period=<PERIOD_TO_RUN_COMPACTING_SEGMENTS_DUTY>
+robux.coordinator.dutyGroups=[<SOME_GROUP_NAME>]
+robux.coordinator.<SOME_GROUP_NAME>.duties=["compactSegments"]
+robux.coordinator.<SOME_GROUP_NAME>.period=<PERIOD_TO_RUN_COMPACTING_SEGMENTS_DUTY>
 ```
 
 ## Segment search policy in automatic compaction

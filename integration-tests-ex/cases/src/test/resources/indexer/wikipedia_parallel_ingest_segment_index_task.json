@@ -44,7 +44,7 @@
     "ioConfig": {
       "type": "index_parallel",
       "inputSource": {
-        "type": "druid",
+        "type": "robux",
         "dataSource": "%%DATASOURCE%%",
         "interval": "2013-08-31/2013-09-02",
         "maxInputSegmentBytesPerTask": 1

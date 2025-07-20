@@ -23,17 +23,17 @@ title: "DataSketches HLL Sketch module"
   -->
 
 
-This module provides Apache Druid aggregators for distinct counting based on HLL sketch from [Apache DataSketches](https://datasketches.apache.org/) library. At ingestion time, this aggregator creates the HLL sketch objects to store in Druid segments. By default, Druid reads and merges sketches at query time. The default result is
+This module provides Apache Robux aggregators for distinct counting based on HLL sketch from [Apache DataSketches](https://datasketches.apache.org/) library. At ingestion time, this aggregator creates the HLL sketch objects to store in Robux segments. By default, Robux reads and merges sketches at query time. The default result is
 the estimate of the number of distinct values presented to the sketch. You can also use post aggregators to produce a union of sketch columns in the same row.
 You can use the HLL sketch aggregator on any column to estimate its cardinality.
 
 To use this aggregator, make sure you [include](../../configuration/extensions.md#loading-extensions) the extension in your config file:
 
 ```
-druid.extensions.loadList=["druid-datasketches"]
+robux.extensions.loadList=["robux-datasketches"]
 ```
 
-For additional sketch types supported in Druid, see [DataSketches extension](datasketches-extension.md).
+For additional sketch types supported in Robux, see [DataSketches extension](datasketches-extension.md).
 
 ## Aggregators
 
@@ -64,7 +64,7 @@ For additional sketch types supported in Druid, see [DataSketches extension](dat
  }
 ```
 
-The `HLLSketchBuild` aggregator builds an HLL sketch object from the specified input column. When used during ingestion, Druid stores pre-generated HLL sketch objects in the datasource instead of the raw data from the input column.
+The `HLLSketchBuild` aggregator builds an HLL sketch object from the specified input column. When used during ingestion, Robux stores pre-generated HLL sketch objects in the datasource instead of the raw data from the input column.
 When applied at query time on an existing dimension, you can use the resulting column as an intermediate dimension by the [post-aggregators](#post-aggregators).
 
 :::info
@@ -97,7 +97,7 @@ When applied at query time on an existing dimension, you can use the resulting c
 }
 ```
 
-You can use the `HLLSketchMerge` aggregator to ingest pre-generated sketches from an input dataset. For example, you can set up a batch processing job to generate the sketches before sending the data to Druid. You must serialize the sketches in the input dataset to Base64-encoded bytes. Then, specify `HLLSketchMerge` for the input column in the native ingestion `metricsSpec`.
+You can use the `HLLSketchMerge` aggregator to ingest pre-generated sketches from an input dataset. For example, you can set up a batch processing job to generate the sketches before sending the data to Robux. You must serialize the sketches in the input dataset to Base64-encoded bytes. Then, specify `HLLSketchMerge` for the input column in the native ingestion `metricsSpec`.
 
 ## Post aggregators
 

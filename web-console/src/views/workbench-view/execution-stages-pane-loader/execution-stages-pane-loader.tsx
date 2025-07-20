@@ -19,7 +19,7 @@
 import React from 'react';
 
 import { Loader } from '../../../components';
-import type { Execution } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
 import { getTaskExecution } from '../../../helpers';
 import { useInterval, useQueryManager } from '../../../hooks';
 import { ExecutionStagesPane } from '../execution-stages-pane/execution-stages-pane';

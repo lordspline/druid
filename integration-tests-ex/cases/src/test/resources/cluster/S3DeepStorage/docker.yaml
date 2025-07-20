@@ -19,7 +19,7 @@
 include:
   - /cluster/Common/zk-metastore.yaml
 
-druid:
+robux:
   coordinator:
     instances:
       - port: 8081
@@ -43,11 +43,11 @@ druid:
 # Guice configuration in lieu of the server-side runtime.properties
 # file.
 #
-# druid.global.http.numMaxThreads avoids creating 40+ Netty threads.
+# robux.global.http.numMaxThreads avoids creating 40+ Netty threads.
 # We only ever use 1.
-# druid.test.config.dockerIp is used by some older test code. Remove
+# robux.test.config.dockerIp is used by some older test code. Remove
 # it when that code is updated.
 properties:
-  druid.global.http.numMaxThreads: 3
-  druid.broker.http.numMaxThreads: 3
-  druid.test.config.dockerIp: localhost
+  robux.global.http.numMaxThreads: 3
+  robux.broker.http.numMaxThreads: 3
+  robux.test.config.dockerIp: localhost

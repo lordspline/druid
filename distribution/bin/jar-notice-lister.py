@@ -23,21 +23,21 @@ existing_jar_dict_notice = {}
 
 def main():
     if len(sys.argv) != 3:
-      sys.stderr.write('usage: program <full extracted druid distribution path> <full tmp path>\n')
+      sys.stderr.write('usage: program <full extracted robux distribution path> <full tmp path>\n')
       sys.exit(1)
 
-    druid_path = sys.argv[1]
+    robux_path = sys.argv[1]
     tmp_path = sys.argv[2]
 
     # copy everything in lib/ to the staging dir
-    lib_path = druid_path + "/lib"
+    lib_path = robux_path + "/lib"
     tmp_lib_path = tmp_path + "/1-lib"
     os.mkdir(tmp_lib_path)
     command = "cp -r {}/* {}".format(lib_path, tmp_lib_path)
     subprocess.check_output(command, shell=True).decode('UTF-8')
 
     # copy hadoop deps to the staging dir
-    hdeps_path = druid_path + "/hadoop-dependencies"
+    hdeps_path = robux_path + "/hadoop-dependencies"
     tmp_hdeps_path = tmp_path + "/2-hdeps"
     os.mkdir(tmp_hdeps_path)
     command = "cp -r {}/* {}".format(hdeps_path, tmp_hdeps_path)
@@ -45,7 +45,7 @@ def main():
 
 
     # copy all extension folders to the staging dir
-    ext_path = druid_path + "/extensions"
+    ext_path = robux_path + "/extensions"
     tmp_ext_path = tmp_path + "/3-ext"
     os.mkdir(tmp_ext_path)
     command = "cp -r {}/* {}".format(ext_path, tmp_ext_path)

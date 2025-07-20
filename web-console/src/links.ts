@@ -17,10 +17,10 @@
  */
 
 // This is set to the latest available version and should be updated to the next version before release
-const DRUID_DOCS_VERSION = 'latest';
+const ROBUX_DOCS_VERSION = 'latest';
 
 function fillVersion(str: string): string {
-  return str.replace(/\{\{VERSION}}/g, DRUID_DOCS_VERSION);
+  return str.replace(/\{\{VERSION}}/g, ROBUX_DOCS_VERSION);
 }
 
 export interface Links {
@@ -34,13 +34,13 @@ export interface Links {
 }
 
 const DEFAULT_LINKS: Links = {
-  websiteHref: 'https://druid.apache.org',
-  githubHref: 'https://github.com/apache/druid',
-  docsHref: fillVersion('https://druid.apache.org/docs/{{VERSION}}'),
-  communityHref: 'https://druid.apache.org/community/',
-  slackHref: 'https://druid.apache.org/community/join-slack',
-  userGroup: 'https://groups.google.com/forum/#!forum/druid-user',
-  developerGroup: 'https://lists.apache.org/list?dev@druid.apache.org',
+  websiteHref: 'https://robux.apache.org',
+  githubHref: 'https://github.com/apache/robux',
+  docsHref: fillVersion('https://robux.apache.org/docs/{{VERSION}}'),
+  communityHref: 'https://robux.apache.org/community/',
+  slackHref: 'https://robux.apache.org/community/join-slack',
+  userGroup: 'https://groups.google.com/forum/#!forum/robux-user',
+  developerGroup: 'https://lists.apache.org/list?dev@robux.apache.org',
 };
 
 const links = DEFAULT_LINKS;

@@ -23,16 +23,16 @@ sidebar_label: Source input formats
   ~ under the License.
   -->
 
-Apache Druid can ingest denormalized data in JSON, CSV, or a delimited form such as TSV, or any custom format. While most examples in the documentation use data in JSON format, it is not difficult to configure Druid to ingest any other delimited data.
+Apache Robux can ingest denormalized data in JSON, CSV, or a delimited form such as TSV, or any custom format. While most examples in the documentation use data in JSON format, it is not difficult to configure Robux to ingest any other delimited data.
 We welcome any contributions to new formats.
 
-This page lists all default and core extension data formats supported by Druid.
+This page lists all default and core extension data formats supported by Robux.
 For additional data formats supported with community extensions,
 please see our [community extensions list](../configuration/extensions.md#community-extensions).
 
 ## Formatting data
 
-The following samples show data formats that are natively supported in Druid:
+The following samples show data formats that are natively supported in Robux:
 
 _JSON_
 
@@ -66,11 +66,11 @@ _TSV (Delimited)_
 
 Note that the CSV and TSV data do not contain column heads. This becomes important when you specify the data for ingesting.
 
-Besides text formats, Druid also supports binary formats such as [Orc](#orc) and [Parquet](#parquet) formats.
+Besides text formats, Robux also supports binary formats such as [Orc](#orc) and [Parquet](#parquet) formats.
 
 ## Custom formats
 
-Druid supports custom data formats and can use the Regex parser or the JavaScript parsers to parse these formats. Using any of these parsers for
+Robux supports custom data formats and can use the Regex parser or the JavaScript parsers to parse these formats. Using any of these parsers for
 parsing data is less efficient than writing a native Java parser or using an external stream processor. We welcome contributions of new parsers.
 
 ## Input format
@@ -78,13 +78,13 @@ parsing data is less efficient than writing a native Java parser or using an ext
 You can use the `inputFormat` field to specify the data format for your input data.
 
 :::info
- `inputFormat` doesn't support all data formats or ingestion methods supported by Druid.
+ `inputFormat` doesn't support all data formats or ingestion methods supported by Robux.
 :::
 
 Especially if you want to use the Hadoop ingestion, you still need to use the [Parser](#parser).
 If your data is formatted in some format not listed in this section, please consider using the Parser instead.
 
-All forms of Druid ingestion require some form of schema object. The format of the data to be ingested is specified using the `inputFormat` entry in your [`ioConfig`](ingestion-spec.md#ioconfig).
+All forms of Robux ingestion require some form of schema object. The format of the data to be ingested is specified using the `inputFormat` entry in your [`ioConfig`](ingestion-spec.md#ioconfig).
 
 ### JSON
 
@@ -170,7 +170,7 @@ For example:
 
 ### ORC
 
-To use the ORC input format, load the Druid Orc extension ( [`druid-orc-extensions`](../development/extensions-core/orc.md)).
+To use the ORC input format, load the Robux Orc extension ( [`robux-orc-extensions`](../development/extensions-core/orc.md)).
 :::info
  To upgrade from versions earlier than 0.15.0 to 0.15.0 or new, read [Migration from 'contrib' extension](../development/extensions-core/orc.md#migration-from-contrib-extension).
 :::
@@ -207,7 +207,7 @@ For example:
 
 ### Parquet
 
-To use the Parquet input format load the Druid Parquet extension ([`druid-parquet-extensions`](../development/extensions-core/parquet.md)).
+To use the Parquet input format load the Robux Parquet extension ([`robux-parquet-extensions`](../development/extensions-core/parquet.md)).
 
 Configure the Parquet `inputFormat` to load Parquet data as follows:
 
@@ -241,9 +241,9 @@ For example:
 
 ### Avro Stream
 
-To use the Avro Stream input format load the Druid Avro extension ([`druid-avro-extensions`](../development/extensions-core/avro.md)).
+To use the Avro Stream input format load the Robux Avro extension ([`robux-avro-extensions`](../development/extensions-core/avro.md)).
 
-For more information on how Druid handles Avro types, see [Avro Types](../development/extensions-core/avro.md#avro-types) section for
+For more information on how Robux handles Avro types, see [Avro Types](../development/extensions-core/avro.md#avro-types) section for
 
 Configure the Avro `inputFormat` to load Avro data as follows:
 
@@ -264,7 +264,7 @@ For example:
       "type": "schema_inline",
       "schema": {
         //your schema goes here, for example
-        "namespace": "org.apache.druid.data",
+        "namespace": "org.apache.robux.data",
         "name": "User",
         "type": "record",
         "fields": [
@@ -309,7 +309,7 @@ This decoder can be used if all the input events can be read using the same sche
   "type": "schema_inline",
   "schema": {
     //your schema goes here, for example
-    "namespace": "org.apache.druid.data",
+    "namespace": "org.apache.robux.data",
     "name": "User",
     "type": "record",
     "fields": [
@@ -332,7 +332,7 @@ Use this decoder if different input events can have different read schemas. In t
   "schemas": {
     //your id -> schema map goes here, for example
     "1": {
-      "namespace": "org.apache.druid.data",
+      "namespace": "org.apache.robux.data",
       "name": "User",
       "type": "record",
       "fields": [
@@ -341,7 +341,7 @@ Use this decoder if different input events can have different read schemas. In t
       ]
     },
     "2": {
-      "namespace": "org.apache.druid.otherdata",
+      "namespace": "org.apache.robux.otherdata",
       "name": "UserIdentity",
       "type": "record",
       "fields": [
@@ -363,7 +363,7 @@ Note that it is essentially a map of integer schema ID to avro schema object. Th
 
 ##### SchemaRepo Based Avro Bytes Decoder
 
-This Avro bytes decoder first extracts `subject` and `id` from the input message bytes, and then uses them to look up the Avro schema used to decode the Avro record from bytes. For details, see the [schema repo](https://github.com/schema-repo/schema-repo). You need an HTTP service like schema repo to hold the Avro schema. For information on registering a schema on the message producer side, see `org.apache.druid.data.input.AvroStreamInputRowParserTest#testParse()`.
+This Avro bytes decoder first extracts `subject` and `id` from the input message bytes, and then uses them to look up the Avro schema used to decode the Avro record from bytes. For details, see the [schema repo](https://github.com/schema-repo/schema-repo). You need an HTTP service like schema repo to hold the Avro schema. For information on registering a schema on the message producer side, see `org.apache.robux.data.input.AvroStreamInputRowParserTest#testParse()`.
 
 | Field | Type | Description | Required |
 |-------|------|-------------|----------|
@@ -437,7 +437,7 @@ Multiple Instances:
    "headers": {
        "traceID" : "b29c5de2-0db4-490b-b421",
        "timeStamp" : "1577191871865",
-       "druid.dynamic.config.provider":{
+       "robux.dynamic.config.provider":{
             "type":"mapString", 
             "config":{
                  "registry.header.prop.1":"value.1", 
@@ -459,9 +459,9 @@ The following errors when reading records will be considered parse exceptions, w
 
 ### Avro OCF
 
-To load the Avro OCF input format, load the Druid Avro extension ([`druid-avro-extensions`](../development/extensions-core/avro.md)).
+To load the Avro OCF input format, load the Robux Avro extension ([`robux-avro-extensions`](../development/extensions-core/avro.md)).
 
-See the [Avro Types](../development/extensions-core/avro.md#avro-types) section for how Avro types are handled in Druid
+See the [Avro Types](../development/extensions-core/avro.md#avro-types) section for how Avro types are handled in Robux
 
 Configure the Avro OCF `inputFormat` to load Avro OCF data as follows:
 
@@ -489,7 +489,7 @@ For example:
       ]
     },
     "schema": {
-      "namespace": "org.apache.druid.data.input",
+      "namespace": "org.apache.robux.data.input",
       "name": "SomeDatum",
       "type": "record",
       "fields" : [
@@ -512,7 +512,7 @@ For example:
 ### Protobuf
 
 :::info
- You need to include the [`druid-protobuf-extensions`](../development/extensions-core/protobuf.md) as an extension to use the Protobuf input format.
+ You need to include the [`robux-protobuf-extensions`](../development/extensions-core/protobuf.md) as an extension to use the Protobuf input format.
 :::
 
 Configure the Protobuf `inputFormat` to load Protobuf data as follows:
@@ -641,7 +641,7 @@ You would parse the example message as follows:
 }
 ```
 
-If you want to use `kafka.timestamp` as Druid's primary timestamp (`__time`), specify it as the value for `column` in the `timestampSpec`:
+If you want to use `kafka.timestamp` as Robux's primary timestamp (`__time`), specify it as the value for `column` in the `timestampSpec`:
 
 ```json
 "timestampSpec": {
@@ -661,7 +661,7 @@ Similarly, if you want to use a timestamp extracted from the Kafka header:
 
 Finally, add these Kafka metadata columns to the `dimensionsSpec` or  set your `dimensionsSpec` to auto-detect columns.
      
-The following supervisor spec demonstrates how to ingest the Kafka header, key, timestamp, and topic into Druid dimensions:
+The following supervisor spec demonstrates how to ingest the Kafka header, key, timestamp, and topic into Robux dimensions:
 
 <details>
 <summary>Click to view the example</summary>
@@ -716,7 +716,7 @@ The following supervisor spec demonstrates how to ingest the Kafka header, key, 
 ```
 </details>
 
-After Druid ingests the data, you can query the Kafka metadata columns as follows:
+After Robux ingests the data, you can query the Kafka metadata columns as follows:
 
 ```sql
 SELECT
@@ -794,7 +794,7 @@ You would parse the example record as follows:
 }
 ```
 
-If you want to use `kinesis.timestamp` as Druid's primary timestamp (`__time`), specify it as the value for `column` in the `timestampSpec`:
+If you want to use `kinesis.timestamp` as Robux's primary timestamp (`__time`), specify it as the value for `column` in the `timestampSpec`:
 
 ```json
 "timestampSpec": {
@@ -805,7 +805,7 @@ If you want to use `kinesis.timestamp` as Druid's primary timestamp (`__time`), 
 
 Finally, add these Kinesis metadata columns to the `dimensionsSpec` or  set your `dimensionsSpec` to automatically detect columns.
 
-The following supervisor spec demonstrates how to ingest the Kinesis timestamp, and partition key into Druid dimensions:
+The following supervisor spec demonstrates how to ingest the Kinesis timestamp, and partition key into Robux dimensions:
 
 <details>
 <summary>Click to view the example</summary>
@@ -860,7 +860,7 @@ The following supervisor spec demonstrates how to ingest the Kinesis timestamp, 
 ```
 </details>
 
-After Druid ingests the data, you can query the Kinesis metadata columns as follows:
+After Robux ingests the data, you can query the Kinesis metadata columns as follows:
 
 ```sql
 SELECT
@@ -877,9 +877,9 @@ This query returns:
 
 ## FlattenSpec
 
-You can use the `flattenSpec` object to flatten nested data, as an alternative to the Druid [nested columns](../querying/nested-columns.md) feature, and for nested input formats unsupported by the feature. It is an object within the `inputFormat` object.
+You can use the `flattenSpec` object to flatten nested data, as an alternative to the Robux [nested columns](../querying/nested-columns.md) feature, and for nested input formats unsupported by the feature. It is an object within the `inputFormat` object.
 
-See [Nested columns](../querying/nested-columns.md) for information on ingesting and storing nested data in an Apache Druid column as a `COMPLEX<json>` data type.
+See [Nested columns](../querying/nested-columns.md) for information on ingesting and storing nested data in an Apache Robux column as a `COMPLEX<json>` data type.
 
 Configure your `flattenSpec` as follows:
 
@@ -902,7 +902,7 @@ For example:
 }
 ```
 
-After Druid reads the input data records, it applies the flattenSpec before applying any other specs such as [`timestampSpec`](./ingestion-spec.md#timestampspec), [`transformSpec`](./ingestion-spec.md#transformspec), [`dimensionsSpec`](./ingestion-spec.md#dimensionsspec), or [`metricsSpec`](./ingestion-spec.md#metricsspec).  This makes it possible to extract timestamps from flattened data, for example, and to refer to flattened data in transformations, in your dimension list, and when generating metrics.
+After Robux reads the input data records, it applies the flattenSpec before applying any other specs such as [`timestampSpec`](./ingestion-spec.md#timestampspec), [`transformSpec`](./ingestion-spec.md#transformspec), [`dimensionsSpec`](./ingestion-spec.md#dimensionsspec), or [`metricsSpec`](./ingestion-spec.md#metricsspec).  This makes it possible to extract timestamps from flattened data, for example, and to refer to flattened data in transformations, in your dimension list, and when generating metrics.
 
 Flattening is only supported for [data formats](data-formats.md) that support nesting, including `avro`, `json`, `orc`, and `parquet`.
 
@@ -920,12 +920,12 @@ Each entry in the `fields` list can have the following components:
 ### Notes on flattening
 
 - For convenience, when defining a root-level field, it is possible to define only the field name, as a string, instead of a JSON object. For example, `{"name": "baz", "type": "root"}` is equivalent to `"baz"`.
-- Enabling `useFieldDiscovery` will only automatically detect "simple" fields at the root level that correspond to data types that Druid supports. This includes strings, numbers, and lists of strings or numbers. Other types will not be automatically detected, and must be specified explicitly in the `fields` list.
+- Enabling `useFieldDiscovery` will only automatically detect "simple" fields at the root level that correspond to data types that Robux supports. This includes strings, numbers, and lists of strings or numbers. Other types will not be automatically detected, and must be specified explicitly in the `fields` list.
 - Duplicate field `name`s are not allowed. An exception will be thrown.
 - If `useFieldDiscovery` is enabled, any discovered field with the same name as one already defined in the `fields` list will be skipped, rather than added twice.
 - [JSONPath evaluator](https://jsonpath.com/) is useful for testing `path`-type expressions.
 - jackson-jq supports a subset of the full [jq](https://stedolan.github.io/jq/) syntax.  Please refer to the [jackson-jq documentation](https://github.com/eiiches/jackson-jq) for details.
-- [JsonPath](https://github.com/jayway/JsonPath) supports a bunch of functions, but not all of these functions are supported by Druid now. Following matrix shows the current supported JsonPath functions and corresponding data formats. Please also note the output data type of these functions.
+- [JsonPath](https://github.com/jayway/JsonPath) supports a bunch of functions, but not all of these functions are supported by Robux now. Following matrix shows the current supported JsonPath functions and corresponding data formats. Please also note the output data type of these functions.
   
   | Function   | Description                                                         | Output type | json | orc | avro | parquet |
   | :----------| :------------------------------------------------------------------ |:----------- |:-----|:----|:-----|:-----|
@@ -963,15 +963,15 @@ Each line can be further parsed using [`parseSpec`](#parsespec).
 ### Avro Hadoop Parser
 
 :::info
- You need to include the [`druid-avro-extensions`](../development/extensions-core/avro.md) as an extension to use the Avro Hadoop Parser.
+ You need to include the [`robux-avro-extensions`](../development/extensions-core/avro.md) as an extension to use the Avro Hadoop Parser.
 :::
 
 :::info
- See the [Avro Types](../development/extensions-core/avro.md#avro-types) section for how Avro types are handled in Druid
+ See the [Avro Types](../development/extensions-core/avro.md#avro-types) section for how Avro types are handled in Robux
 :::
 
 This parser is for [Hadoop batch ingestion](./hadoop.md).
-The `inputFormat` of `inputSpec` in `ioConfig` must be set to `"org.apache.druid.data.input.avro.AvroValueInputFormat"`.
+The `inputFormat` of `inputSpec` in `ioConfig` must be set to `"org.apache.robux.data.input.avro.AvroValueInputFormat"`.
 You may want to set Avro reader's schema in `jobProperties` in `tuningConfig`,
 e.g.: `"avro.schema.input.value.path": "/path/to/your/schema.avsc"` or
 `"avro.schema.input.value": "your_schema_JSON_object"`.
@@ -1010,7 +1010,7 @@ For example, using Avro Hadoop parser with custom reader's schema file:
       "type" : "hadoop",
       "inputSpec" : {
         "type" : "static",
-        "inputFormat": "org.apache.druid.data.input.avro.AvroValueInputFormat",
+        "inputFormat": "org.apache.robux.data.input.avro.AvroValueInputFormat",
         "paths" : ""
       }
     },
@@ -1026,7 +1026,7 @@ For example, using Avro Hadoop parser with custom reader's schema file:
 ### ORC Hadoop Parser
 
 :::info
- You need to include the [`druid-orc-extensions`](../development/extensions-core/orc.md) as an extension to use the ORC Hadoop Parser.
+ You need to include the [`robux-orc-extensions`](../development/extensions-core/orc.md) as an extension to use the ORC Hadoop Parser.
 :::
 
 :::info
@@ -1271,11 +1271,11 @@ setting `"mapreduce.job.user.classpath.first": "true"`, then this will not be an
 ### Parquet Hadoop Parser
 
 :::info
- You need to include the [`druid-parquet-extensions`](../development/extensions-core/parquet.md) as an extension to use the Parquet Hadoop Parser.
+ You need to include the [`robux-parquet-extensions`](../development/extensions-core/parquet.md) as an extension to use the Parquet Hadoop Parser.
 :::
 
 The Parquet Hadoop parser is for [Hadoop batch ingestion](./hadoop.md) and parses Parquet files directly.
-The `inputFormat` of `inputSpec` in `ioConfig` must be set to `org.apache.druid.data.input.parquet.DruidParquetInputFormat`.
+The `inputFormat` of `inputSpec` in `ioConfig` must be set to `org.apache.robux.data.input.parquet.RobuxParquetInputFormat`.
 
 The Parquet Hadoop Parser supports auto field discovery and flattening if provided with a
 [`flattenSpec`](#flattenspec) with the `parquet` `parseSpec`. Parquet nested list and map
@@ -1299,7 +1299,7 @@ differences are:
 
 - The Parquet Hadoop Parser uses a simple conversion while the Parquet Avro Hadoop Parser
 converts Parquet data into avro records first with the `parquet-avro` library and then
-parses avro data using the `druid-avro-extensions` module to ingest into Druid.
+parses avro data using the `robux-avro-extensions` module to ingest into Robux.
 - The Parquet Hadoop Parser sets a hadoop job property
 `parquet.avro.add-list-element-records` to `false` (which normally defaults to `true`), in order to 'unwrap' primitive
 list elements into multi-value dimensions.
@@ -1322,7 +1322,7 @@ However, the Parquet Avro Hadoop Parser was the original basis for supporting th
       "type": "hadoop",
       "inputSpec": {
         "type": "static",
-        "inputFormat": "org.apache.druid.data.input.parquet.DruidParquetInputFormat",
+        "inputFormat": "org.apache.robux.data.input.parquet.RobuxParquetInputFormat",
         "paths": "path/to/file.parquet"
       },
       ...
@@ -1377,7 +1377,7 @@ However, the Parquet Avro Hadoop Parser was the original basis for supporting th
       "type": "hadoop",
       "inputSpec": {
         "type": "static",
-        "inputFormat": "org.apache.druid.data.input.parquet.DruidParquetInputFormat",
+        "inputFormat": "org.apache.robux.data.input.parquet.RobuxParquetInputFormat",
         "paths": "path/to/file.parquet"
       },
       ...
@@ -1421,13 +1421,13 @@ for the differences between those parsers.
 :::
 
 :::info
- You need to include both the [`druid-parquet-extensions`](../development/extensions-core/parquet.md)
-[`druid-avro-extensions`] as extensions to use the Parquet Avro Hadoop Parser.
+ You need to include both the [`robux-parquet-extensions`](../development/extensions-core/parquet.md)
+[`robux-avro-extensions`] as extensions to use the Parquet Avro Hadoop Parser.
 :::
 
 The Parquet Avro Hadoop Parser is for [Hadoop batch ingestion](./hadoop.md).
-This parser first converts the Parquet data into Avro records, and then parses them to ingest into Druid.
-The `inputFormat` of `inputSpec` in `ioConfig` must be set to `org.apache.druid.data.input.parquet.DruidParquetAvroInputFormat`.
+This parser first converts the Parquet data into Avro records, and then parses them to ingest into Robux.
+The `inputFormat` of `inputSpec` in `ioConfig` must be set to `org.apache.robux.data.input.parquet.RobuxParquetAvroInputFormat`.
 
 The Parquet Avro Hadoop Parser supports auto field discovery and flattening if provided with a
 [`flattenSpec`](#flattenspec) with the `avro` `parseSpec`. Parquet nested list and map
@@ -1458,7 +1458,7 @@ an explicitly defined [format](http://www.joda.org/joda-time/apidocs/org/joda/ti
       "type": "hadoop",
       "inputSpec": {
         "type": "static",
-        "inputFormat": "org.apache.druid.data.input.parquet.DruidParquetAvroInputFormat",
+        "inputFormat": "org.apache.robux.data.input.parquet.RobuxParquetAvroInputFormat",
         "paths": "path/to/file.parquet"
       },
       ...
@@ -1506,11 +1506,11 @@ an explicitly defined [format](http://www.joda.org/joda-time/apidocs/org/joda/ti
 ### Avro Stream Parser
 
 :::info
- You need to include the [`druid-avro-extensions`](../development/extensions-core/avro.md) as an extension to use the Avro Stream Parser.
+ You need to include the [`robux-avro-extensions`](../development/extensions-core/avro.md) as an extension to use the Avro Stream Parser.
 :::
 
 :::info
- See the [Avro Types](../development/extensions-core/avro.md#avro-types) section for how Avro types are handled in Druid
+ See the [Avro Types](../development/extensions-core/avro.md#avro-types) section for how Avro types are handled in Robux
 :::
 
 This parser is for [stream ingestion](./index.md#streaming) and reads Avro data from a stream directly.
@@ -1552,7 +1552,7 @@ For example, using Avro stream parser with schema repo Avro bytes decoder:
 ### Protobuf Parser
 
 :::info
- You need to include the [`druid-protobuf-extensions`](../development/extensions-core/protobuf.md) as an extension to use the Protobuf Parser.
+ You need to include the [`robux-protobuf-extensions`](../development/extensions-core/protobuf.md) as an extension to use the Protobuf Parser.
 :::
 
 This parser is for [stream ingestion](./index.md#streaming) and reads Protocol buffer data from a stream directly.
@@ -1692,7 +1692,7 @@ Multiple Instances:
   "headers": {
       "traceID" : "b29c5de2-0db4-490b-b421",
       "timeStamp" : "1577191871865",
-      "druid.dynamic.config.provider":{
+      "robux.dynamic.config.provider":{
            "type":"mapString", 
            "config":{
                 "registry.header.prop.1":"value.1", 
@@ -1748,10 +1748,10 @@ Sample spec:
 ### JSON Lowercase ParseSpec
 
 :::info
- The _jsonLowercase_ parser is deprecated and may be removed in a future version of Druid.
+ The _jsonLowercase_ parser is deprecated and may be removed in a future version of Robux.
 :::
 
-This is a special variation of the JSON ParseSpec that lower cases all the column names in the incoming JSON data. This parseSpec is required if you are updating to Druid 0.7.x from Druid 0.6.x, are directly ingesting JSON with mixed case column names, do not have any ETL in place to lower case those column names, and would like to make queries that include the data you created using 0.6.x and 0.7.x.
+This is a special variation of the JSON ParseSpec that lower cases all the column names in the incoming JSON data. This parseSpec is required if you are updating to Robux 0.7.x from Robux 0.6.x, are directly ingesting JSON with mixed case column names, do not have any ETL in place to lower case those column names, and would like to make queries that include the data you created using 0.6.x and 0.7.x.
 
 | Field | Type | Description | Required |
 |-------|------|-------------|----------|
@@ -1789,11 +1789,11 @@ Sample spec:
 #### CSV Index Tasks
 
 If your input files contain a header, the `columns` field is optional and you don't need to set.
-Instead, you can set the `hasHeaderRow` field to true, which makes Druid automatically extract the column information from the header.
+Instead, you can set the `hasHeaderRow` field to true, which makes Robux automatically extract the column information from the header.
 Otherwise, you must set the `columns` field and ensure that field must match the columns of your input data in the same order.
 
 Also, you can skip some header rows by setting `skipHeaderRows` in your parseSpec. If both `skipHeaderRows` and `hasHeaderRow` options are set,
-`skipHeaderRows` is first applied. For example, if you set `skipHeaderRows` to 2 and `hasHeaderRow` to true, Druid will
+`skipHeaderRows` is first applied. For example, if you set `skipHeaderRows` to 2 and `hasHeaderRow` to true, Robux will
 skip the first two lines and then extract column information from the third line.
 
 Note that `hasHeaderRow` and `skipHeaderRows` are effective only for non-Hadoop batch index tasks. Other types of index
@@ -1838,11 +1838,11 @@ Be sure to change the `delimiter` to the appropriate delimiter for your data. Li
 #### TSV (Delimited) Index Tasks
 
 If your input files contain a header, the `columns` field is optional and doesn't need to be set.
-Instead, you can set the `hasHeaderRow` field to true, which makes Druid automatically extract the column information from the header.
+Instead, you can set the `hasHeaderRow` field to true, which makes Robux automatically extract the column information from the header.
 Otherwise, you must set the `columns` field and ensure that field must match the columns of your input data in the same order.
 
 Also, you can skip some header rows by setting `skipHeaderRows` in your parseSpec. If both `skipHeaderRows` and `hasHeaderRow` options are set,
-`skipHeaderRows` is first applied. For example, if you set `skipHeaderRows` to 2 and `hasHeaderRow` to true, Druid will
+`skipHeaderRows` is first applied. For example, if you set `skipHeaderRows` to 2 and `hasHeaderRow` to true, Robux will
 skip the first two lines and then extract column information from the third line.
 
 Note that `hasHeaderRow` and `skipHeaderRows` are effective only for non-Hadoop batch index tasks. Other types of index
@@ -1890,7 +1890,7 @@ Note with the JavaScript parser that data must be fully parsed and returned as a
 This means any flattening or parsing multi-dimensional values must be done here.
 
 :::info
- JavaScript-based functionality is disabled by default. Please refer to the Druid [JavaScript programming guide](../development/javascript.md) for guidelines about using Druid's JavaScript functionality, including instructions on how to enable it.
+ JavaScript-based functionality is disabled by default. Please refer to the Robux [JavaScript programming guide](../development/javascript.md) for guidelines about using Robux's JavaScript functionality, including instructions on how to enable it.
 :::
 
 ### TimeAndDims ParseSpec

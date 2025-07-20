@@ -26,7 +26,7 @@ exports[`ShowLog describe show log 1`] = `
         aria-disabled="false"
         class="bp5-button bp5-minimal"
         download="test"
-        href="/some/base_url/druid/index/test/log"
+        href="/some/base_url/robux/index/test/log"
         role="button"
       >
         <span

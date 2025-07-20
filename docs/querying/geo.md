@@ -23,23 +23,23 @@ title: "Spatial filters"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](../querying/sql.md) and [native queries](../querying/querying.md).
+ Apache Robux supports two query languages: [Robux SQL](../querying/sql.md) and [native queries](../querying/querying.md).
  This document describes a feature that is only available in the native language.
 :::
 
-Apache Druid supports filtering spatially indexed columns based on an origin and a bound.
+Apache Robux supports filtering spatially indexed columns based on an origin and a bound.
 
 This topic explains how to ingest and query spatial filters.
-For information on other filters supported by Druid, see [Query filters](../querying/filters.md).
+For information on other filters supported by Robux, see [Query filters](../querying/filters.md).
 
 ## Spatial indexing
 
-Spatial indexing refers to ingesting data of a spatial data type, such as geometry or geography, into Druid.
+Spatial indexing refers to ingesting data of a spatial data type, such as geometry or geography, into Robux.
 
 Spatial dimensions are string columns that contain coordinates separated by a comma.
 In the ingestion spec, you configure spatial dimensions in the `dimensionsSpec` object of the `dataSchema` component.
 
-You can provide spatial dimensions in any of the [data formats](../ingestion/data-formats.md) supported by Druid.
+You can provide spatial dimensions in any of the [data formats](../ingestion/data-formats.md) supported by Robux.
 The following example shows an ingestion spec with a spatial dimension named `coordinates`, which is constructed from the input fields `x` and `y`:
 
 ```json
@@ -90,7 +90,7 @@ Each spatial dimension object in the `spatialDimensions` array is defined by the
 |`dims`|The list of dimension names that comprise the spatial dimension.|no|
 
 For information on how to use the ingestion spec to configure ingestion, see [Ingestion spec reference](../ingestion/ingestion-spec.md).
-For general information on loading data in Druid, see [Ingestion](../ingestion/index.md).
+For general information on loading data in Robux, see [Ingestion](../ingestion/index.md).
 
 ## Spatial filters
 

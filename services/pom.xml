@@ -20,30 +20,30 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>druid-services</artifactId>
-    <name>druid-services</name>
-    <description>druid-services</description>
+    <artifactId>robux-services</artifactId>
+    <name>robux-services</name>
+    <description>robux-services</description>
 
     <parent>
-        <groupId>org.apache.druid</groupId>
-        <artifactId>druid</artifactId>
+        <groupId>org.apache.robux</groupId>
+        <artifactId>robux</artifactId>
         <version>35.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-processing</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-processing</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-server</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-server</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-indexing-hadoop</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-indexing-hadoop</artifactId>
             <version>${project.parent.version}</version>
             <exclusions>
                 <exclusion>
@@ -53,8 +53,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-indexing-service</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-indexing-service</artifactId>
             <version>${project.parent.version}</version>
             <exclusions>
                 <exclusion>
@@ -64,8 +64,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-sql</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-sql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -254,15 +254,15 @@
         </dependency>
         <!-- Test Dependencies -->
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-server</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-server</artifactId>
             <version>${project.parent.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-processing</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-processing</artifactId>
             <version>${project.parent.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
@@ -340,7 +340,7 @@
                         </goals>
                         <configuration>
                             <bundledSignatures>
-                                <!-- Do NOT check jdk-system-out for druid-services,
+                                <!-- Do NOT check jdk-system-out for robux-services,
                                      because it uses System.out on purpose. -->
                                 <bundledSignature>jdk-unsafe</bundledSignature>
                             </bundledSignatures>

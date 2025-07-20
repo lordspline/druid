@@ -18,12 +18,12 @@
 
 import { Tag } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { T } from 'druid-query-toolkit';
+import { T } from 'robux-query-toolkit';
 import * as JSONBig from 'json-bigint-native';
 import React, { useState } from 'react';
 
 import { FancyTabPane } from '../../../components';
-import type { Execution } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
 import {
   formatDuration,
   formatDurationWithMs,

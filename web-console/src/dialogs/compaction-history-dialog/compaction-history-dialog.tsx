@@ -22,7 +22,7 @@ import * as JSONBig from 'json-bigint-native';
 import React, { useState } from 'react';
 
 import { Loader, PopoverText, ShowValue } from '../../components';
-import type { CompactionConfig } from '../../druid-models';
+import type { CompactionConfig } from '../../robux-models';
 import { useQueryManager } from '../../hooks';
 import { Api } from '../../singletons';
 import { formatInteger, formatPercent, getApiArrayFromKey } from '../../utils';
@@ -67,7 +67,7 @@ export const CompactionHistoryDialog = React.memo(function CompactionHistoryDial
     processQuery: async (datasource, cancelToken) => {
       try {
         return await getApiArrayFromKey<CompactionHistoryEntry>(
-          `/druid/indexer/v1/compaction/config/datasources/${Api.encodePath(
+          `/robux/indexer/v1/compaction/config/datasources/${Api.encodePath(
             datasource,
           )}/history?count=20`,
           'entries',

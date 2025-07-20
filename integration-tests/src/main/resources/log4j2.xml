@@ -43,13 +43,13 @@
     <Root level="info">
       <AppenderRef ref="RoutingAppender"/>
     </Root>
-    <Logger name="org.apache.druid.segment.metadata" level="debug" additivity="false">
+    <Logger name="org.apache.robux.segment.metadata" level="debug" additivity="false">
       <AppenderRef ref="RoutingAppender"/>
     </Logger>
-    <Logger name="org.apache.druid.server.coordination" level="debug" additivity="false">
+    <Logger name="org.apache.robux.server.coordination" level="debug" additivity="false">
       <AppenderRef ref="RoutingAppender"/>
     </Logger>
-    <Logger name="org.apache.druid.metadata.SqlSegmentsMetadataManager" level="debug" additivity="false">
+    <Logger name="org.apache.robux.metadata.SqlSegmentsMetadataManager" level="debug" additivity="false">
       <AppenderRef ref="RoutingAppender"/>
     </Logger>
   </Loggers>

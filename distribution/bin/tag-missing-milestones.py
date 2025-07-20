@@ -23,11 +23,11 @@ import sys
 if len(sys.argv) != 5:
   sys.stderr.write('usage: program <github-username> <previous-release-commit> <new-release-commit> <milestone-number-to-tag>\n')
   sys.stderr.write("  e.g., program myusername 75c70c2ccc 29f3a328da 30\n")
-  sys.stderr.write("  e.g., The milestone number for Druid 30 is 56, since the milestone has the url https://github.com/apache/druid/milestone/56\n")
+  sys.stderr.write("  e.g., The milestone number for Robux 30 is 56, since the milestone has the url https://github.com/apache/robux/milestone/56\n")
   sys.stderr.write("  It is also necessary to set a GIT_TOKEN environment variable containing a personal access token.\n")
   sys.exit(1)
 
-expected_apache_html_url_prefix = "https://github.com/apache/druid/pull/"
+expected_apache_html_url_prefix = "https://github.com/apache/robux/pull/"
 
 github_username = sys.argv[1]
 previous_release_commit = sys.argv[2]
@@ -41,7 +41,7 @@ all_commits = subprocess.check_output(command, shell=True).decode('UTF-8')
 
 for sha in all_commits.splitlines():
   try:
-    url = "https://api.github.com/repos/apache/druid/commits/{}/pulls".format(sha)
+    url = "https://api.github.com/repos/apache/robux/commits/{}/pulls".format(sha)
     headers = {'Accept': 'application/vnd.github.groot-preview+json'}
     pull_requests = requests.get(url, headers=headers, auth=(github_username, os.environ["GIT_TOKEN"])).json()
 
@@ -53,7 +53,7 @@ for sha in all_commits.splitlines():
         continue
       if pr['milestone'] is None:
         print("Tagging Pull Request {} with milestone {}".format(pr_number, milestone))
-        url = "https://api.github.com/repos/apache/druid/issues/{}".format(pr_number)
+        url = "https://api.github.com/repos/apache/robux/issues/{}".format(pr_number)
         requests.patch(url, json=milestone_json, auth=(github_username, os.environ["GIT_TOKEN"]))
       else:
         print("Skipping Pull Request {} since it's already tagged with milestone {}".format(pr_number, pr['milestone']['number']))

@@ -1,6 +1,6 @@
 [
   {
-    "namespace": "org.apache.druid.data.input",
+    "namespace": "org.apache.robux.data.input",
     "name": "SomeAvroDatum",
     "type": "record",
     "fields": [

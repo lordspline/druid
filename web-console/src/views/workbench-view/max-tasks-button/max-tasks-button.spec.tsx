@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { DEFAULT_SERVER_QUERY_CONTEXT } from '../../../druid-models';
+import { DEFAULT_SERVER_QUERY_CONTEXT } from '../../../robux-models';
 import { shallow } from '../../../utils/shallow-renderer';
 
 import { MaxTasksButton } from './max-tasks-button';

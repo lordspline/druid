@@ -37,7 +37,7 @@ export function TaskGroupHandoffDialog(props: TaskGroupHandoffDialogProps) {
     <AsyncActionDialog
       action={async () => {
         const resp = await Api.instance.post(
-          `/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/taskGroups/handoff`,
+          `/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/taskGroups/handoff`,
           { taskGroupIds: groupIds.map(x => parseInt(x, 10)) },
         );
         return resp.data;

@@ -17,7 +17,7 @@
  */
 
 import { Duration } from 'chronoshift';
-import { SqlExpression } from 'druid-query-toolkit';
+import { SqlExpression } from 'robux-query-toolkit';
 
 import {
   decomposeTimeInInterval,

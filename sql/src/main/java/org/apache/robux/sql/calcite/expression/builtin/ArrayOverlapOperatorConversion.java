@@ -1,0 +1,216 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.sql.calcite.expression.builtin;
+
+import org.apache.calcite.rex.RexCall;
+import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.sql.SqlFunction;
+import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.type.OperandTypes;
+import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlTypeFamily;
+import org.apache.robux.math.expr.Evals;
+import org.apache.robux.math.expr.Expr;
+import org.apache.robux.math.expr.ExprEval;
+import org.apache.robux.math.expr.ExpressionType;
+import org.apache.robux.math.expr.InputBindings;
+import org.apache.robux.query.filter.ArrayContainsElementFilter;
+import org.apache.robux.query.filter.DimFilter;
+import org.apache.robux.query.filter.EqualityFilter;
+import org.apache.robux.query.filter.NullFilter;
+import org.apache.robux.query.filter.OrDimFilter;
+import org.apache.robux.segment.column.ColumnType;
+import org.apache.robux.segment.column.RowSignature;
+import org.apache.robux.sql.calcite.expression.RobuxExpression;
+import org.apache.robux.sql.calcite.expression.Expressions;
+import org.apache.robux.sql.calcite.expression.OperatorConversions;
+import org.apache.robux.sql.calcite.planner.PlannerContext;
+import org.apache.robux.sql.calcite.rel.VirtualColumnRegistry;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class ArrayOverlapOperatorConversion extends BaseExpressionDimFilterOperatorConversion
+{
+  private static final String EXPR_FUNCTION = "array_overlap";
+
+  private static final SqlFunction SQL_FUNCTION = OperatorConversions
+      .operatorBuilder("ARRAY_OVERLAP")
+      .operandTypeChecker(
+          OperandTypes.sequence(
+              "'ARRAY_OVERLAP(array, array)'",
+              OperandTypes.or(
+                  OperandTypes.family(SqlTypeFamily.ARRAY),
+                  OperandTypes.family(SqlTypeFamily.STRING)
+              ),
+              OperandTypes.or(
+                  OperandTypes.family(SqlTypeFamily.ARRAY),
+                  OperandTypes.family(SqlTypeFamily.STRING)
+              )
+          )
+      )
+      .returnTypeInference(ReturnTypes.BOOLEAN_NULLABLE)
+      .build();
+
+  public ArrayOverlapOperatorConversion()
+  {
+    this(SQL_FUNCTION, EXPR_FUNCTION);
+  }
+
+  protected ArrayOverlapOperatorConversion(SqlOperator operator, String robuxFunctionName)
+  {
+    super(operator, robuxFunctionName);
+  }
+
+  @Nullable
+  @Override
+  public DimFilter toRobuxFilter(
+      final PlannerContext plannerContext,
+      RowSignature rowSignature,
+      @Nullable VirtualColumnRegistry virtualColumnRegistry,
+      final RexNode rexNode
+  )
+  {
+    final List<RexNode> operands = ((RexCall) rexNode).getOperands();
+    final List<RobuxExpression> robuxExpressions = Expressions.toRobuxExpressions(
+        plannerContext,
+        rowSignature,
+        operands
+    );
+    if (robuxExpressions == null) {
+      return null;
+    }
+
+    // Converts array_overlaps() function into an OR of Selector filters if possible.
+    final RobuxExpression leftExpr = robuxExpressions.get(0);
+    final RobuxExpression rightExpr = robuxExpressions.get(1);
+    final boolean leftSimpleExtractionExpr = leftExpr.isSimpleExtraction();
+    final boolean rightSimpleExtractionExpr = rightExpr.isSimpleExtraction();
+    final RobuxExpression simpleExtractionExpr;
+    final RobuxExpression complexExpr;
+
+    if (leftSimpleExtractionExpr ^ rightSimpleExtractionExpr) {
+      if (leftSimpleExtractionExpr) {
+        simpleExtractionExpr = leftExpr;
+        complexExpr = rightExpr;
+      } else {
+        simpleExtractionExpr = rightExpr;
+        complexExpr = leftExpr;
+      }
+    } else {
+      return toExpressionFilter(plannerContext, robuxExpressions);
+    }
+
+    final Expr expr = plannerContext.parseExpression(complexExpr.getExpression());
+    if (expr.isLiteral() && !simpleExtractionExpr.isArray()) {
+      // Evaluate the expression to take out the array elements.
+      // We can safely pass null if the expression is literal.
+      ExprEval<?> exprEval = expr.eval(InputBindings.nilBindings());
+      Object[] arrayElements = exprEval.asArray();
+      if (arrayElements == null || arrayElements.length == 0) {
+        // If arrayElements is empty which means complexExpr is an empty array,
+        // it is technically more correct to return a TrueDimFiler here.
+        // However, since both Calcite's SqlMultisetValueConstructor and Robux's ArrayConstructorFunction don't allow
+        // to create an empty array with no argument, we just return null.
+        return null;
+      } else if (arrayElements.length == 1) {
+        if (plannerContext.isUseBoundsAndSelectors()) {
+          return newSelectorDimFilter(simpleExtractionExpr.getSimpleExtraction(), Evals.asString(arrayElements[0]));
+        } else {
+          final String column;
+          if (simpleExtractionExpr.isDirectColumnAccess()) {
+            column = simpleExtractionExpr.getDirectColumn();
+          } else {
+            if (virtualColumnRegistry == null) {
+              // fall back to expression filter
+              return toExpressionFilter(plannerContext, robuxExpressions);
+            }
+            column = virtualColumnRegistry.getOrCreateVirtualColumnForExpression(
+                simpleExtractionExpr,
+                simpleExtractionExpr.getRobuxType()
+            );
+          }
+          final Object elementValue = arrayElements[0];
+          if (elementValue == null) {
+            return NullFilter.forColumn(column);
+          }
+          return new EqualityFilter(
+              column,
+              ExpressionType.toColumnType(exprEval.type()),
+              elementValue,
+              null
+          );
+        }
+      } else {
+        return ScalarInArrayOperatorConversion.makeInFilter(
+            plannerContext,
+            simpleExtractionExpr.getSimpleExtraction().getColumn(),
+            simpleExtractionExpr.getSimpleExtraction().getExtractionFn(),
+            Arrays.asList(arrayElements),
+            ExpressionType.toColumnType((ExpressionType) exprEval.type().getElementType())
+        );
+      }
+    }
+
+    // if the input is a direct array column, we can use sweet array filter
+    if (simpleExtractionExpr.isDirectColumnAccess() && simpleExtractionExpr.isArray()) {
+      // To convert this expression filter into an OR of ArrayContainsElement filters, we need to extract all array
+      // elements.
+      if (expr.isLiteral()) {
+        // Evaluate the expression to get out the array elements.
+        // We can safely pass a nil ObjectBinding if the expression is literal.
+        ExprEval<?> exprEval = expr.eval(InputBindings.nilBindings());
+        if (exprEval.isArray()) {
+          final Object[] arrayElements = exprEval.asArray();
+          if (arrayElements.length == 0) {
+            // this isn't likely possible today because array constructor function does not accept empty argument list
+            // but just in case, return null
+            return null;
+          }
+          final List<DimFilter> filters = new ArrayList<>(arrayElements.length);
+          final ColumnType elementType = ExpressionType.toColumnType(ExpressionType.elementType(exprEval.type()));
+          for (final Object val : arrayElements) {
+            filters.add(
+                new ArrayContainsElementFilter(
+                    leftExpr.getSimpleExtraction().getColumn(),
+                    elementType,
+                    val,
+                    null
+                )
+            );
+          }
+
+          return filters.size() == 1 ? filters.get(0) : new OrDimFilter(filters);
+        } else {
+          return new ArrayContainsElementFilter(
+              leftExpr.getSimpleExtraction().getColumn(),
+              ExpressionType.toColumnType(exprEval.type()),
+              exprEval.valueOrDefault(),
+              null
+          );
+        }
+      }
+    }
+
+    return toExpressionFilter(plannerContext, robuxExpressions);
+  }
+}

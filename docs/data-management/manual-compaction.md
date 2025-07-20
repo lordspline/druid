@@ -22,7 +22,7 @@ title: "Manual compaction"
   ~ under the License.
   -->
 
-In Apache Druid, compaction is a special type of ingestion task that reads data from a Druid datasource and writes it back into the same datasource. A common use case for this is to [optimally size segments](../operations/segment-optimization.md) after ingestion to improve query performance.
+In Apache Robux, compaction is a special type of ingestion task that reads data from a Robux datasource and writes it back into the same datasource. A common use case for this is to [optimally size segments](../operations/segment-optimization.md) after ingestion to improve query performance.
 
 You can perform manual compaction where you submit a one-time compaction task for a specific interval. Generally, you don't need to do this if you use [automatic compaction](./automatic-compaction.md), which is recommended for most workloads.
 
@@ -69,7 +69,7 @@ To control the number of result segments per time chunk, you can set [`maxRowsPe
  You can run multiple compaction tasks in parallel. For example, if you want to compact the data for a year, you are not limited to running a single task for the entire year. You can run 12 compaction tasks with month-long intervals.
 :::
 
-A compaction task internally generates an `index` or `index_parallel` task spec for performing compaction work with some fixed parameters. For example, its `inputSource` is always the [`druid` input source](../ingestion/input-sources.md), and `dimensionsSpec` and `metricsSpec` include all dimensions and metrics of the input segments by default.
+A compaction task internally generates an `index` or `index_parallel` task spec for performing compaction work with some fixed parameters. For example, its `inputSource` is always the [`robux` input source](../ingestion/input-sources.md), and `dimensionsSpec` and `metricsSpec` include all dimensions and metrics of the input segments by default.
 
 Compaction tasks typically fetch all [relevant segments](#compaction-io-configuration) prior to launching any subtasks, _unless_ the following properties are all set to non-null values. It is strongly recommended to set them to non-null values to maximize performance and minimize disk usage of the `compact` task:
 
@@ -108,7 +108,7 @@ The following JSON illustrates a compaction task to compact _all segments_ withi
 ```
 
 `granularitySpec` is an optional field.
-If you don't specify `granularitySpec`, Druid retains the original segment and query granularities when compaction is complete.
+If you don't specify `granularitySpec`, Robux retains the original segment and query granularities when compaction is complete.
 
 ## Compaction I/O configuration
 
@@ -118,7 +118,7 @@ The compaction `ioConfig` requires specifying `inputSpec` as follows:
 |-----|-----------|-------|--------|
 |`type`|Task type. Set the value to `compact`.|none|Yes|
 |`inputSpec`|Specification of the target [interval](#interval-inputspec) or [segments](#segments-inputspec).|none|Yes|
-|`dropExisting`|If `true`, the task replaces all existing segments fully contained by either of the following:<br />- the `interval` in the `interval` type `inputSpec`.<br />- the umbrella interval of the `segments` in the `segment` type `inputSpec`.<br />If compaction fails, Druid does not change any of the existing segments.<br />**WARNING**: `dropExisting` in `ioConfig` is a beta feature. |false|No|
+|`dropExisting`|If `true`, the task replaces all existing segments fully contained by either of the following:<br />- the `interval` in the `interval` type `inputSpec`.<br />- the umbrella interval of the `segments` in the `segment` type `inputSpec`.<br />If compaction fails, Robux does not change any of the existing segments.<br />**WARNING**: `dropExisting` in `ioConfig` is a beta feature. |false|No|
 |`allowNonAlignedInterval`|If `true`, the task allows an explicit [`segmentGranularity`](#compaction-granularity-spec) that is not aligned with the provided [interval](#interval-inputspec) or [segments](#segments-inputspec). This parameter is only used if [`segmentGranularity`](#compaction-granularity-spec) is explicitly provided.<br /><br />This parameter is provided for backwards compatibility. In most scenarios it should not be set, as it can lead to data being accidentally overshadowed. This parameter may be removed in a future release.|false|No|
 
 The compaction task has two kinds of `inputSpec`:
@@ -148,7 +148,7 @@ The compaction task has two kinds of `inputSpec`:
 
 |Field|Description|Required|
 |-----|-----------|--------|
-|`filter`| The `filter` conditionally filters input rows during compaction. Only rows that pass the filter will be included in the compacted segments. Any of Druid's standard [query filters](../querying/filters.md) can be used. Defaults to 'null', which will not filter any row. |No|
+|`filter`| The `filter` conditionally filters input rows during compaction. Only rows that pass the filter will be included in the compacted segments. Any of Robux's standard [query filters](../querying/filters.md) can be used. Defaults to 'null', which will not filter any row. |No|
 
 ## Compaction granularity spec
 
@@ -161,7 +161,7 @@ The compaction task has two kinds of `inputSpec`:
 ## Learn more
 
 See the following topics for more information:
-* [Compaction](compaction.md) for an overview of compaction and how to set up manual compaction in Druid.
-* [Segment optimization](../operations/segment-optimization.md) for guidance on evaluating and optimizing Druid segment size.
+* [Compaction](compaction.md) for an overview of compaction and how to set up manual compaction in Robux.
+* [Segment optimization](../operations/segment-optimization.md) for guidance on evaluating and optimizing Robux segment size.
 * [Coordinator process](../design/coordinator.md#automatic-compaction) for details on how the Coordinator plans compaction tasks.
 

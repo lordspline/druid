@@ -20,5 +20,5 @@
 # Test with deep storage as intermediate location to store shuffle data
 # Local deep storage will be used here
 # If you are making a change in load list below, make the necessary changes in github actions too
-druid_extensions_loadList=["mysql-metadata-storage","druid-basic-security","simple-client-sslcontext","druid-testing-tools","druid-lookups-cached-global","druid-histogram","druid-datasketches"]
-druid_processing_intermediaryData_storage_type=deepstore
+robux_extensions_loadList=["mysql-metadata-storage","robux-basic-security","simple-client-sslcontext","robux-testing-tools","robux-lookups-cached-global","robux-histogram","robux-datasketches"]
+robux_processing_intermediaryData_storage_type=deepstore

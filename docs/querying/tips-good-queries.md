@@ -1,6 +1,6 @@
 ---
 id: tips-good-queries
-title: "Tips for writing good queries in Druid"
+title: "Tips for writing good queries in Robux"
 sidebar_label: "Tips for writing good queries"
 ---
 
@@ -23,11 +23,11 @@ sidebar_label: "Tips for writing good queries"
   ~ under the License.
   -->
 
-This topic includes tips and examples that can help you investigate and improve query performance and accuracy using [Apache Druid SQL](./sql.md).
+This topic includes tips and examples that can help you investigate and improve query performance and accuracy using [Apache Robux SQL](./sql.md).
 
-For an interactive tutorial on Druid SQL, see [Learn the basics of Druid SQL](https://github.com/implydata/learn-druid/tree/main/notebooks) within the [Learn Druid repo](https://github.com/implydata/learn-druid).
+For an interactive tutorial on Robux SQL, see [Learn the basics of Robux SQL](https://github.com/implydata/learn-robux/tree/main/notebooks) within the [Learn Robux repo](https://github.com/implydata/learn-robux).
 
-Your ability to effectively query your data depends in large part on the way you've ingested and stored the data in Apache Druid. This document assumes that you've followed the best practices described in [Schema design tips and best practices](../ingestion/schema-design.md#general-tips-and-best-practices) when modeling your data. 
+Your ability to effectively query your data depends in large part on the way you've ingested and stored the data in Apache Robux. This document assumes that you've followed the best practices described in [Schema design tips and best practices](../ingestion/schema-design.md#general-tips-and-best-practices) when modeling your data. 
 
 ## Investigate query performance
 
@@ -35,33 +35,33 @@ If your queries run slower than anticipated, you can use the following tools to 
 
 ### Analyze query metrics
 
-You can configure Druid processes to emit metrics that are essential for monitoring query execution. See [Query metrics](../operations/metrics.md#query-metrics) for more information. 
+You can configure Robux processes to emit metrics that are essential for monitoring query execution. See [Query metrics](../operations/metrics.md#query-metrics) for more information. 
 
 ### Generate an explain plan
 
-An explain plan shows the full query details and all of the operations Druid performs to execute it. You can use the information in the plan to identify possible areas of query improvement.
+An explain plan shows the full query details and all of the operations Robux performs to execute it. You can use the information in the plan to identify possible areas of query improvement.
 
 See [Explain plan](./sql.md#explain-plan) and [Interpreting explain plan output](./sql-translation.md#interpreting-explain-plan-output) for more information.
 
-You can follow the [Get to know Query view tutorial](../tutorials/tutorial-sql-query-view.md) to create an example explain plan in the Druid console.
+You can follow the [Get to know Query view tutorial](../tutorials/tutorial-sql-query-view.md) to create an example explain plan in the Robux console.
 
 ## Improve query performance
 
-In most cases, you can improve query performance by adjusting Druid settings and by manually tuning your queries.
+In most cases, you can improve query performance by adjusting Robux settings and by manually tuning your queries.
 
-### Adjust Druid settings
+### Adjust Robux settings
 
-This section outlines Druid settings that can help to improve query performance.
+This section outlines Robux settings that can help to improve query performance.
 
 #### Turn on query caching
 
-You can enable caching in Druid to improve query times for frequently accessed data. Caching enables increased concurrency on the same system, leading to noticeable performance improvements for queries handling throughput for concurrent, mixed workloads.
+You can enable caching in Robux to improve query times for frequently accessed data. Caching enables increased concurrency on the same system, leading to noticeable performance improvements for queries handling throughput for concurrent, mixed workloads.
 
 The largest performance gains from caching tend to apply to TopN and timeseries queries. For GroupBy queries, if the bottleneck is in the merging phase on the Broker, enabling caching results in little noticeable query improvement. See [Performance considerations for caching](./caching.md#performance-considerations-for-caching) for more information.
 
 #### Use approximation
 
-When possible, design your SQL queries in such a way that they match the rules for TopN approximation, so that Druid enables TopN by default. For Druid to automatically optimize for TopN, your SQL query must include the following:
+When possible, design your SQL queries in such a way that they match the rules for TopN approximation, so that Robux enables TopN by default. For Robux to automatically optimize for TopN, your SQL query must include the following:
 
 - GROUP BY on one dimension, and
 - ORDER BY on one aggregate.
@@ -70,8 +70,8 @@ When possible, design your SQL queries in such a way that they match the rules f
 
 Note that TopN queries are approximate in that each data process ranks its top K results and only returns those top K results to the Broker.
 
-You can follow the tutorial [Using TopN approximation in Druid queries](https://github.com/implydata/learn-druid/tree/main/notebooks) within the [Learn Druid repo](https://github.com/implydata/learn-druid) to work through some examples with approximation turned on and off.
-The tutorial [Get to know Query view](../tutorials/tutorial-sql-query-view.md) demonstrates running aggregate queries in the Druid console.
+You can follow the tutorial [Using TopN approximation in Robux queries](https://github.com/implydata/learn-robux/tree/main/notebooks) within the [Learn Robux repo](https://github.com/implydata/learn-robux) to work through some examples with approximation turned on and off.
+The tutorial [Get to know Query view](../tutorials/tutorial-sql-query-view.md) demonstrates running aggregate queries in the Robux console.
 
 ### Manually tune your queries
 
@@ -79,7 +79,7 @@ This section outlines techniques you can use to improve your query accuracy and 
 
 #### Query one table at a time
 
-Query a single table at a time to minimize the load on the Druid processor.
+Query a single table at a time to minimize the load on the Robux processor.
 
 #### Select specific columns
 
@@ -112,7 +112,7 @@ AND TIME_IN_INTERVAL(__time, '2016-06-27T01:00:00/2016-06-27T02:00:00')
 
 #### Shorten your queries
 
-Make your queries shorter where possible&mdash;Druid processes shorter queries faster. You might also be able to divide a single query into multiple queries.
+Make your queries shorter where possible&mdash;Robux processes shorter queries faster. You might also be able to divide a single query into multiple queries.
 
 For example, the following query aggregates over multiple datasources using UNION ALL:
 
@@ -176,7 +176,7 @@ WHERE __time BETWEEN '2023-08-01' AND '2023-08-31'
 
 Examine your query to see if it uses a lot of transformations, functions, and expressions. Consider whether you could rewrite the query to reduce the level of computation.
 
-## Druid SQL query example
+## Robux SQL query example
 
 The following example query demonstrates many of the tips outlined in this topic.
 The query:

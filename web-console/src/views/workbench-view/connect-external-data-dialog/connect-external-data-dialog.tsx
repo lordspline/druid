@@ -17,7 +17,7 @@
  */
 
 import { Classes, Dialog } from '@blueprintjs/core';
-import type { SqlExpression } from 'druid-query-toolkit';
+import type { SqlExpression } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 
 import type {
@@ -25,7 +25,7 @@ import type {
   ExternalConfig,
   InputFormat,
   InputSource,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import { InputFormatStep } from '../input-format-step/input-format-step';
 import { InputSourceStep } from '../input-source-step/input-source-step';
 

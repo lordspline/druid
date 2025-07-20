@@ -23,7 +23,7 @@ title: "Metadata Migration"
   -->
 
 
-If you have been running an evaluation Druid cluster using the built-in Derby metadata storage and wish to migrate to a
+If you have been running an evaluation Robux cluster using the built-in Derby metadata storage and wish to migrate to a
 more production-capable metadata store such as MySQL or PostgreSQL, this document describes the necessary steps.
 
 ## Shut down cluster services
@@ -35,7 +35,7 @@ When migrating from Derby, the coordinator processes will still need to be up in
 
 ## Exporting metadata
 
-Druid provides an [Export Metadata Tool](../operations/export-metadata.md) for exporting metadata from Derby into CSV files
+Robux provides an [Export Metadata Tool](../operations/export-metadata.md) for exporting metadata from Derby into CSV files
 which can then be imported into your new metadata store.
 
 The tool also provides options for rewriting the deep storage locations of segments; this is useful
@@ -53,40 +53,40 @@ The [MySQL extension](../development/extensions-core/mysql.md) and [PostgreSQL e
 
 ### Update configuration
 
-Update your Druid runtime properties with the new metadata configuration.
+Update your Robux runtime properties with the new metadata configuration.
 
-### Create Druid tables
+### Create Robux tables
 
-**If you have set `druid.metadata.storage.connector.createTables` to `true` (which is the default), and your metadata connect user has DDL privileges, you can disregard this section as Druid will create metadata tables automatically on start up.**
+**If you have set `robux.metadata.storage.connector.createTables` to `true` (which is the default), and your metadata connect user has DDL privileges, you can disregard this section as Robux will create metadata tables automatically on start up.**
 
-Druid provides a `metadata-init` tool for creating Druid's metadata tables. After initializing the Druid database, you can run the commands shown below from the root of the Druid package to initialize the tables.
+Robux provides a `metadata-init` tool for creating Robux's metadata tables. After initializing the Robux database, you can run the commands shown below from the root of the Robux package to initialize the tables.
 
 In the example commands below:
 
-- `lib` is the Druid lib directory
-- `extensions` is the Druid extensions directory
-- `base` corresponds to the value of `druid.metadata.storage.tables.base` in the configuration, `druid` by default.
-- The `--connectURI` parameter corresponds to the value of `druid.metadata.storage.connector.connectURI`.
-- The `--user` parameter corresponds to the value of `druid.metadata.storage.connector.user`.
-- The `--password` parameter corresponds to the value of `druid.metadata.storage.connector.password`.
+- `lib` is the Robux lib directory
+- `extensions` is the Robux extensions directory
+- `base` corresponds to the value of `robux.metadata.storage.tables.base` in the configuration, `robux` by default.
+- The `--connectURI` parameter corresponds to the value of `robux.metadata.storage.connector.connectURI`.
+- The `--user` parameter corresponds to the value of `robux.metadata.storage.connector.user`.
+- The `--password` parameter corresponds to the value of `robux.metadata.storage.connector.password`.
 
 #### MySQL
 
 ```bash
-cd ${DRUID_ROOT}
-java -classpath "lib/*" -Dlog4j.configurationFile=conf/druid/cluster/_common/log4j2.xml -Ddruid.extensions.directory="extensions" -Ddruid.extensions.loadList="[\"mysql-metadata-storage\"]" -Ddruid.metadata.storage.type=mysql -Ddruid.node.type=metadata-init org.apache.druid.cli.Main tools metadata-init --connectURI="<mysql-uri>" --user <user> --password <pass> --base druid
+cd ${ROBUX_ROOT}
+java -classpath "lib/*" -Dlog4j.configurationFile=conf/robux/cluster/_common/log4j2.xml -Drobux.extensions.directory="extensions" -Drobux.extensions.loadList="[\"mysql-metadata-storage\"]" -Drobux.metadata.storage.type=mysql -Drobux.node.type=metadata-init org.apache.robux.cli.Main tools metadata-init --connectURI="<mysql-uri>" --user <user> --password <pass> --base robux
 ```
 
 #### PostgreSQL
 
 ```bash
-cd ${DRUID_ROOT}
-java -classpath "lib/*" -Dlog4j.configurationFile=conf/druid/cluster/_common/log4j2.xml -Ddruid.extensions.directory="extensions" -Ddruid.extensions.loadList="[\"postgresql-metadata-storage\"]" -Ddruid.metadata.storage.type=postgresql -Ddruid.node.type=metadata-init org.apache.druid.cli.Main tools metadata-init --connectURI="<postgresql-uri>" --user <user> --password <pass> --base druid
+cd ${ROBUX_ROOT}
+java -classpath "lib/*" -Dlog4j.configurationFile=conf/robux/cluster/_common/log4j2.xml -Drobux.extensions.directory="extensions" -Drobux.extensions.loadList="[\"postgresql-metadata-storage\"]" -Drobux.metadata.storage.type=postgresql -Drobux.node.type=metadata-init org.apache.robux.cli.Main tools metadata-init --connectURI="<postgresql-uri>" --user <user> --password <pass> --base robux
 ```
 
-### Update Druid tables to latest compatible schema
+### Update Robux tables to latest compatible schema
 
-The same command as above can be used to update Druid metadata tables to the latest version. If any table already exists, it is not created again but any ALTER statements that may be required are still executed.
+The same command as above can be used to update Robux metadata tables to the latest version. If any table already exists, it is not created again but any ALTER statements that may be required are still executed.
 
 ### Import metadata
 

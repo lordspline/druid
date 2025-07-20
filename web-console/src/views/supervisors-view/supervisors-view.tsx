@@ -53,8 +53,8 @@ import type {
   SupervisorStats,
   SupervisorStatus,
   SupervisorStatusTask,
-} from '../../druid-models';
-import { getConsoleViewIcon, getTotalSupervisorStats } from '../../druid-models';
+} from '../../robux-models';
+import { getConsoleViewIcon, getTotalSupervisorStats } from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import {
   SMALL_TABLE_PAGE_SIZE,
@@ -74,7 +74,7 @@ import {
   formatInteger,
   formatRate,
   getApiArray,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   hasOverlayOpen,
   isNumberLike,
   LocalStorageBackedVisibility,
@@ -82,7 +82,7 @@ import {
   nonEmptyArray,
   oneOf,
   pluralIfNeeded,
-  queryDruidSql,
+  queryRobuxSql,
   QueryManager,
   QueryState,
   ResultWithAuxiliaryWork,
@@ -314,7 +314,7 @@ export class SupervisorsView extends React.PureComponent<
           ).join('\n');
           setIntermediateQuery(sqlQuery);
           supervisors = (
-            await queryDruidSql<SupervisorQueryResultRow>(
+            await queryRobuxSql<SupervisorQueryResultRow>(
               {
                 query: sqlQuery,
               },
@@ -333,7 +333,7 @@ export class SupervisorsView extends React.PureComponent<
               filterClause ? `WHERE ${filterClause}` : undefined,
             ).join('\n');
             const cnt: any = (
-              await queryDruidSql<{ cnt: number }>(
+              await queryRobuxSql<{ cnt: number }>(
                 {
                   query: sqlQuery,
                 },
@@ -346,7 +346,7 @@ export class SupervisorsView extends React.PureComponent<
             };
           });
         } else if (capabilities.hasOverlordAccess()) {
-          supervisors = (await getApiArray('/druid/indexer/v1/supervisor?full', cancelToken)).map(
+          supervisors = (await getApiArray('/robux/indexer/v1/supervisor?full', cancelToken)).map(
             (sup: any) => {
               return {
                 supervisor_id: deepGet(sup, 'id'),
@@ -387,7 +387,7 @@ export class SupervisorsView extends React.PureComponent<
                   async (supervisorsWithAuxiliaryInfo, cancelToken) => {
                     const status = (
                       await Api.instance.get(
-                        `/druid/indexer/v1/supervisor/${Api.encodePath(
+                        `/robux/indexer/v1/supervisor/${Api.encodePath(
                           supervisor.supervisor_id,
                         )}/status`,
                         { cancelToken, timeout: STATUS_API_TIMEOUT },
@@ -414,7 +414,7 @@ export class SupervisorsView extends React.PureComponent<
                   return async (supervisorsWithAuxiliaryInfo, cancelToken) => {
                     const stats = (
                       await Api.instance.get(
-                        `/druid/indexer/v1/supervisor/${Api.encodePath(
+                        `/robux/indexer/v1/supervisor/${Api.encodePath(
                           supervisor.supervisor_id,
                         )}/stats`,
                         { cancelToken, timeout: STATS_API_TIMEOUT },
@@ -503,10 +503,10 @@ export class SupervisorsView extends React.PureComponent<
 
   private readonly submitSupervisor = async (spec: JSON) => {
     try {
-      await Api.instance.post('/druid/indexer/v1/supervisor', spec);
+      await Api.instance.post('/robux/indexer/v1/supervisor', spec);
     } catch (e) {
       AppToaster.show({
-        message: `Failed to submit supervisor: ${getDruidErrorMessage(e)}`,
+        message: `Failed to submit supervisor: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
       return;
@@ -593,7 +593,7 @@ export class SupervisorsView extends React.PureComponent<
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/supervisor/${Api.encodePath(resumeSupervisorId)}/resume`,
+            `/robux/indexer/v1/supervisor/${Api.encodePath(resumeSupervisorId)}/resume`,
             {},
           );
           return resp.data;
@@ -624,7 +624,7 @@ export class SupervisorsView extends React.PureComponent<
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/supervisor/${Api.encodePath(suspendSupervisorId)}/suspend`,
+            `/robux/indexer/v1/supervisor/${Api.encodePath(suspendSupervisorId)}/suspend`,
             {},
           );
           return resp.data;
@@ -687,7 +687,7 @@ export class SupervisorsView extends React.PureComponent<
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/supervisor/${Api.encodePath(resetSupervisorId)}/reset`,
+            `/robux/indexer/v1/supervisor/${Api.encodePath(resetSupervisorId)}/reset`,
             '',
           );
           return resp.data;
@@ -730,7 +730,7 @@ export class SupervisorsView extends React.PureComponent<
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/supervisor/${Api.encodePath(terminateSupervisorId)}/terminate`,
+            `/robux/indexer/v1/supervisor/${Api.encodePath(terminateSupervisorId)}/terminate`,
             {},
           );
           return resp.data;
@@ -1179,7 +1179,7 @@ export class SupervisorsView extends React.PureComponent<
     return (
       <AsyncActionDialog
         action={async () => {
-          const resp = await Api.instance.post(`/druid/indexer/v1/supervisor/resumeAll`, {});
+          const resp = await Api.instance.post(`/robux/indexer/v1/supervisor/resumeAll`, {});
           return resp.data;
         }}
         confirmButtonText="Resume all supervisors"
@@ -1205,7 +1205,7 @@ export class SupervisorsView extends React.PureComponent<
     return (
       <AsyncActionDialog
         action={async () => {
-          const resp = await Api.instance.post(`/druid/indexer/v1/supervisor/suspendAll`, {});
+          const resp = await Api.instance.post(`/robux/indexer/v1/supervisor/suspendAll`, {});
           return resp.data;
         }}
         confirmButtonText="Suspend all supervisors"
@@ -1231,7 +1231,7 @@ export class SupervisorsView extends React.PureComponent<
     return (
       <AsyncActionDialog
         action={async () => {
-          const resp = await Api.instance.post(`/druid/indexer/v1/supervisor/terminateAll`, {});
+          const resp = await Api.instance.post(`/robux/indexer/v1/supervisor/terminateAll`, {});
           return resp.data;
         }}
         confirmButtonText="Terminate all supervisors"

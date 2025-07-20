@@ -23,19 +23,19 @@ title: "Aliyun OSS"
   -->
 
 [Alibaba Cloud](https://www.aliyun.com) is the 3rd largest cloud infrastructure provider in the world. It provides its own storage solution known as OSS, [Object Storage Service](https://www.aliyun.com/product/oss).
-This document describes how to use OSS as Druid deep storage.
+This document describes how to use OSS as Robux deep storage.
 
 ## Installation
 
-Use the [pull-deps](../../operations/pull-deps.md) tool shipped with Druid to install the `aliyun-oss-extensions` extension, as described [here](../../configuration/extensions.md#community-extensions) on middle manager and historical nodes.
+Use the [pull-deps](../../operations/pull-deps.md) tool shipped with Robux to install the `aliyun-oss-extensions` extension, as described [here](../../configuration/extensions.md#community-extensions) on middle manager and historical nodes.
 
 ```bash
-java -classpath "{YOUR_DRUID_DIR}/lib/*" org.apache.druid.cli.Main tools pull-deps -c org.apache.druid.extensions.contrib:aliyun-oss-extensions:{YOUR_DRUID_VERSION}
+java -classpath "{YOUR_ROBUX_DIR}/lib/*" org.apache.robux.cli.Main tools pull-deps -c org.apache.robux.extensions.contrib:aliyun-oss-extensions:{YOUR_ROBUX_VERSION}
 ```
 
 ## Enabling
 
-After installation, add this `aliyun-oss-extensions` extension to `druid.extensions.loadList` in common.runtime.properties and then restart middle manager and historical nodes.
+After installation, add this `aliyun-oss-extensions` extension to `robux.extensions.loadList` in common.runtime.properties and then restart middle manager and historical nodes.
 
 ## Configuration
 
@@ -43,26 +43,26 @@ First add the following OSS configurations to common.runtime.properties
 
 |Property|Description|Required|
 |--------|---------------|-----------|
-|`druid.oss.accessKey`|The `AccessKey ID` of the account to be used to access the OSS bucket|yes|
-|`druid.oss.secretKey`|The `AccessKey Secret` of the account to be used to access the OSS bucket| yes|
-|`druid.oss.endpoint`|The endpoint URL of your OSS storage. <br/>If your Druid cluster is also hosted in the same region on Alibaba Cloud as the region of your OSS bucket, it's recommended to use the internal network endpoint url, so that any inbound and outbound traffic to the OSS bucket is free of charge. | yes|
+|`robux.oss.accessKey`|The `AccessKey ID` of the account to be used to access the OSS bucket|yes|
+|`robux.oss.secretKey`|The `AccessKey Secret` of the account to be used to access the OSS bucket| yes|
+|`robux.oss.endpoint`|The endpoint URL of your OSS storage. <br/>If your Robux cluster is also hosted in the same region on Alibaba Cloud as the region of your OSS bucket, it's recommended to use the internal network endpoint url, so that any inbound and outbound traffic to the OSS bucket is free of charge. | yes|
 
 To use OSS as deep storage, add the following configurations:
 
 |Property|Description|Required|
 |--------|---------------|-----------|
-|`druid.storage.type`| Global deep storage provider. Must be set to `oss` to make use of this extension. |yes|
-|`druid.storage.oss.bucket`|Storage bucket name.| yes |
-|`druid.storage.oss.prefix`| Folder where segments will be published to. `druid/segments` is recommended. | No |
+|`robux.storage.type`| Global deep storage provider. Must be set to `oss` to make use of this extension. |yes|
+|`robux.storage.oss.bucket`|Storage bucket name.| yes |
+|`robux.storage.oss.prefix`| Folder where segments will be published to. `robux/segments` is recommended. | No |
 
 If OSS is used as deep storage for segment files, it's also recommended saving index logs in the OSS too. 
 To do this, add following configurations:
 
 |Property|Description|Required|
 |--------|---------------|-----------|
-|`druid.indexer.logs.type`| Global deep storage provider. Must be set to `oss` to make use of this extension. | yes |
-|`druid.indexer.logs.oss.bucket`|The bucket used to keep logs. It could be the same as `druid.storage.oss.bucket`| yes |
-|`druid.indexer.logs.oss.prefix`|Folder where log files will be published to. `druid/logs` is recommended. | no |
+|`robux.indexer.logs.type`| Global deep storage provider. Must be set to `oss` to make use of this extension. | yes |
+|`robux.indexer.logs.oss.bucket`|The bucket used to keep logs. It could be the same as `robux.storage.oss.bucket`| yes |
+|`robux.indexer.logs.oss.prefix`|Folder where log files will be published to. `robux/logs` is recommended. | no |
 
 
 ## Reading data from OSS
@@ -98,7 +98,7 @@ Below shows the configurations of OSS's input source.
 
 ### Reading from a file 
 
-Say that the file `rollup-data.json`, which can be found under Druid's `quickstart/tutorial` directory, has been uploaded to a folder `druid` in your OSS bucket, the bucket for which your Druid is configured.
+Say that the file `rollup-data.json`, which can be found under Robux's `quickstart/tutorial` directory, has been uploaded to a folder `robux` in your OSS bucket, the bucket for which your Robux is configured.
 In this case, the `uris` property of the OSS's input source can be used for reading, as shown:
 
 ```json
@@ -135,7 +135,7 @@ In this case, the `uris` property of the OSS's input source can be used for read
       "inputSource" : {
         "type" : "oss",
         "uris" : [
-          "oss://{YOUR_BUCKET_NAME}/druid/rollup-data.json"
+          "oss://{YOUR_BUCKET_NAME}/robux/rollup-data.json"
         ]
       },
       "inputFormat" : {
@@ -152,11 +152,11 @@ In this case, the `uris` property of the OSS's input source can be used for read
 }
 ```
 
-By posting the above ingestion task spec to `http://{YOUR_ROUTER_IP}:8888/druid/indexer/v1/task`, an ingestion task will be created by the indexing service to ingest.
+By posting the above ingestion task spec to `http://{YOUR_ROUTER_IP}:8888/robux/indexer/v1/task`, an ingestion task will be created by the indexing service to ingest.
 
 ### Reading files in folders
 
-If we want to read files in a same folder, we could use the `prefixes` property to specify the folder name where Druid could find input files instead of specifying file URIs one by one.
+If we want to read files in a same folder, we could use the `prefixes` property to specify the folder name where Robux could find input files instead of specifying file URIs one by one.
 
 ```json
 ...
@@ -180,7 +180,7 @@ The spec above tells the ingestion task to read all files under `2020` and `2021
 
 ### Reading from other buckets 
 
-If you want to read from files in buckets which are different from the bucket Druid is configured, use `objects` property of OSS's InputSource for task submission as below:
+If you want to read from files in buckets which are different from the bucket Robux is configured, use `objects` property of OSS's InputSource for task submission as below:
 
 ```json
 ...
@@ -189,7 +189,7 @@ If you want to read from files in buckets which are different from the bucket Dr
       "inputSource" : {
         "type" : "oss",
         "objects" : [
-          {"bucket": "YOUR_BUCKET_NAME", "path": "druid/rollup-data.json"}
+          {"bucket": "YOUR_BUCKET_NAME", "path": "robux/rollup-data.json"}
         ]
       },
       "inputFormat" : {
@@ -202,7 +202,7 @@ If you want to read from files in buckets which are different from the bucket Dr
 
 ### Reading with customized accessKey
 
-If the default `druid.oss.accessKey` is not able to access a bucket, `properties` could be used to customize these secret information as below:
+If the default `robux.oss.accessKey` is not able to access a bucket, `properties` could be used to customize these secret information as below:
 
 ```json
 ...
@@ -211,7 +211,7 @@ If the default `druid.oss.accessKey` is not able to access a bucket, `properties
       "inputSource" : {
         "type" : "oss",
         "objects" : [
-          {"bucket": "YOUR_BUCKET_NAME", "path": "druid/rollup-data.json"}
+          {"bucket": "YOUR_BUCKET_NAME", "path": "robux/rollup-data.json"}
         ],
         "properties": {
           "endpoint": "YOUR_ENDPOINT_OF_BUCKET",

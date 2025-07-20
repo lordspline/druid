@@ -37,10 +37,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=integration-test@druid.apache.org
+emailAddress=integration-test@robux.apache.org
 CN = itroot
 
 [ v3_ca ]

@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-import { N } from 'druid-query-toolkit';
+import { N } from 'robux-query-toolkit';
 import React from 'react';
 import ReactTable from 'react-table';
 
 import { Loader } from '../../../components/loader/loader';
 import { useQueryManager } from '../../../hooks';
 import { SMALL_TABLE_PAGE_SIZE, SMALL_TABLE_PAGE_SIZE_OPTIONS } from '../../../react-table';
-import { queryDruidSql } from '../../../utils';
+import { queryRobuxSql } from '../../../utils';
 
 import './lookup-values-table.scss';
 
@@ -42,7 +42,7 @@ export const LookupValuesTable = React.memo(function LookupValuesTable(
 ) {
   const [entriesState] = useQueryManager<string, LookupRow[]>({
     processQuery: async (lookupId, cancelToken) => {
-      return await queryDruidSql<LookupRow>(
+      return await queryRobuxSql<LookupRow>(
         {
           query: `SELECT "k", "v" FROM ${N('lookup').table(lookupId)} LIMIT 5000`,
         },

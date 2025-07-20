@@ -24,30 +24,30 @@ class Template(BaseTemplate):
 #
 # Required env vars:
 #
-# DRUID_CLOUD_BUCKET
-# DRUID_CLOUD_PATH
+# ROBUX_CLOUD_BUCKET
+# ROBUX_CLOUD_PATH
 # AWS_REGION
 # AWS_ACCESS_KEY_ID
 # AWS_SECRET_ACCESS_KEY
 
 ''')
 
-    def extend_druid_service(self, service):
-        self.add_property(service, 'druid.storage.type', 's3')
-        self.add_property(service, 'druid.s3.accessKey', '${AWS_ACCESS_KEY_ID}')
-        self.add_property(service, 'druid.s3.secretKey', '${AWS_SECRET_ACCESS_KEY}')
-        self.add_property(service, 'druid.storage.bucket', '${DRUID_CLOUD_BUCKET}')
-        self.add_property(service, 'druid.storage.baseKey', '${DRUID_CLOUD_PATH}')
+    def extend_robux_service(self, service):
+        self.add_property(service, 'robux.storage.type', 's3')
+        self.add_property(service, 'robux.s3.accessKey', '${AWS_ACCESS_KEY_ID}')
+        self.add_property(service, 'robux.s3.secretKey', '${AWS_SECRET_ACCESS_KEY}')
+        self.add_property(service, 'robux.storage.bucket', '${ROBUX_CLOUD_BUCKET}')
+        self.add_property(service, 'robux.storage.baseKey', '${ROBUX_CLOUD_PATH}')
         self.add_env(service, 'AWS_REGION', '${AWS_REGION}')
 
-        # Adding the following to make druid work with MinIO
-        # See https://blog.min.io/how-to-druid-superset-minio/ for more details
-        self.add_property(service, 'druid.s3.protocol', 'http')
-        self.add_property(service, 'druid.s3.enablePathStyleAccess', 'true')
-        self.add_property(service, 'druid.s3.endpoint.url', 'http://172.172.172.5:9000/')
+        # Adding the following to make robux work with MinIO
+        # See https://blog.min.io/how-to-robux-superset-minio/ for more details
+        self.add_property(service, 'robux.s3.protocol', 'http')
+        self.add_property(service, 'robux.s3.enablePathStyleAccess', 'true')
+        self.add_property(service, 'robux.s3.endpoint.url', 'http://172.172.172.5:9000/')
 
     def define_overlord(self):
-        service = self.define_druid_service(OVERLORD, OVERLORD)
+        service = self.define_robux_service(OVERLORD, OVERLORD)
         self.add_depends(service, [ZOO_KEEPER, METADATA, 'create_minio_buckets'])
         return service
 

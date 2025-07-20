@@ -22,12 +22,12 @@ import React, { useState } from 'react';
 
 import type { FormJsonTabs } from '../../components';
 import { ExternalLink, FormJsonSelector, JsonInput, RuleEditor } from '../../components';
-import type { Rule } from '../../druid-models';
+import type { Rule } from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import { useQueryManager } from '../../hooks';
 import { getLink } from '../../links';
 import { Api } from '../../singletons';
-import { filterMap, getApiArray, queryDruidSql, swapElements } from '../../utils';
+import { filterMap, getApiArray, queryRobuxSql, swapElements } from '../../utils';
 import { SnitchDialog } from '..';
 
 import { RETENTION_RULE_COMPLETIONS } from './retention-rule-completions';
@@ -56,7 +56,7 @@ export const RetentionDialog = React.memo(function RetentionDialog(props: Retent
     initQuery: capabilities,
     processQuery: async (capabilities, cancelToken) => {
       if (capabilities.hasSql()) {
-        const sqlResp = await queryDruidSql<{ tier: string }>(
+        const sqlResp = await queryRobuxSql<{ tier: string }>(
           {
             query: `SELECT "tier"
 FROM "sys"."servers"
@@ -70,7 +70,7 @@ ORDER BY 1`,
         return sqlResp.map(d => d.tier);
       } else if (capabilities.hasCoordinatorAccess()) {
         return filterMap(
-          await getApiArray('/druid/coordinator/v1/servers?simple', cancelToken),
+          await getApiArray('/robux/coordinator/v1/servers?simple', cancelToken),
           (s: any) => (s.type === 'historical' ? s.tier : undefined),
         );
       } else {
@@ -85,7 +85,7 @@ ORDER BY 1`,
     initQuery: props.datasource,
     processQuery: async (datasource, cancelToken) => {
       return await getApiArray(
-        `/druid/coordinator/v1/rules/${Api.encodePath(datasource)}/history?count=200`,
+        `/robux/coordinator/v1/rules/${Api.encodePath(datasource)}/history?count=200`,
         cancelToken,
       );
     },
@@ -150,7 +150,7 @@ ORDER BY 1`,
       historyRecords={historyRecords}
     >
       <p>
-        Druid uses rules to determine what data should be retained in the cluster. The rules are
+        Robux uses rules to determine what data should be retained in the cluster. The rules are
         evaluated in order from top to bottom. For more information please refer to the{' '}
         <ExternalLink href={`${getLink('DOCS')}/operations/rule-configuration`}>
           documentation

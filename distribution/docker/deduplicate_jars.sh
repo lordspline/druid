@@ -23,7 +23,7 @@ set -e
 
 # Check if an argument is provided
 if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <path-to-druid-home>"
+    echo "Usage: $0 <path-to-robux-home>"
     exit 1
 fi
 

@@ -21,30 +21,30 @@ set -e
 DOCKERDIR=$(dirname "$0")/docker
 
 # Skip stopping docker if flag set (For use during development)
-if [ -n "$DRUID_INTEGRATION_TEST_SKIP_RUN_DOCKER" ] && [ "$DRUID_INTEGRATION_TEST_SKIP_RUN_DOCKER" == true ]
+if [ -n "$ROBUX_INTEGRATION_TEST_SKIP_RUN_DOCKER" ] && [ "$ROBUX_INTEGRATION_TEST_SKIP_RUN_DOCKER" == true ]
 then
   exit 0
 fi
 
-rm -rf $(dirname "$0")/../apache-druid-$DRUID_VERSION
+rm -rf $(dirname "$0")/../apache-robux-$ROBUX_VERSION
 
 # stop hadoop container if it exists (can't use docker compose down because it shares network)
-HADOOP_CONTAINER="$(docker ps -aq -f name=druid-it-hadoop)"
+HADOOP_CONTAINER="$(docker ps -aq -f name=robux-it-hadoop)"
 if [ ! -z "$HADOOP_CONTAINER" ]
 then
-  docker stop druid-it-hadoop
-  docker rm druid-it-hadoop
+  docker stop robux-it-hadoop
+  docker rm robux-it-hadoop
 fi
 
 # bring down using the same compose args we started with
-if [ -z "$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH" ]
+if [ -z "$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH" ]
 then
   OVERRIDE_ENV=environment-configs/empty-config docker compose $(getComposeArgs) down
 else
-  OVERRIDE_ENV=$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH docker compose $(getComposeArgs) down
+  OVERRIDE_ENV=$ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH docker compose $(getComposeArgs) down
 fi
 
-if [ ! -z "$(docker network ls -q -f name=druid-it-net)" ]
+if [ ! -z "$(docker network ls -q -f name=robux-it-net)" ]
 then
-  docker network rm druid-it-net
+  docker network rm robux-it-net
 fi

@@ -1,4 +1,4 @@
-# Jupyter Notebook tutorials for Druid
+# Jupyter Notebook tutorials for Robux
 
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one

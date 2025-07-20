@@ -14,8 +14,8 @@
 # limitations under the License.
 #--------------------------------------------------------------------
 
-require_env_var DRUID_CLOUD_BUCKET
-require_env_var DRUID_CLOUD_PATH
+require_env_var ROBUX_CLOUD_BUCKET
+require_env_var ROBUX_CLOUD_PATH
 require_env_var AWS_REGION
 require_env_var AWS_ACCESS_KEY_ID
 require_env_var AWS_SECRET_ACCESS_KEY

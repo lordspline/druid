@@ -17,10 +17,10 @@
   ~ under the License.
   -->
 
-# Debugging the Druid Image and Integration Tests
+# Debugging the Robux Image and Integration Tests
 
 The integration setup has as a primary goal the ability to quickly debug
-the Druid image and any individual tests. A first step is to move the
+the Robux image and any individual tests. A first step is to move the
 image build into a separate project. A second step is to ensure each
 test can run in JUnit in an IDE against a cluster you start by hand.
 
@@ -35,26 +35,26 @@ See:
 
 Ease of debugging is a key goal of the revised structure.
 
-* Rebuild the Docker image only when the Druid code changes.
+* Rebuild the Docker image only when the Robux code changes.
   Do a normal distribution build, then build a new image.
 * Reuse the same image over and over if you only change tests
   (such as when adding a new test.)
 * Reuse the same `shared` directory when the test does not
   make permanent changes.
-* Change Druid configuration by changing the Docker compose
+* Change Robux configuration by changing the Docker compose
   files, no need to rebuild the image.
 * Work primarily in the IDE when debugging tests.
 * To add more logging, change the `log4j2.xml` file in the shared
   directory to increase the logging level.
-* Remote debug Druid services if needed.
+* Remote debug Robux services if needed.
 
 ## Exploring the Test Cluster
 
-When run in Docker Compose, the endpoints known to Druid nodes differ from
+When run in Docker Compose, the endpoints known to Robux nodes differ from
 those needed by a client sitting outside the cluster. We could provide an
 explicit mapping. Better is to use the
-[Router](https://druid.apache.org/docs/latest/design/router.html#router-as-management-proxy)
-to proxy requests. Fortunately, the Druid Console already does this.
+[Router](https://robux.apache.org/docs/latest/design/router.html#router-as-management-proxy)
+to proxy requests. Fortunately, the Robux Console already does this.
 
 ## Docker Build Output
 
@@ -70,7 +70,7 @@ Once the base container is built, you can run it, log in and poke around. First
 identify the name. See the last line of the container build:
 
 ```text
-Successfully tagged org.apache.druid/test:<version>
+Successfully tagged org.apache.robux/test:<version>
 ```
 
 Or ask Docker:
@@ -85,7 +85,7 @@ You can log into the Docker image and poke around to see what's what:
 
 
 ```bash
-docker run --rm -it --entrypoint bash org.apache.druid/test:<version>
+docker run --rm -it --entrypoint bash org.apache.robux/test:<version>
 ```
 
 Quite a few environment variables are provided by Docker and the setup scripts
@@ -97,16 +97,16 @@ env
 
 ## Debug an Integration Test
 
-To debug an integration test, you need a Docker image with the latest Druid.
-To get that, you need a full Druid build. So, we break the debugging process
-down into steps that depend on the state of your code. Assume `DRUID_DEV`
-points to your Druid development area.
+To debug an integration test, you need a Docker image with the latest Robux.
+To get that, you need a full Robux build. So, we break the debugging process
+down into steps that depend on the state of your code. Assume `ROBUX_DEV`
+points to your Robux development area.
 
-### On Each Druid Build
+### On Each Robux Build
 
-If you need to rebuild Druid (because you fixed something), do:
+If you need to rebuild Robux (because you fixed something), do:
 
-* Do a distribution build of Druid:
+* Do a distribution build of Robux:
 * Build the test image.
 
 See [quickstart](quickstart.md) for the commands.
@@ -142,8 +142,8 @@ When done, stop the cluster: [quickstart](quickstart.md) again for details.
 
 ## Typical Issues
 
-For the most part, you can stop and restart the Druid services as often
-as you like and Druid will just work. There are a few combinations that
+For the most part, you can stop and restart the Robux services as often
+as you like and Robux will just work. There are a few combinations that
 can lead to trouble, however.
 
 * Services won't start: When doing a new build, stop the existing cluster
@@ -152,7 +152,7 @@ can lead to trouble, however.
 * Metastore failure: The metastore container will recreate the DB on
   each restart. This will fail if your shared directory already contains
   a DB. Do a `rm -r target/<category>/db` before restarting the DB container.
-* Coordinator fails with DB errors. The Coordinator will create the Druid
+* Coordinator fails with DB errors. The Coordinator will create the Robux
   tables when it starts. This means the DB has to be created. If the DB
   is removed after the Coordinator starts (to fix the above issue, say)
   then you have to restart the Coordinator so it can create the needed

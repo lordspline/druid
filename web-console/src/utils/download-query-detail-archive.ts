@@ -22,7 +22,7 @@ import type {
   AsyncStatusResponse,
   MsqTaskPayloadResponse,
   MsqTaskReportResponse,
-} from '../druid-models';
+} from '../robux-models';
 import { Api } from '../singletons';
 
 import { downloadFile } from './download';
@@ -45,20 +45,20 @@ export async function downloadQueryDetailArchive(id: string) {
   };
 
   try {
-    profile.status = (await Api.instance.get(`/druid/indexer/v1/task/${encodedId}/status`)).data;
+    profile.status = (await Api.instance.get(`/robux/indexer/v1/task/${encodedId}/status`)).data;
   } catch {}
 
   try {
-    profile.reports = (await Api.instance.get(`/druid/indexer/v1/task/${encodedId}/reports`)).data;
+    profile.reports = (await Api.instance.get(`/robux/indexer/v1/task/${encodedId}/reports`)).data;
   } catch {}
 
   try {
-    profile.payload = (await Api.instance.get(`/druid/indexer/v1/task/${encodedId}`)).data;
+    profile.payload = (await Api.instance.get(`/robux/indexer/v1/task/${encodedId}`)).data;
   } catch {}
 
   try {
     profile.statementsStatus = (
-      await Api.instance.get(`/druid/v2/sql/statements/${encodedId}`)
+      await Api.instance.get(`/robux/v2/sql/statements/${encodedId}`)
     ).data;
   } catch {}
 

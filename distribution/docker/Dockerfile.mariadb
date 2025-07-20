@@ -17,10 +17,10 @@
 # under the License.
 #
 
-ARG DRUID_RELEASE
-FROM $DRUID_RELEASE
+ARG ROBUX_RELEASE
+FROM $ROBUX_RELEASE
 
-WORKDIR /opt/druid/extensions/mysql-metadata-storage
+WORKDIR /opt/robux/extensions/mysql-metadata-storage
 
 ARG MARIA_URL=https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/2.7.3/mariadb-java-client-2.7.3.jar
 ARG MARIA_JAR=mariadb-java-client-2.7.3.jar
@@ -28,6 +28,6 @@ ARG MARIA_SHA=4a2edc05bd882ad19371d2615c2635dccf8d74f0
 
 RUN wget -q ${MARIA_URL} \
  && echo "${MARIA_SHA}  ${MARIA_JAR}" | sha1sum -c \
- && ln -s ../extensions/mysql-metadata-storage/${MARIA_JAR} /opt/druid/lib
+ && ln -s ../extensions/mysql-metadata-storage/${MARIA_JAR} /opt/robux/lib
 
-WORKDIR /opt/druid
+WORKDIR /opt/robux

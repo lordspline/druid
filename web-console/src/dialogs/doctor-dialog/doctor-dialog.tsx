@@ -165,7 +165,7 @@ export class DoctorDialog extends React.PureComponent<DoctorDialogProps, DoctorD
             Automated checks to troubleshoot issues with the cluster.
           </Callout>
           <Button
-            text="Analyze Druid cluster"
+            text="Analyze Robux cluster"
             intent={Intent.PRIMARY}
             fill
             onClick={() => void this.doChecks()}
@@ -183,7 +183,7 @@ export class DoctorDialog extends React.PureComponent<DoctorDialogProps, DoctorD
         className="doctor-dialog"
         icon={IconNames.PULSE}
         onClose={onClose}
-        title="Druid Doctor"
+        title="Robux Doctor"
         isOpen
         canEscapeKeyClose={false}
         canOutsideClickClose={false}

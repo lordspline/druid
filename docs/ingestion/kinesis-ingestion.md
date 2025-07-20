@@ -29,17 +29,17 @@ import TabItem from '@theme/TabItem';
 
 When you enable the Kinesis indexing service, you can configure supervisors on the Overlord to manage the creation and lifetime of Kinesis indexing tasks. Kinesis indexing tasks read events using the Kinesis shard and sequence number mechanism to guarantee exactly-once ingestion. The supervisor oversees the state of the indexing tasks to coordinate handoffs, manage failures, and ensure that scalability and replication requirements are maintained.
 
-This topic contains configuration information for the Kinesis indexing service supervisor for Apache Druid.
+This topic contains configuration information for the Kinesis indexing service supervisor for Apache Robux.
 
 ## Setup
 
-To use the Kinesis indexing service, you must first load the `druid-kinesis-indexing-service` core extension on both the Overlord and the Middle Manager. See [Loading extensions](../configuration/extensions.md#loading-extensions) for more information.
+To use the Kinesis indexing service, you must first load the `robux-kinesis-indexing-service` core extension on both the Overlord and the Middle Manager. See [Loading extensions](../configuration/extensions.md#loading-extensions) for more information.
 
-Review [Known issues](#known-issues) before deploying the `druid-kinesis-indexing-service` extension to production.
+Review [Known issues](#known-issues) before deploying the `robux-kinesis-indexing-service` extension to production.
 
 ## Supervisor spec configuration
 
-This section outlines the configuration properties that are specific to the Amazon Kinesis streaming ingestion method. For configuration properties shared across all streaming ingestion methods supported by Druid, see [Supervisor spec](supervisor.md#supervisor-spec).
+This section outlines the configuration properties that are specific to the Amazon Kinesis streaming ingestion method. For configuration properties shared across all streaming ingestion methods supported by Robux, see [Supervisor spec](supervisor.md#supervisor-spec).
 
 The following example shows a supervisor spec for a stream with the name `KinesisStream`:
 
@@ -157,29 +157,29 @@ For configuration properties shared across all streaming ingestion methods, refe
 |Property|Type|Description|Required|Default|
 |--------|----|-----------|--------|-------|
 |`skipSequenceNumberAvailabilityCheck`|Boolean|Whether to enable checking if the current sequence number is still available in a particular Kinesis shard. If `false`, the indexing task attempts to reset the current sequence number, depending on the value of `resetOffsetAutomatically`. For more information on the `resetOffsetAutomatically` property, see [Supervisor tuning configuration](supervisor.md#tuning-configuration).|No|`false`|
-|`recordBufferSizeBytes`|Integer| The size of the buffer (heap memory bytes) Druid uses between the Kinesis fetch threads and the main ingestion thread.|No| See [Determine fetch settings](#determine-fetch-settings) for defaults.|
+|`recordBufferSizeBytes`|Integer| The size of the buffer (heap memory bytes) Robux uses between the Kinesis fetch threads and the main ingestion thread.|No| See [Determine fetch settings](#determine-fetch-settings) for defaults.|
 |`recordBufferOfferTimeout`|Integer|The number of milliseconds to wait for space to become available in the buffer before timing out.|No|5000|
-|`recordBufferFullWait`|Integer|The number of milliseconds to wait for the buffer to drain before Druid attempts to fetch records from Kinesis again.|No|5000|
+|`recordBufferFullWait`|Integer|The number of milliseconds to wait for the buffer to drain before Robux attempts to fetch records from Kinesis again.|No|5000|
 |`fetchThreads`|Integer|The size of the pool of threads fetching data from Kinesis. There is no benefit in having more threads than Kinesis shards.|No| `procs * 2`, where `procs` is the number of processors available to the task.|
 |`maxBytesPerPoll`|Integer| The maximum number of bytes to be fetched from buffer per poll. At least one record is polled from the buffer regardless of this config.|No| 1000000 bytes|
-|`repartitionTransitionDuration`|ISO 8601 period|When shards are split or merged, the supervisor recomputes shard to task group mappings. The supervisor also signals any running tasks created under the old mappings to stop early at current time + `repartitionTransitionDuration`. Stopping the tasks early allows Druid to begin reading from the new shards more quickly. The repartition transition wait time controlled by this property gives the stream additional time to write records to the new shards after the split or merge, which helps avoid issues with [empty shard handling](https://github.com/apache/druid/issues/7600).|No|`PT2M`|
+|`repartitionTransitionDuration`|ISO 8601 period|When shards are split or merged, the supervisor recomputes shard to task group mappings. The supervisor also signals any running tasks created under the old mappings to stop early at current time + `repartitionTransitionDuration`. Stopping the tasks early allows Robux to begin reading from the new shards more quickly. The repartition transition wait time controlled by this property gives the stream additional time to write records to the new shards after the split or merge, which helps avoid issues with [empty shard handling](https://github.com/apache/robux/issues/7600).|No|`PT2M`|
 |`useListShards`|Boolean|Indicates if `listShards` API of AWS Kinesis SDK can be used to prevent `LimitExceededException` during ingestion. You must set the necessary `IAM` permissions.|No|`false`|
 
 ## AWS authentication
 
-Druid uses AWS access and secret keys to authenticate Kinesis API requests. There are a few ways to provide this information to Druid:
+Robux uses AWS access and secret keys to authenticate Kinesis API requests. There are a few ways to provide this information to Robux:
 
 1. Using roles or short-term credentials:
 
-  Druid looks for credentials set in [environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html), via [Web Identity Token](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html), in the default [profile configuration file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html), and from the EC2 instance profile provider (in this order).
+  Robux looks for credentials set in [environment variables](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html), via [Web Identity Token](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html), in the default [profile configuration file](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html), and from the EC2 instance profile provider (in this order).
 
 2. Using long-term security credentials:
 
   You can directly provide your AWS access key and AWS secret key in the `common.runtime.properties` file as shown in the example below:
 
   ```properties
-  druid.kinesis.accessKey=AKIAWxxxxxxxxxx4NCKS
-  druid.kinesis.secretKey=Jbytxxxxxxxxxxx2+555
+  robux.kinesis.accessKey=AKIAWxxxxxxxxxx4NCKS
+  robux.kinesis.secretKey=Jbytxxxxxxxxxxx2+555
   ```
 
 :::info
@@ -259,7 +259,7 @@ For example, consider the following scenario:
 - Segment granularity is set to an HOUR
 - The supervisor was started at 9:10
 
-After 4 hours at 13:10, Druid starts a new set of tasks. The events for the interval 13:00 - 14:00 may be split across existing tasks and the new set of tasks which could result in small segments. To merge them together into new segments of an ideal size (in the range of ~500-700 MB per segment), you can schedule re-indexing tasks, optionally with a different segment granularity.
+After 4 hours at 13:10, Robux starts a new set of tasks. The events for the interval 13:00 - 14:00 may be split across existing tasks and the new set of tasks which could result in small segments. To merge them together into new segments of an ideal size (in the range of ~500-700 MB per segment), you can schedule re-indexing tasks, optionally with a different segment granularity.
 
 For information on how to optimize the segment size, see [Segment size optimization](../operations/segment-optimization.md).
 
@@ -273,7 +273,7 @@ The records fetched by each thread are pushed into a shared queue of size `recor
 The default values for these parameters are:
 
 - `fetchThreads`: Twice the number of processors available to the task. The number of processors available to the task
-is the total number of processors on the server, divided by `druid.worker.capacity` (the number of task slots on that
+is the total number of processors on the server, divided by `robux.worker.capacity` (the number of task slots on that
 particular server). This value is further limited so that the total data record data fetched at a given time does not
 exceed 5% of the max heap configured, assuming that each thread fetches 10 MB of records at once. If the value specified
 for this configuration is higher than this limit, no failure occurs, but a warning is logged, and the value is
@@ -289,7 +289,7 @@ Kinesis places the following restrictions on calls to fetch records:
 - Each shard can read up to 2 MB per second.
 - The maximum size of data that GetRecords can return is 10 MB.
 
-If the above limits are exceeded, Kinesis throws `ProvisionedThroughputExceededException` errors. If this happens, Druid
+If the above limits are exceeded, Kinesis throws `ProvisionedThroughputExceededException` errors. If this happens, Robux
 Kinesis tasks pause by `fetchDelayMillis` or 3 seconds, whichever is larger, and then attempt the call again.
 
 In most cases, the default settings for fetch parameters are sufficient to achieve good performance without excessive
@@ -322,7 +322,7 @@ If resharding occurs when the supervisor is suspended and `useEarliestSequence` 
 
 ## Known issues
 
-Before you deploy the `druid-kinesis-indexing-service` extension to production, consider the following known issues:
+Before you deploy the `robux-kinesis-indexing-service` extension to production, consider the following known issues:
 
 - Kinesis imposes a read throughput limit per shard. If you have multiple supervisors reading from the same Kinesis stream, consider adding more shards to ensure sufficient read throughput for all supervisors.
 - A Kinesis supervisor can sometimes compare the checkpoint sequence number to the retention window of the stream to see if it has fallen behind. These checks fetch the earliest sequence number for Kinesis which can result in `IteratorAgeMilliseconds` becoming very high in AWS CloudWatch.

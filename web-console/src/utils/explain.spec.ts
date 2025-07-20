@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { sane } from 'druid-query-toolkit';
+import { sane } from 'robux-query-toolkit';
 
 import {
   wrapInExplainAsParsedIfNeeded,

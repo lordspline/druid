@@ -23,21 +23,21 @@ title: "DataSketches Quantiles Sketch module"
   -->
 
 
-This module provides Apache Druid aggregators based on numeric quantiles DoublesSketch from [Apache DataSketches](https://datasketches.apache.org/) library. Quantiles sketch is a mergeable streaming algorithm to estimate the distribution of values, and approximately answer queries about the rank of a value, probability mass function of the distribution (PMF) or histogram, cumulative distribution function (CDF), and quantiles (median, min, max, 95th percentile and such). See [Quantiles Sketch Overview](https://datasketches.apache.org/docs/Quantiles/QuantilesOverview).
+This module provides Apache Robux aggregators based on numeric quantiles DoublesSketch from [Apache DataSketches](https://datasketches.apache.org/) library. Quantiles sketch is a mergeable streaming algorithm to estimate the distribution of values, and approximately answer queries about the rank of a value, probability mass function of the distribution (PMF) or histogram, cumulative distribution function (CDF), and quantiles (median, min, max, 95th percentile and such). See [Quantiles Sketch Overview](https://datasketches.apache.org/docs/Quantiles/QuantilesOverview).
 
 There are three major modes of operation:
 
-1. Ingesting sketches built outside of Druid (say, with Pig or Hive)
+1. Ingesting sketches built outside of Robux (say, with Pig or Hive)
 2. Building sketches from raw data during ingestion
 3. Building sketches from raw data at query time
 
 To use this aggregator, make sure you [include](../../configuration/extensions.md#loading-extensions) the extension in your config file:
 
 ```
-druid.extensions.loadList=["druid-datasketches"]
+robux.extensions.loadList=["robux-datasketches"]
 ```
 
-For additional sketch types supported in Druid, see [DataSketches extension](datasketches-extension.md).
+For additional sketch types supported in Robux, see [DataSketches extension](datasketches-extension.md).
 
 ## Aggregator
 

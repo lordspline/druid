@@ -33,7 +33,7 @@ export class ReindexDataConnector implements DataConnector {
 
   constructor(page: playwright.Page, props: ReindexDataConnectorProps) {
     Object.assign(this, props);
-    this.name = 'Reindex from Druid';
+    this.name = 'Reindex from Robux';
     this.needParse = false;
     this.page = page;
   }

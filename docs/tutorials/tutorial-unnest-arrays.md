@@ -35,11 +35,11 @@ This tutorial demonstrates how to use the unnest datasource to unnest a column t
 - Unnesting data can dramatically increase the total number of rows.
 - You cannot unnest an array within an array.
 
-You can use the Druid console  or API to unnest data. To start though, you may want to use the Druid console so that viewing the nested and unnested data is easier.
+You can use the Robux console  or API to unnest data. To start though, you may want to use the Robux console so that viewing the nested and unnested data is easier.
 
 ## Prerequisites
 
-You need a Druid cluster, such as the [quickstart](./index.md). The cluster does not need any existing datasources. You'll load a basic one as part of this tutorial.
+You need a Robux cluster, such as the [quickstart](./index.md). The cluster does not need any existing datasources. You'll load a basic one as part of this tutorial.
 
 ## Load data with nested values
 
@@ -240,7 +240,7 @@ You can also filter the results of an UNNEST clause. The following example unnes
 SELECT * FROM UNNEST(ARRAY[1,2,3]) AS example_table(d1) WHERE d1 IN ('1','2')
 ```
 
-This means that you can run a query like the following where Druid only return rows that meet the following conditions:
+This means that you can run a query like the following where Robux only return rows that meet the following conditions:
 
 - The unnested values of `dim3` (aliased to `d3`) matches `IN ('b', 'd')`
 - The value of `m1` is less than 2.
