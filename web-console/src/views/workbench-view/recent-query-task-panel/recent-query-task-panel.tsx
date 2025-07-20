@@ -21,18 +21,18 @@ import type { IconName } from '@blueprintjs/icons';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
-import { T } from 'druid-query-toolkit';
+import { T } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 import { useStore } from 'zustand';
 
 import { Loader } from '../../../components';
-import type { TaskStatusWithCanceled } from '../../../druid-models';
+import type { TaskStatusWithCanceled } from '../../../robux-models';
 import {
   Execution,
   getConsoleViewIcon,
   TASK_CANCELED_PREDICATE,
   WorkbenchQuery,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import { cancelTaskExecution, getTaskExecution } from '../../../helpers';
 import { useClock, useInterval, useQueryManager } from '../../../hooks';
 import { AppToaster } from '../../../singletons';
@@ -40,7 +40,7 @@ import {
   downloadQueryDetailArchive,
   formatDuration,
   prettyFormatIsoDate,
-  queryDruidSql,
+  queryRobuxSql,
 } from '../../../utils';
 import { CancelQueryDialog } from '../cancel-query-dialog/cancel-query-dialog';
 import { getMsqTaskVersion, WORK_STATE_STORE } from '../work-state-store';
@@ -91,7 +91,7 @@ export const RecentQueryTaskPanel = React.memo(function RecentQueryTaskPanel(
   const [queryTaskHistoryState, queryManager] = useQueryManager<number, RecentQueryEntry[]>({
     query: useStore(WORK_STATE_STORE, getMsqTaskVersion),
     processQuery: async (_, cancelToken) => {
-      return await queryDruidSql<RecentQueryEntry>(
+      return await queryRobuxSql<RecentQueryEntry>(
         {
           query: `SELECT
   CASE WHEN ${TASK_CANCELED_PREDICATE} THEN 'CANCELED' ELSE "status" END AS "taskStatus",

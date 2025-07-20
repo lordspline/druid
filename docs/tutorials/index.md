@@ -23,14 +23,14 @@ sidebar_label: Local quickstart
   ~ under the License.
   -->
 
-This quickstart helps you install Apache Druid and introduces you to Druid ingestion and query features. For this tutorial, you need a machine with at least 6 GiB of RAM.
+This quickstart helps you install Apache Robux and introduces you to Robux ingestion and query features. For this tutorial, you need a machine with at least 6 GiB of RAM.
 
 In this quickstart, you'll:
-- install Druid
-- start up Druid services
+- install Robux
+- start up Robux services
 - use SQL to ingest and query data
 
-Druid supports a variety of ingestion options. Once you're done with this tutorial, refer to the
+Robux supports a variety of ingestion options. Once you're done with this tutorial, refer to the
 [Ingestion](../ingestion/index.md) page to determine which ingestion method is right for you.
 
 ## Prerequisites
@@ -44,80 +44,80 @@ The software requirements for the installation machine are:
 * Python 3 (preferred) or Python 2
 * Perl 5
 
-Java must be available. Either it is on your path, or set one of the `JAVA_HOME` or `DRUID_JAVA_HOME` environment variables.
-You can run `apache-druid-{{DRUIDVERSION}}/bin/verify-java` to verify Java requirements for your environment.
+Java must be available. Either it is on your path, or set one of the `JAVA_HOME` or `ROBUX_JAVA_HOME` environment variables.
+You can run `apache-robux-{{ROBUXVERSION}}/bin/verify-java` to verify Java requirements for your environment.
 
-Before installing a production Druid instance, be sure to review the [security
-overview](../operations/security-overview.md). In general, avoid running Druid as root user. Consider creating a
-dedicated user account for running Druid.  
+Before installing a production Robux instance, be sure to review the [security
+overview](../operations/security-overview.md). In general, avoid running Robux as root user. Consider creating a
+dedicated user account for running Robux.  
 
-## Install Druid
+## Install Robux
 
-Download the [\{\{DRUIDVERSION}} release](https://druid.apache.org/downloads/) from Apache Druid. 
+Download the [\{\{ROBUXVERSION}} release](https://robux.apache.org/downloads/) from Apache Robux. 
 
 In your terminal, extract the file and change directories to the distribution directory:
 
 ```bash
-tar -xzf apache-druid-{{DRUIDVERSION}}-bin.tar.gz
-cd apache-druid-{{DRUIDVERSION}}
+tar -xzf apache-robux-{{ROBUXVERSION}}-bin.tar.gz
+cd apache-robux-{{ROBUXVERSION}}
 ```
 
 The distribution directory contains `LICENSE` and `NOTICE` files and subdirectories for executable files, configuration files, sample data and more.
 
-## Start up Druid services
+## Start up Robux services
 
-Start up Druid services using the automatic single-machine configuration.
-This configuration includes default settings that are appropriate for this tutorial, such as loading the `druid-multi-stage-query` extension by default so that you can use the MSQ task engine.
+Start up Robux services using the automatic single-machine configuration.
+This configuration includes default settings that are appropriate for this tutorial, such as loading the `robux-multi-stage-query` extension by default so that you can use the MSQ task engine.
 
-You can view the default settings in the configuration files located in `conf/druid/auto`.
+You can view the default settings in the configuration files located in `conf/robux/auto`.
 
-From the `apache-druid-{{DRUIDVERSION}}` package root, run the following command:
+From the `apache-robux-{{ROBUXVERSION}}` package root, run the following command:
 
 ```bash
-./bin/start-druid
+./bin/start-robux
 ```
 
-This launches instances of ZooKeeper and the Druid services.
+This launches instances of ZooKeeper and the Robux services.
 For example:
 
 ```bash
-$ ./bin/start-druid
-[Tue Nov 29 16:31:06 2022] Starting Apache Druid.
+$ ./bin/start-robux
+[Tue Nov 29 16:31:06 2022] Starting Apache Robux.
 [Tue Nov 29 16:31:06 2022] Open http://localhost:8888/ in your browser to access the web console.
 [Tue Nov 29 16:31:06 2022] Or, if you have enabled TLS, use https on port 9088.
-[Tue Nov 29 16:31:06 2022] Starting services with log directory [/apache-druid-{{DRUIDVERSION}}/log].
+[Tue Nov 29 16:31:06 2022] Starting services with log directory [/apache-robux-{{ROBUXVERSION}}/log].
 [Tue Nov 29 16:31:06 2022] Running command[zk]: bin/run-zk conf
-[Tue Nov 29 16:31:06 2022] Running command[broker]: bin/run-druid broker /apache-druid-{{DRUIDVERSION}}/conf/druid/single-server/quickstart '-Xms1187m -Xmx1187m -XX:MaxDirectMemorySize=791m'
-[Tue Nov 29 16:31:06 2022] Running command[router]: bin/run-druid router /apache-druid-{{DRUIDVERSION}}/conf/druid/single-server/quickstart '-Xms128m -Xmx128m'
-[Tue Nov 29 16:31:06 2022] Running command[coordinator-overlord]: bin/run-druid coordinator-overlord /apache-druid-{{DRUIDVERSION}}/conf/druid/single-server/quickstart '-Xms1290m -Xmx1290m'
-[Tue Nov 29 16:31:06 2022] Running command[historical]: bin/run-druid historical /apache-druid-{{DRUIDVERSION}}/conf/druid/single-server/quickstart '-Xms1376m -Xmx1376m -XX:MaxDirectMemorySize=2064m'
-[Tue Nov 29 16:31:06 2022] Running command[middleManager]: bin/run-druid middleManager /apache-druid-{{DRUIDVERSION}}/conf/druid/single-server/quickstart '-Xms64m -Xmx64m' '-Ddruid.worker.capacity=2 -Ddruid.indexer.runner.javaOptsArray=["-server","-Duser.timezone=UTC","-Dfile.encoding=UTF-8","-XX:+ExitOnOutOfMemoryError","-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager","-Xms256m","-Xmx256m","-XX:MaxDirectMemorySize=256m"]'
+[Tue Nov 29 16:31:06 2022] Running command[broker]: bin/run-robux broker /apache-robux-{{ROBUXVERSION}}/conf/robux/single-server/quickstart '-Xms1187m -Xmx1187m -XX:MaxDirectMemorySize=791m'
+[Tue Nov 29 16:31:06 2022] Running command[router]: bin/run-robux router /apache-robux-{{ROBUXVERSION}}/conf/robux/single-server/quickstart '-Xms128m -Xmx128m'
+[Tue Nov 29 16:31:06 2022] Running command[coordinator-overlord]: bin/run-robux coordinator-overlord /apache-robux-{{ROBUXVERSION}}/conf/robux/single-server/quickstart '-Xms1290m -Xmx1290m'
+[Tue Nov 29 16:31:06 2022] Running command[historical]: bin/run-robux historical /apache-robux-{{ROBUXVERSION}}/conf/robux/single-server/quickstart '-Xms1376m -Xmx1376m -XX:MaxDirectMemorySize=2064m'
+[Tue Nov 29 16:31:06 2022] Running command[middleManager]: bin/run-robux middleManager /apache-robux-{{ROBUXVERSION}}/conf/robux/single-server/quickstart '-Xms64m -Xmx64m' '-Drobux.worker.capacity=2 -Drobux.indexer.runner.javaOptsArray=["-server","-Duser.timezone=UTC","-Dfile.encoding=UTF-8","-XX:+ExitOnOutOfMemoryError","-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager","-Xms256m","-Xmx256m","-XX:MaxDirectMemorySize=256m"]'
 ```
 
-Druid may use up to 80% of the total available system memory.
-To explicitly set the total memory available to Druid, pass a value for the memory parameter. For example, `./bin/start-druid -m 16g`. 
+Robux may use up to 80% of the total available system memory.
+To explicitly set the total memory available to Robux, pass a value for the memory parameter. For example, `./bin/start-robux -m 16g`. 
 
-Druid stores all persistent state data, such as the cluster metadata store and data segments, in `apache-druid-{{DRUIDVERSION}}/var`.
-Each service writes to a log file under `apache-druid-{{DRUIDVERSION}}/log`.
+Robux stores all persistent state data, such as the cluster metadata store and data segments, in `apache-robux-{{ROBUXVERSION}}/var`.
+Each service writes to a log file under `apache-robux-{{ROBUXVERSION}}/log`.
 
-At any time, you can revert Druid to its original, post-installation state by deleting the entire `var` directory. You may want to do this, for example, between Druid tutorials or after experimentation, to start with a fresh instance. 
+At any time, you can revert Robux to its original, post-installation state by deleting the entire `var` directory. You may want to do this, for example, between Robux tutorials or after experimentation, to start with a fresh instance. 
 
-To stop Druid at any time, use CTRL+C in the terminal. This exits the `bin/start-druid` script and terminates all Druid processes.
+To stop Robux at any time, use CTRL+C in the terminal. This exits the `bin/start-robux` script and terminates all Robux processes.
 
 ## Open the web console 
 
-After starting the Druid services, open the [web console](../operations/web-console.md) at [http://localhost:8888](http://localhost:8888). 
+After starting the Robux services, open the [web console](../operations/web-console.md) at [http://localhost:8888](http://localhost:8888). 
 
 ![web console](../assets/tutorial-quickstart-01.png "web console")
 
-It may take a few seconds for all Druid services to finish starting, including the [Druid router](../design/router.md), which serves the console. If you attempt to open the web console before startup is complete, you may see errors in the browser. Wait a few moments and try again.
+It may take a few seconds for all Robux services to finish starting, including the [Robux router](../design/router.md), which serves the console. If you attempt to open the web console before startup is complete, you may see errors in the browser. Wait a few moments and try again.
 
 In this quickstart, you use the the web console to perform ingestion. The MSQ task engine specifically uses the **Query** view to edit and run SQL queries.
 For a complete walkthrough of the **Query** view as it relates to the multi-stage query architecture and the MSQ task engine, see [UI walkthrough](../operations/web-console.md).
 
 ## Load data
 
-The Druid distribution bundles the `wikiticker-2015-09-12-sampled.json.gz` sample dataset that you can use for testing. The sample dataset is located in the `quickstart/tutorial/` folder, accessible from the Druid root directory, and represents Wikipedia page edits for a given day. 
+The Robux distribution bundles the `wikiticker-2015-09-12-sampled.json.gz` sample dataset that you can use for testing. The sample dataset is located in the `quickstart/tutorial/` folder, accessible from the Robux root directory, and represents Wikipedia page edits for a given day. 
 
 Follow these steps to load the sample Wikipedia dataset:
 
@@ -133,12 +133,12 @@ Follow these steps to load the sample Wikipedia dataset:
    Entering the base directory and [wildcard file filter](https://commons.apache.org/proper/commons-io/apidocs/org/apache/commons/io/filefilter/WildcardFileFilter.html) separately, as afforded by the UI, allows you to specify multiple files for ingestion at once.
 
 3. Click **Connect data**. 
-4. On the **Parse** page, you can examine the raw data and perform the following optional actions before loading data into Druid: 
+4. On the **Parse** page, you can examine the raw data and perform the following optional actions before loading data into Robux: 
    - Expand a row to see the corresponding source data.
    - Customize how the data is handled by selecting from the **Input format** options.
    - Adjust the primary timestamp column for the data.
-   Druid requires data to have a primary timestamp column (internally stored in a column called `__time`).
-   If your dataset doesn't have a timestamp, Druid uses the default value of `1970-01-01 00:00:00`.
+   Robux requires data to have a primary timestamp column (internally stored in a column called `__time`).
+   If your dataset doesn't have a timestamp, Robux uses the default value of `1970-01-01 00:00:00`.
 
    ![Data sample](../assets/tutorial-quickstart-03.png "Data sample")
 
@@ -190,7 +190,7 @@ Follow these steps to load the sample Wikipedia dataset:
 
     ![Run query](../assets/tutorial-quickstart-04.png "Run query")
 
-   A successful task means that Druid data servers have picked up one or more segments.
+   A successful task means that Robux data servers have picked up one or more segments.
 
 ## Query data
 
@@ -209,17 +209,17 @@ ORDER BY COUNT(*) DESC
 
 ![Query view](../assets/tutorial-quickstart-05.png "Query view")
 
-Congratulations! You've gone from downloading Druid to querying data with the MSQ task engine in just one quickstart.
+Congratulations! You've gone from downloading Robux to querying data with the MSQ task engine in just one quickstart.
 
 ## Next steps
 
 See the following topics for more information:
 
-* [Druid SQL overview](../querying/sql.md) or the [Query tutorial](./tutorial-query.md) to learn about how to query the data you just ingested.
+* [Robux SQL overview](../querying/sql.md) or the [Query tutorial](./tutorial-query.md) to learn about how to query the data you just ingested.
 * [Ingestion overview](../ingestion/index.md) to explore options for ingesting more data.
-* [Tutorial: Load files using SQL](./tutorial-msq-extern.md) to learn how to generate a SQL query that loads external data into a Druid datasource.
-* [Tutorial: Load data with native batch ingestion](tutorial-batch-native.md) to load and query data with Druid's native batch ingestion feature.
+* [Tutorial: Load files using SQL](./tutorial-msq-extern.md) to learn how to generate a SQL query that loads external data into a Robux datasource.
+* [Tutorial: Load data with native batch ingestion](tutorial-batch-native.md) to load and query data with Robux's native batch ingestion feature.
 * [Tutorial: Load stream data from Apache Kafka](./tutorial-kafka.md) to load streaming data from a Kafka topic.
-* [Extensions](../configuration/extensions.md) for details on Druid extensions.
+* [Extensions](../configuration/extensions.md) for details on Robux extensions.
 
-Remember that after stopping Druid services, you can start clean next time by deleting the `var` directory from the Druid root directory and running the `bin/start-druid` script again. You may want to do this before using other data ingestion tutorials, since they use the same Wikipedia datasource.
+Remember that after stopping Robux services, you can start clean next time by deleting the `var` directory from the Robux root directory and running the `bin/start-robux` script again. You may want to do this before using other data ingestion tutorials, since they use the same Wikipedia datasource.

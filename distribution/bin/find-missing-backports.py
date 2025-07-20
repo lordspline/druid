@@ -107,7 +107,7 @@ pr_items = []
 page = 0
 while True:
   page = page + 1
-  pr_url = "https://api.github.com/search/issues?per_page=50&page={}&q=milestone:{}+type:pr+is:merged+is:closed+repo:apache/druid".format(page,milestone_title)
+  pr_url = "https://api.github.com/search/issues?per_page=50&page={}&q=milestone:{}+type:pr+is:merged+is:closed+repo:apache/robux".format(page,milestone_title)
   pr_resp = requests.get(pr_url, auth=(github_username, os.environ["GIT_TOKEN"])).json()
   if pr_resp['incomplete_results']:
     sys.stderr.write('This script cannot handle incomplete results')

@@ -23,16 +23,16 @@ title: "Protobuf"
   -->
 
 
-This Apache Druid extension enables Druid to ingest and understand the Protobuf data format. Make sure to [include](../../configuration/extensions.md#loading-extensions) `druid-protobuf-extensions` in the extensions load list.
+This Apache Robux extension enables Robux to ingest and understand the Protobuf data format. Make sure to [include](../../configuration/extensions.md#loading-extensions) `robux-protobuf-extensions` in the extensions load list.
 
-The `druid-protobuf-extensions` provides the [Protobuf Parser](../../ingestion/data-formats.md#protobuf-parser)
+The `robux-protobuf-extensions` provides the [Protobuf Parser](../../ingestion/data-formats.md#protobuf-parser)
 for [stream ingestion](../../ingestion/index.md#streaming). See corresponding docs for details.
 
 ## Example: Load Protobuf messages from Kafka
 
 This example demonstrates how to load Protobuf messages from Kafka.  Please read the [Load from Kafka tutorial](../../tutorials/tutorial-kafka.md) first, and see [Kafka Indexing Service](../../ingestion/kafka-ingestion.md) documentation for more details.
 
-The files used in this example are found at [`./examples/quickstart/protobuf` in your Druid directory](https://github.com/apache/druid/tree/master/examples/quickstart/protobuf).
+The files used in this example are found at [`./examples/quickstart/protobuf` in your Robux directory](https://github.com/apache/robux/tree/master/examples/quickstart/protobuf).
 
 For this example:
 - Kafka broker host is `localhost:9092`
@@ -73,7 +73,7 @@ message Metrics {
 
 ### When using a descriptor file
 
-Next, we use the `protoc` Protobuf compiler to generate the descriptor file and save it as `metrics.desc`. The descriptor file must be either in the classpath or reachable by URL.  In this example the descriptor file was saved at `/tmp/metrics.desc`, however this file is also available in the example files. From your Druid install directory:
+Next, we use the `protoc` Protobuf compiler to generate the descriptor file and save it as `metrics.desc`. The descriptor file must be either in the classpath or reachable by URL.  In this example the descriptor file was saved at `/tmp/metrics.desc`, however this file is also available in the example files. From your Robux install directory:
 
 ```
 protoc -o /tmp/metrics.desc ./quickstart/protobuf/metrics.proto
@@ -94,7 +94,7 @@ Accept: application/vnd.schemaregistry.v1+json, application/vnd.schemaregistry+j
 }
 ```
 
-This feature uses Confluent's Protobuf provider which is not included in the Druid distribution and must be installed separately. You can fetch it and its dependencies from the Confluent repository and Maven Central at: 
+This feature uses Confluent's Protobuf provider which is not included in the Robux distribution and must be installed separately. You can fetch it and its dependencies from the Confluent repository and Maven Central at: 
 - https://packages.confluent.io/maven/io/confluent/kafka-protobuf-provider/6.0.1/kafka-protobuf-provider-6.0.1.jar
 - https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/1.4.0/kotlin-stdlib-1.4.0.jar
 - https://repo1.maven.org/maven2/com/squareup/wire/wire-schema/3.2.2/wire-schema-3.2.2.jar
@@ -254,7 +254,7 @@ If necessary, from your Kafka installation directory run the following command t
 ./bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic metrics_pb
 ```
 
-This example script requires `protobuf` and `kafka-python` modules. With the topic in place, messages can be inserted running the following command from your Druid installation directory
+This example script requires `protobuf` and `kafka-python` modules. With the topic in place, messages can be inserted running the following command from your Robux installation directory
 
 ```
 ./bin/generate-example-metrics | python /quickstart/protobuf/pb_publisher.py
@@ -272,7 +272,7 @@ which should print messages like this
 millisecondsGETR"2017-04-06T03:23:56Z*2002/list:request/latencyBwww1.example.com
 ```
 
-If your supervisor created in the previous step is running, the indexing tasks should begin producing the messages and the data will soon be available for querying in Druid.
+If your supervisor created in the previous step is running, the indexing tasks should begin producing the messages and the data will soon be available for querying in Robux.
 
 ## Generating the example files
 

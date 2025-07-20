@@ -23,7 +23,7 @@ title: "Multi-value dimensions"
   -->
 
 
-Apache Druid supports "multi-value" string dimensions. Multi-value string dimensions result from input fields that contain an
+Apache Robux supports "multi-value" string dimensions. Multi-value string dimensions result from input fields that contain an
 array of values instead of a single value, such as the `tags` values in the following JSON array example: 
 
 ```
@@ -34,7 +34,7 @@ It is important to be aware that multi-value dimensions are distinct from [array
 
 This document describes inserting, filtering, and grouping behavior for multi-value dimensions. For information about the internal representation of multi-value dimensions, see
 [segments documentation](../design/segments.md#multi-value-columns). Examples in this document
-are in the form of both [SQL](sql.md) and [native Druid queries](querying.md). Refer to the [Druid SQL documentation](sql-multivalue-string-functions.md) for details
+are in the form of both [SQL](sql.md) and [native Robux queries](querying.md). Refer to the [Robux SQL documentation](sql-multivalue-string-functions.md) for details
 about the functions available for using multi-value string dimensions in SQL.
 
 The following sections describe inserting, filtering, and grouping behavior based on the following example data, which includes a multi-value dimension, `tags`.
@@ -49,7 +49,7 @@ The following sections describe inserting, filtering, and grouping behavior base
 ## Ingestion
 
 ### Native batch and streaming ingestion
-When using native [batch](../ingestion/native-batch.md) or streaming ingestion such as with [Apache Kafka](../ingestion/kafka-ingestion.md), the Druid web console data loader can detect multi-value dimensions and configure the `dimensionsSpec` accordingly.
+When using native [batch](../ingestion/native-batch.md) or streaming ingestion such as with [Apache Kafka](../ingestion/kafka-ingestion.md), the Robux web console data loader can detect multi-value dimensions and configure the `dimensionsSpec` accordingly.
 
 For TSV or CSV data, you can specify the multi-value delimiters using the `listDelimiter` field in the `inputFormat`. JSON data must be formatted as a JSON array to be ingested as a multi-value dimension. JSON data does not require `inputFormat` configuration.
 
@@ -70,7 +70,7 @@ The following shows an example `dimensionsSpec` for native ingestion of the data
 ],
 ```
 
-By default, Druid sorts values in multi-value dimensions. This behavior is controlled by the `SORTED_ARRAY` value of the `multiValueHandling` field. Alternatively, you can specify multi-value handling as:
+By default, Robux sorts values in multi-value dimensions. This behavior is controlled by the `SORTED_ARRAY` value of the `multiValueHandling` field. Alternatively, you can specify multi-value handling as:
 
 * `SORTED_SET`: results in the removal of duplicate values
 * `ARRAY`: retains the original order of the values
@@ -128,7 +128,7 @@ PARTITIONED BY DAY
 Notice that `ARRAY_TO_MV` is not present in the `GROUP BY` clause since we only wish to coerce the type _after_ grouping.
 
 
-The `EXTERN` is also able to refer to the `tags` input type as `VARCHAR`, which is also how a query on a Druid table containing a multi-value dimension would specify the type of the `tags` column. If this is the case you must use `MV_TO_ARRAY` since the multi-stage query engine only supports grouping on multi-value dimensions as arrays. So, they must be coerced first. These arrays must then be coerced back into `VARCHAR` in the `SELECT` part of the statement with `ARRAY_TO_MV`.
+The `EXTERN` is also able to refer to the `tags` input type as `VARCHAR`, which is also how a query on a Robux table containing a multi-value dimension would specify the type of the `tags` column. If this is the case you must use `MV_TO_ARRAY` since the multi-stage query engine only supports grouping on multi-value dimensions as arrays. So, they must be coerced first. These arrays must then be coerced back into `VARCHAR` in the `SELECT` part of the statement with `ARRAY_TO_MV`.
 
 ```sql
 REPLACE INTO "mvd_example_rollup" OVERWRITE ALL

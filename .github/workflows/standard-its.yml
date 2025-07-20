@@ -38,7 +38,7 @@ jobs:
         with:
           filters: |
             common-extensions:
-              - 'extension-core/(mysql-metadata-storage|druid-basic-security|simple-client-sslcontext|druid-testing-tools|druid-lookups-cached-global|druid-histogram|druid-datasketches|druid-parquet-extensions|druid-avro-extensions|druid-protobuf-extensions|druid-orc-extensions|druid-kafka-indexing-service|druid-s3-extensions)/**'
+              - 'extension-core/(mysql-metadata-storage|robux-basic-security|simple-client-sslcontext|robux-testing-tools|robux-lookups-cached-global|robux-histogram|robux-datasketches|robux-parquet-extensions|robux-avro-extensions|robux-protobuf-extensions|robux-orc-extensions|robux-kafka-indexing-service|robux-s3-extensions)/**'
             core:
               - '!extension*/**'
 
@@ -142,7 +142,7 @@ jobs:
       IT_TEST: -Dit.test=ITNestedQueryPushDownTest
       POD_NAME: int-test
       POD_NAMESPACE: default
-      BUILD_DRUID_CLUSTER: true
+      BUILD_ROBUX_CLUSTER: true
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -177,15 +177,15 @@ jobs:
           # Note: The above command relies on the correct version of the JARs being installed in the local m2 repository.
           # For any changes, please rebuild it using the command from the previous step (./it.sh ci).
 
-          MAVEN_OPTS='-Xmx2048m' ${MVN} verify -pl integration-tests -P int-tests-config-file ${IT_TEST} ${MAVEN_SKIP} -Dpod.name=${POD_NAME} -Dpod.namespace=${POD_NAMESPACE} -Dbuild.druid.cluster=${BUILD_DRUID_CLUSTER}
+          MAVEN_OPTS='-Xmx2048m' ${MVN} verify -pl integration-tests -P int-tests-config-file ${IT_TEST} ${MAVEN_SKIP} -Dpod.name=${POD_NAME} -Dpod.namespace=${POD_NAMESPACE} -Dbuild.robux.cluster=${BUILD_ROBUX_CLUSTER}
 
       - name: Debug on failure
         if: ${{ failure() && steps.test.conclusion == 'failure' }}
         run: |
           for v in broker middlemanager router coordinator historical ; do
-          echo "------------------------druid-tiny-cluster-"$v"s-0-------------------------";
-          /usr/local/bin/kubectl logs --tail 1000 druid-tiny-cluster-"$v"s-0 ||:;
-          /usr/local/bin/kubectl get events | grep druid-tiny-cluster-"$v"s-0 ||:;
+          echo "------------------------robux-tiny-cluster-"$v"s-0-------------------------";
+          /usr/local/bin/kubectl logs --tail 1000 robux-tiny-cluster-"$v"s-0 ||:;
+          /usr/local/bin/kubectl get events | grep robux-tiny-cluster-"$v"s-0 ||:;
           done
 
   integration-other-tests:

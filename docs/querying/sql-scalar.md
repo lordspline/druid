@@ -32,18 +32,18 @@ sidebar_label: "Scalar functions"
 
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
-[Druid SQL](./sql.md) includes scalar functions that include numeric and string functions, IP address functions, Sketch functions, and more, as described on this page. 
+[Robux SQL](./sql.md) includes scalar functions that include numeric and string functions, IP address functions, Sketch functions, and more, as described on this page. 
 
 
 ## Numeric functions
 
-For mathematical operations, Druid SQL will use integer math if all operands involved in an expression are integers.
-Otherwise, Druid will switch to floating point math. You can force this to happen by casting one of your operands
-to FLOAT. At runtime, Druid will widen 32-bit floats to 64-bit for most expressions.
+For mathematical operations, Robux SQL will use integer math if all operands involved in an expression are integers.
+Otherwise, Robux will switch to floating point math. You can force this to happen by casting one of your operands
+to FLOAT. At runtime, Robux will widen 32-bit floats to 64-bit for most expressions.
 
 |Function|Notes|
 |--------|-----|
@@ -129,7 +129,7 @@ String functions accept strings and return a type appropriate to the function.
 
 Time functions can be used with:
 
-- Druid's primary timestamp column, `__time`;
+- Robux's primary timestamp column, `__time`;
 - Numeric values representing milliseconds since the epoch, through the MILLIS_TO_TIMESTAMP function; and
 - String timestamps, through the TIME_PARSE function.
 
@@ -147,15 +147,15 @@ The best way to filter based on time is by using ISO 8601 intervals, like
 `TIME_IN_INTERVAL(__time, '2000-01-01/2000-02-01')`, or by using literal timestamps with the `>=` and `<` operators, like
 `__time >= TIMESTAMP '2000-01-01 00:00:00' AND __time < TIMESTAMP '2000-02-01 00:00:00'`.
 
-Druid supports the standard SQL `BETWEEN` operator, but we recommend avoiding it for time filters. `BETWEEN` is inclusive
+Robux supports the standard SQL `BETWEEN` operator, but we recommend avoiding it for time filters. `BETWEEN` is inclusive
 of its upper bound, which makes it awkward to write time filters correctly. For example, the equivalent of
 `TIME_IN_INTERVAL(__time, '2000-01-01/2000-02-01')` is
 `__time BETWEEN TIMESTAMP '2000-01-01 00:00:00' AND TIMESTAMP '2000-01-31 23:59:59.999'`.
 
-Druid processes timestamps internally as longs (64-bit integers) representing milliseconds since the epoch. Therefore,
+Robux processes timestamps internally as longs (64-bit integers) representing milliseconds since the epoch. Therefore,
 time functions perform best when used with the primary timestamp column, or with timestamps stored in long columns as
 milliseconds and accessed with MILLIS_TO_TIMESTAMP. Other timestamp representations, include string timestamps and
-POSIX timestamps (seconds since the epoch) require query-time conversion to Druid's internal form, which adds additional
+POSIX timestamps (seconds since the epoch) require query-time conversion to Robux's internal form, which adds additional
 overhead.
 
 |Function|Notes|
@@ -263,9 +263,9 @@ The [DataSketches extension](../development/extensions-core/datasketches-extensi
 |Function|Notes|Default|
 |--------|-----|-------|
 |`DS_TUPLE_DOUBLES_METRICS_SUM_ESTIMATE(expr)`|Computes approximate sums of the values contained within a [Tuple sketch](../development/extensions-core/datasketches-tuple.md#estimated-metrics-values-for-each-column-of-arrayofdoublessketch) column which contains an array of double values as its Summary Object.
-|`DS_TUPLE_DOUBLES_INTERSECT(expr, ...[, nominalEntries])`|Returns an intersection of tuple sketches, where each input expression must return a tuple sketch which contains an array of double values as its Summary Object. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Druid assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).|
-|`DS_TUPLE_DOUBLES_NOT(expr, ...[, nominalEntries])`|Returns a set difference of tuple sketches, where each input expression must return a tuple sketch which contains an array of double values as its Summary Object. The values contained in the Summary Object are preserved as is. If the last value of the array is a numeric literal, Druid assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).|
-|`DS_TUPLE_DOUBLES_UNION(expr, ...[, nominalEntries])`|Returns a union of tuple sketches, where each input expression must return a tuple sketch which contains an array of double values as its Summary Object. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Druid assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).|
+|`DS_TUPLE_DOUBLES_INTERSECT(expr, ...[, nominalEntries])`|Returns an intersection of tuple sketches, where each input expression must return a tuple sketch which contains an array of double values as its Summary Object. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Robux assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).|
+|`DS_TUPLE_DOUBLES_NOT(expr, ...[, nominalEntries])`|Returns a set difference of tuple sketches, where each input expression must return a tuple sketch which contains an array of double values as its Summary Object. The values contained in the Summary Object are preserved as is. If the last value of the array is a numeric literal, Robux assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).|
+|`DS_TUPLE_DOUBLES_UNION(expr, ...[, nominalEntries])`|Returns a union of tuple sketches, where each input expression must return a tuple sketch which contains an array of double values as its Summary Object. The values contained in the Summary Objects are summed when combined. If the last value of the array is a numeric literal, Robux assumes that the value is an override parameter for [nominal entries](../development/extensions-core/datasketches-tuple.md).|
 
 
 ## Other scalar functions
@@ -275,8 +275,8 @@ The [DataSketches extension](../development/extensions-core/datasketches-extensi
 |`BLOOM_FILTER_TEST(expr, serialized-filter)`|Returns true if the value of `expr` is contained in the base64-serialized Bloom filter. See the [Bloom filter extension](../development/extensions-core/bloom-filter.md) documentation for additional details. See the [`BLOOM_FILTER` function](sql-aggregations.md) for computing Bloom filters.|
 |`CASE expr WHEN value1 THEN result1 \[ WHEN value2 THEN result2 ... \] \[ ELSE resultN \] END`|Simple CASE.|
 |`CASE WHEN boolean_expr1 THEN result1 \[ WHEN boolean_expr2 THEN result2 ... \] \[ ELSE resultN \] END`|Searched CASE.|
-|`CAST(value AS TYPE)`|Cast value to another type. See [Data types](sql-data-types.md) for details about how Druid SQL handles CAST.|
+|`CAST(value AS TYPE)`|Cast value to another type. See [Data types](sql-data-types.md) for details about how Robux SQL handles CAST.|
 |`COALESCE(value1, value2, ...)`|Returns the first non-null value.|
-|`DECODE_BASE64_COMPLEX(dataType, expr)`| Decodes a Base64-encoded string into a complex data type, where `dataType` is the complex data type and `expr` is the Base64-encoded string to decode. The `hyperUnique` and `serializablePairLongString` data types are supported by default. You can enable support for the following complex data types by loading their extensions:<br/><ul><li>`druid-bloom-filter`: `bloom`</li><li>`druid-datasketches`: `arrayOfDoublesSketch`, `HLLSketch`, `KllDoublesSketch`, `KllFloatsSketch`, `quantilesDoublesSketch`, `thetaSketch`</li><li>`druid-histogram`: `approximateHistogram`, `fixedBucketsHistogram`</li><li>`druid-stats`: `variance`</li><li>`druid-compressed-bigdecimal`: `compressedBigDecimal`</li><li>`druid-momentsketch`: `momentSketch`</li><li>`druid-tdigestsketch`: `tDigestSketch`</li></ul>|
+|`DECODE_BASE64_COMPLEX(dataType, expr)`| Decodes a Base64-encoded string into a complex data type, where `dataType` is the complex data type and `expr` is the Base64-encoded string to decode. The `hyperUnique` and `serializablePairLongString` data types are supported by default. You can enable support for the following complex data types by loading their extensions:<br/><ul><li>`robux-bloom-filter`: `bloom`</li><li>`robux-datasketches`: `arrayOfDoublesSketch`, `HLLSketch`, `KllDoublesSketch`, `KllFloatsSketch`, `quantilesDoublesSketch`, `thetaSketch`</li><li>`robux-histogram`: `approximateHistogram`, `fixedBucketsHistogram`</li><li>`robux-stats`: `variance`</li><li>`robux-compressed-bigdecimal`: `compressedBigDecimal`</li><li>`robux-momentsketch`: `momentSketch`</li><li>`robux-tdigestsketch`: `tDigestSketch`</li></ul>|
 |`NULLIF(value1, value2)`|Returns NULL if `value1` and `value2` match, else returns `value1`.|
 |`NVL(value1, value2)`|Returns `value1` if `value1` is not null, otherwise `value2`.|

@@ -18,8 +18,8 @@
 
 import { Icon } from '@blueprintjs/core';
 import classNames from 'classnames';
-import type { Column, QueryResult } from 'druid-query-toolkit';
-import { SqlColumn } from 'druid-query-toolkit';
+import type { Column, QueryResult } from 'robux-query-toolkit';
+import { SqlColumn } from 'robux-query-toolkit';
 
 import { columnToIcon } from '../../../../../utils';
 

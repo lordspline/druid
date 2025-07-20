@@ -25,7 +25,7 @@ my $h = hostname;
 system("host \Q$h\E >/dev/null 2>&1");
 my $h_valid = !$?;
 
-print "Starting Apache Druid.\n";
+print "Starting Apache Robux.\n";
 print "Open http://localhost:8888/" . 
         ($h_valid ? " or http://$h:8888/" : "") . 
         " in your browser to access the web console.\n";

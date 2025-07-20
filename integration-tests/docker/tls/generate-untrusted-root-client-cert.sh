@@ -30,10 +30,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=integration-test@druid.apache.org
+emailAddress=integration-test@robux.apache.org
 CN = localhost
 
 [ req_ext ]
@@ -55,6 +55,6 @@ openssl req -new -out client_another_root.csr -key client_another_root.key -reqe
 openssl x509 -req -days 3650 -in client_another_root.csr -CA untrusted_root.pem -CAkey untrusted_root.key -set_serial 0x11111114 -out client_another_root.pem -sha256 -extfile csr_another_root.conf -extensions req_ext
 
 # Create a Java keystore containing the generated certificate
-openssl pkcs12 -export -in client_another_root.pem -inkey client_another_root.key -out client_another_root.p12 -name druid_another_root -CAfile untrusted_root.pem -caname druid-it-untrusted-root -password pass:druid123
-keytool -importkeystore -srckeystore client_another_root.p12 -srcstoretype PKCS12 -destkeystore client_another_root.jks -deststoretype pkcs12 -srcstorepass druid123 -deststorepass druid123
+openssl pkcs12 -export -in client_another_root.pem -inkey client_another_root.key -out client_another_root.p12 -name robux_another_root -CAfile untrusted_root.pem -caname robux-it-untrusted-root -password pass:robux123
+keytool -importkeystore -srckeystore client_another_root.p12 -srcstoretype PKCS12 -destkeystore client_another_root.jks -deststoretype pkcs12 -srcstorepass robux123 -deststorepass robux123
 

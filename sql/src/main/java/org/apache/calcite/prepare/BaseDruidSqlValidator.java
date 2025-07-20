@@ -26,12 +26,12 @@ import org.apache.calcite.sql.SqlOperatorTable;
 
 /**
  * Extend the Java-focused {@link CalciteSqlValidator} to make it visible
- * to Druid. {@link CalciteSqlValidator} itself is protected and can be
+ * to Robux. {@link CalciteSqlValidator} itself is protected and can be
  * extended only if this class is in the same Calcite package.
  */
-public class BaseDruidSqlValidator extends CalciteSqlValidator
+public class BaseRobuxSqlValidator extends CalciteSqlValidator
 {
-  public BaseDruidSqlValidator(
+  public BaseRobuxSqlValidator(
       SqlOperatorTable opTab,
       CalciteCatalogReader catalogReader,
       JavaTypeFactory typeFactory,

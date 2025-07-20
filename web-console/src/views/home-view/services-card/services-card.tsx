@@ -19,10 +19,10 @@
 import React from 'react';
 
 import { PluralPairIfNeeded } from '../../../components';
-import { getConsoleViewIcon } from '../../../druid-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import type { Capabilities } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
-import { getApiArray, lookupBy, queryDruidSql } from '../../../utils';
+import { getApiArray, lookupBy, queryRobuxSql } from '../../../utils';
 import { HomeViewCard } from '../home-view-card/home-view-card';
 
 export interface ServiceCounts {
@@ -44,7 +44,7 @@ export const ServicesCard = React.memo(function ServicesCard(props: ServicesCard
   const [serviceCountState] = useQueryManager<Capabilities, ServiceCounts>({
     processQuery: async (capabilities, cancelToken) => {
       if (capabilities.hasSql()) {
-        const serviceCountsFromQuery = await queryDruidSql<{
+        const serviceCountsFromQuery = await queryRobuxSql<{
           service_type: string;
           count: number;
         }>(
@@ -59,10 +59,10 @@ export const ServicesCard = React.memo(function ServicesCard(props: ServicesCard
           x => x.count,
         );
       } else if (capabilities.hasCoordinatorAccess()) {
-        const services = await getApiArray('/druid/coordinator/v1/servers?simple', cancelToken);
+        const services = await getApiArray('/robux/coordinator/v1/servers?simple', cancelToken);
 
         const middleManager = capabilities.hasOverlordAccess()
-          ? await getApiArray('/druid/indexer/v1/workers', cancelToken)
+          ? await getApiArray('/robux/indexer/v1/workers', cancelToken)
           : [];
 
         return {

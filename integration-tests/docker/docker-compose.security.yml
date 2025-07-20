@@ -15,44 +15,44 @@
 
 version: "2.2"
 services:
-  druid-router-permissive-tls:
+  robux-router-permissive-tls:
     extends:
       file: docker-compose.base.yml
-      service: druid-router-permissive-tls
+      service: robux-router-permissive-tls
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-metadata-storage
-      - druid-overlord
-      - druid-coordinator
-      - druid-historical
-      - druid-middlemanager
-      - druid-broker
-      - druid-router
+      - robux-zookeeper-kafka
+      - robux-metadata-storage
+      - robux-overlord
+      - robux-coordinator
+      - robux-historical
+      - robux-middlemanager
+      - robux-broker
+      - robux-router
 
-  druid-router-no-client-auth-tls:
+  robux-router-no-client-auth-tls:
     extends:
       file: docker-compose.base.yml
-      service: druid-router-no-client-auth-tls
+      service: robux-router-no-client-auth-tls
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-metadata-storage
-      - druid-overlord
-      - druid-coordinator
-      - druid-historical
-      - druid-middlemanager
-      - druid-broker
-      - druid-router
+      - robux-zookeeper-kafka
+      - robux-metadata-storage
+      - robux-overlord
+      - robux-coordinator
+      - robux-historical
+      - robux-middlemanager
+      - robux-broker
+      - robux-router
 
-  druid-router-custom-check-tls:
+  robux-router-custom-check-tls:
     extends:
       file: docker-compose.base.yml
-      service: druid-router-custom-check-tls
+      service: robux-router-custom-check-tls
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-metadata-storage
-      - druid-overlord
-      - druid-coordinator
-      - druid-historical
-      - druid-middlemanager
-      - druid-broker
-      - druid-router
+      - robux-zookeeper-kafka
+      - robux-metadata-storage
+      - robux-overlord
+      - robux-coordinator
+      - robux-historical
+      - robux-middlemanager
+      - robux-broker
+      - robux-router

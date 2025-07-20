@@ -17,7 +17,7 @@
  */
 
 import type { CancelToken } from 'axios';
-import { dedupe, F, SqlExpression, SqlFunction } from 'druid-query-toolkit';
+import { dedupe, F, SqlExpression, SqlFunction } from 'robux-query-toolkit';
 import * as JSONBig from 'json-bigint-native';
 
 import type {
@@ -31,7 +31,7 @@ import type {
   TimestampSpec,
   Transform,
   TransformSpec,
-} from '../druid-models';
+} from '../robux-models';
 import {
   ALL_POSSIBLE_SYSTEM_FIELDS,
   DETECTION_TIMESTAMP_SPEC,
@@ -40,15 +40,15 @@ import {
   getFlattenSpec,
   getSpecType,
   getTimestampSchema,
-  isDruidSource,
+  isRobuxSource,
   isFixedFormatSource,
   PLACEHOLDER_TIMESTAMP_SPEC,
   REINDEX_TIMESTAMP_SPEC,
   TIME_COLUMN,
-} from '../druid-models';
+} from '../robux-models';
 import { Api } from '../singletons';
 
-import { getDruidErrorMessage, queryDruidRune } from './druid-query';
+import { getRobuxErrorMessage, queryRobuxRune } from './robux-query';
 import { EMPTY_ARRAY, filterMap } from './general';
 import { allowKeys, deepGet, deepSet } from './object-change';
 
@@ -177,7 +177,7 @@ export async function getProxyOverlordModules(): Promise<string[]> {
   try {
     statusResp = await Api.instance.get(`/proxy/overlord/status`);
   } catch (e) {
-    throw new Error(getDruidErrorMessage(e));
+    throw new Error(getRobuxErrorMessage(e));
   }
 
   const { modules } = statusResp.data;
@@ -195,11 +195,11 @@ export async function postToSampler(
 
   let sampleResp: any;
   try {
-    sampleResp = await Api.instance.post(`/druid/indexer/v1/sampler?for=${forStr}`, sampleSpec, {
+    sampleResp = await Api.instance.post(`/robux/indexer/v1/sampler?for=${forStr}`, sampleSpec, {
       cancelToken,
     });
   } catch (e) {
-    throw new Error(getDruidErrorMessage(e));
+    throw new Error(getRobuxErrorMessage(e));
   }
 
   return sampleResp.data;
@@ -286,7 +286,7 @@ export async function sampleForConnect(
     );
   }
 
-  const reingestMode = isDruidSource(spec);
+  const reingestMode = isRobuxSource(spec);
   const sampleSpec: SampleSpec = {
     type: samplerType,
     spec: {
@@ -312,7 +312,7 @@ export async function sampleForConnect(
     const dataSource = deepGet(ioConfig, 'inputSource.dataSource');
     const intervals = deepGet(ioConfig, 'inputSource.interval');
 
-    const scanResponse = await queryDruidRune({
+    const scanResponse = await queryRobuxRune({
       queryType: 'scan',
       dataSource,
       intervals,
@@ -328,7 +328,7 @@ export async function sampleForConnect(
     }
     samplerResponse.columns = columns;
 
-    const segmentMetadataResponse = await queryDruidRune({
+    const segmentMetadataResponse = await queryRobuxRune({
       queryType: 'segmentMetadata',
       dataSource,
       intervals,
@@ -360,7 +360,7 @@ export async function sampleForParser(
     sampleStrategy,
   );
 
-  const reingestMode = isDruidSource(spec);
+  const reingestMode = isRobuxSource(spec);
 
   const sampleSpec: SampleSpec = {
     type: samplerType,
@@ -669,14 +669,14 @@ function fixSamplerLookups(sampleSpec: SampleSpec): SampleSpec {
  * lookup("x", 'lookup_name') => concat('lookup_name', '[', "x", '] -- This is a placeholder, lookups are not supported in sampling')
  * lookup("x", 'lookup_name', 'replaceValue') => nvl(concat('lookup_name', '[', "x", '] -- This is a placeholder, lookups are not supported in sampling'), 'replaceValue')
  */
-export function changeLookupInExpressionsSampling(druidExpression: string): string {
-  if (!druidExpression.includes('lookup')) return druidExpression;
+export function changeLookupInExpressionsSampling(robuxExpression: string): string {
+  if (!robuxExpression.includes('lookup')) return robuxExpression;
 
-  // The Druid expressions are very close to SQL so try parsing them as SQL, if it parses then this is a more robust way to apply this transformation
-  const parsedDruidExpression = SqlExpression.maybeParse(druidExpression);
-  if (parsedDruidExpression) {
+  // The Robux expressions are very close to SQL so try parsing them as SQL, if it parses then this is a more robust way to apply this transformation
+  const parsedRobuxExpression = SqlExpression.maybeParse(robuxExpression);
+  if (parsedRobuxExpression) {
     return String(
-      parsedDruidExpression.walk(ex => {
+      parsedRobuxExpression.walk(ex => {
         if (ex instanceof SqlFunction && ex.getEffectiveFunctionName() === 'LOOKUP') {
           if (ex.numArgs() < 2 || ex.numArgs() > 3) return SqlExpression.parse('null');
           const concat = F(
@@ -697,7 +697,7 @@ export function changeLookupInExpressionsSampling(druidExpression: string): stri
   }
 
   // If we can not parse the expression as SQL then bash it with a regexp
-  return druidExpression.replace(/lookup\s*\(([^)]+)\)/g, (_, argString: string) => {
+  return robuxExpression.replace(/lookup\s*\(([^)]+)\)/g, (_, argString: string) => {
     const args = argString.trim().split(/\s*,\s*/);
     if (args.length < 2 || args.length > 3) return 'null';
     const concat = `concat(${args[1]},'[',${args[0]},'] -- This is a placeholder, lookups are not supported in sampling')`;

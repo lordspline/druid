@@ -19,7 +19,7 @@
 import type { IconName } from '@blueprintjs/core';
 import { Card, Icon, Intent } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { SqlQuery, SqlTable } from 'druid-query-toolkit';
+import { SqlQuery, SqlTable } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React, { useState } from 'react';
 
@@ -28,13 +28,13 @@ import type {
   ExternalConfig,
   QueryContext,
   QueryWithContext,
-} from '../../druid-models';
+} from '../../robux-models';
 import {
   DEFAULT_SERVER_QUERY_CONTEXT,
   Execution,
   externalConfigToIngestQueryPattern,
   ingestQueryPatternToQuery,
-} from '../../druid-models';
+} from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import { submitTaskQuery } from '../../helpers';
 import { useLocalStorageState } from '../../hooks';

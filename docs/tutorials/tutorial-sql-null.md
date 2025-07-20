@@ -2,7 +2,7 @@
 id: tutorial-sql-null
 title: Null handling tutorial
 sidebar_label: Handling null values
-description: Introduction to null handling in Druid
+description: Introduction to null handling in Robux
 ---
 
 <!--
@@ -24,12 +24,12 @@ description: Introduction to null handling in Druid
   ~ under the License.
   -->
 
-This tutorial introduces the basic concepts of null handling for string and numeric columns in Apache Druid.
+This tutorial introduces the basic concepts of null handling for string and numeric columns in Apache Robux.
 The tutorial focuses on filters using the logical NOT operation on columns with NULL values.
 
 ## Prerequisites
 
-Before starting this tutorial, download and run Apache Druid on your local machine as described in
+Before starting this tutorial, download and run Apache Robux on your local machine as described in
 the [Local quickstart](index.md).
 
 The tutorial assumes you are familiar with using the [Query view](./tutorial-sql-query-view.md) to ingest and query data.
@@ -47,7 +47,7 @@ The sample data for the tutorial contains null values for string and numeric col
 {"date": "1/1/2024 1:05:00","title": "example_4","string_value": null, "numeric_value": null}
 ```
 
-Run the following query in the Druid Console to load the data:
+Run the following query in the Robux Console to load the data:
 
 ```sql
 REPLACE INTO "null_example" OVERWRITE ALL
@@ -69,13 +69,13 @@ FROM "ext"
 PARTITIONED BY DAY
 ```
 
-After Druid finishes loading the data, run the following query to see the table:
+After Robux finishes loading the data, run the following query to see the table:
 
 ```sql
 SELECT * FROM "null_example"
 ```
 
-Druid returns the following:
+Robux returns the following:
 
 |`__time`|`title`|`string_value`|`numeric_value`|
 |---|---|---|---|
@@ -97,7 +97,7 @@ FROM "null_example"
 WHERE "string_value" != 'some_value'
 ```
 
-Druid returns 2 for `another_value` and the empty string `""`. The null value is not counted.
+Robux returns 2 for `another_value` and the empty string `""`. The null value is not counted.
 
 Note that the null value is included in `COUNT(*)` but not as a count of the values in the column as follows:
 
@@ -109,7 +109,7 @@ FROM "inline_data"
 GROUP BY 1
 ```
 
-Druid returns the following:
+Robux returns the following:
 
 |`string_value`|`count_all_rows`|`count_values`|
 |---|---|---|
@@ -130,7 +130,7 @@ FROM "null_example"
 WHERE "string_value" IS NULL OR "string_value" = ''
 ```
 
-Druid returns the following:
+Robux returns the following:
 
 |`__time`|`title`|`string_value`|`numeric_value`|
 |---|---|---|---|
@@ -144,11 +144,11 @@ SELECT COUNT("string_value") FILTER(WHERE "string_value" <> '')
 FROM "null_example"
 ```
 
-Druid returns 2. Both the empty string and null values are excluded.
+Robux returns 2. Both the empty string and null values are excluded.
 
 ## Numeric query examples
 
-Druid does not count null values in numeric comparisons.
+Robux does not count null values in numeric comparisons.
 
 ```sql
 SELECT COUNT(*)
@@ -156,7 +156,7 @@ FROM "null_example"
 WHERE "numeric_value" < 2
 ```
 
-Druid returns 1. The `null` values for examples 3 and 4 are excluded.
+Robux returns 1. The `null` values for examples 3 and 4 are excluded.
 
 Additionally, be aware that null values do not behave as 0. For examples:
 
@@ -166,7 +166,7 @@ FROM "null_example"
 WHERE "__time" > '2024-01-01 01:04:00.000Z'
 ```
 
-Druid returns `null` and not 1. One option is to use the COALESCE function for null handling. For example:
+Robux returns `null` and not 1. One option is to use the COALESCE function for null handling. For example:
 
 ```sql
 SELECT COALESCE(numeric_value, 0) + 1
@@ -174,7 +174,7 @@ FROM "null_example"
 WHERE "__time" > '2024-01-01 01:04:00.000Z'
 ```
 
-In this case, Druid returns 1.
+In this case, Robux returns 1.
 
 ## Ingestion time filtering
 
@@ -202,7 +202,7 @@ WHERE "string_value" != 'some_value'
 PARTITIONED BY DAY
 ```
 
-The resulting data set only includes two rows. Druid has filtered out example 1 (`some_value`) and example 4 (`null`):
+The resulting data set only includes two rows. Robux has filtered out example 1 (`some_value`) and example 4 (`null`):
 
 |`__time`|`title`|`string_value`|`numeric_value`|
 |---|---|---|---|
@@ -213,4 +213,4 @@ The resulting data set only includes two rows. Druid has filtered out example 1 
 
 See the following for more information:
 - [Null values](../querying/sql-data-types.md#null-values)
-- "Generating and working with NULL values" notebook at [Learn druid](https://github.com/implydata/learn-druid/)
+- "Generating and working with NULL values" notebook at [Learn robux](https://github.com/implydata/learn-robux/)

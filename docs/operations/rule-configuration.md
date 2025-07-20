@@ -22,9 +22,9 @@ title: "Using rules to drop and retain data"
   ~ under the License.
   -->
 
-Data retention rules allow you to configure Apache Druid to conform to your data retention policies. Your data retention policies specify which data to retain and which data to drop from the cluster.
+Data retention rules allow you to configure Apache Robux to conform to your data retention policies. Your data retention policies specify which data to retain and which data to drop from the cluster.
 
-Druid supports [load](#load-rules), [drop](#drop-rules), and [broadcast](#broadcast-rules) rules. Each rule is a JSON object. See the [rule definitions below](#load-rules) for details.
+Robux supports [load](#load-rules), [drop](#drop-rules), and [broadcast](#broadcast-rules) rules. Each rule is a JSON object. See the [rule definitions below](#load-rules) for details.
 
 You can configure a default set of rules to apply to all datasources, and/or you can set specific rules for specific datasources. See [rule structure](#rule-structure) to see how rule order impacts the way the Coordinator applies retention rules.
 
@@ -34,15 +34,15 @@ You can specify the data to retain or drop in the following ways:
 - Period: segment data specified as an offset from the present time.
 - Interval: a fixed time range.
 
-Retention rules are persistent: they remain in effect until you change them. Druid stores retention rules in its [metadata store](../design/metadata-storage.md).
+Retention rules are persistent: they remain in effect until you change them. Robux stores retention rules in its [metadata store](../design/metadata-storage.md).
 
 ## Set retention rules
 
-You can use the Druid [web console](./web-console.md) or the [Service status API reference](../api-reference/service-status-api.md#coordinator) to create and manage retention rules.
+You can use the Robux [web console](./web-console.md) or the [Service status API reference](../api-reference/service-status-api.md#coordinator) to create and manage retention rules.
 
 ### Use the web console
 
-To set retention rules in the Druid web console:
+To set retention rules in the Robux web console:
 
 1. On the console home page, click **Datasources**.
 2. Click the name of your datasource to open the data window.
@@ -54,24 +54,24 @@ To set retention rules in the Druid web console:
 
 ### Use the Coordinator API
 
-To set one or more default retention rules for all datasources, send a POST request containing a JSON object for each rule to `/druid/coordinator/v1/rules/_default`.
+To set one or more default retention rules for all datasources, send a POST request containing a JSON object for each rule to `/robux/coordinator/v1/rules/_default`.
 
 The following example request sets a default forever broadcast rule for all datasources:
 
 ```bash
-curl --location --request POST 'http://localhost:8888/druid/coordinator/v1/rules/_default' \
+curl --location --request POST 'http://localhost:8888/robux/coordinator/v1/rules/_default' \
 --header 'Content-Type: application/json' \
 --data-raw '[{
   "type": "broadcastForever"
   }]'
 ```
 
-To set one or more retention rules for a specific datasource, send a POST request containing a JSON object for each rule to `/druid/coordinator/v1/rules/{datasourceName}`.
+To set one or more retention rules for a specific datasource, send a POST request containing a JSON object for each rule to `/robux/coordinator/v1/rules/{datasourceName}`.
 
 The following example request sets a period drop rule and a period broadcast rule for the `wikipedia` datasource:
 
 ```bash
-curl --location --request POST 'http://localhost:8888/druid/coordinator/v1/rules/wikipedia' \
+curl --location --request POST 'http://localhost:8888/robux/coordinator/v1/rules/wikipedia' \
 --header 'Content-Type: application/json' \
 --data-raw '[{
    "type": "dropByPeriod",
@@ -85,10 +85,10 @@ curl --location --request POST 'http://localhost:8888/druid/coordinator/v1/rules
    }]'
 ```
 
-To retrieve all rules for all datasources, send a GET request to `/druid/coordinator/v1/rules`&mdash;for example:
+To retrieve all rules for all datasources, send a GET request to `/robux/coordinator/v1/rules`&mdash;for example:
 
 ```bash
-curl --location --request GET 'http://localhost:8888/druid/coordinator/v1/rules'
+curl --location --request GET 'http://localhost:8888/robux/coordinator/v1/rules'
 ```
 
 ### Rule structure
@@ -109,9 +109,9 @@ In the web console you can use the up and down arrows on the right side of the i
 
 ## Load rules
 
-Load rules define how Druid assigns segments to [Historical process tiers](./mixed-workloads.md#historical-tiering), and how many replicas of a segment exist in each tier.
+Load rules define how Robux assigns segments to [Historical process tiers](./mixed-workloads.md#historical-tiering), and how many replicas of a segment exist in each tier.
 
-If you have a single tier, Druid automatically names the tier `_default`. If you define an additional tier, you must define a load rule to specify which segments to load on that tier. Until you define a load rule, your new tier remains empty.
+If you have a single tier, Robux automatically names the tier `_default`. If you define an additional tier, you must define a load rule to specify which segments to load on that tier. Until you define a load rule, your new tier remains empty.
 
 All load rules can have these properties:
 
@@ -126,7 +126,7 @@ Load rules are also how you take advantage of the resource savings that [query t
 
 ### Forever load rule
 
-The forever load rule assigns all datasource segments to specified tiers. It is the default rule Druid applies to datasources. Forever load rules have type `loadForever`.
+The forever load rule assigns all datasource segments to specified tiers. It is the default rule Robux applies to datasources. Forever load rules have type `loadForever`.
 
 The following example places one replica of each segment on a custom tier named `hot`, and another single replica on the default tier.
 
@@ -147,7 +147,7 @@ Set the following property:
 
 ### Period load rule
 
-You can use a period load rule to assign segment data in a specific period to a tier. Druid compares a segment's interval to the period you specify in the rule and loads the matching data.
+You can use a period load rule to assign segment data in a specific period to a tier. Robux compares a segment's interval to the period you specify in the rule and loads the matching data.
 
 Period load rules have type `loadByPeriod`. The following example places one replica of data in a one-month period on a custom tier named `hot`, and another single replica on the default tier.
 
@@ -166,7 +166,7 @@ Period load rules have type `loadByPeriod`. The following example places one rep
 Set the following properties:
 
 - `period`: a JSON object representing [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) periods. The period is from some time in the past to the present, or into the future if `includeFuture` is set to `true`.
-- `includeFuture`: a boolean flag to instruct Druid to match a segment if:
+- `includeFuture`: a boolean flag to instruct Robux to match a segment if:
   - the segment interval overlaps the rule interval, or
   - the segment interval starts any time after the rule interval starts.
 
@@ -199,13 +199,13 @@ Set the following properties:
 
 ## Drop rules
 
-Drop rules define when Druid drops segments from the cluster. Druid keeps dropped data in deep storage. Note that if you enable automatic cleanup of unused segments, or you run a kill task, Druid deletes the data from deep storage. See [Data deletion](../data-management/delete.md) for more information on deleting data.
+Drop rules define when Robux drops segments from the cluster. Robux keeps dropped data in deep storage. Note that if you enable automatic cleanup of unused segments, or you run a kill task, Robux deletes the data from deep storage. See [Data deletion](../data-management/delete.md) for more information on deleting data.
 
-If you want to use a [load rule](#load-rules) to retain only data from a defined period of time, you must also define a drop rule. If you don't define a drop rule, Druid retains data that doesn't lie within your defined period according to the default rule, `loadForever`.
+If you want to use a [load rule](#load-rules) to retain only data from a defined period of time, you must also define a drop rule. If you don't define a drop rule, Robux retains data that doesn't lie within your defined period according to the default rule, `loadForever`.
 
 ### Forever drop rule
 
-The forever drop rule drops all segment data from the cluster. If you configure a set of rules with a forever drop rule as the last rule, Druid drops any segment data that remains after it evaluates the higher priority rules.
+The forever drop rule drops all segment data from the cluster. If you configure a set of rules with a forever drop rule as the last rule, Robux drops any segment data that remains after it evaluates the higher priority rules.
 
 Forever drop rules have type `dropForever`:
 
@@ -217,7 +217,7 @@ Forever drop rules have type `dropForever`:
 
 ### Period drop rule
 
-Druid compares a segment's interval to the period you specify in the rule and drops the matching data. The rule matches if the period contains the segment interval. This rule always drops recent data.
+Robux compares a segment's interval to the period you specify in the rule and drops the matching data. The rule matches if the period contains the segment interval. This rule always drops recent data.
 
 Period drop rules have type `dropByPeriod` and the following JSON structure:
 
@@ -232,7 +232,7 @@ Period drop rules have type `dropByPeriod` and the following JSON structure:
 Set the following properties:
 
 - `period`: a JSON object representing [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) periods. The period is from some time in the past to the future or to the current time, depending on the `includeFuture` flag.
-- `includeFuture`: a boolean flag to instruct Druid to match a segment if one of the following conditions apply:
+- `includeFuture`: a boolean flag to instruct Robux to match a segment if one of the following conditions apply:
 
   - the segment interval overlaps the rule interval
   - the segment interval starts any time after the rule interval starts
@@ -241,7 +241,7 @@ Set the following properties:
 
 ### Period drop before rule
 
-Druid compares a segment's interval to the period you specify in the rule and drops the matching data. The rule matches if the segment interval is before the specified period.
+Robux compares a segment's interval to the period you specify in the rule and drops the matching data. The rule matches if the segment interval is before the specified period.
 
 If you only want to retain recent data, you can use this rule to drop old data before a specified period, and add a `loadForever` rule to retain the data that follows it. Note that the rule combination `dropBeforeByPeriod` + `loadForever` is equivalent to `loadByPeriod(includeFuture = true)` + `dropForever`.
 
@@ -260,7 +260,7 @@ Set the following property:
 
 ### Interval drop rule
 
-You can use a drop interval rule to prevent Druid from loading a specified range of data onto any tier. The range is typically your oldest data. The dropped data resides in deep storage and can still be [queried from deep storage](../querying/query-from-deep-storage.md). 
+You can use a drop interval rule to prevent Robux from loading a specified range of data onto any tier. The range is typically your oldest data. The dropped data resides in deep storage and can still be [queried from deep storage](../querying/query-from-deep-storage.md). 
 
 Interval drop rules have type `dropByInterval` and the following JSON structure:
 
@@ -277,9 +277,9 @@ Set the following property:
 
 ## Broadcast rules
 
-Druid extensions use broadcast rules to load segment data onto all Brokers in the cluster. Apply broadcast rules in a test environment, not in production.
-To use broadcast rules, ensure that `druid.segmentCache.locations` is configured on both Brokers and Historicals.
-This ensures that Druid can load the segments onto those servers. For more information, see [Segment cache size](../operations/basic-cluster-tuning.md#segment-cache-size).
+Robux extensions use broadcast rules to load segment data onto all Brokers in the cluster. Apply broadcast rules in a test environment, not in production.
+To use broadcast rules, ensure that `robux.segmentCache.locations` is configured on both Brokers and Historicals.
+This ensures that Robux can load the segments onto those servers. For more information, see [Segment cache size](../operations/basic-cluster-tuning.md#segment-cache-size).
 
 ### Forever broadcast rule
 
@@ -295,7 +295,7 @@ Forever broadcast rules have type `broadcastForever`:
 
 ### Period broadcast rule
 
-Druid compares a segment's interval to the period you specify in the rule and loads the matching data onto the brokers in the cluster.
+Robux compares a segment's interval to the period you specify in the rule and loads the matching data onto the brokers in the cluster.
 
 Period broadcast rules have type `broadcastByPeriod` and the following JSON structure:
 
@@ -310,7 +310,7 @@ Period broadcast rules have type `broadcastByPeriod` and the following JSON stru
 Set the following properties:
 
 - `period`: a JSON object representing [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) periods. The period is from some time in the past to the future or to the current time, depending on the `includeFuture` flag.
-- `includeFuture`: a boolean flag to instruct Druid to match a segment if one of the following conditions apply:
+- `includeFuture`: a boolean flag to instruct Robux to match a segment if one of the following conditions apply:
   - the segment interval overlaps the rule interval
   - the segment interval starts any time after the rule interval starts.
 
@@ -335,23 +335,23 @@ Set the following property:
 
 ## Permanently delete data
 
-Druid can fully drop data from the cluster, wipe the metadata store entry, and remove the data from deep storage for any segments marked `unused`. Note that Druid always marks segments dropped from the cluster by rules as `unused`. You can submit a [kill task](../ingestion/tasks.md) to the [Overlord](../design/overlord.md) to do this.
+Robux can fully drop data from the cluster, wipe the metadata store entry, and remove the data from deep storage for any segments marked `unused`. Note that Robux always marks segments dropped from the cluster by rules as `unused`. You can submit a [kill task](../ingestion/tasks.md) to the [Overlord](../design/overlord.md) to do this.
 
 ## Reload dropped data
 
-You can't use a single rule to reload data Druid has dropped from a cluster.
+You can't use a single rule to reload data Robux has dropped from a cluster.
 
 To reload dropped data:
 
 1. Set your retention period&mdash;for example, change the retention period from one month to two months.
 2. Use the web console or the API to mark all segments belonging to the datasource as `used`.
 
-This prompts Druid to rerun the Coordinator rules and load all missing segments. The Coordinator identifies the latest version of the segments and drops older versions.
+This prompts Robux to rerun the Coordinator rules and load all missing segments. The Coordinator identifies the latest version of the segments and drops older versions.
 
 ## Learn more
 
-For more information about using retention rules in Druid, see the following topics:
+For more information about using retention rules in Robux, see the following topics:
 
 - [Tutorial: Configuring data retention](../tutorials/tutorial-retention.md)
-- [Configure Druid for mixed workloads](../operations/mixed-workloads.md)
+- [Configure Robux for mixed workloads](../operations/mixed-workloads.md)
 - [Router process](../design/router.md)

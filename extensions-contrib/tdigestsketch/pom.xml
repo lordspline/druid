@@ -20,17 +20,17 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>druid</artifactId>
-    <groupId>org.apache.druid</groupId>
+    <artifactId>robux</artifactId>
+    <groupId>org.apache.robux</groupId>
     <version>35.0.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.apache.druid.extensions.contrib</groupId>
-  <artifactId>druid-tdigestsketch</artifactId>
+  <groupId>org.apache.robux.extensions.contrib</groupId>
+  <artifactId>robux-tdigestsketch</artifactId>
   <name>tdigestsketch</name>
-  <description>Druid extension for generating tdigest backed sketches</description>
+  <description>Robux extension for generating tdigest backed sketches</description>
 
   <dependencies>
     <dependency>
@@ -45,8 +45,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -111,8 +111,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-sql</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-sql</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -122,8 +122,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <scope>provided</scope>
       <version>${project.parent.version}</version>
     </dependency>
@@ -180,22 +180,22 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-sql</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-sql</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>

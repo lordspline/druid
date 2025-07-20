@@ -17,14 +17,14 @@
  */
 
 import type { AxiosResponse, CancelToken } from 'axios';
-import { QueryResult } from 'druid-query-toolkit';
+import { QueryResult } from 'robux-query-toolkit';
 
-import type { AsyncStatusResponse, MsqTaskPayloadResponse, QueryContext } from '../../druid-models';
-import { Execution } from '../../druid-models';
+import type { AsyncStatusResponse, MsqTaskPayloadResponse, QueryContext } from '../../robux-models';
+import { Execution } from '../../robux-models';
 import { Api } from '../../singletons';
-import { deepGet, DruidError, IntermediateQueryState, QueryManager } from '../../utils';
+import { deepGet, RobuxError, IntermediateQueryState, QueryManager } from '../../utils';
 
-// some executionMode has to be set on the /druid/v2/sql/statements API
+// some executionMode has to be set on the /robux/v2/sql/statements API
 function ensureExecutionModeIsSet(context: QueryContext | undefined): QueryContext {
   if (typeof context?.executionMode === 'string') return context;
   return {
@@ -84,16 +84,16 @@ export async function submitTaskQuery(
   let sqlAsyncResp: AxiosResponse<AsyncStatusResponse>;
   try {
     sqlAsyncResp = await Api.instance.post<AsyncStatusResponse>(
-      `/druid/v2/sql/statements`,
+      `/robux/v2/sql/statements`,
       jsonQuery,
       {
         cancelToken,
       },
     );
   } catch (e) {
-    const druidError = deepGet(e, 'response.data');
-    if (!druidError) throw e;
-    throw new DruidError(druidError, prefixLines);
+    const robuxError = deepGet(e, 'response.data');
+    if (!robuxError) throw e;
+    throw new RobuxError(robuxError, prefixLines);
   }
 
   const sqlAsyncStatus = sqlAsyncResp.data;
@@ -171,7 +171,7 @@ export async function getTaskExecution(
     let taskReport: any;
     try {
       taskReport = (
-        await Api.instance.get(`/druid/indexer/v1/task/${encodedId}/reports`, {
+        await Api.instance.get(`/robux/indexer/v1/task/${encodedId}/reports`, {
           cancelToken,
         })
       ).data;
@@ -185,7 +185,7 @@ export async function getTaskExecution(
         // We got a bad payload, wait a bit and try to get the payload again (also log it)
         // This whole catch block is a hack, and we should make the detail route more robust
         console.error(
-          `Got unusable response from the reports endpoint (/druid/indexer/v1/task/${encodedId}/reports) going to retry`,
+          `Got unusable response from the reports endpoint (/robux/indexer/v1/task/${encodedId}/reports) going to retry`,
         );
         console.log('Report response:', taskReport);
       }
@@ -194,7 +194,7 @@ export async function getTaskExecution(
 
   if (!execution) {
     const statusResp = await Api.instance.get<AsyncStatusResponse>(
-      `/druid/v2/sql/statements/${encodedId}?detail=true`,
+      `/robux/v2/sql/statements/${encodedId}?detail=true`,
       {
         cancelToken,
       },
@@ -207,7 +207,7 @@ export async function getTaskExecution(
   if (Execution.USE_TASK_PAYLOAD && !taskPayload) {
     try {
       taskPayload = (
-        await Api.instance.get(`/druid/indexer/v1/task/${encodedId}`, {
+        await Api.instance.get(`/robux/indexer/v1/task/${encodedId}`, {
           cancelToken,
         })
       ).data;
@@ -223,7 +223,7 @@ export async function getTaskExecution(
   if (execution.status === 'SUCCESS' && !execution.destinationPages) {
     try {
       const statusResp = await Api.instance.get<AsyncStatusResponse>(
-        `/druid/v2/sql/statements/${encodedId}`,
+        `/robux/v2/sql/statements/${encodedId}`,
         {
           cancelToken,
         },
@@ -259,5 +259,5 @@ function cancelTaskExecutionOnCancel(
 }
 
 export function cancelTaskExecution(id: string): Promise<void> {
-  return Api.instance.post(`/druid/indexer/v1/task/${Api.encodePath(id)}/shutdown`, {});
+  return Api.instance.post(`/robux/indexer/v1/task/${Api.encodePath(id)}/shutdown`, {});
 }

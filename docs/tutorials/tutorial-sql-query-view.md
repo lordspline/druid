@@ -24,9 +24,9 @@ sidebar_label: Get to know Query view
   -->
 
 
-This tutorial demonstrates some useful features built into Query view in Apache Druid.
+This tutorial demonstrates some useful features built into Query view in Apache Robux.
 
-Query view lets you run [Druid SQL queries](../querying/sql.md) and [native (JSON-based) queries](../querying/querying.md) against ingested data.
+Query view lets you run [Robux SQL queries](../querying/sql.md) and [native (JSON-based) queries](../querying/querying.md) against ingested data.
 
 You can use Query view to test and tune queries before you use them in API requests&mdash;for example, to perform [SQL-based ingestion](../api-reference/sql-ingestion-api.md). You can also ingest data directly in Query view.
 
@@ -34,15 +34,15 @@ The tutorial guides you through the steps to ingest sample data and query the in
 
 ## Prerequisites
 
-Before you follow the steps in this tutorial, download Druid as described in the [quickstart](./index.md) and have it running on your local machine. You don't need to have loaded any data.
+Before you follow the steps in this tutorial, download Robux as described in the [quickstart](./index.md) and have it running on your local machine. You don't need to have loaded any data.
 
 ## Run a demo query to ingest data
 
-Druid includes demo queries that each demonstrate a different Druid feature&mdash;for example transforming data during ingestion and sorting ingested data. Each query has detailed comments to help you learn more.
+Robux includes demo queries that each demonstrate a different Robux feature&mdash;for example transforming data during ingestion and sorting ingested data. Each query has detailed comments to help you learn more.
 
 In this section you load the demo queries and run a SQL task to ingest sample data into a [table datasource](../querying/datasource.md#table).
 
-1. Navigate to the Druid console at [http://localhost:8888](http://localhost:8888) and click **Query**.
+1. Navigate to the Robux console at [http://localhost:8888](http://localhost:8888) and click **Query**.
 
 2. Click the ellipsis at the bottom of the query window and select **Load demo queries**. Note that loading the demo queries replaces all of your current query tabs. The demo queries load in several tabs:
 
@@ -52,7 +52,7 @@ In this section you load the demo queries and run a SQL task to ingest sample da
 
 4. Click **Run** to ingest the data.
 
-5. When ingestion is complete, Druid displays the time it took to complete the insert query, and the new datasource **kttm_simple** displays in the left pane.
+5. When ingestion is complete, Robux displays the time it took to complete the insert query, and the new datasource **kttm_simple** displays in the left pane.
 
 ## View and filter query results
 
@@ -100,9 +100,9 @@ In this section you run some queries using aggregate functions and perform some 
 
    ![aggregate-query](../assets/tutorial-sql-aggregate-query.png)
 
-7. Click **Engine: Auto (SQL native)** to display the engine options&mdash;**Native** for native (JSON-based) queries, **SQL native** for Druid SQL queries, and **SQL MSQ-task** for SQL-based ingestion. 
+7. Click **Engine: Auto (SQL native)** to display the engine options&mdash;**Native** for native (JSON-based) queries, **SQL native** for Robux SQL queries, and **SQL MSQ-task** for SQL-based ingestion. 
 
-   Select **Auto** to let Druid select the most efficient engine based on your query input.
+   Select **Auto** to let Robux select the most efficient engine based on your query input.
 
 8. From the engine menu you can also edit the query context and turn off some query defaults. 
 
@@ -126,9 +126,9 @@ In this section you run some queries using aggregate functions and perform some 
 
 ## Generate an explain plan
 
-In this section you generate an explain plan for a query. An explain plan shows the full query details and all of the operations Druid performs to execute it. 
+In this section you generate an explain plan for a query. An explain plan shows the full query details and all of the operations Robux performs to execute it. 
 
-Druid optimizes queries of certain [types](../querying/sql-translation.md#query-types)&mdash;see [SQL query translation](../querying/sql-translation.md) for information on how to interpret an explain plan and use the details to improve query performance.
+Robux optimizes queries of certain [types](../querying/sql-translation.md#query-types)&mdash;see [SQL query translation](../querying/sql-translation.md) for information on how to interpret an explain plan and use the details to improve query performance.
 
 1. Open a new query tab.
 
@@ -156,7 +156,7 @@ In this section you try out a few more useful Query view features.
 
 ### Use calculator mode
 
-Queries without a FROM clause run in calculator mode&mdash;this can be useful to help you understand how functions work. See the [Druid SQL functions](../querying/sql-functions.md) reference for more information.
+Queries without a FROM clause run in calculator mode&mdash;this can be useful to help you understand how functions work. See the [Robux SQL functions](../querying/sql-functions.md) reference for more information.
 
 1. Open a new query tab and enter the following:
    ```sql
@@ -188,10 +188,10 @@ You can click the links on the left to view queries run at a particular date and
 
 For more information on ingestion and querying data, see the following topics:
 
-- [Quickstart](./index.md) for information on getting started with Druid.
-- [Tutorial: Querying data](tutorial-query.md) for example queries to run on Druid data.
-- [Ingestion](../ingestion/index.md) for an overview of ingestion and the ingestion methods available in Druid.
+- [Quickstart](./index.md) for information on getting started with Robux.
+- [Tutorial: Querying data](tutorial-query.md) for example queries to run on Robux data.
+- [Ingestion](../ingestion/index.md) for an overview of ingestion and the ingestion methods available in Robux.
 - [SQL-based ingestion](../multi-stage-query/index.md) for an overview of SQL-based ingestion.
 - [SQL-based ingestion query examples](../multi-stage-query/examples.md) for examples of SQL-based ingestion for various use cases.
-- [Introduction to Druid SQL](https://github.com/implydata/learn-druid/tree/main/notebooks) to learn more about Druid SQL.
+- [Introduction to Robux SQL](https://github.com/implydata/learn-robux/tree/main/notebooks) to learn more about Robux SQL.
 

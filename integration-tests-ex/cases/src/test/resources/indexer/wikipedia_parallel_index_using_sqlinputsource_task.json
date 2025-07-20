@@ -71,8 +71,8 @@
         "database": {
           "type": "mysql",
           "connectorConfig": {
-            "connectURI": "jdbc:mysql://metadata/druid",
-            "user": "druid",
+            "connectURI": "jdbc:mysql://metadata/robux",
+            "user": "robux",
             "password": "diurd"
           }
         },

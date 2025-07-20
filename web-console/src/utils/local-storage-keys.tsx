@@ -37,7 +37,7 @@ export const LocalStorageKeys = {
   TASK_TABLE_COLUMN_SELECTION: 'task-table-column-selection' as const,
   SERVICE_TABLE_COLUMN_SELECTION: 'service-table-column-selection' as const,
   LOOKUP_TABLE_COLUMN_SELECTION: 'lookup-table-column-selection' as const,
-  QUERY_KEY: 'druid-console-query' as const,
+  QUERY_KEY: 'robux-console-query' as const,
   QUERY_CONTEXT: 'query-context' as const,
   TASKS_REFRESH_RATE: 'task-refresh-rate' as const,
   DATASOURCES_REFRESH_RATE: 'datasources-refresh-rate' as const,

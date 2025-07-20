@@ -20,8 +20,8 @@ import { Button, Callout, Code, FormGroup, Intent, Tag } from '@blueprintjs/core
 import React from 'react';
 
 import { ExternalLink, LearnMore } from '../../components';
-import type { IngestionSpec, SchemaMode } from '../../druid-models';
-import { getIngestionDocLink } from '../../druid-models';
+import type { IngestionSpec, SchemaMode } from '../../robux-models';
+import { getIngestionDocLink } from '../../robux-models';
 import { getLink } from '../../links';
 import { deepGet, deepSet } from '../../utils';
 
@@ -37,14 +37,14 @@ export const ConnectMessage = React.memo(function ConnectMessage(props: ConnectM
     <FormGroup>
       <Callout>
         <p>
-          Druid ingests raw data and converts it into a custom,{' '}
+          Robux ingests raw data and converts it into a custom,{' '}
           <ExternalLink href={`${getLink('DOCS')}/design/segments`}>indexed format</ExternalLink>{' '}
           that is optimized for analytic queries.
         </p>
         {inlineMode ? (
           <>
             <p>To get started, please paste some data in the box to the left.</p>
-            <p>Click &quot;Apply&quot; to verify your data with Druid.</p>
+            <p>Click &quot;Apply&quot; to verify your data with Robux.</p>
           </>
         ) : (
           <p>To get started, please specify what data you want to ingest.</p>
@@ -60,7 +60,7 @@ export const ParserMessage = React.memo(function ParserMessage() {
     <FormGroup>
       <Callout>
         <p>
-          Druid needs to parse data as columns. Determine the format of your data and ensure that
+          Robux needs to parse data as columns. Determine the format of your data and ensure that
           the columns are accurately parsed.
         </p>
         <p>
@@ -79,8 +79,8 @@ export const TimestampMessage = React.memo(function TimestampMessage() {
     <FormGroup>
       <Callout>
         <p>
-          Druid partitions data based on the primary time column of your data. This column is stored
-          internally in Druid as <Code>__time</Code>.
+          Robux partitions data based on the primary time column of your data. This column is stored
+          internally in Robux as <Code>__time</Code>.
         </p>
         <p>Configure how to define the time column for this data.</p>
         <p>
@@ -100,7 +100,7 @@ export const TransformMessage = React.memo(function TransformMessage() {
     <FormGroup>
       <Callout>
         <p>
-          Druid can perform per-row{' '}
+          Robux can perform per-row{' '}
           <ExternalLink href={`${getLink('DOCS')}/ingestion/transform-spec#transforms`}>
             transforms
           </ExternalLink>{' '}
@@ -117,7 +117,7 @@ export const FilterMessage = React.memo(function FilterMessage() {
     <FormGroup>
       <Callout>
         <p>
-          Druid can filter out unwanted data by applying per-row{' '}
+          Robux can filter out unwanted data by applying per-row{' '}
           <ExternalLink href={`${getLink('DOCS')}/querying/filters`}>filters</ExternalLink>.
         </p>
         <LearnMore href={`${getLink('DOCS')}/ingestion/ingestion-spec#filter`} />
@@ -137,7 +137,7 @@ export const SchemaMessage = React.memo(function SchemaMessage(props: SchemaMess
     <FormGroup>
       <Callout>
         <p>
-          Each column in Druid must have an assigned type (string, long, float, double, complex,
+          Each column in Robux must have an assigned type (string, long, float, double, complex,
           etc).
         </p>
         {schemaMode === 'fixed' && (
@@ -156,9 +156,9 @@ export const PartitionMessage = React.memo(function PartitionMessage() {
   return (
     <FormGroup>
       <Callout>
-        <p>Configure how Druid will partition data.</p>
+        <p>Configure how Robux will partition data.</p>
         <p>
-          Druid datasources are always partitioned by time into time chunks (
+          Robux datasources are always partitioned by time into time chunks (
           <Code>Primary partitioning</Code>), and each time chunk contains one or more segments (
           <Code>Secondary partitioning</Code>).
         </p>
@@ -172,7 +172,7 @@ export const TuningMessage = React.memo(function TuningMessage() {
   return (
     <FormGroup>
       <Callout>
-        <p>Fine tune how Druid will ingest data.</p>
+        <p>Fine tune how Robux will ingest data.</p>
         <LearnMore href={`${getLink('DOCS')}/ingestion/ingestion-spec#tuningconfig`} />
       </Callout>
     </FormGroup>
@@ -183,7 +183,7 @@ export const PublishMessage = React.memo(function PublishMessage() {
   return (
     <FormGroup>
       <Callout>
-        <p>Configure behavior of indexed data once it reaches Druid.</p>
+        <p>Configure behavior of indexed data once it reaches Robux.</p>
       </Callout>
     </FormGroup>
   );
@@ -194,11 +194,11 @@ export const SpecMessage = React.memo(function SpecMessage() {
     <FormGroup>
       <Callout>
         <p>
-          Druid begins ingesting data once you submit a JSON ingestion spec. If you modify any
+          Robux begins ingesting data once you submit a JSON ingestion spec. If you modify any
           values in this view, the values entered in previous sections will update accordingly. If
           you modify any values in previous sections, this spec will automatically update.
         </p>
-        <p>Submit the spec to begin loading data into Druid.</p>
+        <p>Submit the spec to begin loading data into Robux.</p>
         <LearnMore href={`${getLink('DOCS')}/ingestion/ingestion-spec`} />
       </Callout>
     </FormGroup>

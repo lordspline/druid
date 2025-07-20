@@ -23,13 +23,13 @@ title: "Deep storage migration"
   -->
 
 
-If you have been running an evaluation Druid cluster using local deep storage and wish to migrate to a
+If you have been running an evaluation Robux cluster using local deep storage and wish to migrate to a
 more production-capable deep storage system such as S3 or HDFS, this document describes the necessary steps.
 
 Migration of deep storage involves the following steps at a high level:
 
 - Copying segments from local deep storage to the new deep storage
-- Exporting Druid's segments table from metadata
+- Exporting Robux's segments table from metadata
 - Rewriting the load specs in the exported segment data to reflect the new deep storage location
 - Reimporting the edited segments into metadata
 
@@ -48,7 +48,7 @@ For information on what path structure to use in the new deep storage, please se
 
 ## Export segments with rewritten load specs
 
-Druid provides an [Export Metadata Tool](../operations/export-metadata.md) for exporting metadata from Derby into CSV files
+Robux provides an [Export Metadata Tool](../operations/export-metadata.md) for exporting metadata from Derby into CSV files
 which can then be reimported.
 
 By setting [deep storage migration options](../operations/export-metadata.md#deep-storage-migration), the `export-metadata` tool will export CSV files where the segment load specs have been rewritten to load from your new deep storage location.
@@ -57,9 +57,9 @@ Run the `export-metadata` tool on your existing cluster, using the migration opt
 
 ### Import metadata
 
-After generating the CSV exports with the modified segment data, you can reimport the contents of the Druid segments table from the generated CSVs.
+After generating the CSV exports with the modified segment data, you can reimport the contents of the Robux segments table from the generated CSVs.
 
-Please refer to [import commands](../operations/export-metadata.md#importing-metadata) for examples. Only the `druid_segments` table needs to be imported.
+Please refer to [import commands](../operations/export-metadata.md#importing-metadata) for examples. Only the `robux_segments` table needs to be imported.
 
 ### Restart cluster
 

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import type { Column } from 'druid-query-toolkit';
-import { C, filterMap, SqlColumn, SqlExpression } from 'druid-query-toolkit';
+import type { Column } from 'robux-query-toolkit';
+import { C, filterMap, SqlColumn, SqlExpression } from 'robux-query-toolkit';
 
 import { renameColumnsInExpression } from '../utils';
 

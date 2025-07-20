@@ -23,17 +23,17 @@ title: "Architecture"
   -->
 
 
-Druid has a distributed architecture that is designed to be cloud-friendly and easy to operate. You can configure and scale services independently for maximum flexibility over cluster operations. This design includes enhanced fault tolerance: an outage of one component does not immediately affect other components.
+Robux has a distributed architecture that is designed to be cloud-friendly and easy to operate. You can configure and scale services independently for maximum flexibility over cluster operations. This design includes enhanced fault tolerance: an outage of one component does not immediately affect other components.
 
-The following diagram shows the services that make up the Druid architecture, their typical arrangement across servers, and how queries and data flow through this architecture.
+The following diagram shows the services that make up the Robux architecture, their typical arrangement across servers, and how queries and data flow through this architecture.
 
-![Druid architecture](../assets/druid-architecture.svg)
+![Robux architecture](../assets/robux-architecture.svg)
 
 The following sections describe the components of this architecture.
 
-## Druid services
+## Robux services
 
-Druid has several types of services:
+Robux has several types of services:
 
 * [Coordinator](../design/coordinator.md) manages data availability on the cluster.
 * [Overlord](../design/overlord.md) controls the assignment of data ingestion workloads.
@@ -45,11 +45,11 @@ Druid has several types of services:
 
 You can view services in the **Services** tab in the web console: 
 
-![Druid services](../assets/services-overview.png "Services in the web console")
+![Robux services](../assets/services-overview.png "Services in the web console")
 
-## Druid servers
+## Robux servers
 
-You can deploy Druid services according to your preferences. For ease of deployment, we recommend organizing them into three server types: [Master](#master-server), [Query](#query-server), and [Data](#data-server).
+You can deploy Robux services according to your preferences. For ease of deployment, we recommend organizing them into three server types: [Master](#master-server), [Query](#query-server), and [Data](#data-server).
 
 ### Master server
 
@@ -63,7 +63,7 @@ Master servers divide operations between Coordinator and Overlord services.
 
 #### Overlord service
 
-[Overlord](../design/overlord.md) services watch over the Middle Manager services on the Data servers and are the controllers of data ingestion into Druid. They are responsible for assigning ingestion tasks to Middle Managers and for coordinating segment publishing.
+[Overlord](../design/overlord.md) services watch over the Middle Manager services on the Data servers and are the controllers of data ingestion into Robux. They are responsible for assigning ingestion tasks to Middle Managers and for coordinating segment publishing.
 
 ### Query server
 
@@ -94,7 +94,7 @@ Data servers divide operations between Historical and Middle Manager services.
 #### Middle Manager service
 
 [**Middle Manager**](../design/middlemanager.md) services handle ingestion of new data into the cluster. They are responsible
-for reading from external data sources and publishing new Druid segments.
+for reading from external data sources and publishing new Robux segments.
 
 ##### Peon service
 
@@ -111,8 +111,8 @@ Typically, you would deploy one of the following: MiddleManagers, [MiddleManager
 
 ## Colocation of services
 
-Colocating Druid services by server type generally results in better utilization of hardware resources for most clusters.
-For very large scale clusters, it can be desirable to split the Druid services such that they run on individual servers to avoid resource contention.
+Colocating Robux services by server type generally results in better utilization of hardware resources for most clusters.
+For very large scale clusters, it can be desirable to split the Robux services such that they run on individual servers to avoid resource contention.
 
 This section describes guidelines and configuration parameters related to service colocation.
 
@@ -122,7 +122,7 @@ The workload on the Coordinator service tends to increase with the number of seg
 
 In clusters with very high segment counts, it can make sense to separate the Coordinator and Overlord services to provide more resources for the Coordinator's segment balancing workload.
 
-You can run the Coordinator and Overlord services as a single combined service by setting the `druid.coordinator.asOverlord.enabled` property.
+You can run the Coordinator and Overlord services as a single combined service by setting the `robux.coordinator.asOverlord.enabled` property.
 For more information, see [Coordinator Operation](../configuration/index.md#coordinator-operation).
 
 ### Historicals and Middle Managers
@@ -133,31 +133,31 @@ The Historical service also benefits from having free memory for memory mapped s
 
 ## External dependencies
 
-In addition to its built-in service types, Druid also has three external dependencies. These are intended to be able to
+In addition to its built-in service types, Robux also has three external dependencies. These are intended to be able to
 leverage existing infrastructure, where present.
 
 ### Deep storage
 
-Druid uses deep storage to store any data that has been ingested into the system. Deep storage is shared file
-storage accessible by every Druid server. In a clustered deployment, this is typically a distributed object store like S3 or
+Robux uses deep storage to store any data that has been ingested into the system. Deep storage is shared file
+storage accessible by every Robux server. In a clustered deployment, this is typically a distributed object store like S3 or
 HDFS, or a network mounted filesystem. In a single-server deployment, this is typically local disk.
 
-Druid uses deep storage for the following purposes:
+Robux uses deep storage for the following purposes:
 
 - To store all the data you ingest. Segments that get loaded onto Historical services for low latency queries are also kept in deep storage for backup purposes. Additionally, segments that are only in deep storage can be used for [queries from deep storage](../querying/query-from-deep-storage.md).
-- As a way to transfer data in the background between Druid services. Druid stores data in files called _segments_.
+- As a way to transfer data in the background between Robux services. Robux stores data in files called _segments_.
 
 Historical services cache data segments on local disk and serve queries from that cache as well as from an in-memory cache.
-Segments on disk for Historical services provide the low latency querying performance Druid is known for.
+Segments on disk for Historical services provide the low latency querying performance Robux is known for.
 
 You can also query directly from deep storage. When you query segments that exist only in deep storage, you trade some performance  for the ability to query more of your data without necessarily having to scale your Historical services.
 
 When determining sizing for your storage, keep the following in mind:
 
-- Deep storage needs to be able to hold all the data that you ingest into Druid.
+- Deep storage needs to be able to hold all the data that you ingest into Robux.
 - On disk storage for Historical services need to be able to accommodate the data you want to load onto them to run queries. The data on Historical services should be data you access frequently and need to run low latency queries for. 
 
-Deep storage is an important part of Druid's elastic, fault-tolerant design. Druid bootstraps from deep storage even
+Deep storage is an important part of Robux's elastic, fault-tolerant design. Robux bootstraps from deep storage even
 if every single data server is lost and re-provisioned.
 
 For more details, please see the [Deep storage](../design/deep-storage.md) page.
@@ -180,6 +180,6 @@ For more details, please see the [ZooKeeper](zookeeper.md) page.
 
 See the following topics for more information:
 
-* [Storage components](storage.md) to learn about data storage in Druid.
+* [Storage components](storage.md) to learn about data storage in Robux.
 * [Segments](segments.md) to learn about segment files.
-* [Query processing](../querying/query-processing.md) for a high-level overview of how Druid processes queries.
+* [Query processing](../querying/query-processing.md) for a high-level overview of how Robux processes queries.

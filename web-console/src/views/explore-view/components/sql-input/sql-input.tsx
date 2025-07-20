@@ -17,7 +17,7 @@
  */
 
 import type { Ace } from 'ace-builds';
-import type { Column } from 'druid-query-toolkit';
+import type { Column } from 'robux-query-toolkit';
 import React from 'react';
 import AceEditor from 'react-ace';
 

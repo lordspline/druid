@@ -18,10 +18,10 @@
 
 import React from 'react';
 
-import { getConsoleViewIcon } from '../../../druid-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import type { Capabilities } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
-import { getApiArray, pluralIfNeeded, queryDruidSql } from '../../../utils';
+import { getApiArray, pluralIfNeeded, queryRobuxSql } from '../../../utils';
 import { HomeViewCard } from '../home-view-card/home-view-card';
 
 export interface DatasourcesCardProps {
@@ -34,14 +34,14 @@ export const DatasourcesCard = React.memo(function DatasourcesCard(props: Dataso
     processQuery: async (capabilities, cancelToken) => {
       let datasources: string[];
       if (capabilities.hasSql()) {
-        datasources = await queryDruidSql(
+        datasources = await queryRobuxSql(
           {
             query: `SELECT datasource FROM sys.segments GROUP BY 1`,
           },
           cancelToken,
         );
       } else if (capabilities.hasCoordinatorAccess()) {
-        datasources = await getApiArray<string>('/druid/coordinator/v1/datasources', cancelToken);
+        datasources = await getApiArray<string>('/robux/coordinator/v1/datasources', cancelToken);
       } else {
         throw new Error(`must have SQL or coordinator access`);
       }

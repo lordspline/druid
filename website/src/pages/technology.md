@@ -1,6 +1,6 @@
 ---
 title: Technology
-canonical: 'https://druid.apache.org/technology'
+canonical: 'https://robux.apache.org/technology'
 ---
 
 <!--
@@ -22,4 +22,4 @@ canonical: 'https://druid.apache.org/technology'
 
 -->
 
-Edit this page in the [`druid-website-src`](https://github.com/apache/druid-website-src/) repo. To see your changes, navigate to them from the [Docs section](/docs/latest/design).
+Edit this page in the [`robux-website-src`](https://github.com/apache/robux-website-src/) repo. To see your changes, navigate to them from the [Docs section](/docs/latest/design).

@@ -2,7 +2,7 @@
 id: tutorial-update-data
 title: Update data
 sidebar_label: Update data
-description: Learn how to update data in Apache Druid.
+description: Learn how to update data in Apache Robux.
 ---
 
 <!--
@@ -24,14 +24,14 @@ description: Learn how to update data in Apache Druid.
   ~ under the License.
   -->
 
-Apache Druid stores data and indexes in [segment files](../design/segments.md) partitioned by time.
-After Druid creates a segment, its contents can't be modified.
+Apache Robux stores data and indexes in [segment files](../design/segments.md) partitioned by time.
+After Robux creates a segment, its contents can't be modified.
 You can either replace data for the whole segment, or, in some cases, overshadow a portion of the segment data.
 
-In Druid, use time ranges to specify the data you want to update, as opposed to a primary key or dimensions often used in transactional databases. Data outside the specified replacement time range remains unaffected.
-You can use this Druid functionality to perform data updates, inserts, and deletes, similar to UPSERT functionality for transactional databases.
+In Robux, use time ranges to specify the data you want to update, as opposed to a primary key or dimensions often used in transactional databases. Data outside the specified replacement time range remains unaffected.
+You can use this Robux functionality to perform data updates, inserts, and deletes, similar to UPSERT functionality for transactional databases.
 
-This tutorial shows you how to use the Druid SQL [REPLACE](../multi-stage-query/reference.md#replace) function with the OVERWRITE clause to update existing data.
+This tutorial shows you how to use the Robux SQL [REPLACE](../multi-stage-query/reference.md#replace) function with the OVERWRITE clause to update existing data.
 
 The tutorial walks you through the following use cases:
 
@@ -43,16 +43,16 @@ All examples use the [multi-stage query (MSQ)](../multi-stage-query/index.md) ta
 
 ## Prerequisites
 
-Before you follow the steps in this tutorial, download Druid as described in [Quickstart (local)](index.md) and have it running on your local machine. You don't need to load any data into the Druid cluster.
+Before you follow the steps in this tutorial, download Robux as described in [Quickstart (local)](index.md) and have it running on your local machine. You don't need to load any data into the Robux cluster.
 
-You should be familiar with data querying in Druid. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
+You should be familiar with data querying in Robux. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
 
 ## Load sample data
 
 Load a sample dataset using [REPLACE](../multi-stage-query/reference.md#replace) and [EXTERN](../multi-stage-query/reference.md#extern-function) functions.
-In Druid SQL, the REPLACE function can create a new [datasource](../design/storage.md) or update an existing datasource.
+In Robux SQL, the REPLACE function can create a new [datasource](../design/storage.md) or update an existing datasource.
 
-In the Druid [web console](../operations/web-console.md), go to the **Query** view and run the following query:
+In the Robux [web console](../operations/web-console.md), go to the **Query** view and run the following query:
 
 ```sql
 REPLACE INTO "update_tutorial" OVERWRITE ALL
@@ -190,7 +190,7 @@ Note the changes in the resulting datasource:
 
 ## Update a row using partial segment overshadowing
 
-In Druid, you can overlay older data with newer data for the entire segment or portions of the segment within a particular partition.
+In Robux, you can overlay older data with newer data for the entire segment or portions of the segment within a particular partition.
 This capability is called [overshadowing](../ingestion/tasks.md#overshadowing-between-segments).
 
 You can use partial overshadowing to update a single row by adding a smaller time granularity segment on top of the existing data.
@@ -243,6 +243,6 @@ When you perform partial segment overshadowing multiple times, you can create se
 
 See the following topics for more information:
 
-* [Data updates](../data-management/update.md) for an overview of updating data in Druid.
+* [Data updates](../data-management/update.md) for an overview of updating data in Robux.
 * [Load files with SQL-based ingestion](../tutorials/tutorial-msq-extern.md) for generating a query that references externally hosted data.
 * [Overwrite data with REPLACE](../multi-stage-query/concepts.md#overwrite-data-with-replace) for details on how the MSQ task engine executes SQL REPLACE queries.

@@ -18,11 +18,11 @@
 
 import React from 'react';
 
-import type { IngestionSpec } from '../../../druid-models';
-import { getConsoleViewIcon } from '../../../druid-models';
+import type { IngestionSpec } from '../../../robux-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import type { Capabilities } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
-import { getApiArray, partition, pluralIfNeeded, queryDruidSql } from '../../../utils';
+import { getApiArray, partition, pluralIfNeeded, queryRobuxSql } from '../../../utils';
 import { HomeViewCard } from '../home-view-card/home-view-card';
 
 export interface SupervisorCounts {
@@ -39,7 +39,7 @@ export const SupervisorsCard = React.memo(function SupervisorsCard(props: Superv
     processQuery: async (capabilities, cancelToken) => {
       if (capabilities.hasSql()) {
         return (
-          await queryDruidSql(
+          await queryRobuxSql(
             {
               query: `SELECT
   COUNT(*) FILTER (WHERE "suspended" = 0) AS "running",
@@ -51,7 +51,7 @@ FROM sys.supervisors`,
         )[0];
       } else if (capabilities.hasOverlordAccess()) {
         const supervisors = await getApiArray<{ spec: IngestionSpec }>(
-          '/druid/indexer/v1/supervisor?full',
+          '/robux/indexer/v1/supervisor?full',
           cancelToken,
         );
         const [running, suspended] = partition(supervisors, d => !d.spec.suspended);

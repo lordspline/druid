@@ -14,14 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## Initialization script for druid nodes
-## Runs druid nodes as a daemon
+## Initialization script for robux nodes
+## Runs robux nodes as a daemon
 ## Environment Variables used by this script -
-## DRUID_BIN_DIR - directory having druid bin files, default=bin
-## DRUID_LIB_DIR - directory having druid jar files, default=lib
-## DRUID_CONF_DIR - directory having druid config files, default=conf/druid
-## DRUID_LOG_DIR - directory used to store druid logs, default=log
-## DRUID_PID_DIR - directory used to store pid files, default=var/druid/pids
+## ROBUX_BIN_DIR - directory having robux bin files, default=bin
+## ROBUX_LIB_DIR - directory having robux jar files, default=lib
+## ROBUX_CONF_DIR - directory having robux config files, default=conf/robux
+## ROBUX_LOG_DIR - directory used to store robux logs, default=log
+## ROBUX_PID_DIR - directory used to store pid files, default=var/robux/pids
 ## HADOOP_CONF_DIR - directory used to store hadoop config files
 
 usage="Usage: node.sh nodeType (start|stop|status)"
@@ -36,15 +36,15 @@ shift
 
 command=$1
 
-LIB_DIR="${DRUID_LIB_DIR:=lib}"
-BIN_DIR="${DRUID_BIN_DIR:=$DRUID_LIB_DIR/../bin}"
-CONF_DIR="${DRUID_CONF_DIR:=conf/druid}"
-PID_DIR="${DRUID_PID_DIR:=var/druid/pids}"
+LIB_DIR="${ROBUX_LIB_DIR:=lib}"
+BIN_DIR="${ROBUX_BIN_DIR:=$ROBUX_LIB_DIR/../bin}"
+CONF_DIR="${ROBUX_CONF_DIR:=conf/robux}"
+PID_DIR="${ROBUX_PID_DIR:=var/robux/pids}"
 WHEREAMI="$(dirname "$0")"
 WHEREAMI="$(cd "$WHEREAMI" && pwd)"
 
 # Remove possilble ending slash
-LOG_DIR="${DRUID_LOG_DIR:=${WHEREAMI}/log}"
+LOG_DIR="${ROBUX_LOG_DIR:=${WHEREAMI}/log}"
 if [[ $LOG_DIR == */ ]];
 then
   LOG_DIR=${LOG_DIR%?}
@@ -65,7 +65,7 @@ case $command in
     if [ ! -d "$PID_DIR" ]; then mkdir -p $PID_DIR; fi
     if [ ! -d "$LOG_DIR" ]; then mkdir -p $LOG_DIR; fi
 
-    nohup "$BIN_DIR/run-java" -Ddruid.node.type=$nodeType "-Ddruid.log.path=$LOG_DIR" `cat $CONF_DIR/$nodeType/jvm.config | xargs` -cp $CONF_DIR/_common:$CONF_DIR/$nodeType:$LIB_DIR/*:$HADOOP_CONF_DIR org.apache.druid.cli.Main server $nodeType >> /dev/null 2>&1 &
+    nohup "$BIN_DIR/run-java" -Drobux.node.type=$nodeType "-Drobux.log.path=$LOG_DIR" `cat $CONF_DIR/$nodeType/jvm.config | xargs` -cp $CONF_DIR/_common:$CONF_DIR/$nodeType:$LIB_DIR/*:$HADOOP_CONF_DIR org.apache.robux.cli.Main server $nodeType >> /dev/null 2>&1 &
     nodeType_PID=$!
     echo $nodeType_PID > $pid
     echo "Started $nodeType node, pid: $nodeType_PID"

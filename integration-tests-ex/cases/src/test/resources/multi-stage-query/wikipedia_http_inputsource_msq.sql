@@ -1,7 +1,7 @@
 REPLACE INTO "%%DATASOURCE%%" OVERWRITE ALL
 WITH "source" AS (SELECT * FROM TABLE(
   EXTERN(
-    '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz","https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz","https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type":"json"}',
     '[{"name":"timestamp","type":"string"},{"name":"page","type":"string"},{"name":"language","type":"string"},{"name":"user","type":"string"},{"name":"unpatrolled","type":"string"},{"name":"newPage","type":"string"},{"name":"robot","type":"string"},{"name":"anonymous","type":"string"},{"name":"namespace","type":"string"},{"name":"continent","type":"string"},{"name":"country","type":"string"},{"name":"region","type":"string"},{"name":"city","type":"string"},{"name":"added","type":"double"},{"name":"deleted","type":"double"},{"name":"delta","type":"double"}]'
   )

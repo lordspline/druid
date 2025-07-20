@@ -36,7 +36,7 @@ fi
 CONFDIR="$(cd "$CONFDIR">/dev/null && pwd)/zk"
 WHEREAMI="$(cd "$WHEREAMI">/dev/null && pwd)"
 
-LOG_DIR="${DRUID_LOG_DIR:=${WHEREAMI}/../log}"
+LOG_DIR="${ROBUX_LOG_DIR:=${WHEREAMI}/../log}"
 # Remove possible ending slash
 if [[ $LOG_DIR == */ ]];
 then
@@ -47,7 +47,7 @@ if [ ! -d "$LOG_DIR" ]; then mkdir -p $LOG_DIR; fi
 echo "Running [ZooKeeper], logging to [$LOG_DIR/zookeeper.log] if no changes made to log4j2.xml"
 
 cd "$WHEREAMI/.."
-exec "$WHEREAMI"/run-java "-Ddruid.log.path=$LOG_DIR" `cat "$CONFDIR"/jvm.config | xargs` \
+exec "$WHEREAMI"/run-java "-Drobux.log.path=$LOG_DIR" `cat "$CONFDIR"/jvm.config | xargs` \
   -cp "$WHEREAMI/../lib/*:$CONFDIR" \
   -Dzookeeper.jmx.log4j.disable=true \
   org.apache.zookeeper.server.quorum.QuorumPeerMain \

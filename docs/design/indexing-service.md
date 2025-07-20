@@ -23,9 +23,9 @@ title: "Indexing Service"
   -->
 
 
-The Apache Druid indexing service is a highly-available, distributed service that runs indexing related tasks.
+The Apache Robux indexing service is a highly-available, distributed service that runs indexing related tasks.
 
-Indexing [tasks](../ingestion/tasks.md) are responsible for creating and [killing](../ingestion/tasks.md#kill) Druid [segments](../design/segments.md).
+Indexing [tasks](../ingestion/tasks.md) are responsible for creating and [killing](../ingestion/tasks.md#kill) Robux [segments](../design/segments.md).
 
 The indexing service is composed of three main components: [Peons](../design/peons.md) that can run a single task, [Middle Managers](../design/middlemanager.md) that manage Peons, and an [Overlord](../design/overlord.md) that manages task distribution to Middle Managers.
 Overlords and Middle Managers may run on the same process or across multiple processes, while Middle Managers and Peons always run on the same process.

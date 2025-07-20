@@ -23,9 +23,9 @@ title: "InfluxDB Line Protocol Parser"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-influx-extensions` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-influx-extensions` in the extensions load list.
 
-This extension enables Druid to parse the [InfluxDB Line Protocol](https://docs.influxdata.com/influxdb/v1.5/write_protocols/line_protocol_tutorial/), a popular text-based timeseries metric serialization format.
+This extension enables Robux to parse the [InfluxDB Line Protocol](https://docs.influxdata.com/influxdb/v1.5/write_protocols/line_protocol_tutorial/), a popular text-based timeseries metric serialization format.
 
 ## Line Protocol
 

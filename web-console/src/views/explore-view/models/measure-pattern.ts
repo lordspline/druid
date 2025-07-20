@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import type { Column, SqlExpression } from 'druid-query-toolkit';
-import { C, F, SqlColumn, SqlFunction, SqlStar } from 'druid-query-toolkit';
+import type { Column, SqlExpression } from 'robux-query-toolkit';
+import { C, F, SqlColumn, SqlFunction, SqlStar } from 'robux-query-toolkit';
 
 import { capitalizeFirst } from '../../../utils';
 

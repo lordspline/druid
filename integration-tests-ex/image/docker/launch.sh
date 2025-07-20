@@ -17,7 +17,7 @@
 #-------------------------------------------------------------------------
 
 # Launch script which runs inside the container to set up configuration
-# and then launch Druid itself.
+# and then launch Robux itself.
 
 # Fail fast on any error
 set -e
@@ -28,25 +28,25 @@ set -e
 # Dump the environment for debugging. Also done later to the log.
 #env
 
-# Launch Druid within the container.
+# Launch Robux within the container.
 cd /
 
 # Where things are located
 SHARED_DIR=/shared
 LOG_DIR=$SHARED_DIR/logs
-DRUID_HOME=/usr/local/druid
+ROBUX_HOME=/usr/local/robux
 
 # Allow test-specific extensions in the /shared/extensions directory.
 # If that directory exists (it won't for most tests), add it to the
-# extensions path, using a feature in Druid 26 or later.
+# extensions path, using a feature in Robux 26 or later.
 # For maximum flexibility, don't overwrite the extensions path if
 # it is set.
 TEST_EXTN_DIR=$SHARED_DIR/extensions
 if [ -d $TEST_EXTN_DIR ]; then
-  if [ -z "$druid_extensions_path" ]; then
-    export druid_extensions_path="[\"${TEST_EXTN_DIR}\"]"
+  if [ -z "$robux_extensions_path" ]; then
+    export robux_extensions_path="[\"${TEST_EXTN_DIR}\"]"
   else
-    echo "Extension directory $TEST_EXTN_DIR found, and druid_extensions_path={$druid_extensions_path} -- not setting path automatically"
+    echo "Extension directory $TEST_EXTN_DIR found, and robux_extensions_path={$robux_extensions_path} -- not setting path automatically"
   fi
 fi
 
@@ -55,65 +55,65 @@ fi
 
 # The image contains both the MySQL and MariaDB JDBC drivers.
 # The MySQL driver is selected by the Docker Compose file.
-# Set  druid.metadata.mysql.driver.driverClassName to the preferred
+# Set  robux.metadata.mysql.driver.driverClassName to the preferred
 # driver.
 if [ -n "$MYSQL_DRIVER_CLASSNAME" ]; then
-  export druid_metadata_mysql_driver_driverClassName="$MYSQL_DRIVER_CLASSNAME"
+  export robux_metadata_mysql_driver_driverClassName="$MYSQL_DRIVER_CLASSNAME"
 fi
 
 # Test-specific way to define extensions. Compose defines two test-specific
 # variables. We combine these to create the final form converted to a property.
-if [ -n "$druid_extensions_loadList" ]; then
-	echo "Using the provided druid_extensions_loadList=$druid_extensions_loadList"
+if [ -n "$robux_extensions_loadList" ]; then
+	echo "Using the provided robux_extensions_loadList=$robux_extensions_loadList"
 else
 	mkdir -p /tmp/conf
 	EXTNS_FILE=/tmp/conf/extns
-	echo $druid_standard_loadList | tr "," "\n" > $EXTNS_FILE
-	if [ -n "$druid_test_loadList" ]; then
-		echo $druid_test_loadList | tr "," "\n" >> $EXTNS_FILE
+	echo $robux_standard_loadList | tr "," "\n" > $EXTNS_FILE
+	if [ -n "$robux_test_loadList" ]; then
+		echo $robux_test_loadList | tr "," "\n" >> $EXTNS_FILE
 	fi
-	druid_extensions_loadList="["
+	robux_extensions_loadList="["
 	delim=""
 	while read -r line; do
-	  	druid_extensions_loadList="$druid_extensions_loadList$delim\"$line\""
+	  	robux_extensions_loadList="$robux_extensions_loadList$delim\"$line\""
 	  	delim=","
 	done < $EXTNS_FILE
-	export druid_extensions_loadList="${druid_extensions_loadList}]"
-	unset druid_standard_loadList
-	unset druid_test_loadList
+	export robux_extensions_loadList="${robux_extensions_loadList}]"
+	unset robux_standard_loadList
+	unset robux_test_loadList
 	rm $EXTNS_FILE
-	echo "Effective druid_extensions_loadList=$druid_extensions_loadList"
+	echo "Effective robux_extensions_loadList=$robux_extensions_loadList"
 fi
 
-# Create druid service config files with all the config variables
-. /druid.sh
+# Create robux service config files with all the config variables
+. /robux.sh
 setupConfig
 
 # Export the service config file path to use in supervisord conf file
-DRUID_SERVICE_CONF_DIR="$(. /druid.sh; getConfPath ${DRUID_SERVICE})"
+ROBUX_SERVICE_CONF_DIR="$(. /robux.sh; getConfPath ${ROBUX_SERVICE})"
 
 # Export the common config file path to use in supervisord conf file
-DRUID_COMMON_CONF_DIR="$(. /druid.sh; getConfPath _common)"
+ROBUX_COMMON_CONF_DIR="$(. /robux.sh; getConfPath _common)"
 
 # For multiple nodes of the same type to create a unique name
-INSTANCE_NAME=$DRUID_SERVICE
-if [ -n "$DRUID_INSTANCE" ]; then
-	INSTANCE_NAME=${DRUID_SERVICE}-$DRUID_INSTANCE
+INSTANCE_NAME=$ROBUX_SERVICE
+if [ -n "$ROBUX_INSTANCE" ]; then
+	INSTANCE_NAME=${ROBUX_SERVICE}-$ROBUX_INSTANCE
 fi
 
 # Assemble Java options
-JAVA_OPTS="$DRUID_SERVICE_JAVA_OPTS $DRUID_COMMON_JAVA_OPTS -XX:HeapDumpPath=$LOG_DIR/$INSTANCE_NAME $DEBUG_OPTS"
+JAVA_OPTS="$ROBUX_SERVICE_JAVA_OPTS $ROBUX_COMMON_JAVA_OPTS -XX:HeapDumpPath=$LOG_DIR/$INSTANCE_NAME $DEBUG_OPTS"
 LOG4J_CONFIG=$SHARED_DIR/resources/log4j2.xml
 if [ -f $LOG4J_CONFIG ]; then
 	JAVA_OPTS="$JAVA_OPTS -Dlog4j.configurationFile=$LOG4J_CONFIG"
 fi
 
 # The env-to-config scripts creates a single config file.
-# The common one is empty, but Druid still wants to find it,
+# The common one is empty, but Robux still wants to find it,
 # so we add it to the class path anyway.
-CP=$DRUID_COMMON_CONF_DIR:$DRUID_SERVICE_CONF_DIR:${DRUID_HOME}/lib/\*
-if [ -n "$DRUID_CLASSPATH" ]; then
-	CP=$CP:$DRUID_CLASSPATH
+CP=$ROBUX_COMMON_CONF_DIR:$ROBUX_SERVICE_CONF_DIR:${ROBUX_HOME}/lib/\*
+if [ -n "$ROBUX_CLASSPATH" ]; then
+	CP=$CP:$ROBUX_CLASSPATH
 fi
 HADOOP_XML=$SHARED_DIR/hadoop-xml
 if [ -d $HADOOP_XML ]; then
@@ -139,12 +139,12 @@ echo "" >> $LOG_FILE
 echo "--- env ---" >> $LOG_FILE
 env >> $LOG_FILE
 echo "--- runtime.properties ---" >> $LOG_FILE
-cat $DRUID_SERVICE_CONF_DIR/*.properties >> $LOG_FILE
+cat $ROBUX_SERVICE_CONF_DIR/*.properties >> $LOG_FILE
 echo "---" >> $LOG_FILE
 echo "" >> $LOG_FILE
 
-# Run Druid service
-cd $DRUID_HOME
+# Run Robux service
+cd $ROBUX_HOME
 exec bin/run-java $JAVA_OPTS -cp $CP \
-	org.apache.druid.cli.Main server $DRUID_SERVICE \
+	org.apache.robux.cli.Main server $ROBUX_SERVICE \
 	>> $LOG_FILE 2>&1

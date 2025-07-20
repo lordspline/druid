@@ -19,7 +19,7 @@
 import { HotkeysProvider } from '@blueprintjs/core';
 import { render } from '@testing-library/react';
 
-import { DEFAULT_SERVER_QUERY_CONTEXT, DRUID_ENGINES, WorkbenchQuery } from '../../../druid-models';
+import { DEFAULT_SERVER_QUERY_CONTEXT, ROBUX_ENGINES, WorkbenchQuery } from '../../../robux-models';
 
 import { RunPanel } from './run-panel';
 
@@ -32,7 +32,7 @@ describe('RunPanel', () => {
           onQueryChange={() => {}}
           running={false}
           onRun={() => {}}
-          queryEngines={DRUID_ENGINES}
+          queryEngines={ROBUX_ENGINES}
           clusterCapacity={9}
           defaultQueryContext={DEFAULT_SERVER_QUERY_CONTEXT}
         />
@@ -52,7 +52,7 @@ describe('RunPanel', () => {
           onQueryChange={() => {}}
           running={false}
           onRun={() => {}}
-          queryEngines={DRUID_ENGINES}
+          queryEngines={ROBUX_ENGINES}
           clusterCapacity={9}
           defaultQueryContext={DEFAULT_SERVER_QUERY_CONTEXT}
         />

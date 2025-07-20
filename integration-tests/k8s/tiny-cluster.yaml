@@ -13,16 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: "druid.apache.org/v1alpha1"
-kind: "Druid"
+apiVersion: "robux.apache.org/v1alpha1"
+kind: "Robux"
 metadata:
   name: tiny-cluster
 spec:
-  image: druid/cluster:v1
+  image: robux/cluster:v1
   # Optionally specify image for all nodes. Can be specify on nodes also
   # imagePullSecrets:
   # - name: tutu
-  startScript: /druid.sh
+  startScript: /robux.sh
   podLabels:
     environment: stage
     release: alpha
@@ -42,7 +42,7 @@ spec:
     - spec:
         type: ClusterIP
         clusterIP: None
-  commonConfigMountPath: "/opt/druid/conf/druid/cluster/_common"
+  commonConfigMountPath: "/opt/robux/conf/robux/cluster/_common"
   jvm.options: |-
     -server
     -XX:MaxDirectMemorySize=10240g
@@ -67,41 +67,41 @@ spec:
   common.runtime.properties: |
 
     #
-    # Zookeeper-less Druid Cluster
+    # Zookeeper-less Robux Cluster
     #
-    druid.zk.service.enabled=false
-    druid.discovery.type=k8s
-    druid.discovery.k8s.clusterIdentifier=druid-it
-    druid.serverview.type=http
-    druid.indexer.runner.type=httpRemote
+    robux.zk.service.enabled=false
+    robux.discovery.type=k8s
+    robux.discovery.k8s.clusterIdentifier=robux-it
+    robux.serverview.type=http
+    robux.indexer.runner.type=httpRemote
 
     # Metadata Store
-    druid.metadata.storage.type=derby
-    druid.metadata.storage.connector.connectURI=jdbc:derby://localhost:1527/var/druid/metadata.db;create=true
-    druid.metadata.storage.connector.host=localhost
-    druid.metadata.storage.connector.port=1527
-    druid.metadata.storage.connector.createTables=true
+    robux.metadata.storage.type=derby
+    robux.metadata.storage.connector.connectURI=jdbc:derby://localhost:1527/var/robux/metadata.db;create=true
+    robux.metadata.storage.connector.host=localhost
+    robux.metadata.storage.connector.port=1527
+    robux.metadata.storage.connector.createTables=true
 
     # Deep Storage
-    druid.storage.type=local
-    druid.storage.storageDirectory=/druid/data/deepstorage
+    robux.storage.type=local
+    robux.storage.storageDirectory=/robux/data/deepstorage
 
     #
     # Extensions
     #
-    druid.extensions.loadList=["druid-avro-extensions","druid-hdfs-storage", "druid-kafka-indexing-service", "druid-datasketches", "druid-kubernetes-extensions"]
+    robux.extensions.loadList=["robux-avro-extensions","robux-hdfs-storage", "robux-kafka-indexing-service", "robux-datasketches", "robux-kubernetes-extensions"]
 
     #
     # Service discovery
     #
-    druid.selectors.indexing.serviceName=druid/overlord
-    druid.selectors.coordinator.serviceName=druid/coordinator
+    robux.selectors.indexing.serviceName=robux/overlord
+    robux.selectors.coordinator.serviceName=robux/coordinator
 
-    druid.indexer.logs.type=file
-    druid.indexer.logs.directory=/druid/data/task-logs
-    druid.indexer.task.baseDir=/druid/data/task-base
+    robux.indexer.logs.type=file
+    robux.indexer.logs.directory=/robux/data/task-logs
+    robux.indexer.task.baseDir=/robux/data/task-base
 
-    druid.lookup.enableLookupSyncOnStartup=false
+    robux.lookup.enableLookupSyncOnStartup=false
 
   env:
     - name: POD_NAME
@@ -121,7 +121,7 @@ spec:
       # Optionally specify for broker nodes
       # imagePullSecrets:
       # - name: tutu
-      druid.port: 8088
+      robux.port: 8088
       services:
         - spec:
             type: NodePort
@@ -136,23 +136,23 @@ spec:
         - spec:
             type: ClusterIP
             clusterIP: None
-      nodeConfigMountPath: "/opt/druid/conf/druid/cluster/query/broker"
+      nodeConfigMountPath: "/opt/robux/conf/robux/cluster/query/broker"
       replicas: 1
       runtime.properties: |
-        druid.service=druid/broker
+        robux.service=robux/broker
 
         # HTTP server threads
-        druid.broker.http.numConnections=5
-        druid.server.http.numThreads=40
+        robux.broker.http.numConnections=5
+        robux.server.http.numThreads=40
 
         # Processing threads and buffers
-        druid.processing.buffer.sizeBytes=25000000
-        druid.sql.enable=true
+        robux.processing.buffer.sizeBytes=25000000
+        robux.sql.enable=true
       extra.jvm.options: |-
         -Xmx512m
         -Xms512m
       volumeMounts:
-        - mountPath: /druid/data
+        - mountPath: /robux/data
           name: data-volume
       volumes:
         - name: data-volume
@@ -168,7 +168,7 @@ spec:
       # Optionally specify for running coordinator as Deployment
       # kind: Deployment
       nodeType: "coordinator"
-      druid.port: 8088
+      robux.port: 8088
       services:
         - spec:
             type: NodePort
@@ -183,24 +183,24 @@ spec:
         - spec:
             type: ClusterIP
             clusterIP: None
-      nodeConfigMountPath: "/opt/druid/conf/druid/cluster/master/coordinator-overlord"
+      nodeConfigMountPath: "/opt/robux/conf/robux/cluster/master/coordinator-overlord"
       replicas: 1
       runtime.properties: |
-        druid.service=druid/coordinator
+        robux.service=robux/coordinator
 
         # HTTP server threads
-        druid.coordinator.startDelay=PT30S
-        druid.coordinator.period=PT30S
+        robux.coordinator.startDelay=PT30S
+        robux.coordinator.period=PT30S
 
         # Configure this coordinator to also run as Overlord
-        druid.coordinator.asOverlord.enabled=true
-        druid.coordinator.asOverlord.overlordService=druid/overlord
-        druid.indexer.queue.startDelay=PT30S
+        robux.coordinator.asOverlord.enabled=true
+        robux.coordinator.asOverlord.overlordService=robux/overlord
+        robux.indexer.queue.startDelay=PT30S
       extra.jvm.options: |-
         -Xmx800m
         -Xms800m
       volumeMounts:
-        - mountPath: /druid/data
+        - mountPath: /robux/data
           name: data-volume
       volumes:
         - name: data-volume
@@ -214,7 +214,7 @@ spec:
 
     historicals:
       nodeType: "historical"
-      druid.port: 8088
+      robux.port: 8088
       services:
         - spec:
             type: NodePort
@@ -229,20 +229,20 @@ spec:
         - spec:
             type: ClusterIP
             clusterIP: None
-      nodeConfigMountPath: "/opt/druid/conf/druid/cluster/data/historical"
+      nodeConfigMountPath: "/opt/robux/conf/robux/cluster/data/historical"
       replicas: 1
       runtime.properties: |
-        druid.service=druid/historical
-        druid.processing.buffer.sizeBytes=25000000
-        druid.processing.numThreads=2
+        robux.service=robux/historical
+        robux.processing.buffer.sizeBytes=25000000
+        robux.processing.numThreads=2
         # Segment storage
-        druid.segmentCache.locations=[{"path":"/druid/data/segments","maxSize":10737418240}]
-        druid.server.maxSize=10737418240
+        robux.segmentCache.locations=[{"path":"/robux/data/segments","maxSize":10737418240}]
+        robux.server.maxSize=10737418240
       extra.jvm.options: |-
         -Xmx512m
         -Xms512m
       volumeMounts:
-        - mountPath: /druid/data
+        - mountPath: /robux/data
           name: data-volume
       volumes:
         - name: data-volume
@@ -256,7 +256,7 @@ spec:
 
     routers:
       nodeType: "router"
-      druid.port: 8088
+      robux.port: 8088
       services:
         - spec:
             type: NodePort
@@ -271,29 +271,29 @@ spec:
         - spec:
             type: ClusterIP
             clusterIP: None
-      nodeConfigMountPath: "/opt/druid/conf/druid/cluster/query/router"
+      nodeConfigMountPath: "/opt/robux/conf/robux/cluster/query/router"
       replicas: 1
       runtime.properties: |
-        druid.service=druid/router
-        druid.plaintextPort=8088
+        robux.service=robux/router
+        robux.plaintextPort=8088
 
         # HTTP proxy
-        druid.router.http.numConnections=50
-        druid.router.http.readTimeout=PT5M
-        druid.router.http.numMaxThreads=100
-        druid.server.http.numThreads=100
+        robux.router.http.numConnections=50
+        robux.router.http.readTimeout=PT5M
+        robux.router.http.numMaxThreads=100
+        robux.server.http.numThreads=100
 
         # Service discovery
-        druid.router.defaultBrokerServiceName=druid/broker
-        druid.router.coordinatorServiceName=druid/coordinator
+        robux.router.defaultBrokerServiceName=robux/broker
+        robux.router.coordinatorServiceName=robux/coordinator
 
         # Management proxy to coordinator / overlord: required for unified web console.
-        druid.router.managementProxy.enabled=true
+        robux.router.managementProxy.enabled=true
 
     middlemanagers:
       nodeType: "middleManager"
-      nodeConfigMountPath: "/opt/druid/conf/druid/cluster/data/middleManager"
-      druid.port: 8088
+      nodeConfigMountPath: "/opt/robux/conf/robux/cluster/data/middleManager"
+      robux.port: 8088
       services:
         - spec:
             type: NodePort
@@ -310,19 +310,19 @@ spec:
             clusterIP: None
       replicas: 1
       runtime.properties: |
-        druid.service=druid/middleManager
-        druid.worker.capacity=2
-        druid.indexer.runner.javaOpts=-server -Xms128m -Xmx128m -XX:MaxDirectMemorySize=256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.io.tmpdir=/druid/data/tmp -XX:+ExitOnOutOfMemoryError -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
-        druid.indexer.task.baseTaskDir=/druid/data/baseTaskDir
-        druid.server.http.numThreads=10
-        druid.indexer.fork.property.druid.processing.buffer.sizeBytes=25000000
-        druid.indexer.fork.property.druid.processing.numMergeBuffers=2
-        druid.indexer.fork.property.druid.processing.numThreads=1
+        robux.service=robux/middleManager
+        robux.worker.capacity=2
+        robux.indexer.runner.javaOpts=-server -Xms128m -Xmx128m -XX:MaxDirectMemorySize=256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Djava.io.tmpdir=/robux/data/tmp -XX:+ExitOnOutOfMemoryError -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager
+        robux.indexer.task.baseTaskDir=/robux/data/baseTaskDir
+        robux.server.http.numThreads=10
+        robux.indexer.fork.property.robux.processing.buffer.sizeBytes=25000000
+        robux.indexer.fork.property.robux.processing.numMergeBuffers=2
+        robux.indexer.fork.property.robux.processing.numThreads=1
       extra.jvm.options: |-
         -Xmx64m
         -Xms64m
       volumeMounts:
-        - mountPath: /druid/data
+        - mountPath: /robux/data
           name: data-volume
       volumes:
         - name: data-volume

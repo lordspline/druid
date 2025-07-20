@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { EXECUTION_INGEST_COMPLETE } from '../../../druid-models/mocks';
+import { EXECUTION_INGEST_COMPLETE } from '../../../robux-models/mocks';
 import { shallow } from '../../../utils/shallow-renderer';
 
 import { ExecutionStagesPane } from './execution-stages-pane';

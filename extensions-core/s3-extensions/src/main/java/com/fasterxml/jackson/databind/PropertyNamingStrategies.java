@@ -3,7 +3,7 @@
  * https://github.com/FasterXML/jackson-databind/blob/2.16/LICENSE
  * Stating the Credits to FasterXML project based on Apache Lic.
  * No changes are done in the file other than attaching notice.
- * Copyright 2023 Apache Druid
+ * Copyright 2023 Apache Robux
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

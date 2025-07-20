@@ -17,12 +17,12 @@
   ~ under the License.
   -->
 
-druid-kubernetes-overlord-extensions
+robux-kubernetes-overlord-extensions
 =============
 
 Overview
 =============
-The Kubernetes Task Scheduling extension allows a Druid cluster running on Kubernetes to schedule
+The Kubernetes Task Scheduling extension allows a Robux cluster running on Kubernetes to schedule
 its tasks as Kubernetes Jobs instead of sending them to workers (middle managers or indexers).
 
 Documentation

@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { DruidEngine } from '../druid-models';
+import type { RobuxEngine } from '../robux-models';
 import { Api } from '../singletons';
 import { filterMap } from '../utils';
 
@@ -89,7 +89,7 @@ export class Capabilities {
     // Check SQL endpoint
     try {
       await Api.instance.post(
-        '/druid/v2/sql?capabilities',
+        '/robux/v2/sql?capabilities',
         { query: 'SELECT 1337', context: { timeout: Capabilities.STATUS_TIMEOUT } },
         { timeout: Capabilities.STATUS_TIMEOUT },
       );
@@ -107,7 +107,7 @@ export class Capabilities {
 
       try {
         await Api.instance.post(
-          '/druid/v2?capabilities',
+          '/robux/v2?capabilities',
           {
             queryType: 'dataSourceMetadata',
             dataSource: '__web_console_probe__',
@@ -146,7 +146,7 @@ export class Capabilities {
   static async detectNode(node: 'coordinator' | 'overlord'): Promise<boolean> {
     try {
       await Api.instance.get(
-        `/druid/${node === 'overlord' ? 'indexer' : node}/v1/isLeader?capabilities`,
+        `/robux/${node === 'overlord' ? 'indexer' : node}/v1/isLeader?capabilities`,
         {
           timeout: Capabilities.STATUS_TIMEOUT,
         },
@@ -160,7 +160,7 @@ export class Capabilities {
 
   static async detectMultiStageQueryTask(): Promise<boolean> {
     try {
-      const resp = await Api.instance.get(`/druid/v2/sql/task/enabled?capabilities`);
+      const resp = await Api.instance.get(`/robux/v2/sql/task/enabled?capabilities`);
       return Boolean(resp.data.enabled);
     } catch {
       return false;
@@ -169,7 +169,7 @@ export class Capabilities {
 
   static async detectMultiStageQueryDart(): Promise<boolean> {
     try {
-      const resp = (await Api.instance.get(`/druid/v2/sql/engines?capabilities`)).data;
+      const resp = (await Api.instance.get(`/robux/v2/sql/engines?capabilities`)).data;
       return (
         Array.isArray(resp.engines) &&
         resp.engines.some(({ name }: { name: string }) => name === 'msq-dart')
@@ -229,7 +229,7 @@ export class Capabilities {
       return functionRowsToMap(
         (
           await Api.instance.post<FunctionRow[]>(
-            '/druid/v2/sql?capabilities-functions',
+            '/robux/v2/sql?capabilities-functions',
             {
               query: FUNCTION_SQL,
               resultFormat: 'array',
@@ -334,8 +334,8 @@ export class Capabilities {
     return this.multiStageQueryDart;
   }
 
-  public getSupportedQueryEngines(): DruidEngine[] {
-    const queryEngines: DruidEngine[] = ['native'];
+  public getSupportedQueryEngines(): RobuxEngine[] {
+    const queryEngines: RobuxEngine[] = ['native'];
     if (this.hasSql()) {
       queryEngines.push('sql-native');
     }

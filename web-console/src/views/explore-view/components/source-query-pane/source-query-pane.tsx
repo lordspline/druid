@@ -21,7 +21,7 @@ import { IconNames } from '@blueprintjs/icons';
 import React, { useEffect, useState } from 'react';
 
 import { useQueryManager } from '../../../../hooks';
-import { type ColumnMetadata, queryDruidSql } from '../../../../utils';
+import { type ColumnMetadata, queryRobuxSql } from '../../../../utils';
 import { ColumnTree } from '../../../workbench-view/column-tree/column-tree';
 import { FlexibleQueryInput } from '../../../workbench-view/flexible-query-input/flexible-query-input';
 
@@ -46,7 +46,7 @@ export const SourceQueryPane = React.memo(function SourceQueryPane(props: Source
   const [columnMetadataState] = useQueryManager({
     initQuery: '',
     processQuery: async () => {
-      return await queryDruidSql<ColumnMetadata>({
+      return await queryRobuxSql<ColumnMetadata>({
         query: `SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS`,
       });
     },

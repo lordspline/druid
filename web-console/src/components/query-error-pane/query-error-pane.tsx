@@ -19,13 +19,13 @@
 import type { JSX } from 'react';
 import React, { useState } from 'react';
 
-import type { DruidError, RowColumn } from '../../utils';
+import type { RobuxError, RowColumn } from '../../utils';
 import { HighlightText } from '../highlight-text/highlight-text';
 
 import './query-error-pane.scss';
 
 export interface QueryErrorPaneProps {
-  error: DruidError;
+  error: RobuxError;
   moveCursorTo: (rowColumn: RowColumn) => void;
   queryString?: string;
   onQueryStringChange?: (newQueryString: string, run?: boolean) => void;

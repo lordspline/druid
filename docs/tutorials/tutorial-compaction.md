@@ -24,7 +24,7 @@ sidebar_label: Compact segments
   -->
 
 
-This tutorial demonstrates how to compact existing segments into fewer but larger segments in Apache Druid.
+This tutorial demonstrates how to compact existing segments into fewer but larger segments in Apache Robux.
 
 There is some per-segment memory and processing overhead during query processing.
 Therefore, it can be beneficial to reduce the total number of segments.
@@ -32,7 +32,7 @@ See [Segment size optimization](../operations/segment-optimization.md) for detai
 
 ## Prerequisites
 
-This tutorial assumes you have already downloaded Apache Druid as described in
+This tutorial assumes you have already downloaded Apache Robux as described in
 the [single-machine quickstart](index.md) and have it running on your local machine.
 
 If you haven't already, you should finish the following tutorials first:
@@ -41,7 +41,7 @@ If you haven't already, you should finish the following tutorials first:
 
 ## Load the initial data
 
-This tutorial uses the Wikipedia edits sample data included with the Druid distribution.
+This tutorial uses the Wikipedia edits sample data included with the Robux distribution.
 To load the initial data, you use an ingestion spec that loads batch data with segment granularity of `HOUR` and creates between one and three segments per hour.
 
 You can review the ingestion spec at `quickstart/tutorial/compaction-init-index.json`.
@@ -80,7 +80,7 @@ Retrieved 1 row in 1.38s.
 ## Compact the data
 
 Now you compact these 51 small segments and retain the segment granularity of `HOUR`.
-The Druid distribution includes a compaction task spec for this tutorial datasource at `quickstart/tutorial/compaction-keep-granularity.json`:
+The Robux distribution includes a compaction task spec for this tutorial datasource at `quickstart/tutorial/compaction-keep-granularity.json`:
 
 ```json
 {
@@ -101,7 +101,7 @@ This compacts all segments for the interval `2015-09-12/2015-09-13` in the `comp
 
 The parameters in the `tuningConfig` control the maximum number of rows present in each compacted segment and thus affect the number of segments in the compacted set.
 
-This datasource only has 39,244 rows. 39,244 is below the default limit of 5,000,000 `maxRowsPerSegment` for [dynamic partitioning](../ingestion/native-batch.md#dynamic-partitioning). Therefore, Druid only creates one compacted segment per hour.
+This datasource only has 39,244 rows. 39,244 is below the default limit of 5,000,000 `maxRowsPerSegment` for [dynamic partitioning](../ingestion/native-batch.md#dynamic-partitioning). Therefore, Robux only creates one compacted segment per hour.
 
 Submit the compaction task now:
 
@@ -145,7 +145,7 @@ After the Coordinator has been running for at least 15 minutes, the segments vie
 
 You can also change the segment granularity in a compaction task to produce compacted segments with a different granularity from that of the input segments.
 
-The Druid distribution includes a compaction task spec to create `DAY` granularity segments at `quickstart/tutorial/compaction-day-granularity.json`:
+The Robux distribution includes a compaction task spec to create `DAY` granularity segments at `quickstart/tutorial/compaction-day-granularity.json`:
 
 ```json
 {

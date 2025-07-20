@@ -24,17 +24,17 @@ sidebar_label: Load from Apache Kafka
   -->
 
 
-This tutorial shows you how to load data into Apache Druid from a Kafka stream, using Druid's Kafka indexing service. 
+This tutorial shows you how to load data into Apache Robux from a Kafka stream, using Robux's Kafka indexing service. 
 
-The tutorial guides you through the steps to load sample nested clickstream data from the [Koalas to the Max](https://www.koalastothemax.com/) game into a Kafka topic, then ingest the data into Druid.
+The tutorial guides you through the steps to load sample nested clickstream data from the [Koalas to the Max](https://www.koalastothemax.com/) game into a Kafka topic, then ingest the data into Robux.
 
 ## Prerequisites
 
-Before you follow the steps in this tutorial, download Druid as described in the [quickstart](index.md) using the [automatic single-machine configuration](../operations/single-server.md) and have it running on your local machine. You don't need to have loaded any data.
+Before you follow the steps in this tutorial, download Robux as described in the [quickstart](index.md) using the [automatic single-machine configuration](../operations/single-server.md) and have it running on your local machine. You don't need to have loaded any data.
 
 ## Download and start Kafka
 
-[Apache Kafka](http://kafka.apache.org/) is a high-throughput message bus that works well with Druid. For this tutorial, use Kafka 2.7.0. 
+[Apache Kafka](http://kafka.apache.org/) is a high-throughput message bus that works well with Robux. For this tutorial, use Kafka 2.7.0. 
 
 1. To download Kafka, run the following commands in your terminal:
 
@@ -46,9 +46,9 @@ Before you follow the steps in this tutorial, download Druid as described in the
 2. If you're already running Kafka on the machine you're using for this tutorial, delete or rename the `kafka-logs` directory in `/tmp`.
    
 :::info
- Druid and Kafka both rely on [Apache ZooKeeper](https://zookeeper.apache.org/) to coordinate and manage services. Because Druid is already running, Kafka attaches to the Druid ZooKeeper instance when it starts up.<br />
+ Robux and Kafka both rely on [Apache ZooKeeper](https://zookeeper.apache.org/) to coordinate and manage services. Because Robux is already running, Kafka attaches to the Robux ZooKeeper instance when it starts up.<br />
 
- In a production environment where you're running Druid and Kafka on different machines, [start the Kafka ZooKeeper](https://kafka.apache.org/quickstart) before you start the Kafka broker.
+ In a production environment where you're running Robux and Kafka on different machines, [start the Kafka ZooKeeper](https://kafka.apache.org/quickstart) before you start the Kafka broker.
 :::
 
 3. In the Kafka root directory, run this command to start a Kafka broker:
@@ -88,15 +88,15 @@ In this section, you download sample data to the tutorial's directory and send t
    gzcat ./sample-data/kttm-nested-v2-2019-08-25.json.gz | ./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic kttm
    ```
 
-## Load data into Druid
+## Load data into Robux
 
-Now that you have data in your Kafka topic, you can use Druid's Kafka indexing service to ingest the data into Druid. 
+Now that you have data in your Kafka topic, you can use Robux's Kafka indexing service to ingest the data into Robux. 
 
-To do this, you can use the Druid console data loader or you can submit a supervisor spec. Follow the steps below to try each method.
+To do this, you can use the Robux console data loader or you can submit a supervisor spec. Follow the steps below to try each method.
 
 ### Load data with the console data loader
 
-The Druid console data loader presents you with several screens to configure each section of the supervisor spec, then creates an ingestion task to ingest the Kafka data. 
+The Robux console data loader presents you with several screens to configure each section of the supervisor spec, then creates an ingestion task to ingest the Kafka data. 
 
 To use the console data loader:
 
@@ -114,13 +114,13 @@ To use the console data loader:
 
    ![Data loader parse data](../assets/tutorial-kafka-data-loader-03.png "Data loader parse data")
 
-   The data loader automatically tries to determine the correct parser for the data. For the sample data, it selects input format `json`. You can play around with the different options to get a preview of how Druid parses your data.
+   The data loader automatically tries to determine the correct parser for the data. For the sample data, it selects input format `json`. You can play around with the different options to get a preview of how Robux parses your data.
 
 5. With the `json` input format selected, click **Next: Parse time**. You may need to click **Apply** first.
 
    ![Data loader parse time](../assets/tutorial-kafka-data-loader-04.png "Data loader parse time")
 
-   Druid's architecture requires that you specify a primary timestamp column. Druid stores the timestamp in the `__time` column in your Druid datasource.
+   Robux's architecture requires that you specify a primary timestamp column. Robux stores the timestamp in the `__time` column in your Robux datasource.
    In a production environment, if you don't have a timestamp in your data, you can select **Parse timestamp from:** `None` to use a placeholder value. 
 
    For the sample data, the data loader selects the `timestamp` column in the raw data as the primary time column.
@@ -129,13 +129,13 @@ To use the console data loader:
 
    ![Data loader schema](../assets/tutorial-kafka-data-loader-05.png "Data loader schema")
 
-7. In the **Configure schema** step, you can select data types for the columns and configure [dimensions](../ingestion/schema-model.md#dimensions) and [metrics](../ingestion/schema-model.md#metrics) to ingest into Druid. The console does most of this for you. Notice that the dimensions `event`, `agent` and `geo_ip` are of the type `json`. 
+7. In the **Configure schema** step, you can select data types for the columns and configure [dimensions](../ingestion/schema-model.md#dimensions) and [metrics](../ingestion/schema-model.md#metrics) to ingest into Robux. The console does most of this for you. Notice that the dimensions `event`, `agent` and `geo_ip` are of the type `json`. 
 
-8.  Click **Next: Partition** to configure how Druid partitions the data into segments.
+8.  Click **Next: Partition** to configure how Robux partitions the data into segments.
 
     ![Data loader partition](../assets/tutorial-kafka-data-loader-06.png "Data loader partition")
 
-9.  Select `day` as the **Segment granularity**. Since this is a small dataset, you don't need to make any further adjustments. Click **Next: Tune** to fine tune how Druid ingests data.
+9.  Select `day` as the **Segment granularity**. Since this is a small dataset, you don't need to make any further adjustments. Click **Next: Tune** to fine tune how Robux ingests data.
    
     ![Data loader tune](../assets/tutorial-kafka-data-loader-07.png "Data loader tune")
 
@@ -151,9 +151,9 @@ To use the console data loader:
    
 12. Click **Submit** to create an ingestion task.
 
-    Druid displays the task view with the focus on the newly created supervisor.
+    Robux displays the task view with the focus on the newly created supervisor.
 
-    The task view auto-refreshes, so wait until the supervisor launches a task. The status changes from **Pending** to **Running** as Druid starts to ingest data.
+    The task view auto-refreshes, so wait until the supervisor launches a task. The status changes from **Pending** to **Running** as Robux starts to ingest data.
 
     ![Tasks view](../assets/tutorial-kafka-data-loader-10.png "Tasks view")
 
@@ -169,11 +169,11 @@ To use the console data loader:
 
 ### Submit a supervisor spec
 
-As an alternative to using the data loader, you can submit a supervisor spec to Druid. You can do this in the console or using the Druid API.
+As an alternative to using the data loader, you can submit a supervisor spec to Robux. You can do this in the console or using the Robux API.
 
 #### Use the console
 
-To submit a supervisor spec using the Druid console:
+To submit a supervisor spec using the Robux console:
 
 1. Click **Ingestion** in the console, then click the ellipses next to the refresh button and select **Submit JSON supervisor**.
 
@@ -254,27 +254,27 @@ To submit a supervisor spec using the Druid console:
 
 #### Use the API
 
-You can also use the Druid API to submit a supervisor spec.
+You can also use the Robux API to submit a supervisor spec.
 
 1. Run the following command to download the sample spec:
 
    ```bash
-   curl -o kttm-kafka-supervisor.json https://raw.githubusercontent.com/apache/druid/master/docs/assets/files/kttm-kafka-supervisor.json
+   curl -o kttm-kafka-supervisor.json https://raw.githubusercontent.com/apache/robux/master/docs/assets/files/kttm-kafka-supervisor.json
    ```
 
 2. Run the following command to submit the spec in the `kttm-kafka-supervisor.json` file:
 
     ```bash
-    curl -X POST -H 'Content-Type: application/json' -d @kttm-kafka-supervisor.json http://localhost:8081/druid/indexer/v1/supervisor
+    curl -X POST -H 'Content-Type: application/json' -d @kttm-kafka-supervisor.json http://localhost:8081/robux/indexer/v1/supervisor
     ```
 
-    After Druid successfully creates the supervisor, you get a response containing the supervisor ID: `{"id":"kttm-kafka-supervisor-api"}`.
+    After Robux successfully creates the supervisor, you get a response containing the supervisor ID: `{"id":"kttm-kafka-supervisor-api"}`.
 
 3. Click **Tasks** on the console home page to monitor the status of the job. This spec writes the data in the `kttm` topic to a datasource named `kttm-kafka-supervisor-api`.
 
 ## Query your data
 
-After Druid sends data to the Kafka stream, it is immediately available for querying. Click **Query** in the Druid console to run SQL queries against the datasource.
+After Robux sends data to the Kafka stream, it is immediately available for querying. Click **Query** in the Robux console to run SQL queries against the datasource.
 
 Since this tutorial ingests a small dataset, you can run the query `SELECT * FROM "kttm-kafka"` to return all of the data in the dataset you created.
 
@@ -286,4 +286,4 @@ Check out the [Querying data tutorial](../tutorials/tutorial-query.md) to run so
 
 For more information, see the following topics:
 
-- [Apache Kafka ingestion](../ingestion/kafka-ingestion.md) for information on loading data from Kafka streams and maintaining Kafka supervisors for Druid.
+- [Apache Kafka ingestion](../ingestion/kafka-ingestion.md) for information on loading data from Kafka streams and maintaining Kafka supervisors for Robux.

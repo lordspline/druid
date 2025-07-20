@@ -1,4 +1,4 @@
-all : druid_demo.pdf
+all : robux_demo.pdf
 
 clean :
 	@rm -f *.aux *.bbl *.blg *.log

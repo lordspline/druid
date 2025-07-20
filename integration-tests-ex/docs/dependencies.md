@@ -24,14 +24,14 @@ when making changes or debugging problems.
 
 ## Third-Party Libraries
 
-As described in the [Docker](docker.md) section, the Docker image contains Druid
+As described in the [Docker](docker.md) section, the Docker image contains Robux
 plus three external dependencies:
 
 * The MySQL client library
 * The MariaDB client library
 * The Kafka protobuf provider
 
-These libraries are not shipped with Druid itself. Instead, we add them to the
+These libraries are not shipped with Robux itself. Instead, we add them to the
 image as follows:
 
 * Dependencies are listed in the `test-image/pom.xml` file.
@@ -40,9 +40,9 @@ image as follows:
 * The `test-image/pom.xml` file uses the `maven-dependency-plugin`
   to copy these dependencies from the local repo into the
   `target/docker` directory.
-* The `Dockerfile` copies the dependencies into the `/usr/local/druid/lib`
-  directory after `build-image.sh` has unpacked the Druid distribution
-  into `/usr/local/druid`.
+* The `Dockerfile` copies the dependencies into the `/usr/local/robux/lib`
+  directory after `build-image.sh` has unpacked the Robux distribution
+  into `/usr/local/robux`.
 
 The key benefit is that the dependencies are downloaded once and are
 served from the local repo afterwards.
@@ -53,7 +53,7 @@ As described in the [Docker](docker.md) section, we use third-party
 "official" images for three of our external server dependencies:
 
 * [MySQL](https://hub.docker.com/_/mysql). This image is configured
-  to create the Druid database and user upon startup.
+  to create the Robux database and user upon startup.
 * [ZooKeeper](https://hub.docker.com/_/zookeeper).
 * [Kafka](https://hub.docker.com/r/bitnami/kafka/). There is no
   "official" image so we use the one from Bitnami.
@@ -66,14 +66,14 @@ We will want to track down official images for those as well.
 
 ## Guice and Lifecycle
 
-Nothing will consume more of your time than fighting with Druid's
+Nothing will consume more of your time than fighting with Robux's
 Guice and Lifecycle mechanisms. These mechanisms are designed to do
-exactly one thing: configure the Druid server. They are a nightmare
+exactly one thing: configure the Robux server. They are a nightmare
 to use in other configurations such as unit or integration tests.
 
 ### Guice Modules
 
-Druid has *many* Guice modules. There is no documentation to explain
+Robux has *many* Guice modules. There is no documentation to explain
 which components are available from which modules, or their dependencies.
 So, if one needs component X, one has to hunt through the source to
 find the module that provides X. (Or, one has to "just know.") There
@@ -96,19 +96,19 @@ include everything and pretend we are a server.
 There is no obvious solution, it is just a massive time sink at
 present.
 
-### Druid Modules
+### Robux Modules
 
 Many of the modules we want to use in integration test are
-`DruidModule`s. These go beyond the usual Guice modules to provide
+`RobuxModule`s. These go beyond the usual Guice modules to provide
 extra functionality, some of which is vital in tests:
 
 * The modules have depenencies injected from the "startup injector."
 * The modules provide Jackson modules needed to serialized JSON.
 
 The `Initialization` class provides the mechanisms needed to work
-with `DruidModule`s, but only when creating a server: that same class
+with `RobuxModule`s, but only when creating a server: that same class
 has a strong opinion about which modules to include based on the
-assumption that the process is a server (or a Druid tool which acts
+assumption that the process is a server (or a Robux tool which acts
 like a server.)
 
 The code here refactored `Initialization` a bit to allow us to
@@ -119,7 +119,7 @@ deal with the dependency nightmare.
 
 ### Lifecycle Race Conditions
 
-Druid uses the `Lifecycle` class to manage object initialization. The
+Robux uses the `Lifecycle` class to manage object initialization. The
 Lifecycle expects instances to be registered before the lifecycle
 starts, after which it is impossible to register new instances.
 
@@ -149,10 +149,10 @@ set up the injector, and run the lifecycle, once per test class. This
 is easy to do with the JUnit `@BeforeClass` annotation. But, when we
 try this, the livecycle race condition issue slams us hard.
 
-Tests want to reference certain components, such as `DruidNodeDiscoveryProvider`
+Tests want to reference certain components, such as `RobuxNodeDiscoveryProvider`
 which require `CuratorFramework` which is provided by a module that
 registers a component with the lifecycle. Because of the lazy singleton
-pattern, `DruidNodeDiscoveryProvider` (and hence its dependenencies)
+pattern, `RobuxNodeDiscoveryProvider` (and hence its dependenencies)
 are created when first referenced, which occurs when JUnit instantiates
 the test class, which happens after the Guice/Lifecycle setup in
 `@BeforeClass`. And, we get our "It doesn't work that way" error.
@@ -176,9 +176,9 @@ into service to shut down the lifecycle after all tests run.
 
 ## Testing Tools And the Custom Node Role
 
-The Druid extension `druid-testing-tools` (Maven project
+The Robux extension `robux-testing-tools` (Maven project
 `extensions-core/testing-tools` provides an extension to be loaded
-into the Druid image along with the Druid distribution and third-party
+into the Robux image along with the Robux distribution and third-party
 libraries.
 
 The `integration-tests` provides additional components (such as the
@@ -196,7 +196,7 @@ since we must maintain backward compatibility with `integration-tests`,
 and that module is a nightmare to modify, we must use a short-term
 compromise.
 
-For now, we punt: we make a copy of `druid-testing-tools`, add the
+For now, we punt: we make a copy of `robux-testing-tools`, add the
 `integraton-tools` custom node role, and call it `testing-tools-ex`.
 See [`testing-tools/README`](../testing-tools/README.md) for the
 details.
@@ -220,9 +220,9 @@ The ideal solution would be to move the test utilities to a new
 sub-project within `integration-tests` and have both the new and old test
 projects include the resulting jar.
 
-For now, we use a "shadow" approach, we use the `org.apache.druid.testsEx`
+For now, we use a "shadow" approach, we use the `org.apache.robux.testsEx`
 package name for new tests so names do not conflict with the
-`org.apache.druid.tests` name used in `integration-tests`. Eventually,
+`org.apache.robux.tests` name used in `integration-tests`. Eventually,
 if all tests are renamed, we can rename the `testsEx` package back
 to `tests`.
 
@@ -231,9 +231,9 @@ setup which does not match the new setup. In this case, we make a copy
 of the class and apply needed changes. At present, only one class has this
 issue:
 
-* `DruidClusterAdminClient` - interfaces with Docker using hard-coded
+* `RobuxClusterAdminClient` - interfaces with Docker using hard-coded
   container names.
 
-The old versions are in `org.apache.druid.testing.utils` in
-`integration-tests`, the new versions in `org.apache.druid.testing2.utils`
+The old versions are in `org.apache.robux.testing.utils` in
+`integration-tests`, the new versions in `org.apache.robux.testing2.utils`
 in this project.

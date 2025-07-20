@@ -24,13 +24,13 @@ When submitting a pull request (PR), please use the following guidelines:
 - A description of style conventions can be found at [`dev/style-conventions.md`](dev/style-conventions.md) 
 - Make sure your code respects existing formatting conventions. In general, follow
   the same coding style as the code that you are modifying.
-- For Intellij you can import our code style settings xml: [`druid_intellij_formatting.xml`](
-  https://github.com/apache/druid/raw/master/dev/druid_intellij_formatting.xml).
+- For Intellij you can import our code style settings xml: [`robux_intellij_formatting.xml`](
+  https://github.com/apache/robux/raw/master/dev/robux_intellij_formatting.xml).
 - For Eclipse you can import our code style settings xml: [`eclipse_formatting.xml`](
-  https://github.com/apache/druid/raw/master/dev/eclipse_formatting.xml).
+  https://github.com/apache/robux/raw/master/dev/eclipse_formatting.xml).
 - Do add/update documentation appropriately for the change you are making.
 - If you are introducing a new feature you may want to first write about your idea
-  for feedback to [dev@druid.apache.org](https://lists.apache.org/list.html?dev@druid.apache.org). Or create an issue
+  for feedback to [dev@robux.apache.org](https://lists.apache.org/list.html?dev@robux.apache.org). Or create an issue
   using "Feature/Change" template. Non-trivial features should include unit tests covering the new functionality. Open
   a "Proposal" issue for large changes.
 - Bugfixes should include a unit test or integration test reproducing the issue.
@@ -38,21 +38,21 @@ When submitting a pull request (PR), please use the following guidelines:
 - Try to keep pull requests short and submit separate ones for unrelated
   features, but feel free to combine simple bugfixes/tests into one pull request.
 - If you are adding or updating a dependency, be sure to update the version, license, or notice information in
-  [licenses.yaml](https://github.com/apache/druid/blob/master/licenses.yaml) as appropriate to help ease
+  [licenses.yaml](https://github.com/apache/robux/blob/master/licenses.yaml) as appropriate to help ease
   LICENSE and NOTICE management for ASF releases.
 
 You can find more developers' resources in [`dev/`](dev) directory.
 
 ## GitHub Workflow
 
-1. Fork the apache/druid repository into your GitHub account
+1. Fork the apache/robux repository into your GitHub account
 
-    <https://github.com/apache/druid/fork>
+    <https://github.com/apache/robux/fork>
 
 2. Clone your fork of the GitHub repository
 
     ```sh
-    git clone git@github.com:<username>/druid.git
+    git clone git@github.com:<username>/robux.git
     ```
 
     replace `<username>` with your GitHub username.
@@ -60,7 +60,7 @@ You can find more developers' resources in [`dev/`](dev) directory.
 3. Add a remote to keep up with upstream changes
 
     ```sh
-    git remote add upstream https://github.com/apache/druid.git
+    git remote add upstream https://github.com/apache/robux.git
     ```
 
     If you already have a copy, fetch upstream changes
@@ -98,16 +98,16 @@ You can find more developers' resources in [`dev/`](dev) directory.
     git push origin feature-xxx
     ```
 
-    Go to your Druid fork main page
+    Go to your Robux fork main page
 
     ```txt
-    https://github.com/<username>/druid
+    https://github.com/<username>/robux
     ```
 
     If you recently pushed your changes GitHub will automatically pop up a
     `Compare & pull request` button for any branches you recently pushed to. If you
     click that button it will automatically offer you to submit your pull-request
-    to the apache/druid repository.
+    to the apache/robux repository.
 
     - Give your pull-request a meaningful title.
     - In the description, explain your changes and the problem they are solving.
@@ -136,13 +136,13 @@ You can find more developers' resources in [`dev/`](dev) directory.
   ```
 
   _Avoid rebasing and force pushes after submitting a pull request,_ since these make it
-  difficult for reviewers to see what you've changed in response to their reviews. The Druid
+  difficult for reviewers to see what you've changed in response to their reviews. The Robux
   committer that merges your change will rebase and squash it into a single commit before
   committing it to master.
 
 ## Release notes
 
-Release notes are the way that Druid users will learn about your fix or improvement. What does a user need to know? The key is to identify the user impact. Give it your best shot! Druid committers will review and edit your notes.
+Release notes are the way that Robux users will learn about your fix or improvement. What does a user need to know? The key is to identify the user impact. Give it your best shot! Robux committers will review and edit your notes.
 
 Here's a non-exhaustive list of the type of changes that have user impact and need release notes:
 
@@ -151,7 +151,7 @@ Here's a non-exhaustive list of the type of changes that have user impact and ne
 - Changes the results of any query, ingestion, or task.
 - Changes performance (preferably making things faster).
 - Adds, deprecates, or removes features.
-- Anything that changes install, configuration, or operation of Druid.
+- Anything that changes install, configuration, or operation of Robux.
 
 An example of a change that doesn't need a release note is fixing a flakey test.
 

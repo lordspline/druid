@@ -21,7 +21,7 @@ import { IconNames } from '@blueprintjs/icons';
 import React, { useState } from 'react';
 
 import { JsonInput } from '../../components';
-import type { QueryContext } from '../../druid-models';
+import type { QueryContext } from '../../robux-models';
 import { AppToaster } from '../../singletons';
 
 import { QUERY_CONTEXT_COMPLETIONS } from './query-context-completions';

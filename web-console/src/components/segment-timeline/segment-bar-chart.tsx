@@ -17,14 +17,14 @@
  */
 
 import { Duration, Timezone } from 'chronoshift';
-import { C, F, L, N, sql, SqlExpression, SqlQuery } from 'druid-query-toolkit';
+import { C, F, L, N, sql, SqlExpression, SqlQuery } from 'robux-query-toolkit';
 import { useMemo } from 'react';
 
-import { END_OF_TIME_DATE, type Rule, RuleUtil, START_OF_TIME_DATE } from '../../druid-models';
+import { END_OF_TIME_DATE, type Rule, RuleUtil, START_OF_TIME_DATE } from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import { useQueryManager } from '../../hooks';
 import { Api } from '../../singletons';
-import { filterMap, getApiArray, queryDruidSql } from '../../utils';
+import { filterMap, getApiArray, queryRobuxSql } from '../../utils';
 import { Loader } from '../loader/loader';
 
 import type { IntervalRow } from './interval';
@@ -72,7 +72,7 @@ export const SegmentBarChart = function SegmentBarChart(props: SegmentBarChartPr
           .addSelect(F.sum(C('num_rows')).as('rows'))
           .toString();
 
-        return (await queryDruidSql({ query }, cancelToken)).map(sr => {
+        return (await queryRobuxSql({ query }, cancelToken)).map(sr => {
           const start = new Date(sr.start);
           const end = new Date(sr.end);
 
@@ -87,7 +87,7 @@ export const SegmentBarChart = function SegmentBarChart(props: SegmentBarChartPr
       } else {
         return filterMap(
           await getApiArray(
-            `/druid/coordinator/v1/metadata/segments?includeOvershadowedStatus&includeRealtimeSegments&${
+            `/robux/coordinator/v1/metadata/segments?includeOvershadowedStatus&includeRealtimeSegments&${
               shownDatasource ? `datasources=${Api.encodePath(shownDatasource)}` : ''
             }`,
             cancelToken,
@@ -120,7 +120,7 @@ export const SegmentBarChart = function SegmentBarChart(props: SegmentBarChartPr
     query: shownDatasource ? '' : undefined,
     processQuery: async (_, cancelToken) => {
       return (
-        await Api.instance.get<Record<string, Rule[]>>('/druid/coordinator/v1/rules', {
+        await Api.instance.get<Record<string, Rule[]>>('/robux/coordinator/v1/rules', {
           cancelToken,
         })
       ).data;

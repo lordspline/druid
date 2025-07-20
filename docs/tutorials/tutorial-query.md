@@ -24,7 +24,7 @@ sidebar_label: Query data
   -->
 
 
-This tutorial demonstrates how to query data in Apache Druid using SQL.  
+This tutorial demonstrates how to query data in Apache Robux using SQL.  
 
 It assumes that you've completed the [Quickstart](../tutorials/index.md) 
 or one of the following tutorials, since we'll query datasources that you would have created
@@ -34,7 +34,7 @@ by following one of them:
 * [Load stream data from Kafka](../tutorials/tutorial-kafka.md)
 * [Load a file using Hadoop](../tutorials/tutorial-batch-hadoop.md)
 
-There are various ways to run Druid SQL queries: from the web console, using a command line utility
+There are various ways to run Robux SQL queries: from the web console, using a command line utility
 and by posting the query by HTTP. We'll look at each of these. 
 
 
@@ -43,7 +43,7 @@ and by posting the query by HTTP. We'll look at each of these.
 The web console includes a view that makes it easier to build and test queries, and 
 view their results. 
 
-1. Start up the Druid cluster, if it's not already running, and open the web console in your web
+1. Start up the Robux cluster, if it's not already running, and open the web console in your web
 browser. 
 
 2. Click **Query** from the header to open the Query view:  
@@ -83,8 +83,8 @@ add the new column to the GROUP BY clause as well, either by name or by referenc
    2. For readability, replace `Count` column name with `Edits`, since the `COUNT()` function actually
 returns the number of edits for the page. Make the same column name change in the ORDER BY clause as well. 
 
-      The `COUNT()` function is one of many functions available for use in Druid SQL queries. You can mouse over a function name
-      in the autocomplete menu to see a brief description of a function. Also, you can find more information in the Druid 
+      The `COUNT()` function is one of many functions available for use in Robux SQL queries. You can mouse over a function name
+      in the autocomplete menu to see a brief description of a function. Also, you can find more information in the Robux 
       documentation; for example, the `COUNT()` function is documented in 
       [Aggregation functions](../querying/sql-aggregations.md). 
 
@@ -116,10 +116,10 @@ we'll edit it by hand. The new WHERE clause should appear in your query.
 
    ![Finished query](../assets/tutorial-query-04.png "Finished query")
 
-9. Under the covers, every Druid SQL query is translated into a query in the JSON-based _Druid native query_ format before it runs
+9. Under the covers, every Robux SQL query is translated into a query in the JSON-based _Robux native query_ format before it runs
  on data nodes. You can view the native query for this query by clicking `...` and **Explain SQL Query**. 
 
-   While you can use Druid SQL for most purposes, familiarity with native query is useful for composing complex queries and for troubleshooting 
+   While you can use Robux SQL for most purposes, familiarity with native query is useful for composing complex queries and for troubleshooting 
 performance issues. For more information, see [Native queries](../querying/querying.md). 
 
    ![Explain query](../assets/tutorial-query-05.png "Explain query")
@@ -148,11 +148,11 @@ from the command line or over HTTP.
 That's it! We've built a simple query using some of the query builder features built into the web console. The following
 sections provide a few more example queries you can try.
 
-See [Query SQL over HTTP](#query-sql-over-http) for an example of how to use the Druid SQL HTTP API. 
+See [Query SQL over HTTP](#query-sql-over-http) for an example of how to use the Robux SQL HTTP API. 
 
-## More Druid SQL examples
+## More Robux SQL examples
 
-Try the following queries to learn a few more Druid SQL tricks:
+Try the following queries to learn a few more Robux SQL tricks:
 
 ### Query over time
 
@@ -178,7 +178,7 @@ ORDER BY SUM(added) DESC
 ## Query SQL over HTTP
 
 
-You can submit native queries [directly to the Druid Broker over HTTP](../api-reference/sql-api.md#submit-a-query). The request body should be a JSON object, with the value for the key `query` containing text of the query:
+You can submit native queries [directly to the Robux Broker over HTTP](../api-reference/sql-api.md#submit-a-query). The request body should be a JSON object, with the value for the key `query` containing text of the query:
 
 ```json
 {
@@ -186,10 +186,10 @@ You can submit native queries [directly to the Druid Broker over HTTP](../api-re
 }
 ```
 
-The tutorial package includes an example file that contains the SQL query shown above at `quickstart/tutorial/wikipedia-top-pages-sql.json`. Let's submit that query to the Druid Broker:
+The tutorial package includes an example file that contains the SQL query shown above at `quickstart/tutorial/wikipedia-top-pages-sql.json`. Let's submit that query to the Robux Broker:
 
 ```bash
-curl -X 'POST' -H 'Content-Type:application/json' -d @quickstart/tutorial/wikipedia-top-pages-sql.json http://localhost:8888/druid/v2/sql
+curl -X 'POST' -H 'Content-Type:application/json' -d @quickstart/tutorial/wikipedia-top-pages-sql.json http://localhost:8888/robux/v2/sql
 ```
 
 The following results should be returned:
@@ -241,6 +241,6 @@ The following results should be returned:
 
 ## Further reading
 
-See the [Druid SQL documentation](../querying/sql.md) for more information on using Druid SQL queries.
+See the [Robux SQL documentation](../querying/sql.md) for more information on using Robux SQL queries.
 
-See the [Queries documentation](../querying/querying.md) for more information on Druid native queries.
+See the [Queries documentation](../querying/querying.md) for more information on Robux native queries.

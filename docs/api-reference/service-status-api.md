@@ -28,7 +28,7 @@ import TabItem from '@theme/TabItem';
   -->
 
 
-This document describes the API endpoints to retrieve service status, cluster information for Apache Druid.
+This document describes the API endpoints to retrieve service status, cluster information for Apache Robux.
 
 In this document, `http://SERVICE_IP:SERVICE_PORT` is a placeholder for the server address of deployment and the service port. For example, on the quickstart configuration, replace `http://ROUTER_IP:ROUTER_PORT` with `http://localhost:8888`.
 
@@ -49,7 +49,7 @@ You can use each endpoint with the ports for each type of service. The following
 
 ### Get service information
 
-Retrieves the Druid version, loaded extensions, memory used, total memory, and other useful information about the individual service.
+Retrieves the Robux version, loaded extensions, memory used, total memory, and other useful information about the individual service.
 
 Modify the host and port for the endpoint to match the service to query. Refer to the [default service ports](#common) for the port numbers.
 
@@ -106,83 +106,83 @@ Host: http://ROUTER_IP:ROUTER_PORT
     "version": "26.0.0",
     "modules": [
         {
-            "name": "org.apache.druid.common.aws.AWSModule",
-            "artifact": "druid-aws-common",
+            "name": "org.apache.robux.common.aws.AWSModule",
+            "artifact": "robux-aws-common",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.common.gcp.GcpModule",
-            "artifact": "druid-gcp-common",
+            "name": "org.apache.robux.common.gcp.GcpModule",
+            "artifact": "robux-gcp-common",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.storage.hdfs.HdfsStorageDruidModule",
-            "artifact": "druid-hdfs-storage",
+            "name": "org.apache.robux.storage.hdfs.HdfsStorageRobuxModule",
+            "artifact": "robux-hdfs-storage",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.indexing.kafka.KafkaIndexTaskModule",
-            "artifact": "druid-kafka-indexing-service",
+            "name": "org.apache.robux.indexing.kafka.KafkaIndexTaskModule",
+            "artifact": "robux-kafka-indexing-service",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.query.aggregation.datasketches.theta.SketchModule",
-            "artifact": "druid-datasketches",
+            "name": "org.apache.robux.query.aggregation.datasketches.theta.SketchModule",
+            "artifact": "robux-datasketches",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.query.aggregation.datasketches.theta.oldapi.OldApiSketchModule",
-            "artifact": "druid-datasketches",
+            "name": "org.apache.robux.query.aggregation.datasketches.theta.oldapi.OldApiSketchModule",
+            "artifact": "robux-datasketches",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.query.aggregation.datasketches.quantiles.DoublesSketchModule",
-            "artifact": "druid-datasketches",
+            "name": "org.apache.robux.query.aggregation.datasketches.quantiles.DoublesSketchModule",
+            "artifact": "robux-datasketches",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.query.aggregation.datasketches.tuple.ArrayOfDoublesSketchModule",
-            "artifact": "druid-datasketches",
+            "name": "org.apache.robux.query.aggregation.datasketches.tuple.ArrayOfDoublesSketchModule",
+            "artifact": "robux-datasketches",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.query.aggregation.datasketches.hll.HllSketchModule",
-            "artifact": "druid-datasketches",
+            "name": "org.apache.robux.query.aggregation.datasketches.hll.HllSketchModule",
+            "artifact": "robux-datasketches",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.query.aggregation.datasketches.kll.KllSketchModule",
-            "artifact": "druid-datasketches",
+            "name": "org.apache.robux.query.aggregation.datasketches.kll.KllSketchModule",
+            "artifact": "robux-datasketches",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.msq.guice.MSQExternalDataSourceModule",
-            "artifact": "druid-multi-stage-query",
+            "name": "org.apache.robux.msq.guice.MSQExternalDataSourceModule",
+            "artifact": "robux-multi-stage-query",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.msq.guice.MSQIndexingModule",
-            "artifact": "druid-multi-stage-query",
+            "name": "org.apache.robux.msq.guice.MSQIndexingModule",
+            "artifact": "robux-multi-stage-query",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.msq.guice.MSQDurableStorageModule",
-            "artifact": "druid-multi-stage-query",
+            "name": "org.apache.robux.msq.guice.MSQDurableStorageModule",
+            "artifact": "robux-multi-stage-query",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.msq.guice.MSQServiceClientModule",
-            "artifact": "druid-multi-stage-query",
+            "name": "org.apache.robux.msq.guice.MSQServiceClientModule",
+            "artifact": "robux-multi-stage-query",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.msq.guice.MSQSqlModule",
-            "artifact": "druid-multi-stage-query",
+            "name": "org.apache.robux.msq.guice.MSQSqlModule",
+            "artifact": "robux-multi-stage-query",
             "version": "26.0.0"
         },
         {
-            "name": "org.apache.druid.msq.guice.SqlTaskModule",
-            "artifact": "druid-multi-stage-query",
+            "name": "org.apache.robux.msq.guice.SqlTaskModule",
+            "artifact": "robux-multi-stage-query",
             "version": "26.0.0"
         }
     ],
@@ -199,7 +199,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get service health
 
-Retrieves the online status of the individual Druid service. It is a simple health check to determine if the service is running and accessible. If online, it will always return a boolean `true` value, indicating that the service can receive API calls. This endpoint is suitable for automated health checks.
+Retrieves the online status of the individual Robux service. It is a simple health check to determine if the service is running and accessible. If online, it will always return a boolean `true` value, indicating that the service can receive API calls. This endpoint is suitable for automated health checks.
 
 Modify the host and port for the endpoint to match the service to query. Refer to the [default service ports](#common) for the port numbers.
 
@@ -315,81 +315,81 @@ Host: http://ROUTER_IP:ROUTER_PORT
 {
     "gopherProxySet": "false",
     "awt.toolkit": "sun.lwawt.macosx.LWCToolkit",
-    "druid.monitoring.monitors": "[\"org.apache.druid.java.util.metrics.JvmMonitor\"]",
+    "robux.monitoring.monitors": "[\"org.apache.robux.java.util.metrics.JvmMonitor\"]",
     "java.specification.version": "11",
     "sun.cpu.isalist": "",
-    "druid.plaintextPort": "8888",
+    "robux.plaintextPort": "8888",
     "sun.jnu.encoding": "UTF-8",
-    "druid.indexing.doubleStorage": "double",
-    "druid.metadata.storage.connector.port": "1527",
+    "robux.indexing.doubleStorage": "double",
+    "robux.metadata.storage.connector.port": "1527",
     "java.class.path": "/Users/genericUserPath",
     "log4j.shutdownHookEnabled": "true",
     "java.vm.vendor": "Homebrew",
     "sun.arch.data.model": "64",
-    "druid.extensions.loadList": "[\"druid-hdfs-storage\", \"druid-kafka-indexing-service\", \"druid-datasketches\", \"druid-multi-stage-query\"]",
+    "robux.extensions.loadList": "[\"robux-hdfs-storage\", \"robux-kafka-indexing-service\", \"robux-datasketches\", \"robux-multi-stage-query\"]",
     "java.vendor.url": "https://github.com/Homebrew/homebrew-core/issues",
-    "druid.router.coordinatorServiceName": "druid/coordinator",
+    "robux.router.coordinatorServiceName": "robux/coordinator",
     "user.timezone": "UTC",
-    "druid.global.http.eagerInitialization": "false",
+    "robux.global.http.eagerInitialization": "false",
     "os.name": "Mac OS X",
     "java.vm.specification.version": "11",
     "sun.java.launcher": "SUN_STANDARD",
     "user.country": "US",
     "sun.boot.library.path": "/opt/homebrew/Cellar/openjdk@11/11.0.19/libexec/openjdk.jdk/Contents/Home/lib",
-    "sun.java.command": "org.apache.druid.cli.Main server router",
+    "sun.java.command": "org.apache.robux.cli.Main server router",
     "http.nonProxyHosts": "local|*.local|169.254/16|*.169.254/16",
     "jdk.debug": "release",
-    "druid.metadata.storage.connector.host": "localhost",
+    "robux.metadata.storage.connector.host": "localhost",
     "sun.cpu.endian": "little",
-    "druid.zk.paths.base": "/druid",
+    "robux.zk.paths.base": "/robux",
     "user.home": "/Users/genericUser",
     "user.language": "en",
     "java.specification.vendor": "Oracle Corporation",
     "java.version.date": "2023-04-18",
     "java.home": "/opt/homebrew/Cellar/openjdk@11/11.0.19/libexec/openjdk.jdk/Contents/Home",
-    "druid.service": "druid/router",
-    "druid.selectors.coordinator.serviceName": "druid/coordinator",
-    "druid.metadata.storage.connector.connectURI": "jdbc:derby://localhost:1527/var/druid/metadata.db;create=true",
+    "robux.service": "robux/router",
+    "robux.selectors.coordinator.serviceName": "robux/coordinator",
+    "robux.metadata.storage.connector.connectURI": "jdbc:derby://localhost:1527/var/robux/metadata.db;create=true",
     "file.separator": "/",
-    "druid.selectors.indexing.serviceName": "druid/overlord",
+    "robux.selectors.indexing.serviceName": "robux/overlord",
     "java.vm.compressedOopsMode": "Zero based",
-    "druid.metadata.storage.type": "derby",
+    "robux.metadata.storage.type": "derby",
     "line.separator": "\n",
-    "druid.log.path": "/Users/genericUserPath",
+    "robux.log.path": "/Users/genericUserPath",
     "java.vm.specification.vendor": "Oracle Corporation",
     "java.specification.name": "Java Platform API Specification",
-    "druid.indexer.logs.directory": "var/druid/indexing-logs",
+    "robux.indexer.logs.directory": "var/robux/indexing-logs",
     "java.awt.graphicsenv": "sun.awt.CGraphicsEnvironment",
-    "druid.router.defaultBrokerServiceName": "druid/broker",
-    "druid.storage.storageDirectory": "var/druid/segments",
+    "robux.router.defaultBrokerServiceName": "robux/broker",
+    "robux.storage.storageDirectory": "var/robux/segments",
     "sun.management.compiler": "HotSpot 64-Bit Tiered Compilers",
     "ftp.nonProxyHosts": "local|*.local|169.254/16|*.169.254/16",
     "java.runtime.version": "11.0.19+0",
     "user.name": "genericUser",
-    "druid.indexer.logs.type": "file",
-    "druid.host": "localhost",
+    "robux.indexer.logs.type": "file",
+    "robux.host": "localhost",
     "log4j2.is.webapp": "false",
     "path.separator": ":",
     "os.version": "12.6.5",
-    "druid.lookup.enableLookupSyncOnStartup": "false",
+    "robux.lookup.enableLookupSyncOnStartup": "false",
     "java.runtime.name": "OpenJDK Runtime Environment",
-    "druid.zk.service.host": "localhost",
+    "robux.zk.service.host": "localhost",
     "file.encoding": "UTF-8",
-    "druid.sql.planner.useGroupingSetForExactDistinct": "true",
-    "druid.router.managementProxy.enabled": "true",
+    "robux.sql.planner.useGroupingSetForExactDistinct": "true",
+    "robux.router.managementProxy.enabled": "true",
     "java.vm.name": "OpenJDK 64-Bit Server VM",
     "java.vendor.version": "Homebrew",
-    "druid.startup.logging.logProperties": "true",
+    "robux.startup.logging.logProperties": "true",
     "java.vendor.url.bug": "https://github.com/Homebrew/homebrew-core/issues",
-    "log4j.shutdownCallbackRegistry": "org.apache.druid.common.config.Log4jShutdown",
+    "log4j.shutdownCallbackRegistry": "org.apache.robux.common.config.Log4jShutdown",
     "java.io.tmpdir": "var/tmp",
-    "druid.sql.enable": "true",
-    "druid.emitter.logging.logLevel": "info",
+    "robux.sql.enable": "true",
+    "robux.emitter.logging.logLevel": "info",
     "java.version": "11.0.19",
-    "user.dir": "/Users/genericUser/Downloads/apache-druid-26.0.0",
+    "user.dir": "/Users/genericUser/Downloads/apache-robux-26.0.0",
     "os.arch": "aarch64",
     "java.vm.specification.name": "Java Virtual Machine Specification",
-    "druid.node.type": "router",
+    "robux.node.type": "router",
     "java.awt.printerjob": "sun.lwawt.macosx.CPrinterJob",
     "sun.os.patch.level": "unknown",
     "java.util.logging.manager": "org.apache.logging.log4j.jul.LogManager",
@@ -397,12 +397,12 @@ Host: http://ROUTER_IP:ROUTER_PORT
     "java.vendor": "Homebrew",
     "java.vm.info": "mixed mode",
     "java.vm.version": "11.0.19+0",
-    "druid.emitter": "noop",
+    "robux.emitter": "noop",
     "sun.io.unicode.encoding": "UnicodeBig",
-    "druid.storage.type": "local",
+    "robux.storage.type": "local",
     "java.class.version": "55.0",
     "socksNonProxyHosts": "local|*.local|169.254/16|*.169.254/16",
-    "druid.server.hiddenProperties": "[\"druid.s3.accessKey\",\"druid.s3.secretKey\",\"druid.metadata.storage.connector.password\", \"password\", \"key\", \"token\", \"pwd\"]"
+    "robux.server.hiddenProperties": "[\"robux.s3.accessKey\",\"robux.s3.secretKey\",\"robux.metadata.storage.connector.password\", \"password\", \"key\", \"token\", \"pwd\"]"
 }
 ```
 
@@ -410,9 +410,9 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get node discovery status and cluster integration confirmation
 
-Retrieves a JSON map of the form `{"selfDiscovered": true/false}`, indicating whether the node has received a confirmation from the central node discovery mechanism (currently ZooKeeper) of the Druid cluster that the node has been added to the cluster.
+Retrieves a JSON map of the form `{"selfDiscovered": true/false}`, indicating whether the node has received a confirmation from the central node discovery mechanism (currently ZooKeeper) of the Robux cluster that the node has been added to the cluster.
 
-Only consider a Druid node "healthy" or "ready" in automated deployment/container management systems when this endpoint returns `{"selfDiscovered": true}`. Nodes experiencing network issues may become isolated and are not healthy.
+Only consider a Robux node "healthy" or "ready" in automated deployment/container management systems when this endpoint returns `{"selfDiscovered": true}`. Nodes experiencing network issues may become isolated and are not healthy.
 For nodes that use Zookeeper segment discovery, a response of `{"selfDiscovered": true}` indicates that the node's Zookeeper client has started receiving data from the Zookeeper cluster, enabling timely discovery of segments and other nodes.
 
 #### URL
@@ -472,7 +472,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get node self-discovery status
 
-Returns an HTTP status code to indicate node discovery within the Druid cluster. This endpoint is similar to the `status/selfDiscovered/status` endpoint, but relies on HTTP status codes alone.
+Returns an HTTP status code to indicate node discovery within the Robux cluster. This endpoint is similar to the `status/selfDiscovered/status` endpoint, but relies on HTTP status codes alone.
 Use this endpoint for monitoring checks that are unable to examine the response body. For example, AWS load balancer health checks.
 
 #### URL
@@ -536,7 +536,7 @@ Retrieves the address of the current leader Coordinator of the cluster. If any r
 
 #### URL
 
-`GET` `/druid/coordinator/v1/leader`
+`GET` `/robux/coordinator/v1/leader`
 
 #### Responses
 
@@ -562,7 +562,7 @@ Retrieves the address of the current leader Coordinator of the cluster. If any r
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/leader"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/leader"
 ```
 
 </TabItem>
@@ -570,7 +570,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/leader"
 
 
 ```http
-GET /druid/coordinator/v1/leader HTTP/1.1
+GET /robux/coordinator/v1/leader HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -596,7 +596,7 @@ Use this endpoint as a load balancer status check when you only want the active 
 
 #### URL
 
-`GET` `/druid/coordinator/v1/isLeader`
+`GET` `/robux/coordinator/v1/isLeader`
 
 #### Responses
 
@@ -630,7 +630,7 @@ Use this endpoint as a load balancer status check when you only want the active 
 
 
 ```shell
-curl "http://COORDINATOR_IP:COORDINATOR_PORT/druid/coordinator/v1/isLeader"
+curl "http://COORDINATOR_IP:COORDINATOR_PORT/robux/coordinator/v1/isLeader"
 ```
 
 </TabItem>
@@ -638,7 +638,7 @@ curl "http://COORDINATOR_IP:COORDINATOR_PORT/druid/coordinator/v1/isLeader"
 
 
 ```http
-GET /druid/coordinator/v1/isLeader HTTP/1.1
+GET /robux/coordinator/v1/isLeader HTTP/1.1
 Host: http://COORDINATOR_IP:COORDINATOR_PORT
 ```
 
@@ -665,7 +665,7 @@ Retrieves the current status of Historical cloning from the Coordinator.
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config/cloneStatus`
+`GET` `/robux/coordinator/v1/config/cloneStatus`
 
 #### Responses
 
@@ -689,7 +689,7 @@ Retrieves the current status of Historical cloning from the Coordinator.
 
 
 ```shell
-curl "http://COORDINATOR_IP:COORDINATOR_PORT/druid/coordinator/v1/config/cloneStatus"
+curl "http://COORDINATOR_IP:COORDINATOR_PORT/robux/coordinator/v1/config/cloneStatus"
 ```
 
 </TabItem>
@@ -697,7 +697,7 @@ curl "http://COORDINATOR_IP:COORDINATOR_PORT/druid/coordinator/v1/config/cloneSt
 
 
 ```http
-GET /druid/coordinator/v1/config/cloneStatus HTTP/1.1
+GET /robux/coordinator/v1/config/cloneStatus HTTP/1.1
 Host: http://COORDINATOR_IP:COORDINATOR_PORT
 ```
 
@@ -732,7 +732,7 @@ Retrieves the list of Brokers which have an up-to-date view of Coordinator dynam
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config/syncedBrokers`
+`GET` `/robux/coordinator/v1/config/syncedBrokers`
 
 #### Responses
 
@@ -756,7 +756,7 @@ Retrieves the list of Brokers which have an up-to-date view of Coordinator dynam
 
 
 ```shell
-curl "http://COORDINATOR_IP:COORDINATOR_PORT/druid/coordinator/v1/config/syncedBrokers"
+curl "http://COORDINATOR_IP:COORDINATOR_PORT/robux/coordinator/v1/config/syncedBrokers"
 ```
 
 </TabItem>
@@ -764,7 +764,7 @@ curl "http://COORDINATOR_IP:COORDINATOR_PORT/druid/coordinator/v1/config/syncedB
 
 
 ```http
-GET /druid/coordinator/v1/config/syncedBrokers HTTP/1.1
+GET /robux/coordinator/v1/config/syncedBrokers HTTP/1.1
 Host: http://COORDINATOR_IP:COORDINATOR_PORT
 ```
 
@@ -798,7 +798,7 @@ Retrieves the address of the current leader Overlord of the cluster. In a cluste
 
 #### URL
 
-`GET` `/druid/indexer/v1/leader`
+`GET` `/robux/indexer/v1/leader`
 
 #### Responses
 
@@ -824,7 +824,7 @@ Retrieves the address of the current leader Overlord of the cluster. In a cluste
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/leader"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/leader"
 ```
 
 </TabItem>
@@ -832,7 +832,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/leader"
 
 
 ```http
-GET /druid/indexer/v1/leader HTTP/1.1
+GET /robux/indexer/v1/leader HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -859,7 +859,7 @@ Use this endpoint as a load balancer status check when you only want the active 
 
 #### URL
 
-`GET` `/druid/indexer/v1/isLeader`
+`GET` `/robux/indexer/v1/isLeader`
 
 #### Responses
 
@@ -893,7 +893,7 @@ Use this endpoint as a load balancer status check when you only want the active 
 
 
 ```shell
-curl "http://OVERLORD_IP:OVERLORD_PORT/druid/indexer/v1/isLeader"
+curl "http://OVERLORD_IP:OVERLORD_PORT/robux/indexer/v1/isLeader"
 ```
 
 </TabItem>
@@ -901,7 +901,7 @@ curl "http://OVERLORD_IP:OVERLORD_PORT/druid/indexer/v1/isLeader"
 
 
 ```http
-GET /druid/indexer/v1/isLeader HTTP/1.1
+GET /robux/indexer/v1/isLeader HTTP/1.1
 Host: http://OVERLORD_IP:OVERLORD_PORT
 ```
 
@@ -926,11 +926,11 @@ Host: http://OVERLORD_IP:OVERLORD_PORT
 
 ### Get Middle Manager state status
 
-Retrieves the enabled state of the Middle Manager process. Returns JSON object keyed by the combined `druid.host` and `druid.port` with a boolean `true` or `false` state as the value.
+Retrieves the enabled state of the Middle Manager process. Returns JSON object keyed by the combined `robux.host` and `robux.port` with a boolean `true` or `false` state as the value.
 
 #### URL
 
-`GET` `/druid/worker/v1/enabled`
+`GET` `/robux/worker/v1/enabled`
 
 #### Responses
 
@@ -956,7 +956,7 @@ Retrieves the enabled state of the Middle Manager process. Returns JSON object k
 
 
 ```shell
-curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/enabled"
+curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/robux/worker/v1/enabled"
 ```
 
 </TabItem>
@@ -964,7 +964,7 @@ curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/enabled"
 
 
 ```http
-GET /druid/worker/v1/enabled HTTP/1.1
+GET /robux/worker/v1/enabled HTTP/1.1
 Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 ```
 
@@ -986,11 +986,11 @@ Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 
 ### Get active tasks
 
-Retrieves a list of active tasks being run on the Middle Manager. Returns JSON list of task ID strings. Note that for normal usage, you should use the `/druid/indexer/v1/tasks` [Tasks API](./tasks-api.md) endpoint or one of the task state specific variants instead.
+Retrieves a list of active tasks being run on the Middle Manager. Returns JSON list of task ID strings. Note that for normal usage, you should use the `/robux/indexer/v1/tasks` [Tasks API](./tasks-api.md) endpoint or one of the task state specific variants instead.
 
 #### URL
 
-`GET` `/druid/worker/v1/tasks`
+`GET` `/robux/worker/v1/tasks`
 
 #### Responses
 
@@ -1016,7 +1016,7 @@ Retrieves a list of active tasks being run on the Middle Manager. Returns JSON l
 
 
 ```shell
-curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/tasks"
+curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/robux/worker/v1/tasks"
 ```
 
 </TabItem>
@@ -1024,7 +1024,7 @@ curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/tasks"
 
 
 ```http
-GET /druid/worker/v1/tasks HTTP/1.1
+GET /robux/worker/v1/tasks HTTP/1.1
 Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 ```
 
@@ -1046,21 +1046,21 @@ Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 
 ### Get task log
 
-Retrieves task log output stream by task ID. For normal usage, you should use the `/druid/indexer/v1/task/{taskId}/log`
+Retrieves task log output stream by task ID. For normal usage, you should use the `/robux/indexer/v1/task/{taskId}/log`
 [Tasks API](./tasks-api.md) endpoint instead.
 
 #### URL
 
-`GET` `/druid/worker/v1/task/{taskId}/log`
+`GET` `/robux/worker/v1/task/{taskId}/log`
 
 ### Shut down running task
 
-Shuts down a running task by ID. For normal usage, you should use the `/druid/indexer/v1/task/{taskId}/shutdown`
+Shuts down a running task by ID. For normal usage, you should use the `/robux/indexer/v1/task/{taskId}/shutdown`
 [Tasks API](./tasks-api.md) endpoint instead.
 
 #### URL
 
-`POST` `/druid/worker/v1/task/{taskId}/shutdown`
+`POST` `/robux/worker/v1/task/{taskId}/shutdown`
 
 #### Responses
 <Tabs>
@@ -1087,7 +1087,7 @@ The following example shuts down a task with specified ID `index_kafka_wikiticke
 
 
 ```shell
-curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/task/index_kafka_wikiticker_f7011f8ffba384b_fpeclode/shutdown"
+curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/robux/worker/v1/task/index_kafka_wikiticker_f7011f8ffba384b_fpeclode/shutdown"
 ```
 
 </TabItem>
@@ -1095,7 +1095,7 @@ curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/task/index_kafk
 
 
 ```http
-POST /druid/worker/v1/task/index_kafka_wikiticker_f7011f8ffba384b_fpeclode/shutdown HTTP/1.1
+POST /robux/worker/v1/task/index_kafka_wikiticker_f7011f8ffba384b_fpeclode/shutdown HTTP/1.1
 Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 ```
 
@@ -1118,11 +1118,11 @@ Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 ### Disable Middle Manager
 
 Disables a Middle Manager, causing it to stop accepting new tasks but complete all existing tasks. Returns a JSON  object
-keyed by the combined `druid.host` and `druid.port`.
+keyed by the combined `robux.host` and `robux.port`.
 
 #### URL
 
-`POST` `/druid/worker/v1/disable`
+`POST` `/robux/worker/v1/disable`
 
 #### Responses
 
@@ -1146,7 +1146,7 @@ keyed by the combined `druid.host` and `druid.port`.
 
 
 ```shell
-curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/disable"
+curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/robux/worker/v1/disable"
 ```
 
 </TabItem>
@@ -1154,7 +1154,7 @@ curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/disable"
 
 
 ```http
-POST /druid/worker/v1/disable HTTP/1.1
+POST /robux/worker/v1/disable HTTP/1.1
 Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 ```
 
@@ -1176,11 +1176,11 @@ Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 
 ### Enable Middle Manager
 
-Enables a Middle Manager, allowing it to accept new tasks again if it was previously disabled. Returns a JSON object keyed by the combined `druid.host` and `druid.port`.
+Enables a Middle Manager, allowing it to accept new tasks again if it was previously disabled. Returns a JSON object keyed by the combined `robux.host` and `robux.port`.
 
 #### URL
 
-`POST` `/druid/worker/v1/enable`
+`POST` `/robux/worker/v1/enable`
 
 #### Responses
 
@@ -1204,7 +1204,7 @@ Enables a Middle Manager, allowing it to accept new tasks again if it was previo
 
 
 ```shell
-curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/enable"
+curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/robux/worker/v1/enable"
 ```
 
 </TabItem>
@@ -1212,7 +1212,7 @@ curl "http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT/druid/worker/v1/enable"
 
 
 ```http
-POST /druid/worker/v1/enable HTTP/1.1
+POST /robux/worker/v1/enable HTTP/1.1
 Host: http://MIDDLEMANAGER_IP:MIDDLEMANAGER_PORT
 ```
 
@@ -1242,7 +1242,7 @@ Use this endpoint to know when a Broker service is ready to accept queries after
 
 #### URL
 
-`GET` `/druid/historical/v1/loadstatus`
+`GET` `/robux/historical/v1/loadstatus`
 
 #### Responses
 
@@ -1266,7 +1266,7 @@ Use this endpoint to know when a Broker service is ready to accept queries after
 
 
 ```shell
-curl "http://HISTORICAL_IP:HISTORICAL_PORT/druid/historical/v1/loadstatus"
+curl "http://HISTORICAL_IP:HISTORICAL_PORT/robux/historical/v1/loadstatus"
 ```
 
 </TabItem>
@@ -1274,7 +1274,7 @@ curl "http://HISTORICAL_IP:HISTORICAL_PORT/druid/historical/v1/loadstatus"
 
 
 ```http
-GET /druid/historical/v1/loadstatus HTTP/1.1
+GET /robux/historical/v1/loadstatus HTTP/1.1
 Host: http://HISTORICAL_IP:HISTORICAL_PORT
 ```
 
@@ -1296,11 +1296,11 @@ Host: http://HISTORICAL_IP:HISTORICAL_PORT
 
 ### Get segment readiness
 
-Retrieves a status code to indicate if all segments in the local cache have been loaded. Similar to `/druid/historical/v1/loadstatus`, but instead of returning JSON with a flag, it returns status codes.
+Retrieves a status code to indicate if all segments in the local cache have been loaded. Similar to `/robux/historical/v1/loadstatus`, but instead of returning JSON with a flag, it returns status codes.
 
 #### URL
 
-`GET` `/druid/historical/v1/readiness`
+`GET` `/robux/historical/v1/readiness`
 
 #### Responses
 
@@ -1332,7 +1332,7 @@ Retrieves a status code to indicate if all segments in the local cache have been
 
 
 ```shell
-curl "http://HISTORICAL_IP:HISTORICAL_PORT/druid/historical/v1/readiness"
+curl "http://HISTORICAL_IP:HISTORICAL_PORT/robux/historical/v1/readiness"
 ```
 
 </TabItem>
@@ -1340,7 +1340,7 @@ curl "http://HISTORICAL_IP:HISTORICAL_PORT/druid/historical/v1/readiness"
 
 
 ```http
-GET /druid/historical/v1/readiness HTTP/1.1
+GET /robux/historical/v1/readiness HTTP/1.1
 Host: http://HISTORICAL_IP:HISTORICAL_PORT
 ```
 
@@ -1359,7 +1359,7 @@ Retrieves a flag indicating if the Broker knows about all segments in the cluste
 
 #### URL
 
-`GET` `/druid/broker/v1/loadstatus`
+`GET` `/robux/broker/v1/loadstatus`
 
 #### Responses
 
@@ -1383,7 +1383,7 @@ Retrieves a flag indicating if the Broker knows about all segments in the cluste
 
 
 ```shell
-curl "http://BROKER_IP:BROKER_PORT/druid/broker/v1/loadstatus"
+curl "http://BROKER_IP:BROKER_PORT/robux/broker/v1/loadstatus"
 ```
 
 </TabItem>
@@ -1391,7 +1391,7 @@ curl "http://BROKER_IP:BROKER_PORT/druid/broker/v1/loadstatus"
 
 
 ```http
-GET /druid/broker/v1/loadstatus HTTP/1.1
+GET /robux/broker/v1/loadstatus HTTP/1.1
 Host: http://<BROKER_IP>:<BROKER_PORT>
 ```
 
@@ -1413,11 +1413,11 @@ Host: http://<BROKER_IP>:<BROKER_PORT>
 
 ### Get Broker query readiness
 
-Retrieves a status code to indicate Broker readiness. Readiness signifies the Broker knows about all segments in the cluster and is ready to accept queries after a restart. Similar to `/druid/broker/v1/loadstatus`, but instead of returning a JSON, it returns status codes.
+Retrieves a status code to indicate Broker readiness. Readiness signifies the Broker knows about all segments in the cluster and is ready to accept queries after a restart. Similar to `/robux/broker/v1/loadstatus`, but instead of returning a JSON, it returns status codes.
 
 #### URL
 
-`GET` `/druid/broker/v1/readiness`
+`GET` `/robux/broker/v1/readiness`
 
 #### Responses
 
@@ -1449,7 +1449,7 @@ Retrieves a status code to indicate Broker readiness. Readiness signifies the Br
 
 
 ```shell
-curl "http://BROKER_IP:BROKER_PORT/druid/broker/v1/readiness"
+curl "http://BROKER_IP:BROKER_PORT/robux/broker/v1/readiness"
 ```
 
 </TabItem>
@@ -1457,7 +1457,7 @@ curl "http://BROKER_IP:BROKER_PORT/druid/broker/v1/readiness"
 
 
 ```http
-GET /druid/broker/v1/readiness HTTP/1.1
+GET /robux/broker/v1/readiness HTTP/1.1
 Host: http://BROKER_IP:BROKER_PORT
 ```
 

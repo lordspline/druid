@@ -17,7 +17,7 @@
  */
 
 import { Duration } from 'chronoshift';
-import type { SqlAlias, SqlExpression, SqlOrderByExpression, SqlTable } from 'druid-query-toolkit';
+import type { SqlAlias, SqlExpression, SqlOrderByExpression, SqlTable } from 'robux-query-toolkit';
 import {
   C,
   F,
@@ -29,7 +29,7 @@ import {
   SqlType,
   SqlWithPart,
   T,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 
 import type { ColumnHint } from '../../../utils';
 import { forceSignInNumberFormatter, formatNumber, formatPercent } from '../../../utils';
@@ -49,7 +49,7 @@ export type CompareType = 'value' | 'delta' | 'absDelta' | 'percent' | 'absPerce
 
 export type RestrictTop = 'always' | 'never';
 
-const DRUID_DEFAULT_TOTAL_SUB_QUERY_LIMIT = 100000;
+const ROBUX_DEFAULT_TOTAL_SUB_QUERY_LIMIT = 100000;
 
 const COMMON_NAME = 'common';
 const TOP_VALUES_NAME = 'top_values';
@@ -370,7 +370,7 @@ export interface MakeTableQueryAndHintsOptions {
   pivotValues?: string[];
   orderBy: SqlOrderByExpression | undefined;
 
-  // Druid config / version related
+  // Robux config / version related
   totalSubQueryLimit?: number;
   useGroupingToOrderSubQueries?: boolean;
   topValuesK?: number;
@@ -394,7 +394,7 @@ export function makeTableQueryAndHints(options: MakeTableQueryAndHintsOptions): 
   const maxRows = options.maxRows;
   const orderBy = options.orderBy;
 
-  const totalSubQueryLimit = options.totalSubQueryLimit || DRUID_DEFAULT_TOTAL_SUB_QUERY_LIMIT;
+  const totalSubQueryLimit = options.totalSubQueryLimit || ROBUX_DEFAULT_TOTAL_SUB_QUERY_LIMIT;
   const useGroupingToOrderSubQueries = Boolean(options.useGroupingToOrderSubQueries);
   const topValuesK = options.topValuesK || DEFAULT_TOP_VALUES_K;
 

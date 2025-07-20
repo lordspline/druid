@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import type { SqlOrderByExpression } from 'druid-query-toolkit';
-import { C, sql, SqlExpression, SqlQuery, T } from 'druid-query-toolkit';
+import type { SqlOrderByExpression } from 'robux-query-toolkit';
+import { C, sql, SqlExpression, SqlQuery, T } from 'robux-query-toolkit';
 
 import { nodePostJson } from '../../../test-utils';
 import { ExpressionMeta, Measure } from '../models';
@@ -26,10 +26,10 @@ import type { CompareType, RestrictTop } from './table-query';
 import { makeCompareMeasureName, makeTableQueryAndHints } from './table-query';
 import type { Compare } from './time-manipulation';
 
-const VALIDATE_QUERIES_WITH_DRUID = false;
+const VALIDATE_QUERIES_WITH_ROBUX = false;
 const STOP_ON_FIRST_FAILURE = true;
 
-if (VALIDATE_QUERIES_WITH_DRUID) {
+if (VALIDATE_QUERIES_WITH_ROBUX) {
   jest.setTimeout(600000);
 }
 
@@ -518,15 +518,15 @@ describe('table-query', () => {
       });
     });
 
-    it('validates with Druid', async () => {
-      if (!VALIDATE_QUERIES_WITH_DRUID) return;
+    it('validates with Robux', async () => {
+      if (!VALIDATE_QUERIES_WITH_ROBUX) return;
 
       const failedDescriptions: string[] = [];
       for (let i = 0; i < descriptionAndQueries.length; i++) {
         console.log(`Running query ${i + 1} of ${descriptionAndQueries.length}`);
         const [description, query] = descriptionAndQueries[i];
         try {
-          await nodePostJson('http://localhost:8888/druid/v2/sql', {
+          await nodePostJson('http://localhost:8888/robux/v2/sql', {
             query: query.toString(),
             context: { sqlOuterLimit: 500 },
           });

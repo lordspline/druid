@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import type { TabEntry } from '../../druid-models';
-import { WorkbenchQuery } from '../../druid-models';
+import type { TabEntry } from '../../robux-models';
+import { WorkbenchQuery } from '../../robux-models';
 
 const BASE_QUERY = WorkbenchQuery.blank().changeQueryContext({ maxNumTasks: 2 });
 
@@ -176,7 +176,7 @@ CLUSTERED BY browser, session
         `
 -- This demo has a query that is identical to the previous demo except instead of reading the fact data from an external
 -- file, it reads the "kttm_simple" datasource that was created in Demo 1.
--- This shows you that you can mix and match data already stored in Druid with external data and transform as needed.
+-- This shows you that you can mix and match data already stored in Robux with external data and transform as needed.
 --
 -- In the next demo you will look at another type of data transformation.
 
@@ -245,8 +245,8 @@ PARTITIONED BY ALL TIME
 -- use the "Preview" button for any of the earlier demos, it works by removing the REPLACE / INSERT clause and
 -- running the query "inline" as a SELECT with a limit.
 --
--- If you want to run a one time calculation on data, you can do it without ingesting it into Druid. Doing this
--- takes the same order of magnitude of resources and time as it would to ingest the data into Druid though.
+-- If you want to run a one time calculation on data, you can do it without ingesting it into Robux. Doing this
+-- takes the same order of magnitude of resources and time as it would to ingest the data into Robux though.
 --
 -- This functionality should be considered as a tech preview of what the sql-msq-task engine can do and not something for
 -- production use (outside of specific, narrow uses like the "Preview" feature in this console).

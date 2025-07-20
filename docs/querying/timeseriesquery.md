@@ -24,9 +24,9 @@ sidebar_label: "Timeseries"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes a query
- type in the native language. For information about when Druid SQL will use this query type, refer to the
+ type in the native language. For information about when Robux SQL will use this query type, refer to the
  [SQL documentation](sql-translation.md#query-types).
 :::
 
@@ -74,7 +74,7 @@ There are 7 main parts to a timeseries query:
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "timeseries"; this is the first thing Apache Druid looks at to figure out how to interpret the query|yes|
+|queryType|This String should always be "timeseries"; this is the first thing Apache Robux looks at to figure out how to interpret the query|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../querying/datasource.md) for more information.|yes|
 |descending|Whether to make descending ordered result. Default is `false`(ascending).|no|
 |intervals|A JSON Object representing ISO-8601 Intervals. This defines the time ranges to run the query over.|yes|
@@ -103,7 +103,7 @@ To pull it all together, the above query would return 2 data points, one for eac
 
 ## Grand totals
 
-Druid can include an extra "grand totals" row as the last row of a timeseries result set. To enable this, add
+Robux can include an extra "grand totals" row as the last row of a timeseries result set. To enable this, add
 `"grandTotal" : true` to your query context. For example:
 
 ```json
@@ -128,9 +128,9 @@ upon the grand total aggregations.
 
 ## Empty bucket values
 
-By default Druid fills empty interior time buckets in the results of timeseries queries with the default value for the [aggregator function](./sql-aggregations.md).
+By default Robux fills empty interior time buckets in the results of timeseries queries with the default value for the [aggregator function](./sql-aggregations.md).
 For example, if you issue a "day" granularity
-timeseries query for the interval 2012-01-01/2012-01-04 using the SUM aggregator, and no data exists for 2012-01-02, Druid returns:
+timeseries query for the interval 2012-01-01/2012-01-04 using the SUM aggregator, and no data exists for 2012-01-02, Robux returns:
 
 ```json
 [
@@ -152,7 +152,7 @@ timeseries query for the interval 2012-01-01/2012-01-04 using the SUM aggregator
 Time buckets that lie completely outside the data interval are not filled with the default value.
 
 You can disable all empty bucket filling with the context flag `skipEmptyBuckets`.
-In this mode, Druid omits the data point 2012-01-02 from the results.
+In this mode, Robux omits the data point 2012-01-02 from the results.
 For example:
 
 ```json

@@ -19,8 +19,8 @@
 import { Button } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import type { Timezone } from 'chronoshift';
-import type { SqlExpression, SqlOrderByDirection, SqlQuery } from 'druid-query-toolkit';
-import { C, F } from 'druid-query-toolkit';
+import type { SqlExpression, SqlOrderByDirection, SqlQuery } from 'robux-query-toolkit';
+import { C, F } from 'robux-query-toolkit';
 import { useMemo } from 'react';
 
 import { Loader } from '../../../../components';

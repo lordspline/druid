@@ -17,24 +17,24 @@
 set -e
 set -x
 
-if ($BUILD_DRUID_CLSUTER); then
+if ($BUILD_ROBUX_CLSUTER); then
 
-  DRUID_HOME=$(dirname `pwd`)
-  echo "SET DRUID_HOME: $DRUID_HOME"
+  ROBUX_HOME=$(dirname `pwd`)
+  echo "SET ROBUX_HOME: $ROBUX_HOME"
   k3sFile="/usr/local/bin/k3s*"
 
   if [ -f "$k3sFile" ]; then
-    bash $DRUID_HOME/integration-tests/script/stop_k8s_cluster.sh
+    bash $ROBUX_HOME/integration-tests/script/stop_k8s_cluster.sh
   fi
 
-  cd $DRUID_HOME
+  cd $ROBUX_HOME
   echo "Start to setup k8s cluster"
-  bash $DRUID_HOME/integration-tests/script/setup_k8s_cluster.sh
+  bash $ROBUX_HOME/integration-tests/script/setup_k8s_cluster.sh
 
-  echo "Start to setup druid operator on k8s"
-  bash $DRUID_HOME/integration-tests/script/setup_druid_operator_on_k8s.sh
+  echo "Start to setup robux operator on k8s"
+  bash $ROBUX_HOME/integration-tests/script/setup_robux_operator_on_k8s.sh
 
-  echo "Start to setup druid on k8s"
-  bash $DRUID_HOME/integration-tests/script/setup_druid_on_k8s.sh
+  echo "Start to setup robux on k8s"
+  bash $ROBUX_HOME/integration-tests/script/setup_robux_on_k8s.sh
 fi
 

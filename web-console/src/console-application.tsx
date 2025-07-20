@@ -30,7 +30,7 @@ import { initAceDsqlMode } from './ace-modes/dsql';
 import { initAceHjsonMode } from './ace-modes/hjson';
 import { HeaderBar, Loader } from './components';
 import { SqlFunctionsProvider } from './contexts/sql-functions-context';
-import type { ConsoleViewId, QueryContext, QueryWithContext } from './druid-models';
+import type { ConsoleViewId, QueryContext, QueryWithContext } from './robux-models';
 import type { AvailableFunctions } from './helpers';
 import { Capabilities, maybeGetClusterCapacity } from './helpers';
 import { stringToTableFilters, tableFiltersToString } from './react-table';
@@ -104,8 +104,8 @@ export class ConsoleApplication extends React.PureComponent<
       timeout: 120000,
       message: (
         <>
-          Some backend druid services are not responding. The console will not function at the
-          moment. Make sure that all your Druid services are up and running. Check the logs of
+          Some backend robux services are not responding. The console will not function at the
+          moment. Make sure that all your Robux services are up and running. Check the logs of
           individual services for troubleshooting.
         </>
       ),

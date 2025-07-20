@@ -27,13 +27,13 @@ sidebar_label: "Indexer"
  The Indexer is an optional and experimental feature. If you're primarily performing batch ingestion, we recommend you use either the MiddleManager and Peon task execution system or [MiddleManager-less ingestion using Kubernetes](../development/extensions-core/k8s-jobs.md). If you're primarily doing streaming ingestion, you may want to try either [MiddleManager-less ingestion using Kubernetes](../development/extensions-core/k8s-jobs.md) or the Indexer service.
 :::
 
-The Apache Druid Indexer service is an alternative to the Middle Manager + Peon task execution system. Instead of forking a separate JVM process per-task, the Indexer runs tasks as separate threads within a single JVM process.
+The Apache Robux Indexer service is an alternative to the Middle Manager + Peon task execution system. Instead of forking a separate JVM process per-task, the Indexer runs tasks as separate threads within a single JVM process.
 
 The Indexer is designed to be easier to configure and deploy compared to the Middle Manager + Peon system and to better enable resource sharing across tasks.
 
 ## Configuration
 
-For Apache Druid Indexer service configuration, see [Indexer Configuration](../configuration/index.md#indexer).
+For Apache Robux Indexer service configuration, see [Indexer Configuration](../configuration/index.md#indexer).
 
 ## HTTP endpoints
 
@@ -42,7 +42,7 @@ The Indexer service shares the same HTTP endpoints as the [Middle Manager](../ap
 ## Running
 
 ```
-org.apache.druid.cli.Main server indexer
+org.apache.robux.cli.Main server indexer
 ```
 
 ## Task resource sharing
@@ -60,19 +60,19 @@ If [query caching](../configuration/index.md#indexer-caching) is enabled, the qu
 The Indexer maintains two equally sized pools of HTTP threads.
 One pool is exclusively used for task control messages between the Overlord and the Indexer ("chat handler threads"). The other pool is used for handling all other HTTP requests.
 
-To configure the number of threads, use the `druid.server.http.numThreads` property. For example, if `druid.server.http.numThreads` is set to 10, there will be 10 chat handler threads and 10 non-chat handler threads.
+To configure the number of threads, use the `robux.server.http.numThreads` property. For example, if `robux.server.http.numThreads` is set to 10, there will be 10 chat handler threads and 10 non-chat handler threads.
 
 In addition to these two pools, the Indexer allocates two separate threads for lookup handling. If lookups are not used, these threads will not be used.
 
 ### Memory sharing
 
-The Indexer uses the `druid.worker.globalIngestionHeapLimitBytes` property to impose a global heap limit across all of the tasks it is running.
+The Indexer uses the `robux.worker.globalIngestionHeapLimitBytes` property to impose a global heap limit across all of the tasks it is running.
 
-This global limit is evenly divided across the number of task slots configured by `druid.worker.capacity`.
+This global limit is evenly divided across the number of task slots configured by `robux.worker.capacity`.
 
 To apply the per-task heap limit, the Indexer overrides `maxBytesInMemory` in task tuning configurations, that is ignoring the default value or any user configured value. It also overrides `maxRowsInMemory` to an essentially unlimited value: the Indexer does not support row limits.
 
-By default, `druid.worker.globalIngestionHeapLimitBytes` is set to 1/6th of the available JVM heap. This default is chosen to align with the default value of `maxBytesInMemory` in task tuning configs when using the Middle Manager + Peon system, which is also 1/6th of the JVM heap.
+By default, `robux.worker.globalIngestionHeapLimitBytes` is set to 1/6th of the available JVM heap. This default is chosen to align with the default value of `maxBytesInMemory` in task tuning configs when using the Middle Manager + Peon system, which is also 1/6th of the JVM heap.
 
 The peak usage for rows held in heap memory relates to the interaction between the `maxBytesInMemory` and `maxPendingPersists` properties in the task tuning configs. When the amount of row data held in-heap by a task reaches the limit specified by `maxBytesInMemory`, a task will persist the in-heap row data. After the persist has been started, the task can again ingest up to `maxBytesInMemory` bytes worth of row data while the persist is running.
 
@@ -84,7 +84,7 @@ The remaining portion of the heap is reserved for query processing and segment p
 
 To help reduce peak memory usage, the Indexer imposes a limit on the number of concurrent segment persist/merge operations across all running tasks.
 
-By default, the number of concurrent persist/merge operations is limited to `(druid.worker.capacity / 2)`, rounded down. This limit can be configured with the `druid.worker.numConcurrentMerges` property.
+By default, the number of concurrent persist/merge operations is limited to `(robux.worker.capacity / 2)`, rounded down. This limit can be configured with the `robux.worker.numConcurrentMerges` property.
 
 ## Current limitations
 
@@ -92,4 +92,4 @@ Separate task logs are not currently supported when using the Indexer; all task 
 
 The Indexer currently imposes an identical memory limit on each task. In later releases, the per-task memory limit will be removed and only the global limit will apply. The limit on concurrent merges will also be removed.
 
-In later releases, per-task memory usage will be dynamically managed. Please see https://github.com/apache/druid/issues/7900 for details on future enhancements to the Indexer.
+In later releases, per-task memory usage will be dynamically managed. Please see https://github.com/apache/robux/issues/7900 for details on future enhancements to the Indexer.

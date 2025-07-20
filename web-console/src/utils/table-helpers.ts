@@ -17,8 +17,8 @@
  */
 
 import { ascending, descending, sort } from 'd3-array';
-import type { QueryResult, SqlExpression } from 'druid-query-toolkit';
-import { C } from 'druid-query-toolkit';
+import type { QueryResult, SqlExpression } from 'robux-query-toolkit';
+import { C } from 'robux-query-toolkit';
 import type { Filter, SortingRule } from 'react-table';
 
 import { filterMap, formatNumber, isNumberLike, oneOf } from './general';

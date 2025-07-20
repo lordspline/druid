@@ -17,7 +17,7 @@
   ~ under the License.
   -->
 
-This module provides Druid aggregators based on https://datasketches.apache.org/.
+This module provides Robux aggregators based on https://datasketches.apache.org/.
 
 Credits: This module is a result of feedback and work done by following people.
 

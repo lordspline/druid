@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { L } from 'druid-query-toolkit';
+import { L } from 'robux-query-toolkit';
 import React from 'react';
 import ReactTable from 'react-table';
 
@@ -24,7 +24,7 @@ import { Loader } from '../../../components';
 import { useQueryManager } from '../../../hooks';
 import { SMALL_TABLE_PAGE_SIZE, SMALL_TABLE_PAGE_SIZE_OPTIONS } from '../../../react-table';
 import type { ColumnMetadata } from '../../../utils';
-import { queryDruidSql } from '../../../utils';
+import { queryRobuxSql } from '../../../utils';
 
 import './datasource-columns-table.scss';
 
@@ -43,10 +43,10 @@ export const DatasourceColumnsTable = React.memo(function DatasourceColumnsTable
   const [columnsState] = useQueryManager<string, DatasourceColumnsTableRow[]>({
     initQuery: props.datasource,
     processQuery: async (datasourceId, cancelToken) => {
-      return await queryDruidSql<ColumnMetadata>(
+      return await queryRobuxSql<ColumnMetadata>(
         {
           query: `SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS
-          WHERE TABLE_SCHEMA = 'druid' AND TABLE_NAME = ${L(datasourceId)}`,
+          WHERE TABLE_SCHEMA = 'robux' AND TABLE_NAME = ${L(datasourceId)}`,
         },
         cancelToken,
       );

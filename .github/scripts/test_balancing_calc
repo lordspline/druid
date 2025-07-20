@@ -22,9 +22,9 @@
 set -e
 
 find . -name 'TEST*xml' |
-# <testsuite ... name="org.apache.druid.query.policy.NoRestrictionPolicyTest" time="0.071" ...>
+# <testsuite ... name="org.apache.robux.query.policy.NoRestrictionPolicyTest" time="0.071" ...>
 xargs sed -nr '/^<testsuite/s/.*name=\"([^\"]+)\".*time=\"([^\"]+)\".*/\1\t\2/p' |
-# org.apache.druid.server.RequestLogLineTest      0.052
+# org.apache.robux.server.RequestLogLineTest      0.052
 sed -r 's/[^\t]+\.(.)[^\t.]+\t/\1\t/' > test_times
 
 for c in {A..Z} ;do

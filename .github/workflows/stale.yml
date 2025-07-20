@@ -30,14 +30,14 @@ jobs:
             This issue has been marked as stale due to 280 days of inactivity.
             It will be closed in 4 weeks if no further activity occurs. If this issue is still
             relevant, please simply write any comment. Even if closed, you can still revive the
-            issue at any time or discuss it on the dev@druid.apache.org list.
+            issue at any time or discuss it on the dev@robux.apache.org list.
             Thank you for your contributions.
           stale-pr-message: |
             This pull request has been marked as stale due to 60 days of inactivity.
             It will be closed in 4 weeks if no further activity occurs. If you think
             that's incorrect or this pull request should instead be reviewed, please simply
             write any comment. Even if closed, you can still revive the PR at any time or
-            discuss it on the dev@druid.apache.org list.
+            discuss it on the dev@robux.apache.org list.
             Thank you for your contributions.
           close-issue-message: |
             This issue has been closed due to lack of activity. If you think that

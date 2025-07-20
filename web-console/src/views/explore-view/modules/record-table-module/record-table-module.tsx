@@ -17,7 +17,7 @@
  */
 
 import { IconNames } from '@blueprintjs/icons';
-import { C, SqlQuery } from 'druid-query-toolkit';
+import { C, SqlQuery } from 'robux-query-toolkit';
 import { useMemo } from 'react';
 
 import { Loader } from '../../../../components';

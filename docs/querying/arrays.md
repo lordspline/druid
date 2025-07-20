@@ -23,10 +23,10 @@ title: "Arrays"
   -->
 
 
-Apache Druid supports SQL standard `ARRAY` typed columns for `VARCHAR`, `BIGINT`, and `DOUBLE` types (native types `ARRAY<STRING>`, `ARRAY<LONG>`, and `ARRAY<DOUBLE>`). Other more complicated ARRAY types must be stored in [nested columns](nested-columns.md). Druid ARRAY types are distinct from [multi-value dimension](multi-value-dimensions.md), which have significantly different behavior than standard arrays.
+Apache Robux supports SQL standard `ARRAY` typed columns for `VARCHAR`, `BIGINT`, and `DOUBLE` types (native types `ARRAY<STRING>`, `ARRAY<LONG>`, and `ARRAY<DOUBLE>`). Other more complicated ARRAY types must be stored in [nested columns](nested-columns.md). Robux ARRAY types are distinct from [multi-value dimension](multi-value-dimensions.md), which have significantly different behavior than standard arrays.
 
 This document describes inserting, filtering, and grouping behavior for `ARRAY` typed columns.
-Refer to the [Druid SQL data type documentation](sql-data-types.md#arrays) and [SQL array function reference](sql-array-functions.md) for additional details
+Refer to the [Robux SQL data type documentation](sql-data-types.md#arrays) and [SQL array function reference](sql-array-functions.md) for additional details
 about the functions available to use with ARRAY columns and types in SQL.
 
 The following sections describe inserting, filtering, and grouping behavior based on the following example data, which includes 3 array typed columns:
@@ -135,10 +135,10 @@ PARTITIONED BY DAY
 
 #### `arrayIngestMode`
 
-For seamless backwards compatible behavior with Druid versions older than 31, there is an `arrayIngestMode` query context flag.
+For seamless backwards compatible behavior with Robux versions older than 31, there is an `arrayIngestMode` query context flag.
 
-When `arrayIngestMode` is `array`, SQL ARRAY types are stored using Druid array columns. This is recommended for new
-tables and the default configuration for Druid 31 and newer.
+When `arrayIngestMode` is `array`, SQL ARRAY types are stored using Robux array columns. This is recommended for new
+tables and the default configuration for Robux 31 and newer.
 
 When `arrayIngestMode` is `mvd` (legacy), SQL `VARCHAR ARRAY` are implicitly wrapped in [`ARRAY_TO_MV`](sql-functions.md#array_to_mv).
 This causes them to be stored as [multi-value strings](multi-value-dimensions.md), using the same `STRING` column type
@@ -157,7 +157,7 @@ The following table summarizes the differences in SQL ARRAY handling between `ar
 In either mode, you can explicitly wrap string arrays in `ARRAY_TO_MV` to cause them to be stored as
 [multi-value strings](multi-value-dimensions.md).
 
-When validating a SQL INSERT or REPLACE statement that contains arrays, Druid checks whether the statement would lead
+When validating a SQL INSERT or REPLACE statement that contains arrays, Robux checks whether the statement would lead
 to mixing string arrays and multi-value strings in the same column. If this condition is detected, the statement fails
 validation unless the column is named under the `skipTypeVerification` context parameter. This parameter can be either
 a comma-separated list of column names, or a JSON array in string form. This validation is done to prevent accidentally

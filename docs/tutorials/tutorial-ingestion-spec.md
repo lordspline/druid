@@ -26,7 +26,7 @@ sidebar_label: Write an ingestion spec
 
 This tutorial will guide the reader through the process of defining an ingestion spec, pointing out key considerations and guidelines.
 
-For this tutorial, we'll assume you've already downloaded Apache Druid as described in
+For this tutorial, we'll assume you've already downloaded Apache Robux as described in
 the [single-machine quickstart](index.md) and have it running on your local machine.
 
 It will also be helpful to have finished [Tutorial: Loading a file](../tutorials/tutorial-batch.md), [Tutorial: Querying data](../tutorials/tutorial-query.md), and [Tutorial: Rollup](../tutorials/tutorial-rollup.md).
@@ -64,7 +64,7 @@ For this tutorial, we will be using the native batch indexing task. When using o
 
 ## Defining the schema
 
-The core element of a Druid ingestion spec is the `dataSchema`. The `dataSchema` defines how to parse input data into a set of columns that will be stored in Druid.
+The core element of a Robux ingestion spec is the `dataSchema`. The `dataSchema` defines how to parse input data into a set of columns that will be stored in Robux.
 
 Let's start with an empty `dataSchema` and add fields to it as we progress through the tutorial.
 
@@ -108,7 +108,7 @@ The timestamp column in our input data is named "ts", containing ISO 8601 timest
 
 Now that we've defined the time column, let's look at definitions for other columns.
 
-Druid supports the following column types: String, Long, Float, Double. We will see how these are used in the following sections.
+Robux supports the following column types: String, Long, Float, Double. We will see how these are used in the following sections.
 
 Before we move on to how we define our other non-time columns, let's discuss `rollup` first.
 
@@ -176,7 +176,7 @@ Each dimension has a `name` and a `type`, where `type` can be "long", "float", "
 
 Note that `srcIP` is a "string" dimension; for string dimensions, it is enough to specify just a dimension name, since "string" is the default dimension type.
 
-Also note that `protocol` is a numeric value in the input data, but we are ingesting it as a "string" column; Druid will coerce the input longs to strings during ingestion.
+Also note that `protocol` is a numeric value in the input data, but we are ingesting it as a "string" column; Robux will coerce the input longs to strings during ingestion.
 
 ##### Strings vs. Numerics
 
@@ -332,7 +332,7 @@ To see the effect of the query granularity, let's look at this row from the raw 
 {"ts":"2018-01-01T01:03:29Z","srcIP":"1.1.1.1", "dstIP":"2.2.2.2", "srcPort":5000, "dstPort":7000, "protocol": 6, "packets":60, "bytes":6000, "cost": 4.3}
 ```
 
-When this row is ingested with minute queryGranularity, Druid will floor the row's timestamp to minute buckets:
+When this row is ingested with minute queryGranularity, Robux will floor the row's timestamp to minute buckets:
 
 ```json
 {"ts":"2018-01-01T01:03:00Z","srcIP":"1.1.1.1", "dstIP":"2.2.2.2", "srcPort":5000, "dstPort":7000, "protocol": 6, "packets":60, "bytes":6000, "cost": 4.3}
@@ -582,7 +582,7 @@ We've finished defining the ingestion spec, it should now look like the followin
 
 ## Submit the task and query the data
 
-From the `apache-druid-{{DRUIDVERSION}}` package root, run the following command:
+From the `apache-robux-{{ROBUXVERSION}}` package root, run the following command:
 
 ```bash
 bin/post-index-task --file quickstart/ingestion-tutorial-index.json --url http://localhost:8081

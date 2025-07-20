@@ -19,11 +19,11 @@
 import { sum } from 'd3-array';
 import React from 'react';
 
-import { getConsoleViewIcon } from '../../../druid-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import type { Capabilities } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
 import { Api } from '../../../singletons';
-import { deepGet, getApiArray, pluralIfNeeded, queryDruidSql } from '../../../utils';
+import { deepGet, getApiArray, pluralIfNeeded, queryRobuxSql } from '../../../utils';
 import { HomeViewCard } from '../home-view-card/home-view-card';
 
 export interface SegmentCounts {
@@ -42,7 +42,7 @@ export const SegmentsCard = React.memo(function SegmentsCard(props: SegmentsCard
     initQuery: props.capabilities,
     processQuery: async (capabilities, cancelToken) => {
       if (capabilities.hasSql()) {
-        const segments = await queryDruidSql(
+        const segments = await queryRobuxSql(
           {
             query: `SELECT
   COUNT(*) AS "active",
@@ -56,14 +56,14 @@ WHERE is_active = 1`,
         );
         return segments.length === 1 ? segments[0] : null;
       } else if (capabilities.hasCoordinatorAccess()) {
-        const loadstatusResp = await Api.instance.get('/druid/coordinator/v1/loadstatus?simple', {
+        const loadstatusResp = await Api.instance.get('/robux/coordinator/v1/loadstatus?simple', {
           cancelToken,
         });
         const loadstatus = loadstatusResp.data;
         const unavailableSegmentNum = sum(Object.keys(loadstatus), key => loadstatus[key]);
 
         const datasourcesMeta = await getApiArray(
-          '/druid/coordinator/v1/datasources?simple',
+          '/robux/coordinator/v1/datasources?simple',
           cancelToken,
         );
         const availableSegmentNum = sum(datasourcesMeta, (curr: any) =>

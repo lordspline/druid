@@ -1,6 +1,6 @@
-all : druid sigmod zip
+all : robux sigmod zip
 
-druid : druid.pdf
+robux : robux.pdf
 
 sigmod : modii658-yang.pdf
 

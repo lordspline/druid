@@ -24,13 +24,13 @@ sidebar_label: "Scan"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes a query
- type in the native language. For information about when Druid SQL will use this query type, refer to the
+ type in the native language. For information about when Robux SQL will use this query type, refer to the
  [SQL documentation](sql-translation.md#query-types).
 :::
 
-The Scan query returns raw Apache Druid rows in streaming mode.  
+The Scan query returns raw Apache Robux rows in streaming mode.  
 
 In addition to straightforward usage where a Scan query is issued to the Broker, the Scan query can also be issued
 directly to Historical processes or streaming ingestion tasks. This can be useful if you want to retrieve large
@@ -56,7 +56,7 @@ The following are the main parameters for Scan queries:
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "scan"; this is the first thing Druid looks at to figure out how to interpret the query|yes|
+|queryType|This String should always be "scan"; this is the first thing Robux looks at to figure out how to interpret the query|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../querying/datasource.md) for more information.|yes|
 |intervals|A JSON Object representing ISO-8601 Intervals. This defines the time ranges to run the query over.|yes|
 |resultFormat|How the results are represented: list, compactedList or valueVector. Currently only `list` and `compactedList` are supported. Default is `list`|no|
@@ -157,8 +157,8 @@ The format of the result when resultFormat equals `compactedList`:
 
 The Scan query currently supports ordering based on timestamp.  Note that using time ordering will yield results that
 do not indicate which segment rows are from (`segmentId` will show up as `null`).  Furthermore, time ordering is only
-supported where the result set limit is less than `druid.query.scan.maxRowsQueuedForOrdering` rows **or** all segments
-scanned have fewer than `druid.query.scan.maxSegmentPartitionsOrderedInMemory` partitions.  Also, time ordering is not
+supported where the result set limit is less than `robux.query.scan.maxRowsQueuedForOrdering` rows **or** all segments
+scanned have fewer than `robux.query.scan.maxSegmentPartitionsOrderedInMemory` partitions.  Also, time ordering is not
 supported for queries issued directly to historicals unless a list of segments is specified.  The reasoning behind
 these limitations is that the implementation of time ordering uses two strategies that can consume too much heap memory
 if left unbounded.  These strategies (listed below) are chosen on a per-Historical basis depending on query result set
@@ -168,17 +168,17 @@ limit and the number of segments being scanned.
 queue which is ordered by timestamp.  For every row above the result set limit, the row with the earliest (if descending)
 or latest (if ascending) timestamp will be dequeued.  After every row has been processed, the sorted contents of the
 priority queue are streamed back to the Broker(s) in batches.  Attempting to load too many rows into memory runs the
-risk of Historical nodes running out of memory.  The `druid.query.scan.maxRowsQueuedForOrdering` property protects
+risk of Historical nodes running out of memory.  The `robux.query.scan.maxRowsQueuedForOrdering` property protects
 from this by limiting the number of rows in the query result set when time ordering is used.
 
 2. N-Way Merge: For each segment, each partition is opened in parallel.  Since each partition's rows are already
 time-ordered, an n-way merge can be performed on the results from each partition.  This approach doesn't persist the entire
 result set in memory (like the Priority Queue) as it streams back batches as they are returned from the merge function.
 However, attempting to query too many partition could also result in high memory usage due to the need to open
-decompression and decoding buffers for each.  The `druid.query.scan.maxSegmentPartitionsOrderedInMemory` limit protects
+decompression and decoding buffers for each.  The `robux.query.scan.maxSegmentPartitionsOrderedInMemory` limit protects
 from this by capping the number of partitions opened at any times when time ordering is used.
 
-Both `druid.query.scan.maxRowsQueuedForOrdering` and `druid.query.scan.maxSegmentPartitionsOrderedInMemory` are
+Both `robux.query.scan.maxRowsQueuedForOrdering` and `robux.query.scan.maxSegmentPartitionsOrderedInMemory` are
 configurable and can be tuned based on hardware specs and number of dimensions being queried.  These config properties
 can also be overridden using the `maxRowsQueuedForOrdering` and `maxSegmentPartitionsOrderedInMemory` properties in
 the query context (see the Query Context Properties section).
@@ -189,16 +189,16 @@ Configuration properties:
 
 |property|description|values|default|
 |--------|-----------|------|-------|
-|druid.query.scan.maxRowsQueuedForOrdering|The maximum number of rows returned when time ordering is used|An integer in [1, 2147483647]|100000|
-|druid.query.scan.maxSegmentPartitionsOrderedInMemory|The maximum number of segments scanned per historical when time ordering is used|An integer in [1, 2147483647]|50|
+|robux.query.scan.maxRowsQueuedForOrdering|The maximum number of rows returned when time ordering is used|An integer in [1, 2147483647]|100000|
+|robux.query.scan.maxSegmentPartitionsOrderedInMemory|The maximum number of segments scanned per historical when time ordering is used|An integer in [1, 2147483647]|50|
 
 
 ## Query context properties
 
 |property|description|values|default|
 |--------|-----------|------|-------|
-|maxRowsQueuedForOrdering|The maximum number of rows returned when time ordering is used.  Overrides the identically named config.|An integer in [1, 2147483647]|`druid.query.scan.maxRowsQueuedForOrdering`|
-|maxSegmentPartitionsOrderedInMemory|The maximum number of segments scanned per historical when time ordering is used.  Overrides the identically named config.|An integer in [1, 2147483647]|`druid.query.scan.maxSegmentPartitionsOrderedInMemory`|
+|maxRowsQueuedForOrdering|The maximum number of rows returned when time ordering is used.  Overrides the identically named config.|An integer in [1, 2147483647]|`robux.query.scan.maxRowsQueuedForOrdering`|
+|maxSegmentPartitionsOrderedInMemory|The maximum number of segments scanned per historical when time ordering is used.  Overrides the identically named config.|An integer in [1, 2147483647]|`robux.query.scan.maxSegmentPartitionsOrderedInMemory`|
 
 Sample query context JSON object:
 
@@ -211,4 +211,4 @@ Sample query context JSON object:
 
 ## Legacy mode
 
-In older versions of Druid, the scan query supported a legacy mode designed for protocol compatibility with the former scan-query contrib extension from versions of Druid older than 0.11. This mode has been removed.
+In older versions of Robux, the scan query supported a legacy mode designed for protocol compatibility with the former scan-query contrib extension from versions of Robux older than 0.11. This mode has been removed.

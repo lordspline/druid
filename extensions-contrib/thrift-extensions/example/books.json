@@ -6,7 +6,7 @@
       "parser" : {
         "type" : "thrift",
         "jarPath" : "example/book.jar",
-        "thriftClass": "org.apache.druid.data.input.thrift.Book",
+        "thriftClass": "org.apache.robux.data.input.thrift.Book",
         "protocol" : "compact",
         "parseSpec" : {
           "format" : "json",
@@ -57,7 +57,7 @@
         "targetPartitionSize" : 5000000
       },
       "jobProperties" : {
-        "tmpjars": "/user/xxx/druid/test/book.jar"
+        "tmpjars": "/user/xxx/robux/test/book.jar"
       }
     }
   },

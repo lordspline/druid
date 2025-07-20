@@ -20,7 +20,7 @@ import type * as playwright from 'playwright-chromium';
 
 import { QueryOverview } from './component/query/overview';
 import { saveScreenshotIfError } from './util/debug';
-import { UNIFIED_CONSOLE_URL } from './util/druid';
+import { UNIFIED_CONSOLE_URL } from './util/robux';
 import { createBrowser, createPage } from './util/playwright';
 import { waitTillWebConsoleReady } from './util/setup';
 

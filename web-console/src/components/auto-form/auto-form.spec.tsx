@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { COMPACTION_CONFIG_FIELDS } from '../../druid-models';
+import { COMPACTION_CONFIG_FIELDS } from '../../robux-models';
 import { shallow } from '../../utils/shallow-renderer';
 
 import { AutoForm } from './auto-form';

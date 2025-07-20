@@ -20,13 +20,13 @@ import { Button, ButtonGroup } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import type { CancelToken } from 'axios';
 import classNames from 'classnames';
-import type { LiteralValue, QueryResult, SqlQuery, ValuesFilterPattern } from 'druid-query-toolkit';
+import type { LiteralValue, QueryResult, SqlQuery, ValuesFilterPattern } from 'robux-query-toolkit';
 import {
   F,
   filterPatternsToExpression,
   fitFilterPatterns,
   SqlExpression,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 import React, { useMemo, useState } from 'react';
 
 import { ClearableInput, Loader } from '../../../../components';

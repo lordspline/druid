@@ -28,16 +28,16 @@ class Template(BaseTemplate):
         service_name = COORDINATOR + '-one'
         service = self.define_master_service(service_name, COORDINATOR)
         service['container_name'] = service_name
-        self.add_env(service, 'DRUID_INSTANCE', 'one')
-        self.add_env(service, 'druid_host', service_name)
+        self.add_env(service, 'ROBUX_INSTANCE', 'one')
+        self.add_env(service, 'robux_host', service_name)
         service['container_name'] = service_name
 
     def define_coordinator_two(self):
         service_name = COORDINATOR + '-two'
         service = self.define_full_service(service_name, COORDINATOR, 120)
         service['container_name'] = service_name
-        self.add_env(service, 'DRUID_INSTANCE', 'two')
-        self.add_env(service, 'druid_host', service_name)
+        self.add_env(service, 'ROBUX_INSTANCE', 'two')
+        self.add_env(service, 'robux_host', service_name)
         service['ports'] = [ '18081:8081', '18281:8281', '15006:8000' ]
         self.add_depends(service, [ZOO_KEEPER, METADATA])
 
@@ -49,15 +49,15 @@ class Template(BaseTemplate):
         service_name = OVERLORD + '-one'
         service = self.define_master_service(service_name, OVERLORD)
         service['container_name'] = service_name
-        self.add_env(service, 'DRUID_INSTANCE', 'one')
-        self.add_env(service, 'druid_host', service_name)
+        self.add_env(service, 'ROBUX_INSTANCE', 'one')
+        self.add_env(service, 'robux_host', service_name)
 
     def define_overlord_two(self):
         service_name = OVERLORD + '-two'
         service = self.define_full_service(service_name, OVERLORD, 110)
         service['container_name'] = service_name
-        self.add_env(service, 'DRUID_INSTANCE', 'two')
-        self.add_env(service, 'druid_host', service_name)
+        self.add_env(service, 'ROBUX_INSTANCE', 'two')
+        self.add_env(service, 'robux_host', service_name)
         service['ports'] = [ '18090:8090', '18290:8290', '15009:8000' ]
         self.add_depends(service, [ZOO_KEEPER, METADATA])
 
@@ -80,9 +80,9 @@ class Template(BaseTemplate):
         service_name = 'custom-node-role'
         service = self.define_full_service(service_name, None, 90)
         service['container_name'] = service_name
-        self.add_env(service, 'DRUID_SERVICE', service_name)
-        self.add_env(service, 'SERVICE_DRUID_JAVA_OPTS', '-Xmx64m -Xms64m')
-        self.add_env(service, 'druid_host', service_name)
+        self.add_env(service, 'ROBUX_SERVICE', service_name)
+        self.add_env(service, 'SERVICE_ROBUX_JAVA_OPTS', '-Xmx64m -Xms64m')
+        self.add_env(service, 'robux_host', service_name)
         service['ports'] = [ '50011:50011', '9301:9301', '9501:9501', '5010:8000' ]
         self.add_depends(service, [ZOO_KEEPER])
 

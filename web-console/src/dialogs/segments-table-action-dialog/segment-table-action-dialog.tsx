@@ -64,7 +64,7 @@ export const SegmentTableActionDialog = React.memo(function SegmentTableActionDi
     >
       {activeTab === 'metadata' && (
         <ShowJson
-          endpoint={`/druid/coordinator/v1/metadata/datasources/${Api.encodePath(
+          endpoint={`/robux/coordinator/v1/metadata/datasources/${Api.encodePath(
             datasourceId,
           )}/segments/${Api.encodePath(segmentId)}`}
           downloadFilename={`Segment-metadata-${segmentId}.json`}

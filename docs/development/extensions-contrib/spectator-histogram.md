@@ -23,14 +23,14 @@ title: "Spectator Histogram module"
   -->
 
 ## Summary
-This module provides Apache Druid approximate histogram aggregators and percentile
+This module provides Apache Robux approximate histogram aggregators and percentile
 post-aggregators based on Spectator fixed-bucket histograms.
 
 Consider SpectatorHistogram to compute percentile approximations. This extension has a reduced storage footprint compared to the [DataSketches extension](../extensions-core/datasketches-extension.md), which results in smaller segment sizes, faster loading from deep storage, and lower memory usage. This extension provides fast and accurate queries on large datasets at low storage cost.
 
 This aggregator only applies when your raw data contains positive long integer values. Do not use this aggregator if you have negative values in your data.
 
-In the Druid instance shown below, the example Wikipedia dataset is loaded 3 times.
+In the Robux instance shown below, the example Wikipedia dataset is loaded 3 times.
 * `wikipedia` contains the dataset ingested as is, without rollup
 * `wikipedia_spectator` contains the dataset with a single extra metric column of type `spectatorHistogram` for the `added` column
 * `wikipedia_datasketch` contains the dataset with a single extra metric column of type `quantilesDoublesSketch` for the `added` column
@@ -57,8 +57,8 @@ It was built, primarily, to work with [Atlas](https://netflix.github.io/atlas-do
 Atlas was developed by Netflix to manage dimensional time series data for near
 real-time operational insight.
 
-With the [Atlas-Druid](https://github.com/Netflix-Skunkworks/iep-apps/tree/main/atlas-druid)
-service, it's possible to use the power of Atlas queries, backed by Druid as a
+With the [Atlas-Robux](https://github.com/Netflix-Skunkworks/iep-apps/tree/main/atlas-robux)
+service, it's possible to use the power of Atlas queries, backed by Robux as a
 data store to benefit from high-dimensionality and high-cardinality data.
 
 SpectatorHistogram is designed for efficient parallel aggregations while still
@@ -79,7 +79,7 @@ Also see the [limitations](#limitations] of this extension.
 * Supports positive long integer values within the range of [0, 2^53). Negatives are
 coerced to 0.
 * Does not support decimals.
-* Does not support Druid SQL queries, only native queries.
+* Does not support Robux SQL queries, only native queries.
 * Does not support vectorized queries.
 * Generates 276 fixed buckets with increasing bucket widths. In practice, the observed error of computed percentiles ranges from 0.1% to 3%, exclusive. See [Bucket boundaries](#histogram-bucket-boundaries) for the full list of bucket boundaries.
 
@@ -113,9 +113,9 @@ of the number of values that were aggregated into the histogram. This flexibilit
 avoid the need to maintain a separate metric for the count of values.
 
 For high-frequency measurements, you may need to pre-aggregate data at the client prior
-to sending into Druid. For example, if you're measuring individual image render times
+to sending into Robux. For example, if you're measuring individual image render times
 on an image-heavy website, you may want to aggregate the render times for a page-view
-into a single histogram prior to sending to Druid in real-time. This can reduce the
+into a single histogram prior to sending to Robux in real-time. This can reduce the
 amount of data that's needed to send from the client across the wire.
 
 SpectatorHistogram supports ingesting pre-aggregated histograms in real-time and batch.
@@ -131,7 +131,7 @@ histogram. The keys need not be ordered or contiguous. For example:
 To use SpectatorHistogram, make sure you [include](../../configuration/extensions.md#loading-extensions) the extension in your config file:
 
 ```
-druid.extensions.loadList=["druid-spectator-histogram"]
+robux.extensions.loadList=["robux-spectator-histogram"]
 ```
 
 ## Aggregators
@@ -161,12 +161,12 @@ See [Histogram bucket boundaries](#histogram-bucket-boundaries) for the full lis
 ```
 
 There are multiple aggregator types included, all of which are based on the same
-underlying implementation. If you use the Atlas-Druid service, the different types
+underlying implementation. If you use the Atlas-Robux service, the different types
 signal the service on how to handle the resulting data from a query.
 
 * spectatorHistogramTimer signals that the histogram is representing
 a collection of timer values. It is recommended to normalize timer values to nanoseconds
-at, or prior to, ingestion. If queried via the Atlas-Druid service, it will
+at, or prior to, ingestion. If queried via the Atlas-Robux service, it will
 normalize timers to second resolution at query time as a more natural unit of time
 for human consumption.
 * spectatorHistogram and spectatorHistogramDistribution are generic histograms that
@@ -284,7 +284,7 @@ Example of ingesting the sample Wikipedia dataset with a histogram metric column
       "type": "index_parallel",
       "inputSource": {
         "type": "http",
-        "uris": ["https://druid.apache.org/data/wikipedia.json.gz"]
+        "uris": ["https://robux.apache.org/data/wikipedia.json.gz"]
       },
       "inputFormat": { "type": "json" }
     },

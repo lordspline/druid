@@ -25,7 +25,7 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
-  druid_shared: {}
+  robux_shared: {}
 
 
 services:
@@ -38,8 +38,8 @@ services:
       - metadata_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=FoolishPassword
-      - POSTGRES_USER=druid
-      - POSTGRES_DB=druid
+      - POSTGRES_USER=robux
+      - POSTGRES_DB=robux
 
   # Need 3.5 or later for container nodes
   zookeeper:
@@ -51,11 +51,11 @@ services:
       - ZOO_MY_ID=1
 
   coordinator:
-    image: apache/druid:34.0.0
+    image: apache/robux:34.0.0
     container_name: coordinator
     volumes:
-      - druid_shared:/opt/shared
-      - coordinator_var:/opt/druid/var
+      - robux_shared:/opt/shared
+      - coordinator_var:/opt/robux/var
     depends_on:
       - zookeeper
       - postgres
@@ -67,10 +67,10 @@ services:
       - environment
 
   broker:
-    image: apache/druid:34.0.0
+    image: apache/robux:34.0.0
     container_name: broker
     volumes:
-      - broker_var:/opt/druid/var
+      - broker_var:/opt/robux/var
     depends_on:
       - zookeeper
       - postgres
@@ -83,11 +83,11 @@ services:
       - environment
 
   historical:
-    image: apache/druid:34.0.0
+    image: apache/robux:34.0.0
     container_name: historical
     volumes:
-      - druid_shared:/opt/shared
-      - historical_var:/opt/druid/var
+      - robux_shared:/opt/shared
+      - historical_var:/opt/robux/var
     depends_on: 
       - zookeeper
       - postgres
@@ -100,11 +100,11 @@ services:
       - environment
 
   middlemanager:
-    image: apache/druid:34.0.0
+    image: apache/robux:34.0.0
     container_name: middlemanager
     volumes:
-      - druid_shared:/opt/shared
-      - middle_var:/opt/druid/var
+      - robux_shared:/opt/shared
+      - middle_var:/opt/robux/var
     depends_on: 
       - zookeeper
       - postgres
@@ -118,10 +118,10 @@ services:
       - environment
 
   router:
-    image: apache/druid:34.0.0
+    image: apache/robux:34.0.0
     container_name: router
     volumes:
-      - router_var:/opt/druid/var
+      - router_var:/opt/robux/var
     depends_on:
       - zookeeper
       - postgres

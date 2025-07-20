@@ -15,110 +15,110 @@
 
 version: "2.2"
 services:
-  druid-zookeeper-kafka:
+  robux-zookeeper-kafka:
     extends:
       file: docker-compose.base.yml
-      service: druid-zookeeper-kafka
+      service: robux-zookeeper-kafka
 
-  druid-metadata-storage:
+  robux-metadata-storage:
     extends:
       file: docker-compose.base.yml
-      service: druid-metadata-storage
+      service: robux-metadata-storage
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
+      - robux-zookeeper-kafka
 
-  druid-coordinator:
+  robux-coordinator:
     extends:
       file: docker-compose.base.yml
-      service: druid-coordinator
+      service: robux-coordinator
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - DRUID_LOG_PATH=/shared/logs/ha-coordinator-one.log
-      - druid_manager_config_pollDuration=PT10S
-      - druid_manager_rules_pollDuration=PT10S
-      - druid_manager_segments_pollDuration=PT10S
-      - druid_coordinator_period=PT10S
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - ROBUX_LOG_PATH=/shared/logs/ha-coordinator-one.log
+      - robux_manager_config_pollDuration=PT10S
+      - robux_manager_rules_pollDuration=PT10S
+      - robux_manager_segments_pollDuration=PT10S
+      - robux_coordinator_period=PT10S
     depends_on:
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-coordinator-two:
+  robux-coordinator-two:
     extends:
       file: docker-compose.base.yml
-      service: druid-coordinator-two
+      service: robux-coordinator-two
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - DRUID_LOG_PATH=/shared/logs/ha-coordinator-two.log
-      - druid_host=druid-coordinator-two
-      - druid_manager_config_pollDuration=PT10S
-      - druid_manager_rules_pollDuration=PT10S
-      - druid_manager_segments_pollDuration=PT10S
-      - druid_coordinator_period=PT10S
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - ROBUX_LOG_PATH=/shared/logs/ha-coordinator-two.log
+      - robux_host=robux-coordinator-two
+      - robux_manager_config_pollDuration=PT10S
+      - robux_manager_rules_pollDuration=PT10S
+      - robux_manager_segments_pollDuration=PT10S
+      - robux_coordinator_period=PT10S
     depends_on:
-      - druid-coordinator
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-coordinator
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-overlord:
+  robux-overlord:
     extends:
       file: docker-compose.base.yml
-      service: druid-overlord
+      service: robux-overlord
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - DRUID_LOG_PATH=/shared/logs/ha-overlord-one.log
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - ROBUX_LOG_PATH=/shared/logs/ha-overlord-one.log
     depends_on:
-      - druid-coordinator
-      - druid-coordinator-two
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-coordinator
+      - robux-coordinator-two
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-overlord-two:
+  robux-overlord-two:
     extends:
       file: docker-compose.base.yml
-      service: druid-overlord-two
+      service: robux-overlord-two
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - DRUID_LOG_PATH=/shared/logs/ha-overlord-two.log
-      - druid_host=druid-overlord-two
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - ROBUX_LOG_PATH=/shared/logs/ha-overlord-two.log
+      - robux_host=robux-overlord-two
     depends_on:
-      - druid-coordinator
-      - druid-coordinator-two
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-coordinator
+      - robux-coordinator-two
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-broker:
+  robux-broker:
     extends:
       file: docker-compose.base.yml
-      service: druid-broker
+      service: robux-broker
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-coordinator
-      - druid-coordinator-two
-      - druid-overlord
-      - druid-overlord-two
-      - druid-zookeeper-kafka
+      - robux-coordinator
+      - robux-coordinator-two
+      - robux-overlord
+      - robux-overlord-two
+      - robux-zookeeper-kafka
 
-  druid-router:
+  robux-router:
     extends:
       file: docker-compose.base.yml
-      service: druid-router
+      service: robux-router
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-coordinator
-      - druid-coordinator-two
-      - druid-overlord
-      - druid-overlord-two
-      - druid-broker
+      - robux-coordinator
+      - robux-coordinator-two
+      - robux-overlord
+      - robux-overlord-two
+      - robux-broker
 
-  druid-custom-node-role:
-    image: druid/cluster
-    container_name: druid-custom-node-role
+  robux-custom-node-role:
+    image: robux/cluster
+    container_name: robux-custom-node-role
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.90
     ports:
       - 50011:50011
@@ -127,26 +127,26 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
-      - DRUID_SERVICE=custom-node-role
-      - DRUID_LOG_PATH=/shared/logs/custom-node-role.log
-      - SERVICE_DRUID_JAVA_OPTS=-server -Xmx128m -Xms128m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011
-      - druid_host=druid-custom-node-role
-      - druid_auth_basic_common_cacheDirectory=/tmp/authCache/custom_node_role
-      - druid_server_https_crlPath=/tls/revocations.crl
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
+      - ROBUX_SERVICE=custom-node-role
+      - ROBUX_LOG_PATH=/shared/logs/custom-node-role.log
+      - SERVICE_ROBUX_JAVA_OPTS=-server -Xmx128m -Xms128m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5011
+      - robux_host=robux-custom-node-role
+      - robux_auth_basic_common_cacheDirectory=/tmp/authCache/custom_node_role
+      - robux_server_https_crlPath=/tls/revocations.crl
     env_file:
       - ./environment-configs/common
       - ${OVERRIDE_ENV}
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-coordinator
-      - druid-coordinator-two
+      - robux-zookeeper-kafka
+      - robux-coordinator
+      - robux-coordinator-two
 
 networks:
-  druid-it-net:
-    name: druid-it-net
+  robux-it-net:
+    name: robux-it-net
     ipam:
       config:
         - subnet: 172.172.172.0/24

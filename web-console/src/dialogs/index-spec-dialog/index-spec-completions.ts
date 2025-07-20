@@ -81,7 +81,7 @@ export const INDEX_SPEC_COMPLETIONS: JsonCompletionRule[] = [
       { value: 'uncompressed', documentation: 'No compression' },
       {
         value: 'none',
-        documentation: 'More efficient than uncompressed (requires newer Druid versions)',
+        documentation: 'More efficient than uncompressed (requires newer Robux versions)',
       },
     ],
   },
@@ -151,8 +151,8 @@ export const INDEX_SPEC_COMPLETIONS: JsonCompletionRule[] = [
   {
     path: '$.stringDictionaryEncoding.formatVersion',
     completions: [
-      { value: '0', documentation: 'Format version 0 (default, compatible with Druid 25+)' },
-      { value: '1', documentation: 'Format version 1 (faster and smaller, requires Druid 26+)' },
+      { value: '0', documentation: 'Format version 0 (default, compatible with Robux 25+)' },
+      { value: '1', documentation: 'Format version 1 (faster and smaller, requires Robux 26+)' },
     ],
   },
 ];

@@ -15,7 +15,7 @@
 # limitations under the License.
 
 #
-# Script to upload tarball of assembly build to static.druid.io for serving
+# Script to upload tarball of assembly build to static.robux.io for serving
 #
 
 if [ $# -lt 1 ]; then
@@ -24,9 +24,9 @@ if [ $# -lt 1 ]; then
 fi
 
 VERSION=$1
-DRUID_TAR=druid-$VERSION-bin.tar.gz
+ROBUX_TAR=robux-$VERSION-bin.tar.gz
 MYSQL_TAR=mysql-metadata-storage-$VERSION.tar.gz
-S3PATH=s3://static.druid.io/artifacts/releases
+S3PATH=s3://static.robux.io/artifacts/releases
 
 # Use s3cmd if available, otherwise try awscli
 if command -v s3cmd >/dev/null 2>&1
@@ -38,8 +38,8 @@ else
   s3cp="aws s3 cp"
 fi
 
-if [ ! -z "`$s3ls "$S3PATH/$DRUID_TAR"`" ]; then
-  echo "ERROR: Refusing to overwrite $S3PATH/$DRUID_TAR" >&2
+if [ ! -z "`$s3ls "$S3PATH/$ROBUX_TAR"`" ]; then
+  echo "ERROR: Refusing to overwrite $S3PATH/$ROBUX_TAR" >&2
   exit 2
 fi
 
@@ -48,5 +48,5 @@ if [ ! -z "`$s3ls "$S3PATH/$MYSQL_TAR"`" ]; then
   exit 2
 fi
 
-$s3cp distribution/target/$DRUID_TAR $S3PATH/$DRUID_TAR
+$s3cp distribution/target/$ROBUX_TAR $S3PATH/$ROBUX_TAR
 $s3cp distribution/target/$MYSQL_TAR $S3PATH/$MYSQL_TAR

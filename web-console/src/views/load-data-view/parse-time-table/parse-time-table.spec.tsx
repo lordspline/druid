@@ -18,8 +18,8 @@
 
 import { render } from '@testing-library/react';
 
-import type { IngestionSpec } from '../../../druid-models';
-import { PLACEHOLDER_TIMESTAMP_SPEC } from '../../../druid-models';
+import type { IngestionSpec } from '../../../robux-models';
+import { PLACEHOLDER_TIMESTAMP_SPEC } from '../../../robux-models';
 import { deepSet } from '../../../utils';
 import { JSON_SAMPLE } from '../../../utils/sampler.mock';
 

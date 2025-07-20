@@ -21,9 +21,9 @@
 # Example of override config file to provide.
 # Please replace <OVERRIDE_THIS> and <YOUR_GOOGLE_CREDENTIALS_FILE_NAME> with your cloud configs/credentials
 #
-druid_storage_type=google
-druid_google_bucket=<OVERRIDE_THIS>
-druid_google_prefix=<OVERRIDE_THIS>
-druid_extensions_loadList=["druid-google-extensions"]
+robux_storage_type=google
+robux_google_bucket=<OVERRIDE_THIS>
+robux_google_prefix=<OVERRIDE_THIS>
+robux_extensions_loadList=["robux-google-extensions"]
 GOOGLE_APPLICATION_CREDENTIALS=/shared/docker/credentials/<YOUR_GOOGLE_CREDENTIALS_FILE_NAME>
 

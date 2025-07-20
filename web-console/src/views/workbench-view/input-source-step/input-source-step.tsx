@@ -28,13 +28,13 @@ import {
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import type { QueryResult } from 'druid-query-toolkit';
+import type { QueryResult } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React, { useEffect, useState } from 'react';
 
 import { AutoForm, ExternalLink } from '../../../components';
 import { ShowValueDialog } from '../../../dialogs/show-value-dialog/show-value-dialog';
-import type { Execution, ExecutionError, InputFormat, InputSource } from '../../../druid-models';
+import type { Execution, ExecutionError, InputFormat, InputSource } from '../../../robux-models';
 import {
   getIngestionImage,
   getIngestionTitle,
@@ -42,7 +42,7 @@ import {
   INPUT_SOURCE_FIELDS,
   issueWithSampleData,
   PLACEHOLDER_TIMESTAMP_SPEC,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import { executionBackgroundResultStatusCheck } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
 import { AppToaster, UrlBaser } from '../../../singletons';

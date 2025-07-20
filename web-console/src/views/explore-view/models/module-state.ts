@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import type { Column } from 'druid-query-toolkit';
-import { SqlExpression, SqlLiteral } from 'druid-query-toolkit';
+import type { Column } from 'robux-query-toolkit';
+import { SqlExpression, SqlLiteral } from 'robux-query-toolkit';
 
 import { ModuleRepository } from '../module-repository/module-repository';
 import type { Rename } from '../utils';

@@ -39,12 +39,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default env => {
-  let druidUrl = (env || {}).druid_host || process.env.druid_host || 'localhost';
-  if (!druidUrl.startsWith('http')) {
-    druidUrl = (druidUrl.endsWith(':9088') ? 'https://' : 'http://') + druidUrl;
+  let robuxUrl = (env || {}).robux_host || process.env.robux_host || 'localhost';
+  if (!robuxUrl.startsWith('http')) {
+    robuxUrl = (robuxUrl.endsWith(':9088') ? 'https://' : 'http://') + robuxUrl;
   }
-  if (!/:\d+$/.test(druidUrl)) {
-    druidUrl += druidUrl.startsWith('https://') ? ':9088' : ':8888';
+  if (!/:\d+$/.test(robuxUrl)) {
+    robuxUrl += robuxUrl.startsWith('https://') ? ':9088' : ':8888';
   }
 
   const mode = process.env.NODE_ENV === 'production' ? 'production' : 'development';
@@ -108,8 +108,8 @@ export default env => {
       open: 'unified-console.html',
       proxy: [
         {
-          context: ['/status', '/druid', '/proxy'],
-          target: druidUrl,
+          context: ['/status', '/robux', '/proxy'],
+          target: robuxUrl,
           secure: false,
         },
       ],

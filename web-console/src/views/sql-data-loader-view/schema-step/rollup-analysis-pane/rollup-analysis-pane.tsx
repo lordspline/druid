@@ -19,12 +19,12 @@
 import { Button, Callout, Intent, Tag } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import type { CancelToken } from 'axios';
-import type { QueryResult, SqlQuery } from 'druid-query-toolkit';
-import { F, SqlExpression, SqlFunction } from 'druid-query-toolkit';
+import type { QueryResult, SqlQuery } from 'robux-query-toolkit';
+import { F, SqlExpression, SqlFunction } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React, { useEffect } from 'react';
 
-import type { Execution } from '../../../../druid-models';
+import type { Execution } from '../../../../robux-models';
 import { executionBackgroundStatusCheck, submitTaskQuery } from '../../../../helpers';
 import { useQueryManager } from '../../../../hooks';
 import { filterMap, formatPercentClapped, IntermediateQueryState } from '../../../../utils';

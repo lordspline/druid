@@ -41,7 +41,7 @@ fi
 
 source $TARGET_DIR/env.sh
 
-# Directory of the parent Druid pom.xml file.
+# Directory of the parent Robux pom.xml file.
 # Unbeliebably hard to get from Maven itself.
 export PARENT_DIR=$SCRIPT_DIR/../..
 

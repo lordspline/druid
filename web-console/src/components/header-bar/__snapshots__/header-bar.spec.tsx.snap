@@ -10,7 +10,7 @@ exports[`HeaderBar matches snapshot 1`] = `
     <a
       href="#"
     >
-      <Memo(DruidLogo) />
+      <Memo(RobuxLogo) />
     </a>
     <Blueprint5.NavbarDivider />
     <Blueprint5.AnchorButton
@@ -242,7 +242,7 @@ exports[`HeaderBar matches snapshot 1`] = `
             onClick={[Function]}
             popoverProps={{}}
             shouldDismissPopover={true}
-            text="Druid Doctor"
+            text="Robux Doctor"
           />
           <Blueprint5.MenuItem
             active={false}
@@ -366,7 +366,7 @@ exports[`HeaderBar matches snapshot 1`] = `
           <Blueprint5.MenuItem
             active={false}
             disabled={false}
-            href="https://druid.apache.org/docs/latest"
+            href="https://robux.apache.org/docs/latest"
             icon="th"
             multiline={false}
             popoverProps={{}}
@@ -377,7 +377,7 @@ exports[`HeaderBar matches snapshot 1`] = `
           <Blueprint5.MenuItem
             active={false}
             disabled={false}
-            href="https://groups.google.com/forum/#!forum/druid-user"
+            href="https://groups.google.com/forum/#!forum/robux-user"
             icon="user"
             multiline={false}
             popoverProps={{}}
@@ -388,7 +388,7 @@ exports[`HeaderBar matches snapshot 1`] = `
           <Blueprint5.MenuItem
             active={false}
             disabled={false}
-            href="https://druid.apache.org/community/join-slack"
+            href="https://robux.apache.org/community/join-slack"
             icon="chat"
             multiline={false}
             popoverProps={{}}
@@ -399,7 +399,7 @@ exports[`HeaderBar matches snapshot 1`] = `
           <Blueprint5.MenuItem
             active={false}
             disabled={false}
-            href="https://github.com/apache/druid"
+            href="https://github.com/apache/robux"
             icon="git-branch"
             multiline={false}
             popoverProps={{}}

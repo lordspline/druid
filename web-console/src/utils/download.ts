@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { QueryResult } from 'druid-query-toolkit';
+import type { QueryResult } from 'robux-query-toolkit';
 import FileSaver from 'file-saver';
 import * as JSONBig from 'json-bigint-native';
 import { Align, getMarkdownTable } from 'markdown-table-ts';

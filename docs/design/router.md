@@ -25,13 +25,13 @@ sidebar_label: "Router"
 
 The Router service distributes queries between different Broker services. By default, the Broker routes queries based on preconfigured [data retention rules](../operations/rule-configuration.md). For example, if one month of recent data is loaded into a `hot` cluster, queries that fall within the recent month can be routed to a dedicated set of Brokers. Queries outside this range are routed to another set of Brokers. This set up provides query isolation such that queries for more important data are not impacted by queries for less important data.
 
-For query routing purposes, you should only ever need the Router service if you have a Druid cluster well into the terabyte range.
+For query routing purposes, you should only ever need the Router service if you have a Robux cluster well into the terabyte range.
 
 In addition to query routing, the Router also runs the [web console](../operations/web-console.md), a UI for loading data, managing datasources and tasks, and viewing server status and segment information.
 
 ## Configuration
 
-For Apache Druid Router service configuration, see [Router configuration](../configuration/index.md#router).
+For Apache Robux Router service configuration, see [Router configuration](../configuration/index.md#router).
 
 For basic tuning guidance for the Router service, see [Basic cluster tuning](../operations/basic-cluster-tuning.md#router).
 
@@ -42,7 +42,7 @@ For a list of API endpoints supported by the Router, see [Legacy metadata API re
 ## Running
 
 ```
-org.apache.druid.cli.Main server router
+org.apache.robux.cli.Main server router
 ```
 
 ## Router as management proxy
@@ -56,30 +56,30 @@ Coordinator or Overlord service does not function correctly, such as when server
 To enable the management proxy, set the following in the Router's `runtime.properties`:
 
 ```
-druid.router.managementProxy.enabled=true
+robux.router.managementProxy.enabled=true
 ```
 
 ### Management proxy routing
 
 The management proxy supports implicit and explicit routes. Implicit routes are those where the destination can be
-determined from the original request path based on Druid API path conventions. For the Coordinator the convention is
-`/druid/coordinator/*` and for the Overlord the convention is `/druid/indexer/*`. These are convenient because they mean
+determined from the original request path based on Robux API path conventions. For the Coordinator the convention is
+`/robux/coordinator/*` and for the Overlord the convention is `/robux/indexer/*`. These are convenient because they mean
 that using the management proxy does not require modifying the API request other than issuing the request to the Router
-instead of the Coordinator or Overlord. Most Druid API requests can be routed implicitly.
+instead of the Coordinator or Overlord. Most Robux API requests can be routed implicitly.
 
 Explicit routes are those where the request to the Router contains a path prefix indicating which service the request
 should be routed to. For the Coordinator this prefix is `/proxy/coordinator` and for the Overlord it is `/proxy/overlord`.
-This is required for API calls with an ambiguous destination. For example, the `/status` API is present on all Druid
+This is required for API calls with an ambiguous destination. For example, the `/status` API is present on all Robux
 services, so explicit routing needs to be used to indicate the proxy destination.
 
 This is summarized in the table below:
 
 |Request Route|Destination|Rewritten Route|Example|
 |-------------|-----------|---------------|-------|
-|`/druid/coordinator/*`|Coordinator|`/druid/coordinator/*`|`router:8888/druid/coordinator/v1/datasources` -> `coordinator:8081/druid/coordinator/v1/datasources`|
-|`/druid/indexer/*`|Overlord|`/druid/indexer/*`|`router:8888/druid/indexer/v1/task` -> `overlord:8090/druid/indexer/v1/task`|
+|`/robux/coordinator/*`|Coordinator|`/robux/coordinator/*`|`router:8888/robux/coordinator/v1/datasources` -> `coordinator:8081/robux/coordinator/v1/datasources`|
+|`/robux/indexer/*`|Overlord|`/robux/indexer/*`|`router:8888/robux/indexer/v1/task` -> `overlord:8090/robux/indexer/v1/task`|
 |`/proxy/coordinator/*`|Coordinator|`/*`|`router:8888/proxy/coordinator/status` -> `coordinator:8081/status`|
-|`/proxy/overlord/*`|Overlord|`/*`|`router:8888/proxy/overlord/druid/indexer/v1/isLeader` -> `overlord:8090/druid/indexer/v1/isLeader`|
+|`/proxy/overlord/*`|Overlord|`/*`|`router:8888/proxy/overlord/robux/indexer/v1/isLeader` -> `overlord:8090/robux/indexer/v1/isLeader`|
 
 ## Router strategies
 
@@ -109,15 +109,15 @@ Queries with a priority set to less than `minPriority` are routed to the lowest 
 
 ### manual
 
-This strategy reads the parameter `brokerService` from the query context and routes the query to that broker service. If no valid `brokerService` is specified in the query context, the field `defaultManualBrokerService` is used to determine target broker service given the value is valid and non-null. A value is considered valid if it is present in `druid.router.tierToBrokerMap`.
+This strategy reads the parameter `brokerService` from the query context and routes the query to that broker service. If no valid `brokerService` is specified in the query context, the field `defaultManualBrokerService` is used to determine target broker service given the value is valid and non-null. A value is considered valid if it is present in `robux.router.tierToBrokerMap`.
 This strategy can route both native and SQL queries.
 
-The following example strategy routes queries to the Broker `druid:broker-hot` if no valid `brokerService` is found in the query context.
+The following example strategy routes queries to the Broker `robux:broker-hot` if no valid `brokerService` is found in the query context.
 
 ```json
 {
   "type": "manual",
-  "defaultManualBrokerService": "druid:broker-hot"
+  "defaultManualBrokerService": "robux:broker-hot"
 }
 ```
 
@@ -135,27 +135,27 @@ The following example function sends queries containing more than three aggregat
 ```
 
 :::info
- JavaScript-based functionality is disabled by default. Please refer to the Druid [JavaScript programming guide](../development/javascript.md) for guidelines about using Druid's JavaScript functionality, including instructions on how to enable it.
+ JavaScript-based functionality is disabled by default. Please refer to the Robux [JavaScript programming guide](../development/javascript.md) for guidelines about using Robux's JavaScript functionality, including instructions on how to enable it.
 :::
 
 ## Routing of SQL queries using strategies
 
-To enable routing of SQL queries using strategies, set `druid.router.sql.enable` to `true`. The Broker service for a
+To enable routing of SQL queries using strategies, set `robux.router.sql.enable` to `true`. The Broker service for a
 given SQL query is resolved using only the provided Router strategies. If not resolved using any of the strategies, the
 Router uses the `defaultBrokerServiceName`. This behavior is slightly different from native queries where the Router
 first tries to resolve the Broker service using strategies, then load rules and finally using the `defaultBrokerServiceName`
-if still not resolved. When `druid.router.sql.enable` is set to `false` (default value), the Router uses the
+if still not resolved. When `robux.router.sql.enable` is set to `false` (default value), the Router uses the
 `defaultBrokerServiceName`.
 
-Setting `druid.router.sql.enable` does not affect either Avatica JDBC requests or native queries.
-Druid always routes native queries using the strategies and load rules as documented.
-Druid always routes Avatica JDBC requests based on connection ID.
+Setting `robux.router.sql.enable` does not affect either Avatica JDBC requests or native queries.
+Robux always routes native queries using the strategies and load rules as documented.
+Robux always routes Avatica JDBC requests based on connection ID.
 
 ## Avatica query balancing
 
-All Avatica JDBC requests with a given connection ID must be routed to the same Broker, since Druid Brokers do not share connection state with each other.
+All Avatica JDBC requests with a given connection ID must be routed to the same Broker, since Robux Brokers do not share connection state with each other.
 
-To accomplish this, Druid provides two built-in balancers that use rendezvous hashing and consistent hashing of a request's connection ID respectively to assign requests to Brokers.
+To accomplish this, Robux provides two built-in balancers that use rendezvous hashing and consistent hashing of a request's connection ID respectively to assign requests to Brokers.
 
 Note that when multiple Routers are used, all Routers should have identical balancer configuration to ensure that they make the same routing decisions.
 
@@ -166,10 +166,10 @@ This balancer uses [Rendezvous Hashing](https://en.wikipedia.org/wiki/Rendezvous
 To use this balancer, specify the following property:
 
 ```
-druid.router.avatica.balancer.type=rendezvousHash
+robux.router.avatica.balancer.type=rendezvousHash
 ```
 
-If no `druid.router.avatica.balancer` property is set, the Router defaults to using the rendezvous hash balancer.
+If no `robux.router.avatica.balancer` property is set, the Router defaults to using the rendezvous hash balancer.
 
 ### Consistent hash balancer
 
@@ -178,7 +178,7 @@ This balancer uses [Consistent Hashing](https://en.wikipedia.org/wiki/Consistent
 To use this balancer, specify the following property:
 
 ```
-druid.router.avatica.balancer.type=consistentHash
+robux.router.avatica.balancer.type=consistentHash
 ```
 
 This is a non-default implementation that is provided for experimentation purposes. The consistent hasher has longer setup times on initialization and when the set of Brokers changes, but has a faster Broker assignment time than the rendezvous hasher when tested with 5 Brokers. Benchmarks for both implementations have been provided in `ConsistentHasherBenchmark` and `RendezvousHasherBenchmark`. The consistent hasher also requires locking, while the rendezvous hasher does not.
@@ -213,18 +213,18 @@ JVM settings:
 Runtime.properties:
 
 ```
-druid.host=#{IP_ADDR}:8080
-druid.plaintextPort=8080
-druid.service=druid/router
+robux.host=#{IP_ADDR}:8080
+robux.plaintextPort=8080
+robux.service=robux/router
 
-druid.router.defaultBrokerServiceName=druid:broker-cold
-druid.router.coordinatorServiceName=druid:coordinator
-druid.router.tierToBrokerMap={"hot":"druid:broker-hot","_default_tier":"druid:broker-cold"}
-druid.router.http.numConnections=50
-druid.router.http.readTimeout=PT5M
+robux.router.defaultBrokerServiceName=robux:broker-cold
+robux.router.coordinatorServiceName=robux:coordinator
+robux.router.tierToBrokerMap={"hot":"robux:broker-hot","_default_tier":"robux:broker-cold"}
+robux.router.http.numConnections=50
+robux.router.http.readTimeout=PT5M
 
 # Number of threads used by the Router proxy http client
-druid.router.http.numMaxThreads=100
+robux.router.http.numMaxThreads=100
 
-druid.server.http.numThreads=100
+robux.server.http.numThreads=100
 ```

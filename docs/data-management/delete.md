@@ -24,7 +24,7 @@ title: "Data deletion"
 
 ## Delete data for a time range manually
 
-Apache Druid stores data [partitioned by time chunk](../design/storage.md) and supports
+Apache Robux stores data [partitioned by time chunk](../design/storage.md) and supports
 deleting data for time chunks by dropping segments. This is a fast, metadata-only operation.
 
 Deletion by time range happens in two steps:
@@ -44,7 +44,7 @@ A data deletion tutorial is available at [Tutorial: Deleting data](../tutorials/
 
 ## Delete data automatically using drop rules
 
-Druid supports [load and drop rules](../operations/rule-configuration.md), which are used to define intervals of time
+Robux supports [load and drop rules](../operations/rule-configuration.md), which are used to define intervals of time
 where data should be preserved, and intervals where data should be discarded. Data that falls under a drop rule is
 marked unused, in the same manner as if you [manually mark that time range unused](#delete-data-for-a-time-range-manually). This is a
 fast, metadata-only operation.
@@ -54,7 +54,7 @@ Data that is dropped in this way is marked unused, but remains in deep storage. 
 
 ## Delete specific records
 
-Druid supports deleting specific records using [reindexing](update.md#reindex) with a filter. The filter specifies which
+Robux supports deleting specific records using [reindexing](update.md#reindex) with a filter. The filter specifies which
 data remains after reindexing, so it must be the inverse of the data you want to delete. Because segments must be
 rewritten to delete data in this way, it can be a time-consuming operation.
 
@@ -64,11 +64,11 @@ For example, to delete records where `userName` is `'bob'` with native batch ind
 
 To delete the same records using SQL, use [REPLACE](../multi-stage-query/concepts.md#overwrite-data-with-replace) with `WHERE userName <> 'bob'`.
 
-To reindex using [native batch](../ingestion/native-batch.md), use the [`druid` input
-source](../ingestion/input-sources.md#druid-input-source). If needed,
+To reindex using [native batch](../ingestion/native-batch.md), use the [`robux` input
+source](../ingestion/input-sources.md#robux-input-source). If needed,
 [`transformSpec`](../ingestion/ingestion-spec.md#transformspec) can be used to filter or modify data during the
 reindexing job. To reindex with SQL, use [`REPLACE <table> OVERWRITE`](../multi-stage-query/reference.md#replace)
-with `SELECT ... FROM <table>`. (Druid does not have `UPDATE` or `ALTER TABLE` statements.) Any SQL SELECT query can be
+with `SELECT ... FROM <table>`. (Robux does not have `UPDATE` or `ALTER TABLE` statements.) Any SQL SELECT query can be
 used to filter, modify, or enrich the data during the reindexing job.
 
 Data that is deleted in this way is marked unused, but remains in deep storage. To permanently delete it, use a [`kill`

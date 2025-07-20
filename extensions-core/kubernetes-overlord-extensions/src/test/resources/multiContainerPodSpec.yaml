@@ -14,13 +14,13 @@ spec:
         - -loggingEnabled=true
         - -platform=platform
         - -splunkCluster=cluster
-        - -splunkIndexName=druid
+        - -splunkIndexName=robux
         - -splunkSourceType=json
         - -splunkWorkingDir=/opt/splunkforwarder
         - -dataCenter=dc
         - -environment=env
-        - -application=druid
+        - -application=robux
         - -instance=instance
-        - -logFiles=/logs/druid/*.log
+        - -logFiles=/logs/robux/*.log
       command:
         - /bin/sidekick

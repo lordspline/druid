@@ -22,12 +22,12 @@ import React, { useState } from 'react';
 
 import type { FormJsonTabs } from '../../components';
 import { AutoForm, ExternalLink, FormJsonSelector, JsonInput, Loader } from '../../components';
-import type { OverlordDynamicConfig } from '../../druid-models';
-import { OVERLORD_DYNAMIC_CONFIG_FIELDS } from '../../druid-models';
+import type { OverlordDynamicConfig } from '../../robux-models';
+import { OVERLORD_DYNAMIC_CONFIG_FIELDS } from '../../robux-models';
 import { useQueryManager } from '../../hooks';
 import { getLink } from '../../links';
 import { Api, AppToaster } from '../../singletons';
-import { getApiArray, getDruidErrorMessage } from '../../utils';
+import { getApiArray, getRobuxErrorMessage } from '../../utils';
 import { SnitchDialog } from '..';
 
 import { OVERLORD_DYNAMIC_CONFIG_COMPLETIONS } from './overlord-dynamic-config-completions';
@@ -49,7 +49,7 @@ export const OverlordDynamicConfigDialog = React.memo(function OverlordDynamicCo
   const [historyRecordsState] = useQueryManager<null, any[]>({
     initQuery: null,
     processQuery: async (_, cancelToken) => {
-      return await getApiArray(`/druid/indexer/v1/worker/history?count=100`, cancelToken);
+      return await getApiArray(`/robux/indexer/v1/worker/history?count=100`, cancelToken);
     },
   });
 
@@ -57,13 +57,13 @@ export const OverlordDynamicConfigDialog = React.memo(function OverlordDynamicCo
     initQuery: null,
     processQuery: async (_, cancelToken) => {
       try {
-        const configResp = await Api.instance.get(`/druid/indexer/v1/worker`, { cancelToken });
+        const configResp = await Api.instance.get(`/robux/indexer/v1/worker`, { cancelToken });
         setDynamicConfig(configResp.data || {});
       } catch (e) {
         AppToaster.show({
           icon: IconNames.ERROR,
           intent: Intent.DANGER,
-          message: `Could not load overlord dynamic config: ${getDruidErrorMessage(e)}`,
+          message: `Could not load overlord dynamic config: ${getRobuxErrorMessage(e)}`,
         });
         onClose();
       }
@@ -73,17 +73,17 @@ export const OverlordDynamicConfigDialog = React.memo(function OverlordDynamicCo
 
   async function saveConfig(comment: string) {
     try {
-      await Api.instance.post('/druid/indexer/v1/worker', dynamicConfig, {
+      await Api.instance.post('/robux/indexer/v1/worker', dynamicConfig, {
         headers: {
-          'X-Druid-Author': 'console',
-          'X-Druid-Comment': comment,
+          'X-Robux-Author': 'console',
+          'X-Robux-Comment': comment,
         },
       });
     } catch (e) {
       AppToaster.show({
         icon: IconNames.ERROR,
         intent: Intent.DANGER,
-        message: `Could not save overlord dynamic config: ${getDruidErrorMessage(e)}`,
+        message: `Could not save overlord dynamic config: ${getRobuxErrorMessage(e)}`,
       });
     }
 

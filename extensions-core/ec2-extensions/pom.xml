@@ -21,34 +21,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.apache.druid.extensions</groupId>
-  <artifactId>druid-ec2-extensions</artifactId>
-  <name>druid-ec2-extensions</name>
-  <description>druid-ec2-extensions</description>
+  <groupId>org.apache.robux.extensions</groupId>
+  <artifactId>robux-ec2-extensions</artifactId>
+  <name>robux-ec2-extensions</name>
+  <description>robux-ec2-extensions</description>
 
   <parent>
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-indexing-service</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-indexing-service</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-aws-common</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-aws-common</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>

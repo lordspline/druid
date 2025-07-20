@@ -37,9 +37,9 @@ then
 
 
   echo $ENV_VAR=-javaagent:"$PWD"/$JAR_OUTPUT_FILE \
-  -Djfr.profiler.http.username=druid-ci \
+  -Djfr.profiler.http.username=robux-ci \
   -Djfr.profiler.http.password=w3Fb6PW8LIo849mViEkbgA== \
-  -Djfr.profiler.tags.project=druid \
+  -Djfr.profiler.tags.project=robux \
   -Djfr.profiler.tags.run_id=$2 \
   -Djfr.profiler.tags.run_number=$3 \
   -Djfr.profiler.tags.run_attempt=$4 \

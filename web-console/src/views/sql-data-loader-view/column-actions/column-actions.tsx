@@ -18,12 +18,12 @@
 
 import { Button, FormGroup, Menu, MenuItem, Popover } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { QueryResult, SqlExpression } from 'druid-query-toolkit';
-import { F } from 'druid-query-toolkit';
+import type { QueryResult, SqlExpression } from 'robux-query-toolkit';
+import { F } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React from 'react';
 
-import { possibleDruidFormatForValues, TIME_COLUMN } from '../../../druid-models';
+import { possibleRobuxFormatForValues, TIME_COLUMN } from '../../../robux-models';
 import type { QueryAction } from '../../../utils';
 import { convertToGroupByExpression, oneOf, timeFormatToSql } from '../../../utils';
 import { TimeFloorMenuItem } from '../../workbench-view/time-floor-menu-item/time-floor-menu-item';
@@ -101,8 +101,8 @@ export const ColumnActions = React.memo(function ExpressionEditor(props: ColumnA
       } else {
         // Not a time column -------------------------------------------
         const values = queryResult.rows.map(row => row[headerIndex]);
-        const possibleDruidFormat = possibleDruidFormatForValues(values);
-        const formatSql = possibleDruidFormat ? timeFormatToSql(possibleDruidFormat) : undefined;
+        const possibleRobuxFormat = possibleRobuxFormatForValues(values);
+        const formatSql = possibleRobuxFormat ? timeFormatToSql(possibleRobuxFormat) : undefined;
 
         if (formatSql) {
           const newSelectExpression = formatSql.fillPlaceholders([
@@ -113,7 +113,7 @@ export const ColumnActions = React.memo(function ExpressionEditor(props: ColumnA
             <MenuItem
               key="parse_time"
               icon={IconNames.TIME}
-              text={`Parse as '${possibleDruidFormat}'`}
+              text={`Parse as '${possibleRobuxFormat}'`}
               onClick={() => {
                 const outputName = expression?.getOutputName();
                 if (!outputName) return;
@@ -123,7 +123,7 @@ export const ColumnActions = React.memo(function ExpressionEditor(props: ColumnA
             <MenuItem
               key="parse_time_and_make_primary"
               icon={IconNames.TIME}
-              text={`Parse as '${possibleDruidFormat}' and use as the primary time column`}
+              text={`Parse as '${possibleRobuxFormat}' and use as the primary time column`}
               onClick={() => {
                 onQueryAction(q =>
                   q.removeSelectIndex(headerIndex).addSelect(newSelectExpression.as(TIME_COLUMN), {

@@ -3,7 +3,7 @@
   "avroBytesDecoder": {
     "type": "schema_inline",
     "schema": {
-      "namespace": "org.apache.druid",
+      "namespace": "org.apache.robux",
       "name": "wikipedia",
       "type": "record",
       "fields": [

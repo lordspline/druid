@@ -19,11 +19,11 @@
 import { Button, Classes, Dialog, Intent } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import { T } from 'druid-query-toolkit';
+import { T } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 
-import type { Execution, QueryWithContext } from '../../../druid-models';
-import { getConsoleViewIcon } from '../../../druid-models';
+import type { Execution, QueryWithContext } from '../../../robux-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import { executionBackgroundStatusCheck, reattachTaskExecution } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
 import { ExecutionProgressBarPane } from '../../workbench-view/execution-progress-bar-pane/execution-progress-bar-pane';

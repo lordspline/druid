@@ -27,7 +27,7 @@ sidebar_label: "Deleting data"
 This tutorial demonstrates how to delete existing data.
 
 This tutorial requires the following:
-* A running Apache Druid instance. If you don't have Druid, see the [single-machine quickstart](index.md) to get started.
+* A running Apache Robux instance. If you don't have Robux, see the [single-machine quickstart](index.md) to get started.
 * The command-line JSON processor, [jq](https://stedolan.github.io/jq/download/).
 
 ## Load initial data
@@ -44,10 +44,10 @@ When the load finishes, open [http://localhost:8888/unified-console.md#datasourc
 
 ## How to permanently delete data
 
-Permanent deletion of a Druid segment has two steps:
+Permanent deletion of a Robux segment has two steps:
 
 1. The segment must first be marked as "unused". This occurs when a user manually disables a segment through the Coordinator API.
-2. After segments have been marked as "unused", a Kill Task will delete any "unused" segments from Druid's metadata store as well as deep storage.
+2. After segments have been marked as "unused", a Kill Task will delete any "unused" segments from Robux's metadata store as well as deep storage.
 
 Let's drop some segments now, by using the coordinator API to drop data by interval and segmentIds.
 
@@ -57,7 +57,7 @@ Let's disable segments in a specified interval. This will mark all segments in t
 Let's disable segments in interval `2015-09-12T18:00:00.000Z/2015-09-12T20:00:00.000Z` i.e. between hour 18 and 20.
 
 ```bash
-curl -X 'POST' -H 'Content-Type:application/json' -d '{ "interval" : "2015-09-12T18:00:00.000Z/2015-09-12T20:00:00.000Z" }' http://localhost:8081/druid/coordinator/v1/datasources/deletion-tutorial/markUnused
+curl -X 'POST' -H 'Content-Type:application/json' -d '{ "interval" : "2015-09-12T18:00:00.000Z/2015-09-12T20:00:00.000Z" }' http://localhost:8081/robux/coordinator/v1/datasources/deletion-tutorial/markUnused
 ```
 
 When the request completes, the Segments view of the web console no longer displays the segments for hours 18 and 19.
@@ -66,7 +66,7 @@ When the request completes, the Segments view of the web console no longer displ
 Note that the hour 18 and 19 segments are still present in deep storage:
 
 ```bash
-$ ls -l1 var/druid/segments/deletion-tutorial/
+$ ls -l1 var/robux/segments/deletion-tutorial/
 2015-09-12T00:00:00.000Z_2015-09-12T01:00:00.000Z
 2015-09-12T01:00:00.000Z_2015-09-12T02:00:00.000Z
 2015-09-12T02:00:00.000Z_2015-09-12T03:00:00.000Z
@@ -107,12 +107,12 @@ Disable the last two segments, hour 22 and 23 segments, by sending a POST reques
 The following command queries the Coordinator for segment IDs and uses `jq` to parse and extract the IDs of the last two segments.
 The segment IDs are stored in an environment variable named `unusedSegmentIds`.
 ```bash
-unusedSegmentIds=$(curl -X 'GET' -H 'Content-Type:application/json' http://localhost:8081/druid/coordinator/v1/datasources/deletion-tutorial/segments | jq '.[-2:]')
+unusedSegmentIds=$(curl -X 'GET' -H 'Content-Type:application/json' http://localhost:8081/robux/coordinator/v1/datasources/deletion-tutorial/segments | jq '.[-2:]')
 ```
 
 The following request marks the segments unused:
 ```bash
-curl -X 'POST' -H 'Content-Type:application/json' -d "{\"segmentIds\": $unusedSegmentIds}" http://localhost:8081/druid/coordinator/v1/datasources/deletion-tutorial/markUnused
+curl -X 'POST' -H 'Content-Type:application/json' -d "{\"segmentIds\": $unusedSegmentIds}" http://localhost:8081/robux/coordinator/v1/datasources/deletion-tutorial/markUnused
 ```
 
 When the request completes, the Segments view of the web console no longer displays the segments for hours 22 and 23.
@@ -122,7 +122,7 @@ When the request completes, the Segments view of the web console no longer displ
 Note that the hour 22 and 23 segments are still in deep storage:
 
 ```bash
-$ ls -l1 var/druid/segments/deletion-tutorial/
+$ ls -l1 var/robux/segments/deletion-tutorial/
 2015-09-12T00:00:00.000Z_2015-09-12T01:00:00.000Z
 2015-09-12T01:00:00.000Z_2015-09-12T02:00:00.000Z
 2015-09-12T02:00:00.000Z_2015-09-12T03:00:00.000Z
@@ -156,14 +156,14 @@ Now that we have disabled some segments, we can submit a Kill Task, which will d
 A Kill Task spec has been provided at `quickstart/tutorial/deletion-kill.json`. Submit this task to the Overlord with the following command:
 
 ```bash
-curl -X 'POST' -H 'Content-Type:application/json' -d @quickstart/tutorial/deletion-kill.json http://localhost:8081/druid/indexer/v1/task
+curl -X 'POST' -H 'Content-Type:application/json' -d @quickstart/tutorial/deletion-kill.json http://localhost:8081/robux/indexer/v1/task
 ```
 
-When the task finishes, note that Druid deleted the disabled segments from deep storage.
+When the task finishes, note that Robux deleted the disabled segments from deep storage.
 
 
 ```bash
-$ ls -l1 var/druid/segments/deletion-tutorial/
+$ ls -l1 var/robux/segments/deletion-tutorial/
 2015-09-12T00:00:00.000Z_2015-09-12T01:00:00.000Z
 2015-09-12T01:00:00.000Z_2015-09-12T02:00:00.000Z
 2015-09-12T02:00:00.000Z_2015-09-12T03:00:00.000Z

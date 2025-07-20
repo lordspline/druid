@@ -20,14 +20,14 @@
 Integration Testing
 ===================
 
-To run integration tests, you have to specify the druid cluster the
+To run integration tests, you have to specify the robux cluster the
 tests should use.
 
-Druid comes with the mvn profile integration-tests
-for setting up druid running in docker containers, and using that
+Robux comes with the mvn profile integration-tests
+for setting up robux running in docker containers, and using that
 cluster to run the integration tests.
 
-To use a druid cluster that is already running, use the
+To use a robux cluster that is already running, use the
 mvn profile int-tests-config-file, which uses a configuration file
 describing the cluster.
 
@@ -64,7 +64,7 @@ mvn verify -P integration-tests -Dgroups=<test_group>
 ```
 
 The list of test groups can be found at
-`integration-tests/src/test/java/org/apache/druid/tests/TestNGGroup.java`.
+`integration-tests/src/test/java/org/apache/robux/tests/TestNGGroup.java`.
 
 ### Run a single test
 
@@ -78,22 +78,22 @@ Parameters:
 
 * Test Group: Required, as certain test tasks for setup and cleanup are based on the test group. You can find
 the test group for a given test as an annotation in the respective test class. A list of test groups can be found at
-`integration-tests/src/test/java/org/apache/druid/tests/TestNGGroup.java`. The annotation uses a string
+`integration-tests/src/test/java/org/apache/robux/tests/TestNGGroup.java`. The annotation uses a string
 constant defined in `TestNGGroup.java`, be sure to use the constant value, not name. For example,
 if your test has the annotation: `@Test(groups = TestNGGroup.BATCH_INDEX)` then use the argument
 `-Dgroups=batch-index`.
 
-* Test Name: Use the fully-qualified class name. For example, `org.apache.druid.tests.indexer.ITOverwriteBatchIndexTest`.
+* Test Name: Use the fully-qualified class name. For example, `org.apache.robux.tests.indexer.ITOverwriteBatchIndexTest`.
 
-* Add `-pl :druid-integration-tests` when running integration tests for the second time or later without changing
+* Add `-pl :robux-integration-tests` when running integration tests for the second time or later without changing
 the code of core modules in between to skip up-to-date checks for the whole module dependency tree.
 
 * Integration tests can also be run with a specific Java version by adding `-Djvm.runtime=#` to the `mvn` command (where `#` can be 11, for example).
 
-* Druid's configuration (using Docker) can be overridden by providing `-Doverride.config.path=<PATH_TO_FILE>`.
-The file must contain one property per line, the key must start with `druid_` and the format should be snake case.
+* Robux's configuration (using Docker) can be overridden by providing `-Doverride.config.path=<PATH_TO_FILE>`.
+The file must contain one property per line, the key must start with `robux_` and the format should be snake case.
 Note that when bringing up Docker containers through Maven and `-Doverride.config.path` is provided, additional
-Druid routers for security group integration test (permissive tls, no client auth tls, custom check tls) will not be started.
+Robux routers for security group integration test (permissive tls, no client auth tls, custom check tls) will not be started.
 
 ### Debugging test runs
 
@@ -135,19 +135,19 @@ Maven to only look locally for snapshot jars.
 
    There are a few different Docker compose yamls located in "docker" folder that could be used to start containers for different tests.
 
-   - To start basic Druid cluster (skip this if running Druid cluster with override configs):
+   - To start basic Robux cluster (skip this if running Robux cluster with override configs):
      ```bash
      docker compose -f integration-tests/docker/docker-compose.yml up
      ```
 
-   - To start Druid cluster with override configs
+   - To start Robux cluster with override configs
      ```bash
      OVERRIDE_ENV=<PATH_TO_ENV> docker compose -f docker-compose.yml up
      ```
 
    - To start tests against Hadoop
      ```bash
-     docker compose -f docker-compose.druid-hadoop.yml up
+     docker compose -f docker-compose.robux-hadoop.yml up
      ```
 
    - To start tests againt security group
@@ -164,20 +164,20 @@ Maven to only look locally for snapshot jars.
 
 ### Running tests from IntelliJ
 
-Before running tests from IntelliJ, ensure you have a Druid cluster running.
+Before running tests from IntelliJ, ensure you have a Robux cluster running.
 Modify the tests run configurations to be the following Vm options:
 
 ```
 -Duser.timezone=UTC
 -Dfile.encoding=UTF-8
--Ddruid.test.config.dockerIp=localhost
--Ddruid.zk.service.host=localhost
--Ddruid.client.https.trustStorePath=client_tls/truststore.jks
--Ddruid.client.https.trustStorePassword=druid123
--Ddruid.client.https.keyStorePath=client_tls/client.jks
--Ddruid.client.https.certAlias=druid
--Ddruid.client.https.keyManagerPassword=druid123
--Ddruid.client.https.keyStorePassword=druid123
+-Drobux.test.config.dockerIp=localhost
+-Drobux.zk.service.host=localhost
+-Drobux.client.https.trustStorePath=client_tls/truststore.jks
+-Drobux.client.https.trustStorePassword=robux123
+-Drobux.client.https.keyStorePath=client_tls/client.jks
+-Drobux.client.https.certAlias=robux
+-Drobux.client.https.keyManagerPassword=robux123
+-Drobux.client.https.keyStorePassword=robux123
 ```
 
 Run tests from the test configuration often found in the top right corner of the IntelliJ IDE.
@@ -191,12 +191,12 @@ The values shown above are for the default docker compose cluster. For other clu
 
 - docker-compose.yml
 
-  Defines a Druid cluster with default configuration that is used for running integration tests.
+  Defines a Robux cluster with default configuration that is used for running integration tests.
 
   ```bash
   docker compose -f docker-compose.yml up
-  # DRUID_INTEGRATION_TEST_GROUP - an environment variable that specifies the integration test group to run.
-  DRUID_INTEGRATION_TEST_GROUP=batch-index docker compose -f docker-compose.yml up
+  # ROBUX_INTEGRATION_TEST_GROUP - an environment variable that specifies the integration test group to run.
+  ROBUX_INTEGRATION_TEST_GROUP=batch-index docker compose -f docker-compose.yml up
   ```
 
   You can change the default configuration using a custom configuration file. The settings in the file will override
@@ -204,24 +204,24 @@ The values shown above are for the default docker compose cluster. For other clu
 
   ```bash
   # OVERRIDE_ENV - an environment variable that specifies the custom configuration file path.
-  OVERRIDE_ENV=./environment-configs/test-groups/prepopulated-data DRUID_INTEGRATION_TEST_GROUP=query docker compose -f docker-compose.yml up
+  OVERRIDE_ENV=./environment-configs/test-groups/prepopulated-data ROBUX_INTEGRATION_TEST_GROUP=query docker compose -f docker-compose.yml up
   ```
 
 - docker-compose.security.yml
 
-  Defines three additional Druid router services with permissive tls, no client auth tls, and custom check tls respectively.
+  Defines three additional Robux router services with permissive tls, no client auth tls, and custom check tls respectively.
   This is meant to be used together with docker-compose.yml and is only needed for the "security" group integration test.
 
   ```bash
   docker compose -f docker-compose.yml -f docker-compose.security.yml up
   ```
 
-- docker-compose.druid-hadoop.yml
+- docker-compose.robux-hadoop.yml
 
-  For starting Apache Hadoop 3.3.6 cluster with the same setup as the Druid tutorial.
+  For starting Apache Hadoop 3.3.6 cluster with the same setup as the Robux tutorial.
 
   ```bash
-  docker compose -f docker-compose.druid-hadoop.yml up
+  docker compose -f docker-compose.robux-hadoop.yml up
   ```
 
 ## Tips & tricks for debugging and developing integration tests
@@ -230,14 +230,14 @@ The values shown above are for the default docker compose cluster. For other clu
 
 | Flag | Description |
 |:---|---|
-| -Ddocker.build.skip=true   | Skip building the containers. <br/><br/>If you do not apply any change to Druid then you skip rebuilding the containers. This can save ~4 minutes. You need to build druid containers only once, after you can skip docker build step.  |
-| -Ddocker.run.skip=true     | Skip starting docker containers.<br/><br/> This can save ~3 minutes by skipping building and bringing up the docker containers (Druid, Kafka, Hadoop, MYSQL, zookeeper, etc).<br/> Please make sure that you actually do have these containers already running if using this flag.<br/><br/> Additionally, please make sure that the running containers are in the same state that the setup script (run_cluster.sh) would have brought it up in. |
+| -Ddocker.build.skip=true   | Skip building the containers. <br/><br/>If you do not apply any change to Robux then you skip rebuilding the containers. This can save ~4 minutes. You need to build robux containers only once, after you can skip docker build step.  |
+| -Ddocker.run.skip=true     | Skip starting docker containers.<br/><br/> This can save ~3 minutes by skipping building and bringing up the docker containers (Robux, Kafka, Hadoop, MYSQL, zookeeper, etc).<br/> Please make sure that you actually do have these containers already running if using this flag.<br/><br/> Additionally, please make sure that the running containers are in the same state that the setup script (run_cluster.sh) would have brought it up in. |
 | -Ddocker.build.hadoop=true | Build the hadoop image when either running integration tests or when building the integration test docker images without running the tests. |
 | -Dstart.hadoop.docker=true | Start hadoop container when you need to run IT tests that utilize local hadoop docker. |
 
-### Debugging Druid while running tests
+### Debugging Robux while running tests
 
-For your convenience, Druid processes running inside Docker have been debugging enabled at following debugging ports:
+For your convenience, Robux processes running inside Docker have been debugging enabled at following debugging ports:
 
 | Process | Remote Debugging Port |
 | --- | :---: |
@@ -252,7 +252,7 @@ For your convenience, Druid processes running inside Docker have been debugging 
 | Overlord | 5009 |
 | Peons (Workers on Middlemanager) |  Ephemeral port assigned by debugger (check task log for port assigned to each task) |
 
-You can use remote debugger(such as via IntelliJ IDEA's Remote Configuration) to debug the corresponding Druid process at above port.
+You can use remote debugger(such as via IntelliJ IDEA's Remote Configuration) to debug the corresponding Robux process at above port.
 
 Running Tests Using A Quickstart Cluster
 -------------------
@@ -273,12 +273,12 @@ The tests rely on files in the test/resources folder to exist under the path /re
 so create a symlink to make them available:
 
 ```bash
-ln -s ${DRUID_HOME}/integration-tests/src/test/resources /resources
+ln -s ${ROBUX_HOME}/integration-tests/src/test/resources /resources
 ```
 
 Set the cluster config file environment variable to the quickstart config:
 ```bash
-export CONFIG_FILE=${DRUID_HOME}/integration-tests/quickstart-it.json
+export CONFIG_FILE=${ROBUX_HOME}/integration-tests/quickstart-it.json
 ```
 
 The test group `quickstart-compatible` has tests that have been verified to work against the quickstart cluster.
@@ -299,7 +299,7 @@ Running Tests Using A Configuration File for Any Cluster
 
 Make sure that you have at least 6GiB of memory available before you run the tests.
 
-To run tests on any druid cluster that is already running, create a configuration file:
+To run tests on any robux cluster that is already running, create a configuration file:
 
     {
        "broker_host": "<broker_ip>",
@@ -322,7 +322,7 @@ export CONFIG_FILE=<config file name>
 ```
 
 To run all tests from a test group using mvn run the following command:
-(list of test groups can be found at integration-tests/src/test/java/org/apache/druid/tests/TestNGGroup.java)
+(list of test groups can be found at integration-tests/src/test/java/org/apache/robux/tests/TestNGGroup.java)
 ```bash
 mvn verify -P int-tests-config-file -Dgroups=<test_group>
 ```
@@ -348,12 +348,12 @@ For all the Cloud Integration tests, the following will also need to be provided
 integration-tests/docker/environment-configs/override-examples/ directory for env vars to provide for each Cloud.
 
 For Amazon Kinesis, the following will also need to be provided:
-1) Provide -Ddruid.test.config.streamEndpoint=<STREAM_ENDPOINT> with the endpoint of your stream set.
+1) Provide -Drobux.test.config.streamEndpoint=<STREAM_ENDPOINT> with the endpoint of your stream set.
 For example, kinesis.us-east-1.amazonaws.com
 
 For Google Cloud Storage, Amazon S3, and Microsoft Azure, the following will also need to be provided:
-1) Set the bucket and path for your test data. This can be done by setting -Ddruid.test.config.cloudBucket and
--Ddruid.test.config.cloudPath in the mvn command or setting "cloud_bucket" and "cloud_path" in the config file.
+1) Set the bucket and path for your test data. This can be done by setting -Drobux.test.config.cloudBucket and
+-Drobux.test.config.cloudPath in the mvn command or setting "cloud_bucket" and "cloud_path" in the config file.
 2) Copy wikipedia_index_data1.json, wikipedia_index_data2.json, and wikipedia_index_data3.json
 located in integration-tests/src/test/resources/data/batch_index/json to your Cloud storage at the location set in step 1.
 
@@ -363,8 +363,8 @@ For Google Cloud Storage, in addition to the above, you will also have to:
 For example, to run integration test for Google Cloud Storage:
 ```bash
 mvn verify -P integration-tests -Dgroups=gcs-deep-storage -Doverride.config.path=<PATH_TO_FILE> \
-           -Dresource.file.dir.path=<PATH_TO_FOLDER> -Ddruid.test.config.cloudBucket=test-bucket \
-           -Ddruid.test.config.cloudPath=test-data-folder/
+           -Dresource.file.dir.path=<PATH_TO_FOLDER> -Drobux.test.config.cloudBucket=test-bucket \
+           -Drobux.test.config.cloudPath=test-data-folder/
 ```
 
 
@@ -372,29 +372,29 @@ Running a Test That Uses Hadoop
 -------------------
 
 The integration test that indexes from hadoop is not run as part
-of the integration test run discussed above.  This is because druid
+of the integration test run discussed above.  This is because robux
 test clusters might not, in general, have access to hadoop.
 This also applies to integration test that uses Hadoop HDFS as an inputSource or as a deep storage.
 To run integration test that uses Hadoop, you will have to run a Hadoop cluster. This can be done in two ways:
-1) Run Druid Docker test clusters with Hadoop container by passing -Dstart.hadoop.docker=true to the mvn command.
+1) Run Robux Docker test clusters with Hadoop container by passing -Dstart.hadoop.docker=true to the mvn command.
    If you have not already built the hadoop image, you will also need to add -Ddocker.build.hadoop=true to the mvn command.
-2) Run your own Druid + Hadoop cluster and specified Hadoop configs in the configuration file (CONFIG_FILE).
+2) Run your own Robux + Hadoop cluster and specified Hadoop configs in the configuration file (CONFIG_FILE).
 
 Currently, hdfs-deep-storage and other <cloud>-deep-storage integration test groups can only be run with
-Druid Docker test clusters by passing -Dstart.hadoop.docker=true to start Hadoop container.
-You will also have to provide -Doverride.config.path=<PATH_TO_FILE> with your Druid's Hadoop configs set.
+Robux Docker test clusters by passing -Dstart.hadoop.docker=true to start Hadoop container.
+You will also have to provide -Doverride.config.path=<PATH_TO_FILE> with your Robux's Hadoop configs set.
 See integration-tests/docker/environment-configs/override-examples/hdfs directory for example.
 Note that if the integration test you are running also uses other cloud extension (S3, Azure, GCS), additional
-credentials/configs may need to be set in the same file as your Druid's Hadoop configs set.
+credentials/configs may need to be set in the same file as your Robux's Hadoop configs set.
 
-If you are running ITHadoopIndexTest with your own Druid + Hadoop cluster, please follow the below steps:
+If you are running ITHadoopIndexTest with your own Robux + Hadoop cluster, please follow the below steps:
 - Copy wikipedia_index_data1.json, wikipedia_index_data2.json, and wikipedia_index_data3.json
   located in integration-tests/src/test/resources/data/batch_index/json to your HDFS at /batch_index/json/
 - Copy batch_hadoop.data located in integration-tests/src/test/resources/data/batch_index/hadoop_tsv to your HDFS
   at /batch_index/hadoop_tsv/
 If using the Docker-based Hadoop container, the steps above are automatically done by the integration tests.
 
-When running the Hadoop tests, you must set `-Dextra.datasource.name.suffix=''`, due to https://github.com/apache/druid/issues/9788.
+When running the Hadoop tests, you must set `-Dextra.datasource.name.suffix=''`, due to https://github.com/apache/robux/issues/9788.
 
 Option 1: Run the test using mvn (using the bundled Docker-based Hadoop cluster and building docker images at runtime):
 ```bash
@@ -423,12 +423,12 @@ In some test environments, the machine where the tests need to be executed
 cannot access the outside internet, so mvn cannot be run.  In that case,
 do the following instead of running the tests using mvn:
 
-### Compile druid and the integration tests
+### Compile robux and the integration tests
 
 On a machine that can do mvn builds:
 
 ```bash
-cd druid
+cd robux
 mvn clean package
 cd integration_tests
 mvn dependency:copy-dependencies package
@@ -442,16 +442,16 @@ Copy the integration-tests directory to the test cluster.
 
 ```bash
 TDIR=<directory containing integration-tests>/target
-VER=<version of druid you built>
-export CLASSPATH=$TDIR/dependency/*:$TDIR/druid-integration-tests-$VER.jar:$TDIR/druid-integration-tests-$VER-tests.jar
+VER=<version of robux you built>
+export CLASSPATH=$TDIR/dependency/*:$TDIR/robux-integration-tests-$VER.jar:$TDIR/robux-integration-tests-$VER-tests.jar
 ```
 
 ### Run the test
 
 ```bash
-java -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Ddruid.test.config.type=configFile \
-     -Ddruid.test.config.configFile=<pathname of configuration file> org.testng.TestNG \
-     -testrunfactory org.testng.DruidTestRunnerFactory -testclass org.apache.druid.tests.hadoop.ITHadoopIndexTest
+java -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Drobux.test.config.type=configFile \
+     -Drobux.test.config.configFile=<pathname of configuration file> org.testng.TestNG \
+     -testrunfactory org.testng.RobuxTestRunnerFactory -testclass org.apache.robux.tests.hadoop.ITHadoopIndexTest
 ```
 
 Writing a New Test
@@ -459,7 +459,7 @@ Writing a New Test
 
 ## What should we cover in integration tests
 
-For every end-user functionality provided by druid we should have an integration-test verifying the correctness.
+For every end-user functionality provided by robux we should have an integration-test verifying the correctness.
 
 ## Rules to be followed while writing a new integration test
 
@@ -477,7 +477,7 @@ To mark a test be able to use Guice Dependency Injection -
 Annotate the test class with the below annotation
 
 ```java
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@Guice(moduleFactory = RobuxTestModuleFactory.class)
 ```
 This will tell the test framework that the test class needs to be constructed using guice.
 
@@ -501,7 +501,7 @@ By default, test methods in a test class will be run in sequential order one at 
 class can be set to run in parallel (multiple test methods of each class running at the same time) by excluding
 the given class/package from the "AllSerializedTests" test tag section and including it in the "AllParallelizedTests"
 test tag section in integration-tests/src/test/resources/testng.xml. TestNG uses two parameters, i.e.,
-`thread-count` and `data-provider-thread-count`, for parallel test execution, which are both set to 2 for Druid integration tests.
+`thread-count` and `data-provider-thread-count`, for parallel test execution, which are both set to 2 for Robux integration tests.
 
 For test using parallel execution with data provider, you will also need to set `@DataProvider(parallel = true)`
 on your data provider method in your test class. Note that for test using parallel execution with data provider, the test
@@ -511,16 +511,16 @@ You may want to modify those values for faster execution.
 See https://testng.org/doc/documentation-main.html#parallel-running and https://testng.org/doc/documentation-main.html#parameters-dataproviders for details.
 
 Please be mindful when adding tests to the "AllParallelizedTests" test tag that the tests can run in parallel with
-other tests from the same class at the same time. i.e. test does not modify/restart/stop the druid cluster or other dependency containers,
+other tests from the same class at the same time. i.e. test does not modify/restart/stop the robux cluster or other dependency containers,
 test does not use excessive memory starving other concurent task, test does not modify and/or use other task,
 supervisor, datasource it did not create.
 
-### Limitation of Druid cluster in Travis environment
+### Limitation of Robux cluster in Travis environment
 
 By default, integration tests are run in Travis environment on commits made to open PR. These integration test jobs are
-required to pass for a PR to be elligible to be merged. Here are known issues and limitations to the Druid docker cluster
+required to pass for a PR to be elligible to be merged. Here are known issues and limitations to the Robux docker cluster
 running in Travis machine that may cause the tests to fail:
-- Number of concurrent running tasks. Although the default Druid cluster config sets the maximum number of tasks (druid.worker.capacity) to 10,
+- Number of concurrent running tasks. Although the default Robux cluster config sets the maximum number of tasks (robux.worker.capacity) to 10,
 the actual maximum can be lowered depending on the type of the tasks. For example, running 2 range partitioning compaction tasks with 2 subtasks each
 (for a total of 6 tasks) concurrently can cause the cluster to intermittently fail. This can cause the Travis job to become stuck until it timeouts (50 minutes)
 and/or terminates after 10 mins of not receiving new output.

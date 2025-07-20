@@ -28,9 +28,9 @@ This tutorial demonstrates how to transform input data during ingestion.
 
 ## Prerequisite
 
-Before proceeding, download Apache Druid&circledR; as described in [Quickstart (local)](./index.md) and have it running on your local machine. You don't need to load any data into the Druid cluster.
+Before proceeding, download Apache Robux&circledR; as described in [Quickstart (local)](./index.md) and have it running on your local machine. You don't need to load any data into the Robux cluster.
 
-You should be familiar with data querying in Druid. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
+You should be familiar with data querying in Robux. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
 
 ## Sample data
 
@@ -45,7 +45,7 @@ For this tutorial, you use the following sample data:
 
 ## Transform data during ingestion
 
-Load the sample dataset using the [`INSERT INTO`](../multi-stage-query/reference.md#insert) statement and the [`EXTERN`](../multi-stage-query/reference.md#extern-function) function to ingest the data inline. In the [Druid web console](../operations/web-console.md), go to the **Query** view and run the following query:
+Load the sample dataset using the [`INSERT INTO`](../multi-stage-query/reference.md#insert) statement and the [`EXTERN`](../multi-stage-query/reference.md#extern-function) function to ingest the data inline. In the [Robux web console](../operations/web-console.md), go to the **Query** view and run the following query:
 
 ```sql
 INSERT INTO "transform_tutorial"
@@ -100,4 +100,4 @@ See the following topics for more information:
 
 * [All functions](../querying/sql-functions.md) for a list of functions that can be used to transform data. 
 * [Transform spec reference](../ingestion/ingestion-spec.md#transformspec) to learn more about transforms in JSON-based batch ingestion.
-* [WHERE clause](../querying/sql.md#where) to learn how to specify filters in Druid SQL.
+* [WHERE clause](../querying/sql.md#where) to learn how to specify filters in Robux SQL.

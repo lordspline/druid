@@ -18,4 +18,4 @@ lib/sql-docs.*
 tscommand-*.tmp.txt
 
 licenses.json
-.druid.pid
+.robux.pid

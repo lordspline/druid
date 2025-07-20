@@ -20,7 +20,7 @@ export * from './bootstrap/react-table-defaults';
 export * from './components';
 export * from './console-application';
 export * from './dialogs';
-export * from './druid-models';
+export * from './robux-models';
 export * from './hooks';
 export * from './singletons';
 export * from './utils';

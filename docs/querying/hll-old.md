@@ -25,7 +25,7 @@ title: "Cardinality/HyperUnique aggregators"
 
 ## Cardinality aggregator
 
-Computes the cardinality of a set of Apache Druid dimensions, using HyperLogLog to estimate the cardinality. Please note that this
+Computes the cardinality of a set of Apache Robux dimensions, using HyperLogLog to estimate the cardinality. Please note that this
 aggregator will be much slower than indexing a column with the hyperUnique aggregator. This aggregator also runs over a dimension column, which
 means the string dimension cannot be removed from the dataset to improve rollup. In general, we strongly recommend using the hyperUnique aggregator
 instead of the cardinality aggregator if you do not care about the individual values of a dimension.
@@ -133,7 +133,7 @@ Uses [HyperLogLog](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf) to
 }
 ```
 
-"isInputHyperUnique" can be set to true to index precomputed HLL (Base64 encoded output from druid-hll is expected).
+"isInputHyperUnique" can be set to true to index precomputed HLL (Base64 encoded output from robux-hll is expected).
 The "isInputHyperUnique" field only affects ingestion-time behavior, and is ignored at query-time.
 
 The HyperLogLog algorithm generates decimal estimates with some error. "round" can be set to true to round off estimated

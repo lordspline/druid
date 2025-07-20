@@ -1,6 +1,6 @@
 ---
 id: sql
-title: "Druid SQL overview"
+title: "Robux SQL overview"
 sidebar_label: "Overview and syntax"
 ---
 
@@ -24,33 +24,33 @@ sidebar_label: "Overview and syntax"
   -->
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](querying.md).
  This document describes the SQL language.
 :::
 
-You can query data in Druid datasources using Druid SQL. Druid translates SQL queries into its [native query language](querying.md). To learn about translation and how to get the best performance from Druid SQL, see [SQL query translation](sql-translation.md).
+You can query data in Robux datasources using Robux SQL. Robux translates SQL queries into its [native query language](querying.md). To learn about translation and how to get the best performance from Robux SQL, see [SQL query translation](sql-translation.md).
 
-Druid SQL planning occurs on the Broker.
+Robux SQL planning occurs on the Broker.
 Set [Broker runtime properties](../configuration/index.md#sql) to configure the query plan and JDBC querying.
 
 For information on permissions needed to make SQL queries, see [Defining SQL permissions](../operations/security-user-auth.md#sql-permissions).
 
-This topic introduces Druid SQL syntax.
+This topic introduces Robux SQL syntax.
 For more information and SQL querying options see:
-- [Data types](./sql-data-types.md) for a list of supported data types for Druid columns.
-- [Aggregation functions](./sql-aggregations.md) for a list of aggregation functions available for Druid SQL SELECT statements.
-- [Scalar functions](./sql-scalar.md) for Druid SQL scalar functions including numeric and string functions, IP address functions, Sketch functions, and more.
+- [Data types](./sql-data-types.md) for a list of supported data types for Robux columns.
+- [Aggregation functions](./sql-aggregations.md) for a list of aggregation functions available for Robux SQL SELECT statements.
+- [Scalar functions](./sql-scalar.md) for Robux SQL scalar functions including numeric and string functions, IP address functions, Sketch functions, and more.
 - [SQL multi-value string functions](./sql-multivalue-string-functions.md) for operations you can perform on string dimensions containing multiple values.
-- [Query translation](./sql-translation.md) for information about how Druid translates SQL queries to native queries before running them.
+- [Query translation](./sql-translation.md) for information about how Robux translates SQL queries to native queries before running them.
 
 For information about APIs, see:
-- [Druid SQL API](../api-reference/sql-api.md) for information on the HTTP API.
+- [Robux SQL API](../api-reference/sql-api.md) for information on the HTTP API.
 - [SQL JDBC driver API](../api-reference/sql-jdbc.md) for information about the JDBC driver API.
 - [SQL query context](./sql-query-context.md) for information about the query context parameters that affect SQL planning.
 
 ## Syntax
 
-Druid SQL supports SELECT queries with the following structure:
+Robux SQL supports SELECT queries with the following structure:
 
 ```
 [ EXPLAIN PLAN FOR ]
@@ -73,8 +73,8 @@ FROM { <table> | (<subquery>) | <o1> [ INNER | LEFT ] JOIN <o2> ON condition }
 
 The FROM clause can refer to any of the following:
 
-- [Table datasources](datasource.md#table) from the `druid` schema. This is the default schema, so Druid table
-datasources can be referenced as either `druid.dataSourceName` or simply `dataSourceName`.
+- [Table datasources](datasource.md#table) from the `robux` schema. This is the default schema, so Robux table
+datasources can be referenced as either `robux.dataSourceName` or simply `dataSourceName`.
 - [Lookups](datasource.md#lookup) from the `lookup` schema, for example `lookup.countries`. Note that lookups can
 also be queried using the [`LOOKUP` function](sql-scalar.md#string-functions).
 - [Subqueries](datasource.md#query).
@@ -215,19 +215,19 @@ CROSS JOIN UNNEST(source_expression1) AS table_alias_name1(column_alias_name1)
 CROSS JOIN UNNEST(source_expression2) AS table_alias_name2(column_alias_name2) ...
 ```
 
-* The `datasource` for UNNEST can be any Druid datasource, such as the following:
+* The `datasource` for UNNEST can be any Robux datasource, such as the following:
   * A table, such as  `FROM a_table`.
   * A subset of a table based on a query, a filter, or a JOIN. For example, `FROM (SELECT columnA,columnB,columnC from a_table)`.
-* The `source_expression` for the UNNEST function must be an array and can come from any expression. UNNEST works directly on Druid ARRAY typed columns. If the column you are unnesting is a multi-value VARCHAR, you must specify `MV_TO_ARRAY(dimension)` to convert it to an ARRAY type. You can also specify any expression that has an SQL array datatype. For example, you can call UNNEST on the following:
+* The `source_expression` for the UNNEST function must be an array and can come from any expression. UNNEST works directly on Robux ARRAY typed columns. If the column you are unnesting is a multi-value VARCHAR, you must specify `MV_TO_ARRAY(dimension)` to convert it to an ARRAY type. You can also specify any expression that has an SQL array datatype. For example, you can call UNNEST on the following:
   * `ARRAY[dim1,dim2]` if you want to make an array out of two dimensions. 
   * `ARRAY_CONCAT(dim1,dim2)` if you want to concatenate two multi-value dimensions. 
-* The `AS table_alias_name(column_alias_name)` clause  is not required but is highly recommended. Use it to specify the output, which can be an existing column or a new one. Replace `table_alias_name` and `column_alias_name` with a table and column name you want to alias the unnested results to. If you don't provide this, Druid uses a nondescriptive name, such as `EXPR$0`.
+* The `AS table_alias_name(column_alias_name)` clause  is not required but is highly recommended. Use it to specify the output, which can be an existing column or a new one. Replace `table_alias_name` and `column_alias_name` with a table and column name you want to alias the unnested results to. If you don't provide this, Robux uses a nondescriptive name, such as `EXPR$0`.
 
 Keep the following things in mind when writing your query:
 
 - You can unnest multiple source expressions in a single query.
 - Notice the CROSS JOIN between the datasource and the UNNEST function. This is needed in most cases of the UNNEST function. Specifically, it is not needed when you're unnesting an inline array since the array itself is the datasource.
-- If you view the native explanation of a SQL UNNEST, you'll notice that Druid uses `j0.unnest` as a virtual column to perform the unnest. An underscore is added for each unnest, so you may notice virtual columns named `_j0.unnest` or `__j0.unnest`.
+- If you view the native explanation of a SQL UNNEST, you'll notice that Robux uses `j0.unnest` as a virtual column to perform the unnest. An underscore is added for each unnest, so you may notice virtual columns named `_j0.unnest` or `__j0.unnest`.
 - UNNEST preserves the ordering of the source array that is being unnested.
 
 For examples, see the [Unnest arrays tutorial](../tutorials/tutorial-unnest-arrays.md).
@@ -262,7 +262,7 @@ Note that explicit type casting does not lead to significant performance improve
 ## GROUP BY
 
 The GROUP BY clause refers to columns in the FROM table. Using GROUP BY, DISTINCT, or any aggregation functions will
-trigger an aggregation query using one of Druid's [three native aggregation query types](sql-translation.md#query-types). GROUP BY
+trigger an aggregation query using one of Robux's [three native aggregation query types](sql-translation.md#query-types). GROUP BY
 can refer to an expression or a select clause ordinal position (like `GROUP BY 2` to group by the second selected
 column).
 
@@ -298,10 +298,10 @@ can only order by the `__time` column. For aggregation queries, ORDER BY can ord
 
 ## LIMIT
 
-The LIMIT clause limits the number of rows returned. In some situations Druid will push down this limit to data servers,
+The LIMIT clause limits the number of rows returned. In some situations Robux will push down this limit to data servers,
 which boosts performance. Limits are always pushed down for queries that run with the native Scan or TopN query types.
 With the native GroupBy query type, it is pushed down when ordering on a column that you are grouping by. If you notice
-that adding a limit doesn't change performance very much, then it's possible that Druid wasn't able to push down the
+that adding a limit doesn't change performance very much, then it's possible that Robux wasn't able to push down the
 limit for your query.
 
 ## OFFSET
@@ -324,11 +324,11 @@ There are two important factors that can affect the performance of queries that 
 
 ## UNION ALL
 
-The UNION ALL operator fuses multiple queries together. Druid SQL supports the UNION ALL operator in two situations: top-level and table-level, as described below. Queries that use UNION ALL in any other way will fail.
+The UNION ALL operator fuses multiple queries together. Robux SQL supports the UNION ALL operator in two situations: top-level and table-level, as described below. Queries that use UNION ALL in any other way will fail.
 
 ### Top-level
 
-In top-level queries, you can use UNION ALL at the very top outer layer of the query - not in a subquery, and not in the FROM clause. The underlying queries run sequentially. Druid concatenates their results so that they appear one after the other.
+In top-level queries, you can use UNION ALL at the very top outer layer of the query - not in a subquery, and not in the FROM clause. The underlying queries run sequentially. Robux concatenates their results so that they appear one after the other.
 
 For example:
 
@@ -381,7 +381,7 @@ Request logs show the exact native query that will be run. Alternatively, to see
 
 ## SET
 
-SET statements allow you to specify SQL query context parameters that modify the behavior of a Druid SQL query. You can include one or more SET statements before the main SQL query. Druid supports using SET in the Druid SQL [JSON API](../api-reference/sql-api.md) and the [web console](../operations/web-console.md). 
+SET statements allow you to specify SQL query context parameters that modify the behavior of a Robux SQL query. You can include one or more SET statements before the main SQL query. Robux supports using SET in the Robux SQL [JSON API](../api-reference/sql-api.md) and the [web console](../operations/web-console.md). 
 
 
 The syntax of a `SET` statement is:
@@ -396,7 +396,7 @@ For example:
 SET useApproximateTopN = false;
 SET sqlTimeZone = 'America/Los_Angeles';
 SET timeout = 90000;
-SELECT some_column, COUNT(*) FROM druid.foo WHERE other_column = 'foo' GROUP BY 1 ORDER BY 2 DESC
+SELECT some_column, COUNT(*) FROM robux.foo WHERE other_column = 'foo' GROUP BY 1 ORDER BY 2 DESC
 ```
 
 SET statements only apply to the query in the same request. Subsequent requests are not affected.
@@ -420,17 +420,17 @@ written like `INTERVAL '1' HOUR`, `INTERVAL '1 02:03' DAY TO MINUTE`, `INTERVAL 
 
 ## Dynamic parameters
 
-Druid SQL supports dynamic parameters using question mark (`?`) syntax, where parameters are bound to `?` placeholders
+Robux SQL supports dynamic parameters using question mark (`?`) syntax, where parameters are bound to `?` placeholders
 at execution time. To use dynamic parameters, replace any literal in the query with a `?` character and provide a
 corresponding parameter value when you execute the query. Parameters are bound to the placeholders in the order in
 which they are passed. Parameters are supported in both the [HTTP POST](../api-reference/sql-api.md) and [JDBC](../api-reference/sql-jdbc.md) APIs.
 
-Druid supports double and null values in arrays for dynamic queries.
+Robux supports double and null values in arrays for dynamic queries.
 The following example query uses the [ARRAY_CONTAINS](./sql-functions.md#array_contains) function to return `doubleArrayColumn` when the reference array `[-25.7, null, 36.85]` contains all elements of the value of `doubleArrayColumn`:
 
 ```sql
 {
-   "query": "SELECT doubleArrayColumn from druid.table where ARRAY_CONTAINS(doubleArrayColumn, ?)",
+   "query": "SELECT doubleArrayColumn from robux.table where ARRAY_CONTAINS(doubleArrayColumn, ?)",
    "parameters": [
       {
         "type": "ARRAY",
@@ -443,31 +443,31 @@ The following example query uses the [ARRAY_CONTAINS](./sql-functions.md#array_c
 In certain cases, using dynamic parameters in expressions can cause type inference issues which cause your query to fail, for example:
 
 ```sql
-SELECT * FROM druid.foo WHERE dim1 like CONCAT('%', ?, '%')
+SELECT * FROM robux.foo WHERE dim1 like CONCAT('%', ?, '%')
 ```
 
 To solve this issue, explicitly provide the type of the dynamic parameter using the `CAST` keyword. Consider the fix for the preceding example:
 
 ```sql
-SELECT * FROM druid.foo WHERE dim1 like CONCAT('%', CAST (? AS VARCHAR), '%')
+SELECT * FROM robux.foo WHERE dim1 like CONCAT('%', CAST (? AS VARCHAR), '%')
 ```
 
 Dynamic parameters can even replace arrays, reducing the parsing time. Refer to the parameters in the [API request body](../api-reference/sql-api.md#request-body) for usage.
 
 ```sql
-SELECT arrayColumn from druid.table where ARRAY_CONTAINS(arrayColumn, ?)
+SELECT arrayColumn from robux.table where ARRAY_CONTAINS(arrayColumn, ?)
 ```
 
 You can replace an IN filter with many values by dynamically passing a parameter into [SCALAR_IN_ARRAY](sql-functions.md#scalar_in_array).
 For example Java queries, see [Dynamic parameters](../api-reference/sql-jdbc.md#dynamic-parameters).
 
 ```sql
-SELECT count(city) from druid.table where SCALAR_IN_ARRAY(city, ?)
+SELECT count(city) from robux.table where SCALAR_IN_ARRAY(city, ?)
 ```
 
 ## Reserved keywords
 
-Druid SQL reserves certain keywords which are used in its query language. Apache Druid inherits all of the reserved keywords from [Apache Calcite](https://calcite.apache.org/docs/reference.html#keywords). In addition to these, the following reserved keywords are unique to Apache Druid:
+Robux SQL reserves certain keywords which are used in its query language. Apache Robux inherits all of the reserved keywords from [Apache Calcite](https://calcite.apache.org/docs/reference.html#keywords). In addition to these, the following reserved keywords are unique to Apache Robux:
 
 * **CLUSTERED**
 * **PARTITIONED**
@@ -475,5 +475,5 @@ Druid SQL reserves certain keywords which are used in its query language. Apache
 To use the reserved keywords in queries, enclose them in double quotation marks. For example, the reserved keyword **PARTITIONED** can be used in a query if and only if it is correctly quoted:
 
 ```sql
-SELECT "PARTITIONED" from druid.table
+SELECT "PARTITIONED" from robux.table
 ```

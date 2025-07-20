@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { Execution } from '../druid-models';
+import type { Execution } from '../robux-models';
 
 export interface WorkbenchRunningPromise {
   executionPromise: Promise<Execution>;

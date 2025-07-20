@@ -97,7 +97,7 @@
     "ioConfig": {
       "type": "hadoop",
       "inputSpec": {
-        "inputFormat": "org.apache.druid.data.input.parquet.DruidParquetInputFormat",
+        "inputFormat": "org.apache.robux.data.input.parquet.RobuxParquetInputFormat",
         "type": "static",
         "paths": "%%INPUT_PATHS%%"
       }
@@ -111,12 +111,12 @@
       },
       "jobProperties": {
         "fs.permissions.umask-mode": "022",
-        "fs.default.name" : "hdfs://druid-it-hadoop:9000",
-        "fs.defaultFS" : "hdfs://druid-it-hadoop:9000",
-        "dfs.datanode.address" : "druid-it-hadoop",
+        "fs.default.name" : "hdfs://robux-it-hadoop:9000",
+        "fs.defaultFS" : "hdfs://robux-it-hadoop:9000",
+        "dfs.datanode.address" : "robux-it-hadoop",
         "dfs.client.use.datanode.hostname" : "true",
         "dfs.datanode.use.datanode.hostname" : "true",
-        "yarn.resourcemanager.hostname" : "druid-it-hadoop",
+        "yarn.resourcemanager.hostname" : "robux-it-hadoop",
         "yarn.nodemanager.vmem-check-enabled" : "false",
         "mapreduce.job.classloader": "true",
         "mapreduce.map.java.opts" : "-Duser.timezone=UTC -Dfile.encoding=UTF-8",

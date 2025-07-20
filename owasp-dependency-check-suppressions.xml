@@ -193,7 +193,7 @@
     <cve>CVE-2022-34917</cve>
     <cve>CVE-2023-25194</cve>
     <cve>CVE-2024-31141</cve>
-    <cve>CVE-2025-27818</cve> <!-- not fixed in any version of ranger dependency. I don't think it is exploitable in Druid within this extension -->
+    <cve>CVE-2025-27818</cve> <!-- not fixed in any version of ranger dependency. I don't think it is exploitable in Robux within this extension -->
   </suppress>
 
   <suppress>
@@ -225,9 +225,9 @@
     <notes><![CDATA[
    file name: okhttp-*.jar
    ]]></notes>
-    <cve>CVE-2021-0341</cve>  <!-- Suppressed since okhttp requests in Druid are internal, and not user-facing -->
-    <cve>CVE-2016-2402</cve>	<!-- Suppressed since okhttp requests in Druid are internal, and not user-facing -->
-    <cve>CVE-2023-0833</cve>  <!-- Suppressed since okhttp requests in Druid are internal, and not user-facing -->
+    <cve>CVE-2021-0341</cve>  <!-- Suppressed since okhttp requests in Robux are internal, and not user-facing -->
+    <cve>CVE-2016-2402</cve>	<!-- Suppressed since okhttp requests in Robux are internal, and not user-facing -->
+    <cve>CVE-2023-0833</cve>  <!-- Suppressed since okhttp requests in Robux are internal, and not user-facing -->
   </suppress>
 
   <suppress>
@@ -240,7 +240,7 @@
   </suppress>
 
   <suppress>
-    <!-- TODO: Fix by updating org.apache.druid.java.util.http.client.NettyHttpClient to use netty 4 -->
+    <!-- TODO: Fix by updating org.apache.robux.java.util.http.client.NettyHttpClient to use netty 4 -->
     <notes><![CDATA[
    file name: netty-3.10.6.Final.jar
    ]]></notes>
@@ -257,7 +257,7 @@
     <cve>CVE-2021-43797</cve> <!-- We don't decode user HTTP requests nor forward them to remote systems, we also don't support for java 6 or lower - https://github.com/advisories/GHSA-wx5j-54mm-rqqq -->
     <cve>CVE-2022-24823</cve> <!-- We don't decode user HTTP requests nor forward them to remote systems, we also don't support for java 6 or lower - https://github.com/advisories/GHSA-269q-hmxg-m83q -->
     <cve>CVE-2022-41881</cve>
-    <cve>CVE-2023-34462</cve>	<!-- Suppressed since netty requests in Druid are internal, and not user-facing -->
+    <cve>CVE-2023-34462</cve>	<!-- Suppressed since netty requests in Robux are internal, and not user-facing -->
   </suppress>
 
   <suppress>
@@ -284,10 +284,10 @@
   </suppress>
 
   <suppress>
-    <!-- The main use of snakeyaml in Druid is coming in test scope from:
+    <!-- The main use of snakeyaml in Robux is coming in test scope from:
      com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.12.7
      (version 1.27)
-     The contrib extension: druid-cassandra-storage uses version 1.6 in compile
+     The contrib extension: robux-cassandra-storage uses version 1.6 in compile
      scope
      The integration tests use version 1.27 in compile scope.
      Previous pinning of version to 1.33 forced the usage of the version across
@@ -300,7 +300,7 @@
     <notes><![CDATA[
     file name: snakeyaml-1.27.jar snakeyaml-1.33.jar
     ]]></notes>
-    <!-- Snakeyaml is used only in test scope in Druid core with trusted inputs -->
+    <!-- Snakeyaml is used only in test scope in Robux core with trusted inputs -->
     <cve>CVE-2022-1471</cve>
     <!-- false positive -->
     <cve>CVE-2023-2251</cve>
@@ -468,7 +468,7 @@
       file name: okio-1.17.2.jar, okio-1.15.0.jar
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/com\.squareup\.okio/okio@..*$</packageUrl>
-    <cve>CVE-2023-3635</cve>  <!-- Suppressed since okio requests in Druid are internal, and not user-facing -->
+    <cve>CVE-2023-3635</cve>  <!-- Suppressed since okio requests in Robux are internal, and not user-facing -->
   </suppress>
 
   <!-- CVE-2022-4244 is affecting plexus-utils package, plexus-interpolation is wrongly matched - https://github.com/jeremylong/DependencyCheck/issues/5973 -->
@@ -477,7 +477,7 @@
     <cve>CVE-2022-4244</cve>
   </suppress>
 
-  <!-- CVE-2023-5072 has a too broad CPE that seems to be flagging dependencies like json-*. Neither Druid nor any of its
+  <!-- CVE-2023-5072 has a too broad CPE that seems to be flagging dependencies like json-*. Neither Robux nor any of its
     ~ transitive dependency use json-java which contains the vulnerability-->
   <suppress base="true">
     <cve>CVE-2023-5072</cve>
@@ -485,8 +485,8 @@
 
 
   <!--
-   ~ Hostname verification is disabled by default in Netty 4.x, therefore the version that Druid is using gets flagged,
-   ~ however Druid enables it in ChannelResourceFactory therefore this is a false positive-->
+   ~ Hostname verification is disabled by default in Netty 4.x, therefore the version that Robux is using gets flagged,
+   ~ however Robux enables it in ChannelResourceFactory therefore this is a false positive-->
   <suppress>
     <notes><![CDATA[
       file name: netty-transport-4.1.100.Final.jar
@@ -494,7 +494,7 @@
     <cve>CVE-2023-4586</cve>
   </suppress>
 
-  <!-- druid cassandra storage exclusions -->
+  <!-- robux cassandra storage exclusions -->
   <suppress>
       <!-- TODO: Fix by using com.datastax.oss:java-driver-core instead of com.netflix.astyanax:astyanax in extensions-contrib/cassandra-storage -->
       <notes><![CDATA[
@@ -521,10 +521,10 @@
       <cve>CVE-2020-17516</cve>
       <cve>CVE-2020-13946</cve>
   </suppress>
-  <!-- end of druid cassandra storage exclusions -->
+  <!-- end of robux cassandra storage exclusions -->
 
 
-  <!-- druid-cloudfiles-extensions exclusions -->
+  <!-- robux-cloudfiles-extensions exclusions -->
   <suppress>
      <!-- CVEs added for completeness in pretty much dead extension  -->
       <notes><![CDATA[
@@ -537,7 +537,7 @@
       <cve>CVE-2016-0738</cve>
       <cve>CVE-2017-16613</cve>
   </suppress>
-  <!-- end of druid-cloudfiles-extensions exclusions -->
+  <!-- end of robux-cloudfiles-extensions exclusions -->
 
   <!-- graphite-emitter exclusions -->
   <suppress>
@@ -677,7 +677,7 @@
   </suppress>
   <suppress>
     <!-- Used in Pac4j. Pac4j versions (such as v5.7.3) corresponding
-    to the safe nimbus-jose-jwt v9.37.2 are incompatible with druid as they don't support JDK 8
+    to the safe nimbus-jose-jwt v9.37.2 are incompatible with robux as they don't support JDK 8
     https://www.pac4j.org/docs/alldocs.html -->
 
     <notes><![CDATA[
@@ -712,7 +712,7 @@
   </suppress>
   <suppress>
     <!-- The CVE is also not applicable to xz-java because it does not implement xzgrep and therefore is not vulnerable
-     ~ to the filename validation problem. Druid does not use xzgrep but this CVE is popping up because the CPE matches the
+     ~ to the filename validation problem. Robux does not use xzgrep but this CVE is popping up because the CPE matches the
      ~ Java package too. -->
     <notes><![CDATA[
     file name: xz-1.9.jar

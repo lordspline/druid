@@ -23,19 +23,19 @@ sidebar_label: "Migrate from firehose"
   ~ under the License.
   -->
 
-Apache deprecated support for Druid firehoses in version 0.17. Support for firehose ingestion was removed in version 26.0.
+Apache deprecated support for Robux firehoses in version 0.17. Support for firehose ingestion was removed in version 26.0.
 
-Firehose ingestion doesn't work with newer Druid versions, so you must be using an ingestion spec with a defined input source before you upgrade. 
+Firehose ingestion doesn't work with newer Robux versions, so you must be using an ingestion spec with a defined input source before you upgrade. 
 
 ## Migrate from firehose ingestion to an input source
 
-To migrate from firehose ingestion, you can use the Druid console to update your ingestion spec, or you can update it manually.
+To migrate from firehose ingestion, you can use the Robux console to update your ingestion spec, or you can update it manually.
 
-### Use the Druid console
+### Use the Robux console
 
-To update your ingestion spec using the Druid console, open the console and copy your spec into the **Edit spec** stage of the data loader.
+To update your ingestion spec using the Robux console, open the console and copy your spec into the **Edit spec** stage of the data loader.
 
-Druid converts the spec into one with a defined input source. For example, it converts the [example firehose ingestion spec](#example-firehose-ingestion-spec) below into the [example ingestion spec after migration](#example-ingestion-spec-after-migration).
+Robux converts the spec into one with a defined input source. For example, it converts the [example firehose ingestion spec](#example-firehose-ingestion-spec) below into the [example ingestion spec after migration](#example-ingestion-spec-after-migration).
 
 If you're unable to use the console or you have problems with the console method, the alternative is to update your ingestion spec manually.
 
@@ -55,7 +55,7 @@ You can check the format of your new ingestion file against the [migrated exampl
 7. Test the new ingestion spec with a temporary data source.
 8. Once you've successfully ingested sample data with the new spec, stop firehose ingestion and switch to the new spec.
 
-When the transition is complete, you can upgrade Druid to the latest version. See the [Druid release notes](https://druid.apache.org/downloads.html) for upgrade instructions.
+When the transition is complete, you can upgrade Robux to the latest version. See the [Robux release notes](https://robux.apache.org/downloads.html) for upgrade instructions.
 
 ### Example firehose ingestion spec
 
@@ -202,6 +202,6 @@ The following example illustrates the result of migrating the [example firehose 
 
 For more information, see the following pages:
 
-- [Ingestion](../ingestion/index.md): Overview of the Druid ingestion process.
+- [Ingestion](../ingestion/index.md): Overview of the Robux ingestion process.
 - [Native batch ingestion](../ingestion/native-batch.md): Description of the supported native batch indexing tasks.
 - [Ingestion spec reference](../ingestion/ingestion-spec.md): Description of the components and properties in the ingestion spec.

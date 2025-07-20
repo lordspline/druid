@@ -18,12 +18,12 @@
 
 import { Button, Menu, MenuDivider, MenuItem, Popover, Position } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { SqlQuery, SqlTable } from 'druid-query-toolkit';
+import { SqlQuery, SqlTable } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React from 'react';
 
 import { useQueryManager } from '../../../../hooks';
-import { queryDruidSql } from '../../../../utils';
+import { queryRobuxSql } from '../../../../utils';
 
 import './source-pane.scss';
 
@@ -56,7 +56,7 @@ export const SourcePane = React.memo(function SourcePane(props: SourcePaneProps)
   const [tables] = useQueryManager<null, string[]>({
     initQuery: null,
     processQuery: async () => {
-      const tables = await queryDruidSql<{ TABLE_NAME: string }>({
+      const tables = await queryRobuxSql<{ TABLE_NAME: string }>({
         query: `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'TABLE'`,
       });
 

@@ -39,8 +39,8 @@ $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
 if [ ! -e .inited ] ; then
 	echo " * initialize hdfs for first run"
 	wait-for-port 9000
-	hdfs dfs -mkdir -p /druid/segments /quickstart /user
-	hdfs dfs -chmod -R 777 /druid /quickstart /user /tmp
+	hdfs dfs -mkdir -p /robux/segments /quickstart /user
+	hdfs dfs -chmod -R 777 /robux /quickstart /user /tmp
 	hdfs dfs -put wikiticker-2015-09-12-sampled.json.gz /quickstart/wikiticker-2015-09-12-sampled.json.gz
 	tar -C $HADOOP_HOME/etc/hadoop -czf /shared/hadoop-conf.tgz .
 	touch .inited

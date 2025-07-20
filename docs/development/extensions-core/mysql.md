@@ -23,11 +23,11 @@ title: "MySQL metadata store"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `mysql-metadata-storage` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `mysql-metadata-storage` in the extensions load list.
 
 With the MySQL extension, you can use MySQL as a metadata store or ingest from a MySQL database.
 
-The extension requires a connector library that's not included with Druid.
+The extension requires a connector library that's not included with Robux.
 See the [Prerequisites](#prerequisites) for installation instructions.
 
 ## Prerequisites
@@ -39,7 +39,7 @@ To use the MySQL extension, you need to install one of the following libraries:
 ### Install MySQL Connector/J
 
 The MySQL extension uses Oracle's MySQL JDBC driver.
-The current version of Druid uses version 8.2.0.
+The current version of Robux uses version 8.2.0.
 Other versions may not work with this extension.
 
 You can download the library from one of the following sources:
@@ -55,7 +55,7 @@ Copy or create a symbolic link to this file inside the `lib` folder in the distr
 ### Install MariaDB Connector/J
 
 This extension also supports using the MariaDB connector jar.
-The current version of Druid uses version 2.7.3.
+The current version of Robux uses version 2.7.3.
 Other versions may not work with this extension.
 
 You can download the library from one of the following sources:
@@ -67,7 +67,7 @@ You can download the library from one of the following sources:
 The download includes the MariaDB connector JAR file with a name like `maria-java-client-2.7.3.jar`.
 Copy or create a symbolic link to this file inside the `lib` folder in the distribution root directory.
 
-To configure the `mysql-metadata-storage` extension to use the MariaDB connector library instead of MySQL, set `druid.metadata.mysql.driver.driverClassName=org.mariadb.jdbc.Driver`.
+To configure the `mysql-metadata-storage` extension to use the MariaDB connector library instead of MySQL, set `robux.metadata.mysql.driver.driverClassName=org.mariadb.jdbc.Driver`.
 
 The protocol of the connection string is `jdbc:mysql:` or `jdbc:mariadb:`,
 depending on your specific version of the MariaDB client library.
@@ -92,7 +92,7 @@ To avoid issues with upgrades that require schema changes to a large metadata ta
 
 This extension also supports using MariaDB server, https://mariadb.org/download/, substituting for MariaDB in the following instructions where appropriate.
 
-2. Create a druid database and user
+2. Create a robux database and user
 
   Connect to MySQL from the machine where it is installed.
 
@@ -103,30 +103,30 @@ This extension also supports using MariaDB server, https://mariadb.org/download/
   Paste the following snippet into the mysql prompt:
 
   ```sql
-  -- create a druid database, make sure to use utf8mb4 as encoding
-  CREATE DATABASE druid DEFAULT CHARACTER SET utf8mb4;
+  -- create a robux database, make sure to use utf8mb4 as encoding
+  CREATE DATABASE robux DEFAULT CHARACTER SET utf8mb4;
 
-  -- create a druid user
-  CREATE USER 'druid'@'localhost' IDENTIFIED BY 'password';
+  -- create a robux user
+  CREATE USER 'robux'@'localhost' IDENTIFIED BY 'password';
 
   -- grant the user all the permissions on the database we just created
-  GRANT ALL PRIVILEGES ON druid.* TO 'druid'@'localhost';
+  GRANT ALL PRIVILEGES ON robux.* TO 'robux'@'localhost';
   ```
 
-3. Configure your Druid metadata storage extension:
+3. Configure your Robux metadata storage extension:
 
-  Add the following parameters to your Druid configuration, replacing `<host>`
+  Add the following parameters to your Robux configuration, replacing `<host>`
   with the location (host name and port) of the database.
 
   ```properties
-  druid.extensions.loadList=["mysql-metadata-storage"]
-  druid.metadata.storage.type=mysql
-  druid.metadata.storage.connector.connectURI=jdbc:mysql://<host>/druid
-  druid.metadata.storage.connector.user=druid
-  druid.metadata.storage.connector.password=diurd
+  robux.extensions.loadList=["mysql-metadata-storage"]
+  robux.metadata.storage.type=mysql
+  robux.metadata.storage.connector.connectURI=jdbc:mysql://<host>/robux
+  robux.metadata.storage.connector.user=robux
+  robux.metadata.storage.connector.password=diurd
   ```
 
-If using the MariaDB connector library, set `druid.metadata.mysql.driver.driverClassName=org.mariadb.jdbc.Driver`.
+If using the MariaDB connector library, set `robux.metadata.mysql.driver.driverClassName=org.mariadb.jdbc.Driver`.
 
 ## Encrypt MySQL connections
 
@@ -136,20 +136,20 @@ This extension provides support for encrypting MySQL connections. To get more in
 
 |Property|Description|Default|Required|
 |--------|-----------|-------|--------|
-|`druid.metadata.mysql.ssl.useSSL`|Enable SSL|`false`|no|
-|`druid.metadata.mysql.ssl.clientCertificateKeyStoreUrl`|The file path URL to the client certificate key store.|none|no|
-|`druid.metadata.mysql.ssl.clientCertificateKeyStoreType`|The type of the key store where the client certificate is stored.|none|no|
-|`druid.metadata.mysql.ssl.clientCertificateKeyStorePassword`|The [Password Provider](../../operations/password-provider.md) or String password for the client key store.|none|no|
-|`druid.metadata.mysql.ssl.verifyServerCertificate`|Enables server certificate verification.|false|no|
-|`druid.metadata.mysql.ssl.trustCertificateKeyStoreUrl`|The file path to the trusted root certificate key store.|Default trust store provided by MySQL|yes if `verifyServerCertificate` is set to true and a custom trust store is used|
-|`druid.metadata.mysql.ssl.trustCertificateKeyStoreType`|The type of the key store where trusted root certificates are stored.|JKS|yes if `verifyServerCertificate` is set to true and keystore type is not JKS|
-|`druid.metadata.mysql.ssl.trustCertificateKeyStorePassword`|The [Password Provider](../../operations/password-provider.md) or String password for the trust store.|none|yes if `verifyServerCertificate` is set to true and password is not null|
-|`druid.metadata.mysql.ssl.enabledSSLCipherSuites`|Overrides the existing cipher suites with these cipher suites.|none|no|
-|`druid.metadata.mysql.ssl.enabledTLSProtocols`|Overrides the TLS protocols with these protocols.|none|no|
+|`robux.metadata.mysql.ssl.useSSL`|Enable SSL|`false`|no|
+|`robux.metadata.mysql.ssl.clientCertificateKeyStoreUrl`|The file path URL to the client certificate key store.|none|no|
+|`robux.metadata.mysql.ssl.clientCertificateKeyStoreType`|The type of the key store where the client certificate is stored.|none|no|
+|`robux.metadata.mysql.ssl.clientCertificateKeyStorePassword`|The [Password Provider](../../operations/password-provider.md) or String password for the client key store.|none|no|
+|`robux.metadata.mysql.ssl.verifyServerCertificate`|Enables server certificate verification.|false|no|
+|`robux.metadata.mysql.ssl.trustCertificateKeyStoreUrl`|The file path to the trusted root certificate key store.|Default trust store provided by MySQL|yes if `verifyServerCertificate` is set to true and a custom trust store is used|
+|`robux.metadata.mysql.ssl.trustCertificateKeyStoreType`|The type of the key store where trusted root certificates are stored.|JKS|yes if `verifyServerCertificate` is set to true and keystore type is not JKS|
+|`robux.metadata.mysql.ssl.trustCertificateKeyStorePassword`|The [Password Provider](../../operations/password-provider.md) or String password for the trust store.|none|yes if `verifyServerCertificate` is set to true and password is not null|
+|`robux.metadata.mysql.ssl.enabledSSLCipherSuites`|Overrides the existing cipher suites with these cipher suites.|none|no|
+|`robux.metadata.mysql.ssl.enabledTLSProtocols`|Overrides the TLS protocols with these protocols.|none|no|
 
 ## MySQL input source
 
-The MySQL extension provides an implementation of an SQL input source to ingest data into Druid from a MySQL database.
+The MySQL extension provides an implementation of an SQL input source to ingest data into Robux from a MySQL database.
 For more information on the input source parameters, see [SQL input source](../../ingestion/input-sources.md#sql-input-source).
 
 ```json
@@ -192,7 +192,7 @@ For more information on the input source parameters, see [SQL input source](../.
         "database": {
           "type": "mysql",
           "connectorConfig": {
-            "connectURI": "jdbc:mysql://some-rds-host.us-west-1.rds.amazonaws.com:3306/druid",
+            "connectURI": "jdbc:mysql://some-rds-host.us-west-1.rds.amazonaws.com:3306/robux",
             "user": "admin",
             "password": "secret"
           }

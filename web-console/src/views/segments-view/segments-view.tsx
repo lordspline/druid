@@ -18,7 +18,7 @@
 
 import { Button, ButtonGroup, Intent, Label, MenuItem, Switch, Tag } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import { C, L, SqlComparison, SqlExpression } from 'druid-query-toolkit';
+import { C, L, SqlComparison, SqlExpression } from 'robux-query-toolkit';
 import * as JSONBig from 'json-bigint-native';
 import type { ReactNode } from 'react';
 import React from 'react';
@@ -44,8 +44,8 @@ import {
 import { AsyncActionDialog } from '../../dialogs';
 import { SegmentTableActionDialog } from '../../dialogs/segments-table-action-dialog/segment-table-action-dialog';
 import { ShowValueDialog } from '../../dialogs/show-value-dialog/show-value-dialog';
-import type { QueryContext, QueryWithContext, ShardSpec } from '../../druid-models';
-import { computeSegmentTimeSpan, getConsoleViewIcon, getDatasourceColor } from '../../druid-models';
+import type { QueryContext, QueryWithContext, ShardSpec } from '../../robux-models';
+import { computeSegmentTimeSpan, getConsoleViewIcon, getDatasourceColor } from '../../robux-models';
 import type { Capabilities, CapabilitiesMode } from '../../helpers';
 import {
   booleanCustomTableFilter,
@@ -72,7 +72,7 @@ import {
   LocalStorageBackedVisibility,
   LocalStorageKeys,
   oneOf,
-  queryDruidSql,
+  queryRobuxSql,
   QueryManager,
   QueryState,
   ResultWithAuxiliaryWork,
@@ -343,7 +343,7 @@ export class SegmentsView extends React.PureComponent<SegmentsViewProps, Segment
               page ? `OFFSET ${page * pageSize}` : undefined,
             ]).join('\n');
 
-            const intervals: string = (await queryDruidSql({ query: innerQuery }))
+            const intervals: string = (await queryRobuxSql({ query: innerQuery }))
               .map(({ start, end }) => `'${start}/${end}'`)
               .join(', ');
 
@@ -373,7 +373,7 @@ export class SegmentsView extends React.PureComponent<SegmentsViewProps, Segment
           }
           const sqlQuery = queryParts.join('\n');
           setIntermediateQuery(sqlQuery);
-          let result = await queryDruidSql(
+          let result = await queryRobuxSql(
             { query: sqlQuery, context: sqlQueryContext },
             cancelToken,
           );
@@ -394,7 +394,7 @@ export class SegmentsView extends React.PureComponent<SegmentsViewProps, Segment
               filterClause ? `WHERE ${filterClause}` : undefined,
             ).join('\n');
             const cnt: any = (
-              await queryDruidSql<{ cnt: number }>(
+              await queryRobuxSql<{ cnt: number }>(
                 {
                   query: sqlQuery,
                 },
@@ -411,7 +411,7 @@ export class SegmentsView extends React.PureComponent<SegmentsViewProps, Segment
           const datasourceFilter = filtered.find(({ id }) => id === 'datasource');
           if (datasourceFilter) {
             datasourceList = (
-              await getApiArray('/druid/coordinator/v1/metadata/datasources', cancelToken)
+              await getApiArray('/robux/coordinator/v1/metadata/datasources', cancelToken)
             ).filter((datasource: string) =>
               booleanCustomTableFilter(datasourceFilter, datasource),
             );
@@ -419,7 +419,7 @@ export class SegmentsView extends React.PureComponent<SegmentsViewProps, Segment
 
           let results = (
             await getApiArray(
-              `/druid/coordinator/v1/metadata/segments?includeOvershadowedStatus&includeRealtimeSegments${datasourceList
+              `/robux/coordinator/v1/metadata/segments?includeOvershadowedStatus&includeRealtimeSegments${datasourceList
                 .map(d => `&datasources=${Api.encodePath(d)}`)
                 .join('')}`,
               cancelToken,
@@ -1023,7 +1023,7 @@ export class SegmentsView extends React.PureComponent<SegmentsViewProps, Segment
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.delete(
-            `/druid/indexer/v1/datasources/${Api.encodePath(
+            `/robux/indexer/v1/datasources/${Api.encodePath(
               terminateDatasourceId,
             )}/segments/${Api.encodePath(terminateSegmentId)}`,
             {},

@@ -22,27 +22,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache.druid.extensions.contrib</groupId>
-    <artifactId>druid-redis-cache</artifactId>
-    <name>druid-redis-cache</name>
+    <groupId>org.apache.robux.extensions.contrib</groupId>
+    <artifactId>robux-redis-cache</artifactId>
+    <name>robux-redis-cache</name>
 
     <parent>
-        <groupId>org.apache.druid</groupId>
-        <artifactId>druid</artifactId>
+        <groupId>org.apache.robux</groupId>
+        <artifactId>robux</artifactId>
         <version>35.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-processing</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-processing</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-server</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-server</artifactId>
             <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -116,8 +116,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.druid</groupId>
-            <artifactId>druid-server</artifactId>
+            <groupId>org.apache.robux</groupId>
+            <artifactId>robux-server</artifactId>
             <version>${project.parent.version}</version>
             <type>test-jar</type>
         </dependency>
@@ -152,11 +152,11 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.apache.commons.pool2</pattern>
-                                    <shadedPattern>org.apache.druid.redis.shaded.org.apache.commons.pool2</shadedPattern>
+                                    <shadedPattern>org.apache.robux.redis.shaded.org.apache.commons.pool2</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>redis.clients.jedis</pattern>
-                                    <shadedPattern>org.apache.druid.redis.shaded.redis.clients.jedis</shadedPattern>
+                                    <shadedPattern>org.apache.robux.redis.shaded.redis.clients.jedis</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

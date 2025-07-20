@@ -21,7 +21,7 @@ import * as JSONBig from 'json-bigint-native';
 import type { DragEvent } from 'react';
 import React, { useState } from 'react';
 
-import { Execution } from '../../../druid-models';
+import { Execution } from '../../../robux-models';
 import { AppToaster } from '../../../singletons';
 import type { QueryDetailArchive } from '../../../utils';
 import { offsetToRowColumn } from '../../../utils';
@@ -182,7 +182,7 @@ export const ExecutionSubmitDialog = React.memo(function ExecutionSubmitDialog(
     >
       <div className={Classes.DIALOG_BODY}>
         <p>
-          You can load query detail archive files from other Druid clusters to render the query
+          You can load query detail archive files from other Robux clusters to render the query
           detail here.
         </p>
         <p>

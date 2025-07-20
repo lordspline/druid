@@ -18,7 +18,7 @@
 
 import { render } from '@testing-library/react';
 
-import { Execution } from '../../../druid-models';
+import { Execution } from '../../../robux-models';
 
 import { ExecutionTimerPanel } from './execution-timer-panel';
 

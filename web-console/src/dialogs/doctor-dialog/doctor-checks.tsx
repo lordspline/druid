@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-import type { CompactionConfigs } from '../../druid-models';
+import type { CompactionConfigs } from '../../robux-models';
 import { Api } from '../../singletons';
-import { deepGet, pluralIfNeeded, queryDruidSql } from '../../utils';
+import { deepGet, pluralIfNeeded, queryRobuxSql } from '../../utils';
 import { postToSampler } from '../../utils/sampler';
 
 export interface CheckControls {
@@ -39,16 +39,16 @@ interface HistoricalFill {
 
 const RUNTIME_PROPERTIES_ALL_NODES_MUST_AGREE_ON: string[] = [
   'user.timezone',
-  'druid.zk.service.host',
+  'robux.zk.service.host',
 ];
 
 // In the future (when we can query other services) is will also be cool to check:
-// 'druid.storage.type' <=> historicals, overlords, mm
-// 'druid.indexer.logs.type' <=> overlord, mm, + peons
+// 'robux.storage.type' <=> historicals, overlords, mm
+// 'robux.indexer.logs.type' <=> overlord, mm, + peons
 
 const RUNTIME_PROPERTIES_MASTER_NODES_SHOULD_AGREE_ON: string[] = [
-  'druid.metadata.storage.type', // overlord + coordinator
-  'druid.metadata.storage.connector.connectURI',
+  'robux.metadata.storage.type', // overlord + coordinator
+  'robux.metadata.storage.connector.connectURI',
 ];
 
 export const DOCTOR_CHECKS: DoctorCheck[] = [
@@ -90,9 +90,9 @@ export const DOCTOR_CHECKS: DoctorCheck[] = [
       }
 
       // Check that the management proxy is on, it really should be for someone to access the console in the first place but everything could happen
-      if (properties['druid.router.managementProxy.enabled'] !== 'true') {
+      if (properties['robux.router.managementProxy.enabled'] !== 'true') {
         controls.addIssue(
-          `The Router's "druid.router.managementProxy.enabled" is not reported as "true". This means that the Coordinator and Overlord will not be accessible from the Router (and this console).`,
+          `The Router's "robux.router.managementProxy.enabled" is not reported as "true". This means that the Coordinator and Overlord will not be accessible from the Router (and this console).`,
         );
       }
 
@@ -104,7 +104,7 @@ export const DOCTOR_CHECKS: DoctorCheck[] = [
         properties['java.specification.version'] !== '17'
       ) {
         controls.addSuggestion(
-          `It looks like are running Java ${properties['java.runtime.version']}. Druid officially supports Java 8u92+, 11, or 17`,
+          `It looks like are running Java ${properties['java.runtime.version']}. Robux officially supports Java 8u92+, 11, or 17`,
         );
       }
 
@@ -160,13 +160,13 @@ export const DOCTOR_CHECKS: DoctorCheck[] = [
 
       if (myStatus.version !== coordinatorStatus.version) {
         controls.addSuggestion(
-          `It looks like the Router and Coordinator services are on different versions of Druid. This may indicate a problem if you are not in the middle of a rolling upgrade.`,
+          `It looks like the Router and Coordinator services are on different versions of Robux. This may indicate a problem if you are not in the middle of a rolling upgrade.`,
         );
       }
 
       if (myStatus.version !== overlordStatus.version) {
         controls.addSuggestion(
-          `It looks like the Router and Overlord services are on different versions of Druid. This may indicate a problem if you are not in the middle of a rolling upgrade.`,
+          `It looks like the Router and Overlord services are on different versions of Robux. This may indicate a problem if you are not in the middle of a rolling upgrade.`,
         );
       }
     },
@@ -283,10 +283,10 @@ export const DOCTOR_CHECKS: DoctorCheck[] = [
       // Make sure that we can run the simplest query
       let sqlResult: any[];
       try {
-        sqlResult = await queryDruidSql({ query: `SELECT 1 + 1 AS "two"` });
+        sqlResult = await queryRobuxSql({ query: `SELECT 1 + 1 AS "two"` });
       } catch (e) {
         controls.addIssue(
-          `Could not query SQL ensure that "druid.sql.enable" is set to "true" and that there is a Broker service running. Got: ${e.message}`,
+          `Could not query SQL ensure that "robux.sql.enable" is set to "true" and that there is a Broker service running. Got: ${e.message}`,
         );
         controls.terminateChecks();
         return;
@@ -303,7 +303,7 @@ export const DOCTOR_CHECKS: DoctorCheck[] = [
       // Make sure that no services are reported that are over 95% capacity
       let historicalFills: HistoricalFill[];
       try {
-        historicalFills = await queryDruidSql({
+        historicalFills = await queryRobuxSql({
           query: `SELECT
   "server" AS "historical",
   "curr_size" * 100.0 / "max_size" AS "fill"
@@ -350,7 +350,7 @@ ORDER BY "fill" DESC`,
       const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       let sqlResult: any[];
       try {
-        sqlResult = await queryDruidSql({
+        sqlResult = await queryRobuxSql({
           query: `SELECT
   "datasource",
   COUNT(*) AS "num_bad_time_chunks"
@@ -377,7 +377,7 @@ ORDER BY "num_bad_time_chunks"`,
         let compactionResult: CompactionConfigs;
         try {
           compactionResult = (
-            await Api.instance.get('/druid/indexer/v1/compaction/config/datasources')
+            await Api.instance.get('/robux/indexer/v1/compaction/config/datasources')
           ).data;
         } catch (e) {
           controls.addIssue(`Could not get compaction config. Something is wrong.`);

@@ -23,13 +23,13 @@ title: "Post-aggregations"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes the native
  language. For information about functions available in SQL, refer to the
  [SQL documentation](sql-aggregations.md).
 :::
 
-Post-aggregations are specifications of processing that should happen on aggregated values as they come out of Apache Druid. If you include a post aggregation as part of a query, make sure to include all aggregators the post-aggregator requires.
+Post-aggregations are specifications of processing that should happen on aggregated values as they come out of Apache Robux. If you include a post aggregation as part of a query, make sure to include all aggregators the post-aggregator requires.
 
 There are several post-aggregators available.
 
@@ -107,15 +107,15 @@ Example:
 
 
 ### Expression post-aggregator
-The expression post-aggregator is defined using a Druid [expression](math-expr.md).
+The expression post-aggregator is defined using a Robux [expression](math-expr.md).
 
 | Property | Description | Required |
 | --- | --- | --- |
 | `type` | Must be `"expression"` | Yes |
 | `name` | Output name of the post-aggregation | Yes |
-| `expression` | Native Druid [expression](math-expr.md) to compute, may refer to any dimension or aggregator output names | Yes |
+| `expression` | Native Robux [expression](math-expr.md) to compute, may refer to any dimension or aggregator output names | Yes |
 | `ordering` | If no ordering (or `null`) is specified, the "natural" ordering is used. `numericFirst` ordering always returns finite values first, followed by `NaN`, and infinite values last. If the expression produces array or complex types, specify `ordering` as null and use `outputType` instead to use the correct type native ordering. | No |
-| `outputType` | Output type is optional, and can be any native Druid type: `LONG`, `FLOAT`, `DOUBLE`, `STRING`, `ARRAY` types (e.g. `ARRAY<LONG>`), or `COMPLEX` types (e.g. `COMPLEX<json>`). If not specified, the output type will be inferred from the `expression`. If specified and `ordering` is null, the type native ordering will be used for sorting values. If the expression produces array or complex types, this value must be non-null to ensure the correct ordering is used. If `outputType` does not match the actual output type of the `expression`, the value will be attempted to coerced to the specified type, possibly failing if coercion is not possible. | No |
+| `outputType` | Output type is optional, and can be any native Robux type: `LONG`, `FLOAT`, `DOUBLE`, `STRING`, `ARRAY` types (e.g. `ARRAY<LONG>`), or `COMPLEX` types (e.g. `COMPLEX<json>`). If not specified, the output type will be inferred from the `expression`. If specified and `ordering` is null, the type native ordering will be used for sorting values. If the expression produces array or complex types, this value must be non-null to ensure the correct ordering is used. If `outputType` does not match the actual output type of the `expression`, the value will be attempted to coerced to the specified type, possibly failing if coercion is not possible. | No |
 
 Example:
 ```json
@@ -178,7 +178,7 @@ Example:
 ```
 
 :::info
- JavaScript-based functionality is disabled by default. Please refer to the Druid [JavaScript programming guide](../development/javascript.md) for guidelines about using Druid's JavaScript functionality, including instructions on how to enable it.
+ JavaScript-based functionality is disabled by default. Please refer to the Robux [JavaScript programming guide](../development/javascript.md) for guidelines about using Robux's JavaScript functionality, including instructions on how to enable it.
 :::
 
 ### HyperUnique Cardinality post-aggregator

@@ -22,15 +22,15 @@ import type { RowRenderProps } from 'react-table';
 import ReactTable from 'react-table';
 
 import { TableCell } from '../../../components';
-import type { Transform } from '../../../druid-models';
-import { TIME_COLUMN } from '../../../druid-models';
+import type { Transform } from '../../../robux-models';
+import { TIME_COLUMN } from '../../../robux-models';
 import {
   DEFAULT_TABLE_CLASS_NAME,
   STANDARD_TABLE_PAGE_SIZE,
   STANDARD_TABLE_PAGE_SIZE_OPTIONS,
 } from '../../../react-table';
 import { caseInsensitiveContains, filterMap } from '../../../utils';
-import { escapeColumnName } from '../../../utils/druid-expression';
+import { escapeColumnName } from '../../../utils/robux-expression';
 import type { SampleEntry, SampleResponse } from '../../../utils/sampler';
 import { getHeaderNamesFromSampleResponse } from '../../../utils/sampler';
 

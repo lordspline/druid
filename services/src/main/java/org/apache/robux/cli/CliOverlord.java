@@ -1,0 +1,550 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.cli;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.rvesse.airline.annotations.Command;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Binder;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
+import com.google.inject.multibindings.MapBinder;
+import com.google.inject.multibindings.Multibinder;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
+import com.google.inject.util.Providers;
+import org.apache.robux.client.indexing.IndexingService;
+import org.apache.robux.discovery.NodeRole;
+import org.apache.robux.guice.IndexingServiceInputSourceModule;
+import org.apache.robux.guice.IndexingServiceModuleHelper;
+import org.apache.robux.guice.IndexingServiceTaskLogsModule;
+import org.apache.robux.guice.IndexingServiceTuningConfigModule;
+import org.apache.robux.guice.JacksonConfigProvider;
+import org.apache.robux.guice.Jerseys;
+import org.apache.robux.guice.JsonConfigProvider;
+import org.apache.robux.guice.LazySingleton;
+import org.apache.robux.guice.LifecycleModule;
+import org.apache.robux.guice.ListProvider;
+import org.apache.robux.guice.ManageLifecycle;
+import org.apache.robux.guice.MetadataManagerModule;
+import org.apache.robux.guice.PolyBind;
+import org.apache.robux.guice.SupervisorModule;
+import org.apache.robux.guice.annotations.Json;
+import org.apache.robux.indexer.HadoopIndexTaskModule;
+import org.apache.robux.indexing.common.RetryPolicyFactory;
+import org.apache.robux.indexing.common.TaskStorageDirTracker;
+import org.apache.robux.indexing.common.actions.LocalTaskActionClientFactory;
+import org.apache.robux.indexing.common.actions.TaskActionClientFactory;
+import org.apache.robux.indexing.common.actions.TaskActionToolbox;
+import org.apache.robux.indexing.common.config.TaskConfig;
+import org.apache.robux.indexing.common.config.TaskStorageConfig;
+import org.apache.robux.indexing.common.stats.DropwizardRowIngestionMetersFactory;
+import org.apache.robux.indexing.common.task.NoopTaskContextEnricher;
+import org.apache.robux.indexing.common.task.TaskContextEnricher;
+import org.apache.robux.indexing.common.task.batch.parallel.ParallelIndexSupervisorTaskClientProvider;
+import org.apache.robux.indexing.common.task.batch.parallel.ShuffleClient;
+import org.apache.robux.indexing.common.tasklogs.SwitchingTaskLogStreamer;
+import org.apache.robux.indexing.common.tasklogs.TaskRunnerTaskLogStreamer;
+import org.apache.robux.indexing.compact.CompactionScheduler;
+import org.apache.robux.indexing.compact.OverlordCompactionScheduler;
+import org.apache.robux.indexing.overlord.RobuxOverlord;
+import org.apache.robux.indexing.overlord.ForkingTaskRunnerFactory;
+import org.apache.robux.indexing.overlord.GlobalTaskLockbox;
+import org.apache.robux.indexing.overlord.HeapMemoryTaskStorage;
+import org.apache.robux.indexing.overlord.IndexerMetadataStorageAdapter;
+import org.apache.robux.indexing.overlord.MetadataTaskStorage;
+import org.apache.robux.indexing.overlord.RemoteTaskRunnerFactory;
+import org.apache.robux.indexing.overlord.TaskMaster;
+import org.apache.robux.indexing.overlord.TaskQueryTool;
+import org.apache.robux.indexing.overlord.TaskRunnerFactory;
+import org.apache.robux.indexing.overlord.TaskStorage;
+import org.apache.robux.indexing.overlord.autoscaling.PendingTaskBasedWorkerProvisioningConfig;
+import org.apache.robux.indexing.overlord.autoscaling.PendingTaskBasedWorkerProvisioningStrategy;
+import org.apache.robux.indexing.overlord.autoscaling.ProvisioningSchedulerConfig;
+import org.apache.robux.indexing.overlord.autoscaling.ProvisioningStrategy;
+import org.apache.robux.indexing.overlord.autoscaling.SimpleWorkerProvisioningConfig;
+import org.apache.robux.indexing.overlord.autoscaling.SimpleWorkerProvisioningStrategy;
+import org.apache.robux.indexing.overlord.config.DefaultTaskConfig;
+import org.apache.robux.indexing.overlord.config.TaskLockConfig;
+import org.apache.robux.indexing.overlord.config.TaskQueueConfig;
+import org.apache.robux.indexing.overlord.duty.OverlordDuty;
+import org.apache.robux.indexing.overlord.duty.TaskLogAutoCleaner;
+import org.apache.robux.indexing.overlord.duty.TaskLogAutoCleanerConfig;
+import org.apache.robux.indexing.overlord.duty.UnusedSegmentsKiller;
+import org.apache.robux.indexing.overlord.hrtr.HttpRemoteTaskRunnerFactory;
+import org.apache.robux.indexing.overlord.hrtr.HttpRemoteTaskRunnerResource;
+import org.apache.robux.indexing.overlord.http.OverlordCompactionResource;
+import org.apache.robux.indexing.overlord.http.OverlordDataSourcesResource;
+import org.apache.robux.indexing.overlord.http.OverlordRedirectInfo;
+import org.apache.robux.indexing.overlord.http.OverlordResource;
+import org.apache.robux.indexing.overlord.sampler.SamplerModule;
+import org.apache.robux.indexing.overlord.setup.WorkerBehaviorConfig;
+import org.apache.robux.indexing.overlord.supervisor.SupervisorManager;
+import org.apache.robux.indexing.overlord.supervisor.SupervisorResource;
+import org.apache.robux.indexing.scheduledbatch.ScheduledBatchTaskManager;
+import org.apache.robux.indexing.worker.config.WorkerConfig;
+import org.apache.robux.indexing.worker.shuffle.DeepStorageIntermediaryDataManager;
+import org.apache.robux.indexing.worker.shuffle.IntermediaryDataManager;
+import org.apache.robux.indexing.worker.shuffle.LocalIntermediaryDataManager;
+import org.apache.robux.java.util.common.logger.Logger;
+import org.apache.robux.metadata.input.InputSourceModule;
+import org.apache.robux.query.lookup.LookupSerdeModule;
+import org.apache.robux.segment.incremental.RowIngestionMetersFactory;
+import org.apache.robux.segment.realtime.ChatHandlerProvider;
+import org.apache.robux.segment.realtime.NoopChatHandlerProvider;
+import org.apache.robux.segment.realtime.appenderator.AppenderatorsManager;
+import org.apache.robux.segment.realtime.appenderator.DummyForInjectionAppenderatorsManager;
+import org.apache.robux.server.compaction.CompactionStatusTracker;
+import org.apache.robux.server.coordinator.CoordinatorOverlordServiceConfig;
+import org.apache.robux.server.coordinator.RobuxCompactionConfig;
+import org.apache.robux.server.http.RedirectFilter;
+import org.apache.robux.server.http.RedirectInfo;
+import org.apache.robux.server.http.SelfDiscoveryResource;
+import org.apache.robux.server.initialization.ServerConfig;
+import org.apache.robux.server.initialization.jetty.JettyServerInitUtils;
+import org.apache.robux.server.initialization.jetty.JettyServerInitializer;
+import org.apache.robux.server.metrics.ServiceStatusMonitor;
+import org.apache.robux.server.metrics.TaskCountStatsProvider;
+import org.apache.robux.server.metrics.TaskSlotCountStatsProvider;
+import org.apache.robux.server.security.AuthConfig;
+import org.apache.robux.server.security.AuthenticationUtils;
+import org.apache.robux.server.security.Authenticator;
+import org.apache.robux.server.security.AuthenticatorMapper;
+import org.apache.robux.storage.local.LocalTmpStorageConfig;
+import org.apache.robux.tasklogs.TaskLogStreamer;
+import org.apache.robux.tasklogs.TaskLogs;
+import org.eclipse.jetty.rewrite.handler.RewriteHandler;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+/**
+ */
+@Command(
+    name = "overlord",
+    description = "Runs an Overlord node, see https://robux.apache.org/docs/latest/Indexing-Service.html for a description"
+)
+public class CliOverlord extends ServerRunnable
+{
+  private static final Logger log = new Logger(CliOverlord.class);
+  private static final String DEFAULT_SERVICE_NAME = "robux/overlord";
+
+  protected static final List<String> UNSECURED_PATHS = ImmutableList.of(
+      "/robux/indexer/v1/isLeader",
+      "/status/health"
+  );
+
+  private Properties properties;
+
+  public CliOverlord()
+  {
+    super(log);
+  }
+
+  @Override
+  protected Set<NodeRole> getNodeRoles(Properties properties)
+  {
+    return ImmutableSet.of(NodeRole.OVERLORD);
+  }
+
+  @Override
+  protected List<? extends Module> getModules()
+  {
+    return getModules(true);
+  }
+
+  @Inject
+  public void configure(Properties properties)
+  {
+    this.properties = properties;
+  }
+
+  protected List<? extends Module> getModules(final boolean standalone)
+  {
+    return ImmutableList.of(
+        standalone ? new MetadataManagerModule() : binder -> {},
+        new Module()
+        {
+          @Override
+          public void configure(Binder binder)
+          {
+            validateCentralizedDatasourceSchemaConfig(properties);
+
+            if (standalone) {
+              binder.bindConstant()
+                    .annotatedWith(Names.named("serviceName"))
+                    .to(DEFAULT_SERVICE_NAME);
+              binder.bindConstant().annotatedWith(Names.named("servicePort")).to(8090);
+              binder.bindConstant().annotatedWith(Names.named("tlsServicePort")).to(8290);
+
+              binder.bind(CompactionStatusTracker.class).in(LazySingleton.class);
+            }
+
+            JsonConfigProvider.bind(binder, "robux.coordinator.asOverlord", CoordinatorOverlordServiceConfig.class);
+            JsonConfigProvider.bind(binder, "robux.indexer.queue", TaskQueueConfig.class);
+            JsonConfigProvider.bind(binder, "robux.indexer.tasklock", TaskLockConfig.class);
+            JsonConfigProvider.bind(binder, "robux.indexer.task", TaskConfig.class);
+            JsonConfigProvider.bind(binder, "robux.indexer.task.default", DefaultTaskConfig.class);
+            binder.bind(RetryPolicyFactory.class).in(LazySingleton.class);
+
+            binder.bind(RobuxOverlord.class).in(ManageLifecycle.class);
+            binder.bind(TaskMaster.class).in(ManageLifecycle.class);
+            binder.bind(TaskCountStatsProvider.class).to(TaskMaster.class);
+            binder.bind(TaskSlotCountStatsProvider.class).to(TaskMaster.class);
+
+            binder.bind(TaskLogStreamer.class)
+                  .to(SwitchingTaskLogStreamer.class)
+                  .in(LazySingleton.class);
+            binder.bind(new TypeLiteral<List<TaskLogStreamer>>() {})
+                  .toProvider(new ListProvider<TaskLogStreamer>().add(TaskLogs.class))
+                  .in(LazySingleton.class);
+
+            binder.bind(TaskLogStreamer.class)
+                  .annotatedWith(Names.named("taskstreamer"))
+                  .to(TaskRunnerTaskLogStreamer.class)
+                  .in(LazySingleton.class);
+
+            binder.bind(TaskActionClientFactory.class).to(LocalTaskActionClientFactory.class).in(LazySingleton.class);
+            binder.bind(TaskActionToolbox.class).in(LazySingleton.class);
+            binder.bind(GlobalTaskLockbox.class).in(LazySingleton.class);
+            binder.bind(TaskQueryTool.class).in(LazySingleton.class);
+            binder.bind(IndexerMetadataStorageAdapter.class).in(LazySingleton.class);
+            binder.bind(CompactionScheduler.class).to(OverlordCompactionScheduler.class).in(ManageLifecycle.class);
+            binder.bind(ScheduledBatchTaskManager.class).in(LazySingleton.class);
+            binder.bind(SupervisorManager.class).in(LazySingleton.class);
+
+            binder.bind(ParallelIndexSupervisorTaskClientProvider.class).toProvider(Providers.of(null));
+            binder.bind(ShuffleClient.class).toProvider(Providers.of(null));
+            binder.bind(ChatHandlerProvider.class).toProvider(Providers.of(new NoopChatHandlerProvider()));
+
+            CliPeon.bindDataSegmentKiller(binder);
+
+            PolyBind.createChoice(
+                binder,
+                "robux.indexer.task.rowIngestionMeters.type",
+                Key.get(RowIngestionMetersFactory.class),
+                Key.get(DropwizardRowIngestionMetersFactory.class)
+            );
+            final MapBinder<String, RowIngestionMetersFactory> rowIngestionMetersHandlerProviderBinder =
+                PolyBind.optionBinder(binder, Key.get(RowIngestionMetersFactory.class));
+            rowIngestionMetersHandlerProviderBinder
+                .addBinding("dropwizard")
+                .to(DropwizardRowIngestionMetersFactory.class)
+                .in(LazySingleton.class);
+            binder.bind(DropwizardRowIngestionMetersFactory.class).in(LazySingleton.class);
+
+            PolyBind.optionBinder(binder, Key.get(TaskContextEnricher.class))
+                    .addBinding(NoopTaskContextEnricher.TYPE)
+                    .to(NoopTaskContextEnricher.class)
+                    .in(LazySingleton.class);
+
+            PolyBind.createChoiceWithDefault(
+                binder,
+                "robux.indexer.task.contextenricher.type",
+                Key.get(TaskContextEnricher.class),
+                NoopTaskContextEnricher.TYPE
+            );
+
+            configureTaskStorage(binder);
+            configureIntermediaryData(binder);
+            configureAutoscale(binder);
+            binder.install(runnerConfigModule());
+            configureOverlordHelpers(binder);
+
+            if (standalone) {
+              binder.bind(RedirectFilter.class).in(LazySingleton.class);
+              binder.bind(RedirectInfo.class).to(OverlordRedirectInfo.class).in(LazySingleton.class);
+              binder.bind(JettyServerInitializer.class)
+                    .to(OverlordJettyServerInitializer.class)
+                    .in(LazySingleton.class);
+            }
+
+            Jerseys.addResource(binder, OverlordResource.class);
+            Jerseys.addResource(binder, SupervisorResource.class);
+            Jerseys.addResource(binder, HttpRemoteTaskRunnerResource.class);
+            Jerseys.addResource(binder, OverlordCompactionResource.class);
+            Jerseys.addResource(binder, OverlordDataSourcesResource.class);
+
+
+            binder.bind(AppenderatorsManager.class)
+                  .to(DummyForInjectionAppenderatorsManager.class)
+                  .in(LazySingleton.class);
+
+            if (standalone) {
+              LifecycleModule.register(binder, Server.class);
+
+              bindAnnouncer(
+                  binder,
+                  IndexingService.class,
+                  DiscoverySideEffectsProvider.create()
+              );
+            }
+
+            Jerseys.addResource(binder, SelfDiscoveryResource.class);
+            LifecycleModule.registerKey(binder, Key.get(SelfDiscoveryResource.class));
+
+            binder.bind(LocalTmpStorageConfig.class)
+                  .toProvider(new LocalTmpStorageConfig.DefaultLocalTmpStorageConfigProvider("overlord"))
+                  .in(LazySingleton.class);
+          }
+
+          private void configureTaskStorage(Binder binder)
+          {
+            JsonConfigProvider.bind(binder, "robux.indexer.storage", TaskStorageConfig.class);
+
+            PolyBind.createChoice(
+                binder,
+                "robux.indexer.storage.type",
+                Key.get(TaskStorage.class),
+                Key.get(HeapMemoryTaskStorage.class)
+            );
+            final MapBinder<String, TaskStorage> storageBinder =
+                PolyBind.optionBinder(binder, Key.get(TaskStorage.class));
+
+            storageBinder.addBinding("local").to(HeapMemoryTaskStorage.class);
+            binder.bind(HeapMemoryTaskStorage.class).in(LazySingleton.class);
+
+            storageBinder.addBinding("metadata").to(MetadataTaskStorage.class).in(ManageLifecycle.class);
+            binder.bind(MetadataTaskStorage.class).in(LazySingleton.class);
+          }
+          private void configureIntermediaryData(Binder binder)
+          {
+            PolyBind.createChoice(
+                binder,
+                "robux.processing.intermediaryData.storage.type",
+                Key.get(IntermediaryDataManager.class),
+                Key.get(LocalIntermediaryDataManager.class)
+            );
+            final MapBinder<String, IntermediaryDataManager> biddy = PolyBind.optionBinder(
+                binder,
+                Key.get(IntermediaryDataManager.class)
+            );
+            biddy.addBinding("local").to(LocalIntermediaryDataManager.class);
+            biddy.addBinding("deepstore").to(DeepStorageIntermediaryDataManager.class).in(LazySingleton.class);
+          }
+
+          private Module runnerConfigModule()
+          {
+            return new Module()
+            {
+              @Override
+              public void configure(Binder binder)
+              {
+                JsonConfigProvider.bind(binder, "robux.worker", WorkerConfig.class);
+
+                PolyBind.createChoice(
+                    binder,
+                    "robux.indexer.runner.type",
+                    Key.get(TaskRunnerFactory.class),
+                    Key.get(HttpRemoteTaskRunnerFactory.class)
+                );
+                final MapBinder<String, TaskRunnerFactory> biddy = PolyBind.optionBinder(
+                    binder,
+                    Key.get(TaskRunnerFactory.class)
+                );
+
+                IndexingServiceModuleHelper.configureTaskRunnerConfigs(binder);
+                biddy.addBinding("local").to(ForkingTaskRunnerFactory.class);
+                binder.bind(ForkingTaskRunnerFactory.class).in(LazySingleton.class);
+
+                biddy.addBinding(RemoteTaskRunnerFactory.TYPE_NAME)
+                     .to(RemoteTaskRunnerFactory.class)
+                     .in(LazySingleton.class);
+                binder.bind(RemoteTaskRunnerFactory.class).in(LazySingleton.class);
+
+                biddy.addBinding(HttpRemoteTaskRunnerFactory.TYPE_NAME)
+                     .to(HttpRemoteTaskRunnerFactory.class)
+                     .in(LazySingleton.class);
+                binder.bind(HttpRemoteTaskRunnerFactory.class).in(LazySingleton.class);
+
+                JacksonConfigProvider.bind(binder, WorkerBehaviorConfig.CONFIG_KEY, WorkerBehaviorConfig.class, null);
+                JacksonConfigProvider.bind(
+                    binder,
+                    RobuxCompactionConfig.CONFIG_KEY,
+                    RobuxCompactionConfig.class,
+                    RobuxCompactionConfig.empty()
+                );
+              }
+
+              @Provides
+              @ManageLifecycle
+              public TaskStorageDirTracker getTaskStorageDirTracker(WorkerConfig workerConfig, TaskConfig taskConfig)
+              {
+                return TaskStorageDirTracker.fromConfigs(workerConfig, taskConfig);
+              }
+
+              @Provides
+              @LazySingleton
+              @Named(ServiceStatusMonitor.HEARTBEAT_TAGS_BINDING)
+              public Supplier<Map<String, Object>> getHeartbeatSupplier(RobuxOverlord overlord)
+              {
+                return () -> {
+                  Map<String, Object> heartbeatTags = new HashMap<>();
+                  heartbeatTags.put("leader", overlord.isLeader() ? 1 : 0);
+
+                  return heartbeatTags;
+                };
+              }
+            };
+          }
+
+          private void configureAutoscale(Binder binder)
+          {
+            JsonConfigProvider.bind(binder, "robux.indexer.autoscale", ProvisioningSchedulerConfig.class);
+            JsonConfigProvider.bind(
+                binder,
+                "robux.indexer.autoscale",
+                PendingTaskBasedWorkerProvisioningConfig.class
+            );
+            JsonConfigProvider.bind(binder, "robux.indexer.autoscale", SimpleWorkerProvisioningConfig.class);
+
+            PolyBind.createChoice(
+                binder,
+                "robux.indexer.autoscale.strategy.type",
+                Key.get(ProvisioningStrategy.class),
+                Key.get(SimpleWorkerProvisioningStrategy.class)
+            );
+            final MapBinder<String, ProvisioningStrategy> biddy = PolyBind.optionBinder(
+                binder,
+                Key.get(ProvisioningStrategy.class)
+            );
+            biddy.addBinding("simple").to(SimpleWorkerProvisioningStrategy.class);
+            biddy.addBinding("pendingTaskBased").to(PendingTaskBasedWorkerProvisioningStrategy.class);
+          }
+
+          private void configureOverlordHelpers(Binder binder)
+          {
+            JsonConfigProvider.bind(binder, "robux.indexer.logs.kill", TaskLogAutoCleanerConfig.class);
+            final Multibinder<OverlordDuty> dutyBinder = Multibinder.newSetBinder(binder, OverlordDuty.class);
+            dutyBinder.addBinding().to(TaskLogAutoCleaner.class);
+            dutyBinder.addBinding().to(UnusedSegmentsKiller.class).in(LazySingleton.class);
+          }
+        },
+        new IndexingServiceInputSourceModule(),
+        new IndexingServiceTaskLogsModule(),
+        new IndexingServiceTuningConfigModule(),
+        new InputSourceModule(),
+        new HadoopIndexTaskModule(),
+        new SupervisorModule(),
+        new LookupSerdeModule(),
+        new SamplerModule()
+    );
+  }
+
+  /**
+   */
+  private static class OverlordJettyServerInitializer implements JettyServerInitializer
+  {
+    private final AuthConfig authConfig;
+    private final ServerConfig serverConfig;
+
+    @Inject
+    OverlordJettyServerInitializer(AuthConfig authConfig, ServerConfig serverConfig)
+    {
+      this.authConfig = authConfig;
+      this.serverConfig = serverConfig;
+    }
+
+    @Override
+    public void initialize(Server server, Injector injector)
+    {
+      final ServletContextHandler root = new ServletContextHandler(ServletContextHandler.SESSIONS);
+      root.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+
+      ServletHolder holderPwd = new ServletHolder("default", DefaultServlet.class);
+
+      root.addServlet(holderPwd, "/");
+
+      final ObjectMapper jsonMapper = injector.getInstance(Key.get(ObjectMapper.class, Json.class));
+      final AuthenticatorMapper authenticatorMapper = injector.getInstance(AuthenticatorMapper.class);
+
+      JettyServerInitUtils.addQosFilters(root, injector);
+      AuthenticationUtils.addSecuritySanityCheckFilter(root, jsonMapper);
+
+      // perform no-op authorization/authentication for these resources
+      AuthenticationUtils.addNoopAuthenticationAndAuthorizationFilters(root, UNSECURED_PATHS);
+      WebConsoleJettyServerInitializer.intializeServerForWebConsoleRoot(root);
+      AuthenticationUtils.addNoopAuthenticationAndAuthorizationFilters(root, authConfig.getUnsecuredPaths());
+
+      final List<Authenticator> authenticators = authenticatorMapper.getAuthenticatorChain();
+      AuthenticationUtils.addAuthenticationFilterChain(root, authenticators);
+
+      AuthenticationUtils.addAllowOptionsFilter(root, authConfig.isAllowUnauthenticatedHttpOptions());
+      JettyServerInitUtils.addAllowHttpMethodsFilter(root, serverConfig.getAllowedHttpMethods());
+
+      JettyServerInitUtils.addExtensionFilters(root, injector);
+
+
+      // Check that requests were authorized before sending responses
+      AuthenticationUtils.addPreResponseAuthorizationCheckFilter(
+          root,
+          authenticators,
+          jsonMapper
+      );
+
+      // add some paths not to be redirected to leader.
+      final FilterHolder guiceFilterHolder = JettyServerInitUtils.getGuiceFilterHolder(injector);
+      root.addFilter(guiceFilterHolder, "/status/*", null);
+      root.addFilter(guiceFilterHolder, "/robux-internal/*", null);
+
+      // redirect anything other than status to the current lead
+      root.addFilter(new FilterHolder(injector.getInstance(RedirectFilter.class)), "/*", null);
+
+      // Can't use /* here because of Guice and Jetty static content conflicts
+      root.addFilter(guiceFilterHolder, "/robux/*", null);
+
+      root.addFilter(guiceFilterHolder, "/robux-ext/*", null);
+
+      RewriteHandler rewriteHandler = WebConsoleJettyServerInitializer.createWebConsoleRewriteHandler();
+      JettyServerInitUtils.maybeAddHSTSPatternRule(serverConfig, rewriteHandler);
+
+      HandlerList handlerList = new HandlerList();
+      handlerList.setHandlers(
+          new Handler[]{
+              rewriteHandler,
+              JettyServerInitUtils.getJettyRequestLogHandler(),
+              JettyServerInitUtils.wrapWithDefaultGzipHandler(
+                  root,
+                  serverConfig.getInflateBufferSize(),
+                  serverConfig.getCompressionLevel()
+              )
+          }
+      );
+
+      server.setHandler(handlerList);
+    }
+  }
+}

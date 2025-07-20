@@ -28,10 +28,10 @@
     <Root level="info">
       <AppenderRef ref="Console"/>
     </Root>
-    <Logger level="info" name="org.apache.druid.frame" additivity="false">
+    <Logger level="info" name="org.apache.robux.frame" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
-    <Logger level="info" name="org.apache.druid.msq" additivity="false">
+    <Logger level="info" name="org.apache.robux.msq" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
     <Logger level="info" name="org.apache.calcite" additivity="false">

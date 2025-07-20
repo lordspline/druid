@@ -32,7 +32,7 @@ This extension allows you to do the following:
 
 :::info
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-azure-extensions` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-azure-extensions` in the extensions load list.
 
 :::
 
@@ -44,7 +44,7 @@ Ingest data using either [MSQ](../../multi-stage-query/index.md) or a native bat
 
 :::info
 
-To use Azure for deep storage, set `druid.storage.type=azure`.
+To use Azure for deep storage, set `robux.storage.type=azure`.
 
 :::
 
@@ -54,12 +54,12 @@ Configure where to store segments using the following properties:
 
 | Property | Description | Default |
 |---|---|---|
-| `druid.azure.account` | The Azure Storage account name. | Must be set. |
-| `druid.azure.container` | The Azure Storage container name. | Must be set. |
-| `druid.azure.prefix` | A prefix string that will be prepended to the blob names for the segments published. | "" |
-| `druid.azure.maxTries` | Number of tries before canceling an Azure operation. | 3 |
-| `druid.azure.protocol` | The protocol to use to connect to the Azure Storage account. Either `http` or `https`. | `https` |
-| `druid.azure.storageAccountEndpointSuffix` | The Storage account endpoint to use. Override the default value to connect to [Azure Government](https://learn.microsoft.com/en-us/azure/azure-government/documentation-government-get-started-connect-to-storage#getting-started-with-storage-api) or storage accounts with [Azure DNS zone endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview#azure-dns-zone-endpoints-preview).<br/><br/>Do _not_ include the storage account name prefix in this config value.<br/><br/>Examples: `ABCD1234.blob.storage.azure.net`, `blob.core.usgovcloudapi.net`. | `blob.core.windows.net` |
+| `robux.azure.account` | The Azure Storage account name. | Must be set. |
+| `robux.azure.container` | The Azure Storage container name. | Must be set. |
+| `robux.azure.prefix` | A prefix string that will be prepended to the blob names for the segments published. | "" |
+| `robux.azure.maxTries` | Number of tries before canceling an Azure operation. | 3 |
+| `robux.azure.protocol` | The protocol to use to connect to the Azure Storage account. Either `http` or `https`. | `https` |
+| `robux.azure.storageAccountEndpointSuffix` | The Storage account endpoint to use. Override the default value to connect to [Azure Government](https://learn.microsoft.com/en-us/azure/azure-government/documentation-government-get-started-connect-to-storage#getting-started-with-storage-api) or storage accounts with [Azure DNS zone endpoints](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview#azure-dns-zone-endpoints-preview).<br/><br/>Do _not_ include the storage account name prefix in this config value.<br/><br/>Examples: `ABCD1234.blob.storage.azure.net`, `blob.core.usgovcloudapi.net`. | `blob.core.windows.net` |
 
 #### Configure authentication
 
@@ -73,24 +73,24 @@ Configure authentication using the following properties:
 
 | Property | Description | Default |
 |---|---|---|
-| `druid.azure.sharedAccessStorageToken` | The SAS (Shared Storage Access) token. |  |
-| `druid.azure.key` | The Shared Key. |  |
-| `druid.azure.useAzureCredentialsChain` | If `true`, use `DefaultAzureCredential` for authentication. | `false` |
-| `druid.azure.managedIdentityClientId` | To use managed identity authentication in the `DefaultAzureCredential`, set `useAzureCredentialsChain` to `true` and provide the client ID here. |  |
+| `robux.azure.sharedAccessStorageToken` | The SAS (Shared Storage Access) token. |  |
+| `robux.azure.key` | The Shared Key. |  |
+| `robux.azure.useAzureCredentialsChain` | If `true`, use `DefaultAzureCredential` for authentication. | `false` |
+| `robux.azure.managedIdentityClientId` | To use managed identity authentication in the `DefaultAzureCredential`, set `useAzureCredentialsChain` to `true` and provide the client ID here. |  |
 
 ### Persist task logs in Azure
 
 :::info
 
-To persist task logs in Azure Blob Storage, set `druid.indexer.logs.type=azure`.
+To persist task logs in Azure Blob Storage, set `robux.indexer.logs.type=azure`.
 
 :::
 
-Druid stores task logs using the storage account and authentication method configured for storing segments. Use the following configuration to set up where to store the task logs:
+Robux stores task logs using the storage account and authentication method configured for storing segments. Use the following configuration to set up where to store the task logs:
 
 | Property | Description | Default |
 |---|---|---|
-| `druid.indexer.logs.container` | The Azure Blob Store container to write logs to. | Must be set. |
-| `druid.indexer.logs.prefix` | The path to prepend to logs. | Must be set. |
+| `robux.indexer.logs.container` | The Azure Blob Store container to write logs to. | Must be set. |
+| `robux.indexer.logs.prefix` | The path to prepend to logs. | Must be set. |
 
 For general options regarding task retention, see [Log retention policy](../../configuration/index.md#log-retention-policy).

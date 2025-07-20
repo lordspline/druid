@@ -1,6 +1,6 @@
 ---
 name: Feature/Change
-about: A template for Druid feature and change descriptions
+about: A template for Robux feature and change descriptions
 title: ""
 labels: Feature/Change Description
 assignees: ''

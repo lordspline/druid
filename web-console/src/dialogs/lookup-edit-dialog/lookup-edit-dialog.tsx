@@ -29,8 +29,8 @@ import React, { useState } from 'react';
 
 import type { FormJsonTabs } from '../../components';
 import { AutoForm, FormJsonSelector, JsonInput } from '../../components';
-import type { LookupSpec } from '../../druid-models';
-import { isLookupInvalid, LOOKUP_FIELDS } from '../../druid-models';
+import type { LookupSpec } from '../../robux-models';
+import { isLookupInvalid, LOOKUP_FIELDS } from '../../robux-models';
 
 import { LOOKUP_COMPLETIONS } from './lookup-completions';
 

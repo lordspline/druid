@@ -19,7 +19,7 @@ exports[`ExecutionSubmitDialog matches snapshot 1`] = `
     className="bp5-dialog-body"
   >
     <p>
-      You can load query detail archive files from other Druid clusters to render the query detail here.
+      You can load query detail archive files from other Robux clusters to render the query detail here.
     </p>
     <p>
       To download the query detail archive for a query, click on the query in the

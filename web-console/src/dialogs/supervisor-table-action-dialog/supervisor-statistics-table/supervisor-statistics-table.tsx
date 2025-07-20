@@ -22,7 +22,7 @@ import type { CellInfo, Column } from 'react-table';
 import ReactTable from 'react-table';
 
 import { Loader } from '../../../components/loader/loader';
-import type { RowStats, RowStatsCounter, SupervisorStats } from '../../../druid-models';
+import type { RowStats, RowStatsCounter, SupervisorStats } from '../../../robux-models';
 import { useInterval, useQueryManager } from '../../../hooks';
 import { SMALL_TABLE_PAGE_SIZE, SMALL_TABLE_PAGE_SIZE_OPTIONS } from '../../../react-table';
 import { Api, UrlBaser } from '../../../singletons';
@@ -53,7 +53,7 @@ export const SupervisorStatisticsTable = React.memo(function SupervisorStatistic
   props: SupervisorStatisticsTableProps,
 ) {
   const { supervisorId } = props;
-  const statsEndpoint = `/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/stats`;
+  const statsEndpoint = `/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/stats`;
 
   const [supervisorStatisticsState, supervisorStatisticsQueryManager] = useQueryManager<
     null,

@@ -36,12 +36,12 @@ import {
   ViewControlBar,
 } from '../../components';
 import { AlertDialog, AsyncActionDialog, SpecDialog, TaskTableActionDialog } from '../../dialogs';
-import type { QueryWithContext } from '../../druid-models';
+import type { QueryWithContext } from '../../robux-models';
 import {
   getConsoleViewIcon,
   TASK_CANCELED_ERROR_MESSAGES,
   TASK_CANCELED_PREDICATE,
-} from '../../druid-models';
+} from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import {
   SMALL_TABLE_PAGE_SIZE,
@@ -52,12 +52,12 @@ import { Api, AppToaster } from '../../singletons';
 import {
   formatDuration,
   getApiArray,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   hasOverlayOpen,
   LocalStorageBackedVisibility,
   LocalStorageKeys,
   oneOf,
-  queryDruidSql,
+  queryRobuxSql,
   QueryManager,
   QueryState,
 } from '../../utils';
@@ -179,14 +179,14 @@ ORDER BY
     this.taskQueryManager = new QueryManager({
       processQuery: async (capabilities, cancelToken) => {
         if (capabilities.hasSql()) {
-          return await queryDruidSql(
+          return await queryRobuxSql(
             {
               query: TasksView.TASK_SQL,
             },
             cancelToken,
           );
         } else if (capabilities.hasOverlordAccess()) {
-          return (await getApiArray(`/druid/indexer/v1/tasks`, cancelToken)).map(d => {
+          return (await getApiArray(`/robux/indexer/v1/tasks`, cancelToken)).map(d => {
             return {
               task_id: d.id,
               group_id: d.groupId,
@@ -229,10 +229,10 @@ ORDER BY
 
   private readonly submitTask = async (spec: JSON) => {
     try {
-      await Api.instance.post('/druid/indexer/v1/task', spec);
+      await Api.instance.post('/robux/indexer/v1/task', spec);
     } catch (e) {
       AppToaster.show({
-        message: `Failed to submit task: ${getDruidErrorMessage(e)}`,
+        message: `Failed to submit task: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
       return;
@@ -303,7 +303,7 @@ ORDER BY
       <AsyncActionDialog
         action={async () => {
           const resp = await Api.instance.post(
-            `/druid/indexer/v1/task/${Api.encodePath(killTaskId)}/shutdown`,
+            `/robux/indexer/v1/task/${Api.encodePath(killTaskId)}/shutdown`,
             {},
           );
           return resp.data;

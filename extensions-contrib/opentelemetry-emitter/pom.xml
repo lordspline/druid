@@ -21,17 +21,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.apache.druid.extensions.contrib</groupId>
+  <groupId>org.apache.robux.extensions.contrib</groupId>
   <artifactId>opentelemetry-emitter</artifactId>
   <name>opentelemetry-emitter</name>
-  <description>Extension support for emitting OpenTelemetry spans for Druid queries</description>
+  <description>Extension support for emitting OpenTelemetry spans for Robux queries</description>
 
   <properties>
     <opentelemetry.version>1.7.0</opentelemetry.version>
@@ -68,8 +68,8 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -189,18 +189,18 @@
               <relocations>
                 <relocation>
                   <pattern>com.google.common</pattern>
-                  <shadedPattern>org.apache.druid.opentelemetry.shaded.com.google.common</shadedPattern>
+                  <shadedPattern>org.apache.robux.opentelemetry.shaded.com.google.common</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>io.grpc</pattern>
-                  <shadedPattern>org.apache.druid.opentelemetry.shaded.io.grpc</shadedPattern>
+                  <shadedPattern>org.apache.robux.opentelemetry.shaded.io.grpc</shadedPattern>
                   <includes>
                     <include>io.grpc.*</include>
                   </includes>
                 </relocation>
                 <relocation>
                   <pattern>io.opentelemetry</pattern>
-                  <shadedPattern>org.apache.druid.opentelemetry.shaded.io.opentelemetry</shadedPattern>
+                  <shadedPattern>org.apache.robux.opentelemetry.shaded.io.opentelemetry</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -213,7 +213,7 @@
         <configuration>
           <signaturesFiles>
             <signaturesFile>${project.parent.basedir}/codestyle/joda-time-forbidden-apis.txt</signaturesFile>
-            <signaturesFile>${project.parent.basedir}/codestyle/druid-forbidden-apis.txt</signaturesFile>
+            <signaturesFile>${project.parent.basedir}/codestyle/robux-forbidden-apis.txt</signaturesFile>
           </signaturesFiles>
         </configuration>
       </plugin>

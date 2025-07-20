@@ -17,5 +17,5 @@
   ~ under the License.
   -->
 
-This extension provides an integration between Druid and Azure. For more details read
+This extension provides an integration between Robux and Azure. For more details read
 the Azure extension docs [here](../../docs/development/extensions-core/azure.md).

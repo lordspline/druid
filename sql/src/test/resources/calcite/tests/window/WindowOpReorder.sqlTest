@@ -6,7 +6,7 @@ sql: |
       m2,
       SUM(m1) OVER(PARTITION BY m2) as sum1,
       SUM(m2) OVER() as sum2
-    from druid.numfoo
+    from robux.numfoo
     GROUP BY m1,m2
 
 expectedOperators:

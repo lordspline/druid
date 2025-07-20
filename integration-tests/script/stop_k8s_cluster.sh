@@ -16,14 +16,14 @@
 
 set -e
 
-if ($BUILD_DRUID_CLSUTER); then
+if ($BUILD_ROBUX_CLSUTER); then
 
-  DRUID_HOME=$(dirname `pwd`)
-  echo "SET DRUID_HOME: $DRUID_HOME"
+  ROBUX_HOME=$(dirname `pwd`)
+  echo "SET ROBUX_HOME: $ROBUX_HOME"
 
   /usr/local/bin/k3s-uninstall.sh
-  sudo rm -rf $DRUID_HOME/tmp
-  sudo rm -rf $DRUID_HOME/druid-operator
+  sudo rm -rf $ROBUX_HOME/tmp
+  sudo rm -rf $ROBUX_HOME/robux-operator
   docker ps
 
 fi

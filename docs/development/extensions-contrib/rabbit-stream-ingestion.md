@@ -28,22 +28,22 @@ These indexing tasks read events from a rabbit super-stream. The supervisor over
 
   - coordinate handoffs
   - manage failures
-  - ensure that Druid maintains scalability and replication requirements
+  - ensure that Robux maintains scalability and replication requirements
 
-  To use the rabbit stream indexing service, load the `druid-rabbit-indexing-service` community druid extension.
+  To use the rabbit stream indexing service, load the `robux-rabbit-indexing-service` community robux extension.
   See [Loading community extensions](../../configuration/extensions.md#loading-community-extensions) for more information.
 
 ## Submitting a supervisor spec
 
-To use the rabbit stream indexing service, load the `druid-rabbit-indexing-service` extension on both the Overlord and the Middle Managers. Druid starts a supervisor for a dataSource when you submit a supervisor spec. Submit your supervisor spec to the following endpoint:
+To use the rabbit stream indexing service, load the `robux-rabbit-indexing-service` extension on both the Overlord and the Middle Managers. Robux starts a supervisor for a dataSource when you submit a supervisor spec. Submit your supervisor spec to the following endpoint:
 
 
-`http://<OVERLORD_IP>:<OVERLORD_PORT>/druid/indexer/v1/supervisor`
+`http://<OVERLORD_IP>:<OVERLORD_PORT>/robux/indexer/v1/supervisor`
 
 For example:
 
 ```
-curl -X POST -H 'Content-Type: application/json' -d @supervisor-spec.json http://localhost:8090/druid/indexer/v1/supervisor
+curl -X POST -H 'Content-Type: application/json' -d @supervisor-spec.json http://localhost:8090/robux/indexer/v1/supervisor
 ```
 
 Where the file `supervisor-spec.json` contains a rabbit supervisor spec:
@@ -157,7 +157,7 @@ The `tuningConfig` is optional. If no `tuningConfig` is specified, default param
 |`indexSpecForIntermediatePersists`|Object|Defines segment storage format options to be used at indexing time for intermediate persisted temporary segments. This can be used to disable dimension/metric compression on intermediate segments to reduce memory required for final merging. However, disabling compression on intermediate segments might increase page cache use while they are used before getting merged into final segment published, see [IndexSpec](#indexspec) for possible values.| no (default = same as `indexSpec`)|
 |`reportParseExceptions`|Boolean|If true, exceptions encountered during parsing will be thrown and will halt ingestion; if false, unparseable rows and fields will be skipped.|no (default == false)|
 |`handoffConditionTimeout`|Long| Milliseconds to wait for segment handoff. It must be >= 0, where 0 means to wait forever.| no (default == 0)|
-|`resetOffsetAutomatically`|Boolean|Controls behavior when Druid needs to read RabbitMQ messages that are no longer available. Not supported.  |no (default == false)|
+|`resetOffsetAutomatically`|Boolean|Controls behavior when Robux needs to read RabbitMQ messages that are no longer available. Not supported.  |no (default == false)|
 |`skipSequenceNumberAvailabilityCheck`|Boolean|Whether to enable checking if the current sequence number is still available in a particular RabbitMQ stream. If set to false, the indexing task will attempt to reset the current sequence number (or not), depending on the value of `resetOffsetAutomatically`.|no (default == false)|
 |`workerThreads`|Integer|The number of threads that the supervisor uses to handle requests/responses for worker tasks, along with any other internal asynchronous operation.|no (default == min(10, taskCount))|
 |`chatRetries`|Integer|The number of times HTTP requests to indexing tasks will be retried before considering tasks unresponsive.| no (default == 8)|
@@ -165,13 +165,13 @@ The `tuningConfig` is optional. If no `tuningConfig` is specified, default param
 |`shutdownTimeout`|ISO8601 Period|How long to wait for the supervisor to attempt a graceful shutdown of tasks before exiting.|no (default == PT80S)|
 |`recordBufferSize`|Integer|Size of the buffer (number of events) used between the RabbitMQ consumers and the main ingestion thread.|no ( default == 100 MB or an estimated 10% of available heap, whichever is smaller.)|
 |`recordBufferOfferTimeout`|Integer|Length of time in milliseconds to wait for space to become available in the buffer before timing out.| no (default == 5000)|                                                 |
-|`segmentWriteOutMediumFactory`|Object|Segment write-out medium to use when creating segments. See below for more information.|no (not specified by default, the value from `druid.peon.defaultSegmentWriteOutMediumFactory.type` is used)|
+|`segmentWriteOutMediumFactory`|Object|Segment write-out medium to use when creating segments. See below for more information.|no (not specified by default, the value from `robux.peon.defaultSegmentWriteOutMediumFactory.type` is used)|
 |`intermediateHandoffPeriod`|ISO8601 Period|How often the tasks should hand off segments. Handoff will happen either if `maxRowsPerSegment` or `maxTotalRows` is hit or every `intermediateHandoffPeriod`, whichever happens earlier.| no (default == P2147483647D)|
 |`logParseExceptions`|Boolean|If true, log an error message when a parsing exception occurs, containing information about the row where the error occurred.|no, default == false|
 |`maxParseExceptions`|Integer|The maximum number of parse exceptions that can occur before the task halts ingestion and fails. Overridden if `reportParseExceptions` is set.|no, unlimited default|
-|`maxSavedParseExceptions`|Integer|When a parse exception occurs, Druid can keep track of the most recent parse exceptions. `maxSavedParseExceptions` limits how many exception instances Druid saves. These saved exceptions are made available after the task finishes in the [task completion report](../../ingestion/tasks.md#task-reports). Overridden if `reportParseExceptions` is set.|no, default == 0|
+|`maxSavedParseExceptions`|Integer|When a parse exception occurs, Robux can keep track of the most recent parse exceptions. `maxSavedParseExceptions` limits how many exception instances Robux saves. These saved exceptions are made available after the task finishes in the [task completion report](../../ingestion/tasks.md#task-reports). Overridden if `reportParseExceptions` is set.|no, default == 0|
 |`maxRecordsPerPoll`|Integer|The maximum number of records/events to be fetched from buffer per poll. The actual maximum will be `Max(maxRecordsPerPoll, Max(bufferSize, 1))`|no, default = 100|
-|`repartitionTransitionDuration`|ISO8601 Period|When shards are split or merged, the supervisor will recompute shard -> task group mappings, and signal any running tasks created under the old mappings to stop early at (current time + `repartitionTransitionDuration`). Stopping the tasks early allows Druid to begin reading from the new shards more quickly. The repartition transition wait time controlled by this property gives the stream additional time to write records to the new shards after the split/merge, which helps avoid the issues with empty shard handling described at https://github.com/apache/druid/issues/7600.|no, (default == PT2M)|
+|`repartitionTransitionDuration`|ISO8601 Period|When shards are split or merged, the supervisor will recompute shard -> task group mappings, and signal any running tasks created under the old mappings to stop early at (current time + `repartitionTransitionDuration`). Stopping the tasks early allows Robux to begin reading from the new shards more quickly. The repartition transition wait time controlled by this property gives the stream additional time to write records to the new shards after the split/merge, which helps avoid the issues with empty shard handling described at https://github.com/apache/robux/issues/7600.|no, (default == PT2M)|
 |`offsetFetchPeriod`|ISO8601 Period|How often the supervisor queries RabbitMQ and the indexing tasks to fetch current offsets and calculate lag. If the user-specified value is below the minimum value (`PT5S`), the supervisor ignores the value and uses the minimum value instead.|no (default == PT30S, min == PT5S)|
 
 
@@ -226,7 +226,7 @@ In order to configure these, use the dynamic configuration provider of the ioCon
     "replicas": 1,
     "taskDuration": "PT1H",
     "consumerProperties": {
-        "druid.dynamic.config.provider" : {
+        "robux.dynamic.config.provider" : {
             "type": "environment",
             "variables": {
                 "username": "RABBIT_USERNAME",

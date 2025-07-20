@@ -27,7 +27,7 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-This document describes the API endpoints to retrieve and manage dynamic configurations for the [Coordinator](../design/coordinator.md) and [Overlord](../design/overlord.md) in Apache Druid.
+This document describes the API endpoints to retrieve and manage dynamic configurations for the [Coordinator](../design/coordinator.md) and [Overlord](../design/overlord.md) in Apache Robux.
 
 In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router service address and port.
 Replace it with the information for your deployment.
@@ -44,7 +44,7 @@ Retrieves the current Coordinator dynamic configuration. Returns a JSON object w
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config`
+`GET` `/robux/coordinator/v1/config`
 
 #### Responses
 
@@ -68,7 +68,7 @@ Retrieves the current Coordinator dynamic configuration. Returns a JSON object w
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config"
 ```
 
 </TabItem>
@@ -76,7 +76,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config"
 
 
 ```HTTP
-GET /druid/coordinator/v1/config HTTP/1.1
+GET /robux/coordinator/v1/config HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -121,16 +121,16 @@ For information on the supported properties, see [Dynamic configuration](../conf
 
 #### URL
 
-`POST` `/druid/coordinator/v1/config`
+`POST` `/robux/coordinator/v1/config`
 
 #### Header parameters
 
 The endpoint supports a set of optional header parameters to populate the `author` and `comment` fields in the configuration history.
 
-* `X-Druid-Author`
+* `X-Robux-Author`
   * Type: String
   * Author of the configuration change.
-* `X-Druid-Comment`
+* `X-Robux-Comment`
   * Type: String
   * Description for the update.
 
@@ -156,7 +156,7 @@ The endpoint supports a set of optional header parameters to populate the `autho
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config" \
 --header 'Content-Type: application/json' \
 --data '{
   "millisToWaitBeforeDeleting": 900000,
@@ -186,7 +186,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config" \
 
 
 ```HTTP
-POST /druid/coordinator/v1/config HTTP/1.1
+POST /robux/coordinator/v1/config HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 683
@@ -227,7 +227,7 @@ Retrieves the history of changes to Coordinator dynamic configuration over an in
 
 #### URL
 
-`GET` `/druid/coordinator/v1/config/history`
+`GET` `/robux/coordinator/v1/config/history`
 
 #### Query parameters
 
@@ -235,7 +235,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 * `interval`
   * Type: String
-  * Limit the results to the specified time interval in ISO 8601 format delimited with `/`. For example, `2023-07-13/2023-07-19`. The default interval is one week. You can change this period by setting `druid.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Coordinator.
+  * Limit the results to the specified time interval in ISO 8601 format delimited with `/`. For example, `2023-07-13/2023-07-19`. The default interval is one week. You can change this period by setting `robux.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Coordinator.
 
 * `count`
   * Type: Integer
@@ -266,7 +266,7 @@ The following example retrieves the dynamic configuration history between `2022-
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/history?interval=2022-07-13%2F2024-07-19&count=10"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/config/history?interval=2022-07-13%2F2024-07-19&count=10"
 ```
 
 </TabItem>
@@ -274,7 +274,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/config/history?interval=
 
 
 ```HTTP
-GET /druid/coordinator/v1/config/history?interval=2022-07-13/2024-07-19&count=10 HTTP/1.1
+GET /robux/coordinator/v1/config/history?interval=2022-07-13/2024-07-19&count=10 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -305,7 +305,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ## Overlord dynamic configuration
 
-The Overlord has dynamic configurations to tune how Druid assigns tasks to workers.
+The Overlord has dynamic configurations to tune how Robux assigns tasks to workers.
 For information on the supported properties, see [Overlord dynamic configuration](../configuration/index.md#overlord-dynamic-configuration).
 
 ### Get dynamic configuration
@@ -316,7 +316,7 @@ Returns an empty response body if there is no current Overlord dynamic configura
 
 #### URL
 
-`GET` `/druid/indexer/v1/worker`
+`GET` `/robux/indexer/v1/worker`
 
 #### Responses
 
@@ -338,7 +338,7 @@ Returns an empty response body if there is no current Overlord dynamic configura
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/worker"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/worker"
 ```
 
 </TabItem>
@@ -346,7 +346,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/worker"
 
 
 ```HTTP
-GET /druid/indexer/v1/worker HTTP/1.1
+GET /robux/indexer/v1/worker HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -381,16 +381,16 @@ For information on the supported properties, see [Overlord dynamic configuration
 
 #### URL
 
-`POST` `/druid/indexer/v1/worker`
+`POST` `/robux/indexer/v1/worker`
 
 #### Header parameters
 
 The endpoint supports a set of optional header parameters to populate the `author` and `comment` fields in the configuration history.
 
-* `X-Druid-Author`
+* `X-Robux-Author`
   * Type: String
   * Author of the configuration change.
-* `X-Druid-Comment`
+* `X-Robux-Comment`
   * Type: String
   * Description for the update.
 
@@ -416,7 +416,7 @@ The endpoint supports a set of optional header parameters to populate the `autho
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/worker" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/worker" \
 --header 'Content-Type: application/json' \
 --data '{
   "type": "default",
@@ -436,7 +436,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/worker" \
 
 
 ```HTTP
-POST /druid/indexer/v1/worker HTTP/1.1
+POST /robux/indexer/v1/worker HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 196
@@ -467,7 +467,7 @@ Retrieves the history of changes to Overlord dynamic configuration over an inter
 
 #### URL
 
-`GET` `/druid/indexer/v1/worker/history`
+`GET` `/robux/indexer/v1/worker/history`
 
 #### Query parameters
 
@@ -475,7 +475,7 @@ The endpoint supports a set of optional query parameters to filter results.
 
 * `interval`
   * Type: String
-  * Limit the results to the specified time interval in ISO 8601 format delimited with `/`. For example, `2023-07-13/2023-07-19`. The default interval is one week. You can change this period by setting `druid.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Overlord.
+  * Limit the results to the specified time interval in ISO 8601 format delimited with `/`. For example, `2023-07-13/2023-07-19`. The default interval is one week. You can change this period by setting `robux.audit.manager.auditHistoryMillis` in the `runtime.properties` file for the Overlord.
 
 * `count`
   * Type: Integer
@@ -505,7 +505,7 @@ The following example retrieves the dynamic configuration history between `2022-
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/worker/history?interval=2022-07-13%2F2024-07-19&count=10"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/worker/history?interval=2022-07-13%2F2024-07-19&count=10"
 ```
 
 </TabItem>
@@ -513,7 +513,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/worker/history?interval=2022
 
 
 ```HTTP
-GET /druid/indexer/v1/worker/history?interval=2022-07-13%2F2024-07-19&count=10 HTTP/1.1
+GET /robux/indexer/v1/worker/history?interval=2022-07-13%2F2024-07-19&count=10 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -547,7 +547,7 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 Returns an array of all the worker nodes in the cluster along with its corresponding metadata.
 
-`GET` `/druid/indexer/v1/workers`
+`GET` `/robux/indexer/v1/workers`
 
 #### Responses
 
@@ -571,7 +571,7 @@ Returns an array of all the worker nodes in the cluster along with its correspon
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/workers"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/workers"
 ```
 
 </TabItem>
@@ -579,7 +579,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/workers"
 
 
 ```HTTP
-GET /druid/indexer/v1/workers HTTP/1.1
+GET /robux/indexer/v1/workers HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -621,7 +621,7 @@ Returns an empty response body if there are no Overlord scaling events.
 
 #### URL
 
-`GET` `/druid/indexer/v1/scaling`
+`GET` `/robux/indexer/v1/scaling`
 
 #### Responses
 
@@ -645,7 +645,7 @@ Returns an empty response body if there are no Overlord scaling events.
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/scaling"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/indexer/v1/scaling"
 ```
 
 </TabItem>
@@ -653,7 +653,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/indexer/v1/scaling"
 
 
 ```HTTP
-GET /druid/indexer/v1/scaling HTTP/1.1
+GET /robux/indexer/v1/scaling HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 

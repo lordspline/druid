@@ -24,13 +24,13 @@ title: "ORC Extension"
 
 ## ORC extension
 
-This Apache Druid extension enables Druid to ingest and understand the Apache ORC data format.
+This Apache Robux extension enables Robux to ingest and understand the Apache ORC data format.
 
 The extension provides the [ORC input format](../../ingestion/data-formats.md#orc) and the [ORC Hadoop parser](../../ingestion/data-formats.md#orc-hadoop-parser)
 for [native batch ingestion](../../ingestion/native-batch.md) and [Hadoop batch ingestion](../../ingestion/hadoop.md), respectively.
 Please see corresponding docs for details.
 
-To use this extension, make sure to [include](../../configuration/extensions.md#loading-extensions) `druid-orc-extensions` in the extensions load list.
+To use this extension, make sure to [include](../../configuration/extensions.md#loading-extensions) `robux-orc-extensions` in the extensions load list.
 
 ### Migration from 'contrib' extension
 This extension, first available in version 0.15.0, replaces the previous 'contrib' extension which was available until
@@ -45,7 +45,7 @@ To migrate to 0.15.0+:
 ORC file, of which was essentially required to have the types correct, but notably _not_ the column names, which
 facilitated column renaming. In the 'core' extension, column renaming can be achieved with
 [`flattenSpec`](../../ingestion/ingestion-spec.md#flattenspec). For example, `"typeString":"struct<time:string,name:string>"`
-with the actual schema `struct<_col0:string,_col1:string>`, to preserve Druid schema would need replaced with:
+with the actual schema `struct<_col0:string,_col1:string>`, to preserve Robux schema would need replaced with:
 
 ```json
 "flattenSpec": {
@@ -68,7 +68,7 @@ with the actual schema `struct<_col0:string,_col1:string>`, to preserve Druid sc
 * The 'contrib' extension supported a `mapFieldNameFormat` property, which provided a way to specify a dimension to
  flatten `OrcMap` columns with primitive types. This functionality has also been replaced with
  [`flattenSpec`](../../ingestion/ingestion-spec.md#flattenspec). For example: `"mapFieldNameFormat": "<PARENT>_<CHILD>"`
- for a dimension `nestedData_dim1`, to preserve Druid schema could be replaced with
+ for a dimension `nestedData_dim1`, to preserve Robux schema could be replaced with
 
  ```json
 "flattenSpec": {

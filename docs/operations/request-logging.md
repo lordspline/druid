@@ -23,12 +23,12 @@ sidebar_label: Request logging
   ~ under the License.
   -->
 
-All Apache Druid services that can serve queries can also log the query requests they process.
+All Apache Robux services that can serve queries can also log the query requests they process.
 Request logs contain information on query metrics, including execution time and memory usage.
 You can use information in the request logs to monitor query performance, determine bottlenecks, and analyze and improve slow queries.
 
 Request logging is disabled by default.
-This topic describes how to configure Druid to generate request logs to track query metrics.
+This topic describes how to configure Robux to generate request logs to track query metrics.
 
 ## Configure request logging
 
@@ -44,23 +44,23 @@ The following request logger types are available:
 - [`composing`](../configuration/index.md#composing-request-logging): Logs all requests to multiple request loggers.
 - [`switching`](../configuration/index.md#switching-request-logging): Logs native queries and SQL queries to separate request loggers.
 
-Define the type of request logger in `druid.request.logging.type`.
+Define the type of request logger in `robux.request.logging.type`.
 See the [Request logging configuration](../configuration/index.md#request-logging) for properties to set for each type of request logger.
 Specify these properties in the `common.runtime.properties` file.
-You must restart Druid for the changes to take effect.
+You must restart Robux for the changes to take effect.
 
-Druid stores the results in the Broker logs, unless the request logging type is `emitter`.
+Robux stores the results in the Broker logs, unless the request logging type is `emitter`.
 If you use emitter request logging, you must also configure metrics emission.
 
 ## Configure metrics emission
 
-Druid includes various emitters to send metrics and alerts. 
-To emit query metrics, set `druid.request.logging.feed=emitter`, and define the emitter type in the `druid.emitter` property.
+Robux includes various emitters to send metrics and alerts. 
+To emit query metrics, set `robux.request.logging.feed=emitter`, and define the emitter type in the `robux.emitter` property.
 
-You can use any of the following emitters in Druid:
+You can use any of the following emitters in Robux:
 
 - `noop`: Disables metric emission, the default behavior.
-- [`logging`](../configuration/index.md#logging-emitter-module): Emits metrics to Log4j 2. See [Logging](../configuration/logging.md) to configure Log4j 2 for use with Druid.
+- [`logging`](../configuration/index.md#logging-emitter-module): Emits metrics to Log4j 2. See [Logging](../configuration/logging.md) to configure Log4j 2 for use with Robux.
 - [`http`](../configuration/index.md#http-emitter-module): Sends HTTP `POST` requests containing the metrics in JSON format to a user-defined endpoint.
 - [`parametrized`](../configuration/index.md#parametrized-http-emitter-module): Operates like the `http` emitter but fine-tunes the recipient URL based on the event feed.
 - [`composing`](../configuration/index.md#composing-emitter-module): Emits metrics to multiple emitter types.
@@ -68,7 +68,7 @@ You can use any of the following emitters in Druid:
 
 Specify these properties in the `common.runtime.properties` file.
 See the [Metrics emitters configuration](../configuration/index.md#metrics-emitters) for properties to set for each type of metrics emitter.
-You must restart Druid for the changes to take effect.
+You must restart Robux for the changes to take effect.
 
 
 ## Example
@@ -76,15 +76,15 @@ You must restart Druid for the changes to take effect.
 The following configuration shows how to enable request logging and post query metrics to the endpoint `http://example.com:8080/path`.
 ```
 # Enable request logging and configure the emitter request logger
-druid.request.logging.type=emitter
-druid.request.logging.feed=myRequestLogFeed
+robux.request.logging.type=emitter
+robux.request.logging.feed=myRequestLogFeed
 
-# Enable metrics emission and tell Druid where to emit messages
-druid.emitter=http
-druid.emitter.http.recipientBaseUrl=http://example.com:8080/path
+# Enable metrics emission and tell Robux where to emit messages
+robux.emitter=http
+robux.emitter.http.recipientBaseUrl=http://example.com:8080/path
 
 # Authenticate to the base URL, if needed
-druid.emitter.http.basicAuthentication=username:password
+robux.emitter.http.basicAuthentication=username:password
 ```
 
 The following shows an example log emitter output:
@@ -93,7 +93,7 @@ The following shows an example log emitter output:
     {
         "feed": "metrics",
         "timestamp": "2022-01-06T20:32:06.628Z",
-        "service": "druid/broker",
+        "service": "robux/broker",
         "host": "localhost:8082",
         "version": "2022.01.0-iap-SNAPSHOT",
         "metric": "sqlQuery/bytes",
@@ -108,7 +108,7 @@ The following shows an example log emitter output:
         "feed": "myRequestLogFeed",
         "timestamp": "2022-01-06T20:32:06.585Z",
         "remoteAddr": "127.0.0.1",
-        "service": "druid/broker",
+        "service": "robux/broker",
         "sqlQueryContext":
         {
             "useApproximateCountDistinct": false,
@@ -145,7 +145,7 @@ The following shows an example log emitter output:
         "feed": "myRequestLogFeed",
         "timestamp": "2022-01-06T20:32:07.652Z",
         "remoteAddr": "",
-        "service": "druid/broker",
+        "service": "robux/broker",
         "sqlQueryContext":
         {},
         "queryStats":

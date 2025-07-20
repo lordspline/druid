@@ -49,39 +49,39 @@ pre code {
   color: #4460de;
 }
 
-footer.druid-footer {
+footer.robux-footer {
   line-height: 1.4em;
   padding: 32px 0 48px 0;
   background-color: #f3f3f3;
   border-top: 1px solid white;
   margin-top: 50px;
 }
-footer.druid-footer .text-center {
+footer.robux-footer .text-center {
   text-align: center;
 }
-footer.druid-footer a {
+footer.robux-footer a {
   color: #4460de;
   cursor: pointer;
   font-weight: 600;
 }
-footer.druid-footer a:hover {
+footer.robux-footer a:hover {
   color: #4460de;
 }
-footer.druid-footer .license {
+footer.robux-footer .license {
   margin-top: 12px;
   font-size: 11px;
   color: #aaa;
   line-height: 1.4em;
 }
-footer.druid-footer .license a {
+footer.robux-footer .license a {
   color: inherit;
   font-weight: inherit;
 }
-footer.druid-footer .license a:hover {
+footer.robux-footer .license a:hover {
   color: #4460de;
   text-decoration: underline;
 }
-footer.druid-footer .fa, footer.druid-footer .fab, footer.druid-footer .fas {
+footer.robux-footer .fa, footer.robux-footer .fab, footer.robux-footer .fas {
   font-size: 18px;
   margin: 6px 0;
   color: #4460de;

@@ -22,7 +22,7 @@ title: "Query processing"
   ~ under the License.
   -->
 
-This topic provides a high-level overview of how Apache Druid distributes and processes queries.
+This topic provides a high-level overview of how Apache Robux distributes and processes queries.
 
 The general flow is as follows:
 
@@ -31,11 +31,11 @@ The general flow is as follows:
 3. The Historical and Middle Manager services execute each subquery and return results to the Broker.
 4. The Broker merges the partial results to get the final answer, which it returns to the original caller.
 
-Druid uses time and attribute pruning to minimize the data it must scan for each query.
+Robux uses time and attribute pruning to minimize the data it must scan for each query.
 
 For filters that are more precise than what the Broker uses for pruning, the [indexing structures](../design/storage.md#indexing-and-handoff) inside each segment allow Historical services to identify matching rows before accessing the data. Once the Historical service knows which rows match a particular query, it only accesses the requires rows and columns.
 
-To maximize query performance, Druid uses the following techniques:
+To maximize query performance, Robux uses the following techniques:
 
 - Pruning the set of segments accessed for a query.
 - Within each segment, using indexes to identify which rows must be accessed.
@@ -45,4 +45,4 @@ To maximize query performance, Druid uses the following techniques:
 
 See the following topic for more information:
 
-* [Query execution](../querying/query-execution.md) to learn how Druid services process query statements.
+* [Query execution](../querying/query-execution.md) to learn how Robux services process query statements.

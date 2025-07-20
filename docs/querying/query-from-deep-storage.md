@@ -22,7 +22,7 @@ title: "Query from deep storage"
   ~ under the License.
   -->
 
-Druid can query segments that are only stored in deep storage. Running a query from deep storage is slower than running queries from segments that are loaded on Historical processes, but it's a great tool for data that you either access infrequently or where the low latency results that typical Druid queries provide is not necessary. Queries from deep storage can increase the surface area of data available to query without requiring you to scale your Historical processes to accommodate more segments.
+Robux can query segments that are only stored in deep storage. Running a query from deep storage is slower than running queries from segments that are loaded on Historical processes, but it's a great tool for data that you either access infrequently or where the low latency results that typical Robux queries provide is not necessary. Queries from deep storage can increase the surface area of data available to query without requiring you to scale your Historical processes to accommodate more segments.
 
 ## Prerequisites
 
@@ -30,14 +30,14 @@ Query from deep storage requires the Multi-stage query (MSQ) task engine. Load t
 
 To be queryable, your datasource must meet one of the following conditions:
 
-- At least one segment from the datasource is loaded onto a Historical service for Druid to plan the query. This segment can be any segment from the datasource. You can verify that a datasource has at least one segment on a Historical service if it's visible in the Druid console.
+- At least one segment from the datasource is loaded onto a Historical service for Robux to plan the query. This segment can be any segment from the datasource. You can verify that a datasource has at least one segment on a Historical service if it's visible in the Robux console.
 - You have the centralized datasource schema feature enabled. For more information, see [Centralized datasource schema](../configuration/index.md#centralized-datasource-schema-experimental).
 
 If you use centralized data source schema, there's an additional step for any datasource created prior to enabling it to make the datasource queryable from deep storage. You need to load the segments from deep storage onto a Historical so that the schema can be backfilled in the metadata database. You can load some or all of the segments that are only in deep storage. If you don't load all the segments, any dimensions that are only in the segments you didn't load will not be in the queryable datasource schema and won't be queryable from deep storage. That is, only the dimensions that are present in the segment schema in metadata database are queryable. Once that process is complete, you can unload all the segments from the Historical and only keep the data in deep storage.
 
 ## Keep segments in deep storage only
 
-Any data you ingest into Druid is already stored in deep storage, so you don't need to perform any additional configuration from that perspective. However, to take advantage of the cost savings that querying from deep storage provides, make sure not all your segments get loaded onto Historical processes. If you use centralized datasource schema, a datasource can be kept only in deep storage but remain queryable.
+Any data you ingest into Robux is already stored in deep storage, so you don't need to perform any additional configuration from that perspective. However, to take advantage of the cost savings that querying from deep storage provides, make sure not all your segments get loaded onto Historical processes. If you use centralized datasource schema, a datasource can be kept only in deep storage but remain queryable.
 
 To manage which segments are kept only in deep storage and which get loaded onto Historical processes, configure [load rules](../operations/rule-configuration.md#load-rules) 
 
@@ -56,12 +56,12 @@ The easiest way to keep segments only in deep storage is to explicitly configure
 
 Any segment that falls within the specified interval exists only in deep storage. For segments that aren't in this interval, they'll use the default cluster load rules or any other load rules you configure.
 
-To configure the load rules through the Druid console, go to **Datasources > ... in the Actions column > Edit retention rules**. Then, paste the provided JSON into the JSON tab:
+To configure the load rules through the Robux console, go to **Datasources > ... in the Actions column > Edit retention rules**. Then, paste the provided JSON into the JSON tab:
 
 ![](../assets/tutorial-query-deepstorage-retention-rule.png)
 
 
-You can verify that a segment is not loaded on any Historical tiers by querying the Druid metadata table:
+You can verify that a segment is not loaded on any Historical tiers by querying the Robux metadata table:
 
 ```sql
 SELECT "segment_id", "replication_factor" FROM sys."segments" WHERE "replication_factor" = 0 AND "datasource" = YOUR_DATASOURCE
@@ -69,23 +69,23 @@ SELECT "segment_id", "replication_factor" FROM sys."segments" WHERE "replication
 
 Segments with a `replication_factor` of `0` are not assigned to any Historical tiers. Queries against these segments are run directly against the segment in deep storage. 
 
-You can also confirm this through the Druid console. On the **Segments** page, see the **Replication factor** column.
+You can also confirm this through the Robux console. On the **Segments** page, see the **Replication factor** column.
 
-Note that the actual number of replicas may differ from the replication factor temporarily as Druid processes your load rules.
+Note that the actual number of replicas may differ from the replication factor temporarily as Robux processes your load rules.
 
 ## Run a query from deep storage
 
 ### Submit a query
 
-You can query data from deep storage by submitting a query to the API using `POST /sql/statements`  or the Druid console. Druid uses the multi-stage query (MSQ) task engine to perform the query.
+You can query data from deep storage by submitting a query to the API using `POST /sql/statements`  or the Robux console. Robux uses the multi-stage query (MSQ) task engine to perform the query.
 
 To run a query from deep storage, send your query to the Router using the POST method:
 
 ```
-POST https://ROUTER:8888/druid/v2/sql/statements
+POST https://ROUTER:8888/robux/v2/sql/statements
 ```
 
-Submitting a query from deep storage uses the same syntax as any other Druid SQL query where the query is contained in the "query" field in the JSON object within the request payload. For example:
+Submitting a query from deep storage uses the same syntax as any other Robux SQL query where the query is contained in the "query" field in the JSON object within the request payload. For example:
 
 ```json
 {"query" : "SELECT COUNT(*) FROM data_source WHERE foo = 'bar'"}
@@ -96,12 +96,12 @@ Generally, the request body fields are the same between the `sql` and `sql/state
 Apart from the context parameters mentioned [here](../multi-stage-query/reference.md#context-parameters) there are additional context parameters for `sql/statements`: 
 
    - `executionMode`  (required) determines how query results are fetched. Set this to `ASYNC`. 
-   - `selectDestination` (optional) set to `durableStorage` instructs Druid to write the results of SELECT queries to durable storage. For result sets with more than 3000 rows, it is highly recommended to use `durableStorage`. Note that this requires you to have [durable storage for MSQ enabled](../operations/durable-storage.md).
+   - `selectDestination` (optional) set to `durableStorage` instructs Robux to write the results of SELECT queries to durable storage. For result sets with more than 3000 rows, it is highly recommended to use `durableStorage`. Note that this requires you to have [durable storage for MSQ enabled](../operations/durable-storage.md).
 
 The following sample query includes the two additional context parameters that querying from deep storage supports:
 
 ```
-curl --location 'http://localhost:8888/druid/v2/sql/statements' \
+curl --location 'http://localhost:8888/robux/v2/sql/statements' \
 --header 'Content-Type: application/json' \
 --data '{
     "query":"SELECT * FROM \"YOUR_DATASOURCE\" where \"__time\" >TIMESTAMP'\''2017-09-01'\'' and \"__time\" <= TIMESTAMP'\''2017-09-02'\''",
@@ -143,7 +143,7 @@ The response for submitting a query includes the query ID along with basic infor
 You can check the status of a query with the following API call:
 
 ```
-GET https://ROUTER:8888/druid/v2/sql/statements/QUERYID
+GET https://ROUTER:8888/robux/v2/sql/statements/QUERYID
 ```
 
 The query returns the status of the query, such as `ACCEPTED` or `RUNNING`. Before you attempt to get results, make sure the state is `SUCCESS`. 
@@ -191,7 +191,7 @@ Only the user who submitted a query can retrieve the results for the query.
 Use the following endpoint to retrieve results:
 
 ```
-GET https://ROUTER:8888/druid/v2/sql/statements/QUERYID/results?page=PAGENUMBER&resultFormat=FORMAT
+GET https://ROUTER:8888/robux/v2/sql/statements/QUERYID/results?page=PAGENUMBER&resultFormat=FORMAT
 ```
 
 Results are returned in JSON format.

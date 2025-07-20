@@ -35,14 +35,14 @@ import {
 } from '../../components';
 import { AsyncActionDialog, LookupEditDialog } from '../../dialogs/';
 import { LookupTableActionDialog } from '../../dialogs/lookup-table-action-dialog/lookup-table-action-dialog';
-import type { LookupSpec } from '../../druid-models';
-import { lookupSpecSummary } from '../../druid-models';
+import type { LookupSpec } from '../../robux-models';
+import { lookupSpecSummary } from '../../robux-models';
 import { STANDARD_TABLE_PAGE_SIZE, STANDARD_TABLE_PAGE_SIZE_OPTIONS } from '../../react-table';
 import { Api, AppToaster } from '../../singletons';
 import {
   deepGet,
   getApiArray,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   hasOverlayOpen,
   isLookupsUninitialized,
   LocalStorageBackedVisibility,
@@ -126,13 +126,13 @@ export class LookupsView extends React.PureComponent<LookupsViewProps, LookupsVi
     this.lookupsQueryManager = new QueryManager({
       processQuery: async (_, cancelToken) => {
         const tiersResp = await getApiArray(
-          '/druid/coordinator/v1/lookups/config?discover=true',
+          '/robux/coordinator/v1/lookups/config?discover=true',
           cancelToken,
         );
         const tiers =
           tiersResp.length > 0 ? tiersResp.sort(tierNameCompare) : [DEFAULT_LOOKUP_TIER];
 
-        const lookupResp = await Api.instance.get('/druid/coordinator/v1/lookups/config/all', {
+        const lookupResp = await Api.instance.get('/robux/coordinator/v1/lookups/config/all', {
           cancelToken,
         });
         const lookupData = lookupResp.data;
@@ -173,13 +173,13 @@ export class LookupsView extends React.PureComponent<LookupsViewProps, LookupsVi
 
   private async initializeLookup() {
     try {
-      await Api.instance.post(`/druid/coordinator/v1/lookups/config`, {});
+      await Api.instance.post(`/robux/coordinator/v1/lookups/config`, {});
       this.lookupsQueryManager.rerunLastQuery();
     } catch (e) {
       AppToaster.show({
         icon: IconNames.ERROR,
         intent: Intent.DANGER,
-        message: getDruidErrorMessage(e),
+        message: getRobuxErrorMessage(e),
       });
     }
   }
@@ -233,7 +233,7 @@ export class LookupsView extends React.PureComponent<LookupsViewProps, LookupsVi
     if (!lookupEdit) return;
 
     const version = updateLookupVersion ? new Date().toISOString() : lookupEdit.version;
-    let endpoint = '/druid/coordinator/v1/lookups/config';
+    let endpoint = '/robux/coordinator/v1/lookups/config';
     const specJson: any = lookupEdit.spec;
     let dataJson: any;
     if (isEdit) {
@@ -262,7 +262,7 @@ export class LookupsView extends React.PureComponent<LookupsViewProps, LookupsVi
       AppToaster.show({
         icon: IconNames.ERROR,
         intent: Intent.DANGER,
-        message: getDruidErrorMessage(e),
+        message: getRobuxErrorMessage(e),
       });
     }
   }
@@ -291,7 +291,7 @@ export class LookupsView extends React.PureComponent<LookupsViewProps, LookupsVi
       <AsyncActionDialog
         action={async () => {
           await Api.instance.delete(
-            `/druid/coordinator/v1/lookups/config/${Api.encodePath(
+            `/robux/coordinator/v1/lookups/config/${Api.encodePath(
               deleteLookupTier,
             )}/${Api.encodePath(deleteLookupName)}`,
           );

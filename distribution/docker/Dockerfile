@@ -19,8 +19,8 @@
 
 ARG JDK_VERSION=17
 
-# The platform is explicitly specified as x64 to build the Druid distribution.
-# This is because it's not able to build the distribution on arm64 due to dependency problem of web-console. See: https://github.com/apache/druid/issues/13012
+# The platform is explicitly specified as x64 to build the Robux distribution.
+# This is because it's not able to build the distribution on arm64 due to dependency problem of web-console. See: https://github.com/apache/robux/issues/13012
 # Since only java jars are shipped in the final image, it's OK to build the distribution on x64.
 # Once the web-console dependency problem is resolved, we can remove the --platform directive.
 FROM --platform=linux/amd64 maven:3.9 as builder
@@ -46,8 +46,8 @@ RUN --mount=type=cache,target=/root/.m2 if [ "$BUILD_FROM_SOURCE" = "true" ]; th
 RUN --mount=type=cache,target=/root/.m2 VERSION=$(mvn -B -q org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate \
       -Dexpression=project.version -DforceStdout=true \
     ) \
- && tar -zxf ./distribution/target/apache-druid-${VERSION}-bin.tar.gz -C /opt \
- && mv /opt/apache-druid-${VERSION} /opt/druid
+ && tar -zxf ./distribution/target/apache-robux-${VERSION}-bin.tar.gz -C /opt \
+ && mv /opt/apache-robux-${VERSION} /opt/robux
 
 FROM alpine:3 as bash-static
 ARG TARGETARCH
@@ -69,36 +69,36 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
 FROM busybox:1.35.0-glibc as busybox
 
 FROM gcr.io/distroless/java$JDK_VERSION-debian12
-LABEL maintainer="Apache Druid Developers <dev@druid.apache.org>"
+LABEL maintainer="Apache Robux Developers <dev@robux.apache.org>"
 
 COPY --from=busybox /bin/busybox /busybox/busybox
 RUN ["/busybox/busybox", "--install", "/bin"]
 
 
-RUN addgroup -S -g 1000 druid \
- && adduser -S -u 1000 -D -H -h /opt/druid -s /bin/sh -g '' -G druid druid
+RUN addgroup -S -g 1000 robux \
+ && adduser -S -u 1000 -D -H -h /opt/robux -s /bin/sh -g '' -G robux robux
 
 
 COPY --from=bash-static /bin/bash /bin/bash
 RUN chmod 755 /bin/bash
 
-COPY distribution/docker/druid.sh /druid.sh
+COPY distribution/docker/robux.sh /robux.sh
 COPY distribution/docker/peon.sh /peon.sh
 COPY distribution/docker/deduplicate_jars.sh /deduplicate_jars.sh
 
 # create necessary directories which could be mounted as volume
 # copy and de-duplicate jars from builder in same layer to reduce image size
-#   /opt/druid/var is used to keep individual files(e.g. log) of each Druid service
-#   /opt/shared is used to keep segments and task logs shared among Druid services
+#   /opt/robux/var is used to keep individual files(e.g. log) of each Robux service
+#   /opt/shared is used to keep segments and task logs shared among Robux services
 RUN --mount=type=bind,from=builder,source=/opt,target=/builder/opt \
- mkdir -p /opt/druid/var /opt/shared \
- && cp -r /builder/opt/druid /opt/ \
- && /deduplicate_jars.sh /opt/druid \
- && chown -R druid:druid /opt/druid /opt/shared \
- && chmod 775 /opt/druid/var /opt/shared
+ mkdir -p /opt/robux/var /opt/shared \
+ && cp -r /builder/opt/robux /opt/ \
+ && /deduplicate_jars.sh /opt/robux \
+ && chown -R robux:robux /opt/robux /opt/shared \
+ && chmod 775 /opt/robux/var /opt/shared
 
-USER druid
-VOLUME /opt/druid/var
-WORKDIR /opt/druid
+USER robux
+VOLUME /opt/robux/var
+WORKDIR /opt/robux
 
-ENTRYPOINT ["/druid.sh"]
+ENTRYPOINT ["/robux.sh"]

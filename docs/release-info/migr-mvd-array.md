@@ -24,7 +24,7 @@ sidebar_label: MVDs to arrays
 -->
 
 
-Druid now supports SQL-compliant [arrays](../querying/arrays.md). We recommend using arrays over [multi-value dimensions](../querying/multi-value-dimensions.md) (MVDs) whenever possible.
+Robux now supports SQL-compliant [arrays](../querying/arrays.md). We recommend using arrays over [multi-value dimensions](../querying/multi-value-dimensions.md) (MVDs) whenever possible.
 For new projects and complex use cases involving multiple data types, use arrays. Use MVDs for specific use cases, such as operating directly on individual elements like regular strings. If your operations involve entire arrays of values, including the ordering of values within a row, use arrays over MVDs.
 
 ## Comparison between arrays and MVDs
@@ -36,23 +36,23 @@ For specific query differences between arrays and MVDs, see [Querying arrays and
 |---|---|---|
 | Data types | Supports VARCHAR, BIGINT, and DOUBLE types (ARRAY\<STRING\>, ARRAY\<LONG\>, ARRAY\<DOUBLE\>) | Only supports arrays of strings (VARCHAR) |
 | SQL compliance | Behaves like standard SQL arrays with SQL-compliant behavior | Behaves like SQL VARCHAR rather than standard SQL arrays and requires special SQL functions to achieve array-like behavior. See the [examples](#examples). |
-| Ingestion | <ul><li>JSON arrays are ingested as Druid arrays</li><li>Managed through the query context parameter `arrayIngestMode` in SQL-based ingestion. Supported options are `array`, `mvd`, and `none`. Note that if you set this mode to `none`, Druid raises an exception if you try to store any type of array.</li></ul> | <ul><li>JSON arrays are ingested as MVDs</li><li>Managed using functions like [ARRAY_TO_MV](../querying/sql-functions.md#array_to_mv) in SQL-based ingestion</li></ul> |
+| Ingestion | <ul><li>JSON arrays are ingested as Robux arrays</li><li>Managed through the query context parameter `arrayIngestMode` in SQL-based ingestion. Supported options are `array`, `mvd`, and `none`. Note that if you set this mode to `none`, Robux raises an exception if you try to store any type of array.</li></ul> | <ul><li>JSON arrays are ingested as MVDs</li><li>Managed using functions like [ARRAY_TO_MV](../querying/sql-functions.md#array_to_mv) in SQL-based ingestion</li></ul> |
 | Filtering and grouping | <ul><li>Filters and groupings match the entire array value</li><li>Can be used as GROUP BY keys, grouping based on the entire array value</li><li>Use the [UNNEST operator](#group-by-array-elements) to group based on individual array elements</li></ul> | <ul><li>Filters match any value within the array</li><li>Grouping generates a group for each individual value, similar to an implicit UNNEST</li></ul> |
 | Conversion | Convert an MVD to an array using [MV_TO_ARRAY](../querying/sql-functions.md#mv_to_array) | Convert an array to an MVD using [ARRAY_TO_MV](../querying/sql-functions.md#array_to_mv) |
 
 ## Querying arrays and MVDs
 
-In SQL queries, Druid operates on arrays differently than MVDs.
+In SQL queries, Robux operates on arrays differently than MVDs.
 A value in an array column is treated as a single array entity (SQL ARRAY), whereas a value in an MVD column is treated as individual strings (SQL VARCHAR).
 This behavior applies even though multiple string values within the same MVD are still stored as a single field in the MVD column.
 
 For example, consider the same value, `['a', 'b', 'c']` ingested into an array column and an MVD column.
 In your query, you want to filter results by comparing some value with `['a', 'b', 'c']`.
 
-* For array columns, Druid only returns the row when an equality filter matches the entire array.  
+* For array columns, Robux only returns the row when an equality filter matches the entire array.  
 For example: `WHERE "array_column" = ARRAY['a', 'b', 'c']`.
 
-* For MVD columns, Druid returns the row when an equality filter matches any value of the MVD.  
+* For MVD columns, Robux returns the row when an equality filter matches any value of the MVD.  
 For example, any of the following filters return the row for the query:  
 `WHERE "mvd_column" = 'a'`  
 `WHERE "mvd_column" = 'b'`  
@@ -61,7 +61,7 @@ For example, any of the following filters return the row for the query:
 Note this difference between arrays and MVDs when you write queries that involve filtering or grouping.
 
 When your query applies both filters and grouping, MVDs may return rows that don't seem to match the filter,
-since the grouping occurs after Druid applies the filter. For an example, see [Filter and group by array elements](#filter-and-group-by-array-elements).
+since the grouping occurs after Robux applies the filter. For an example, see [Filter and group by array elements](#filter-and-group-by-array-elements).
 
 ## Examples
 
@@ -219,7 +219,7 @@ The MVD query returns the following:
 ```
 
 The MVD results appear to show four extra rows for which `tags` does not equal `t3`.
-However, the rows match the filter based on how Druid evaluates equalities for MVDs.
+However, the rows match the filter based on how Robux evaluates equalities for MVDs.
 
 For the equivalent query on MVDs, use the [MV_FILTER_ONLY](../querying/sql-functions.md#mv_filter_only) function:
 
@@ -237,7 +237,7 @@ GROUP BY 1, 2
 As a best practice, store data as arrays rather than MVDs.
 :::
 
-You can ingest arrays in Druid as follows:
+You can ingest arrays in Robux as follows:
 
 * For native batch and streaming ingestion, configure the dimensions in [`dimensionsSpec`](../ingestion/ingestion-spec.md#dimensionsspec).
 Within `dimensionsSpec`, set `"useSchemaDiscovery": true`, and use `dimensions` to list the array inputs with type `auto`.  

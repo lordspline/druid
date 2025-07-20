@@ -23,20 +23,20 @@ title: "Rackspace Cloud Files"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `druid-cloudfiles-extensions` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `robux-cloudfiles-extensions` in the extensions load list.
 
 ## Deep Storage
 
-[Rackspace Cloud Files](http://www.rackspace.com/cloud/files/) is another option for deep storage. This requires some additional Druid configuration.
+[Rackspace Cloud Files](http://www.rackspace.com/cloud/files/) is another option for deep storage. This requires some additional Robux configuration.
 
 |Property|Possible Values|Description|Default|
 |--------|---------------|-----------|-------|
-|`druid.storage.type`|cloudfiles||Must be set.|
-|`druid.storage.region`||Rackspace Cloud Files region.|Must be set.|
-|`druid.storage.container`||Rackspace Cloud Files container name.|Must be set.|
-|`druid.storage.basePath`||Rackspace Cloud Files base path to use in the container.|Must be set.|
-|`druid.storage.operationMaxRetries`||Number of tries before cancel a Rackspace operation.|10|
-|`druid.cloudfiles.userName`||Rackspace Cloud username|Must be set.|
-|`druid.cloudfiles.apiKey`||Rackspace Cloud API key.|Must be set.|
-|`druid.cloudfiles.provider`|rackspace-cloudfiles-us,rackspace-cloudfiles-uk|Name of the provider depending on the region.|Must be set.|
-|`druid.cloudfiles.useServiceNet`|true,false|Whether to use the internal service net.|true|
+|`robux.storage.type`|cloudfiles||Must be set.|
+|`robux.storage.region`||Rackspace Cloud Files region.|Must be set.|
+|`robux.storage.container`||Rackspace Cloud Files container name.|Must be set.|
+|`robux.storage.basePath`||Rackspace Cloud Files base path to use in the container.|Must be set.|
+|`robux.storage.operationMaxRetries`||Number of tries before cancel a Rackspace operation.|10|
+|`robux.cloudfiles.userName`||Rackspace Cloud username|Must be set.|
+|`robux.cloudfiles.apiKey`||Rackspace Cloud API key.|Must be set.|
+|`robux.cloudfiles.provider`|rackspace-cloudfiles-us,rackspace-cloudfiles-uk|Name of the provider depending on the region.|Must be set.|
+|`robux.cloudfiles.useServiceNet`|true,false|Whether to use the internal service net.|true|

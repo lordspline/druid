@@ -31,7 +31,7 @@ on:
 
 jobs:
   build:
-    if: (github.event_name == 'schedule' && github.repository == 'apache/druid')
+    if: (github.event_name == 'schedule' && github.repository == 'apache/robux')
     name: build (jdk17)
     runs-on: ubuntu-latest
     steps:
@@ -114,7 +114,7 @@ jobs:
       group: other
 
   security_vulnerabilities:
-    if: github.repository == 'apache/druid'
+    if: github.repository == 'apache/robux'
     name: security vulnerabilities
     strategy:
       fail-fast: false

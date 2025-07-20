@@ -16,17 +16,17 @@
  * limitations under the License.
  */
 
-import type { Execution } from '../druid-models';
-import type { DruidError, QueryState } from '../utils';
+import type { Execution } from '../robux-models';
+import type { RobuxError, QueryState } from '../utils';
 
 export class ExecutionStateCache {
-  private static readonly cache = new Map<string, QueryState<Execution, DruidError, Execution>>();
+  private static readonly cache = new Map<string, QueryState<Execution, RobuxError, Execution>>();
 
-  static storeState(id: string, report: QueryState<Execution, DruidError, Execution>): void {
+  static storeState(id: string, report: QueryState<Execution, RobuxError, Execution>): void {
     ExecutionStateCache.cache.set(id, report);
   }
 
-  static getState(id: string): QueryState<Execution, DruidError, Execution> | undefined {
+  static getState(id: string): QueryState<Execution, RobuxError, Execution> | undefined {
     return ExecutionStateCache.cache.get(id);
   }
 

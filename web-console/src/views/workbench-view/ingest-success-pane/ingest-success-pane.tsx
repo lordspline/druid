@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import { T } from 'druid-query-toolkit';
+import { T } from 'robux-query-toolkit';
 import React from 'react';
 
-import type { Execution } from '../../../druid-models';
-import { WorkbenchQuery } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
+import { WorkbenchQuery } from '../../../robux-models';
 import { formatDuration, pluralIfNeeded } from '../../../utils';
 import type { ExecutionDetailsTab } from '../execution-details-pane/execution-details-pane';
 

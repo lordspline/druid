@@ -35,21 +35,21 @@ export const AboutDialog = React.memo(function AboutDialog(props: AboutDialogPro
       className="about-dialog"
       icon={IconNames.GRAPH}
       onClose={onClose}
-      title="Apache Druid"
+      title="Apache Robux"
       isOpen
       canEscapeKeyClose
     >
       <div className={Classes.DIALOG_BODY}>
         <p>
-          <strong>Apache Druid is a high performance real-time analytics database.</strong>
+          <strong>Apache Robux is a high performance real-time analytics database.</strong>
         </p>
         <p>
-          For help and support with Druid, please refer to the{' '}
+          For help and support with Robux, please refer to the{' '}
           <ExternalLink href={getLink('COMMUNITY')}>community page</ExternalLink> and the{' '}
           <ExternalLink href={getLink('USER_GROUP')}>user groups</ExternalLink>.
         </p>
         <p>
-          Druid is made with ❤️ by a community of passionate developers. To contribute, join in the
+          Robux is made with ❤️ by a community of passionate developers. To contribute, join in the
           discussion on the{' '}
           <ExternalLink href={getLink('DEVELOPER_GROUP')}>developer group</ExternalLink>.
         </p>
@@ -58,7 +58,7 @@ export const AboutDialog = React.memo(function AboutDialog(props: AboutDialogPro
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <Button onClick={onClose}>Close</Button>
           <AnchorButton intent={Intent.PRIMARY} href={getLink('WEBSITE')} target="_blank">
-            Visit Druid
+            Visit Robux
           </AnchorButton>
         </div>
       </div>

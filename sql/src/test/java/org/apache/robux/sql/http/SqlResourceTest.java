@@ -1,0 +1,2508 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.sql.http;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import org.apache.calcite.avatica.SqlType;
+import org.apache.robux.common.exception.AllowedRegexErrorResponseTransformStrategy;
+import org.apache.robux.common.exception.ErrorResponseTransformStrategy;
+import org.apache.robux.common.guava.SettableSupplier;
+import org.apache.robux.error.RobuxException;
+import org.apache.robux.error.RobuxExceptionMatcher;
+import org.apache.robux.error.ErrorResponse;
+import org.apache.robux.error.QueryExceptionCompat;
+import org.apache.robux.jackson.DefaultObjectMapper;
+import org.apache.robux.java.util.common.ISE;
+import org.apache.robux.java.util.common.NonnullPair;
+import org.apache.robux.java.util.common.Pair;
+import org.apache.robux.java.util.common.RE;
+import org.apache.robux.java.util.common.StringUtils;
+import org.apache.robux.java.util.common.concurrent.Execs;
+import org.apache.robux.java.util.common.guava.LazySequence;
+import org.apache.robux.java.util.common.guava.Sequence;
+import org.apache.robux.java.util.common.guava.Sequences;
+import org.apache.robux.java.util.common.io.Closer;
+import org.apache.robux.java.util.metrics.StubServiceEmitter;
+import org.apache.robux.math.expr.ExprMacroTable;
+import org.apache.robux.query.BadQueryContextException;
+import org.apache.robux.query.BaseQuery;
+import org.apache.robux.query.DefaultQueryConfig;
+import org.apache.robux.query.Query;
+import org.apache.robux.query.QueryCapacityExceededException;
+import org.apache.robux.query.QueryContexts;
+import org.apache.robux.query.QueryException;
+import org.apache.robux.query.QueryRunnerFactoryConglomerate;
+import org.apache.robux.query.QueryTimeoutException;
+import org.apache.robux.query.QueryUnsupportedException;
+import org.apache.robux.query.ResourceLimitExceededException;
+import org.apache.robux.query.context.ResponseContext;
+import org.apache.robux.query.groupby.GroupByQueryConfig;
+import org.apache.robux.query.policy.NoopPolicyEnforcer;
+import org.apache.robux.server.RobuxNode;
+import org.apache.robux.server.QueryResource;
+import org.apache.robux.server.QueryResponse;
+import org.apache.robux.server.QueryScheduler;
+import org.apache.robux.server.QueryStackTests;
+import org.apache.robux.server.ResponseContextConfig;
+import org.apache.robux.server.SpecificSegmentsQuerySegmentWalker;
+import org.apache.robux.server.initialization.ServerConfig;
+import org.apache.robux.server.log.TestRequestLogger;
+import org.apache.robux.server.mocks.MockHttpServletRequest;
+import org.apache.robux.server.mocks.MockHttpServletResponse;
+import org.apache.robux.server.scheduling.HiLoQueryLaningStrategy;
+import org.apache.robux.server.scheduling.ManualQueryPrioritizationStrategy;
+import org.apache.robux.server.security.AuthConfig;
+import org.apache.robux.server.security.AuthenticationResult;
+import org.apache.robux.server.security.AuthorizationResult;
+import org.apache.robux.server.security.ForbiddenException;
+import org.apache.robux.server.security.ResourceAction;
+import org.apache.robux.sql.DirectStatement;
+import org.apache.robux.sql.HttpStatement;
+import org.apache.robux.sql.PreparedStatement;
+import org.apache.robux.sql.SqlLifecycleManager;
+import org.apache.robux.sql.SqlQueryPlus;
+import org.apache.robux.sql.SqlStatementFactory;
+import org.apache.robux.sql.SqlToolbox;
+import org.apache.robux.sql.calcite.parser.RobuxSqlInsert;
+import org.apache.robux.sql.calcite.planner.CalciteRulesManager;
+import org.apache.robux.sql.calcite.planner.CatalogResolver;
+import org.apache.robux.sql.calcite.planner.RobuxOperatorTable;
+import org.apache.robux.sql.calcite.planner.RobuxPlanner;
+import org.apache.robux.sql.calcite.planner.PlannerConfig;
+import org.apache.robux.sql.calcite.planner.PlannerContext;
+import org.apache.robux.sql.calcite.planner.PlannerFactory;
+import org.apache.robux.sql.calcite.planner.PlannerResult;
+import org.apache.robux.sql.calcite.run.NativeSqlEngine;
+import org.apache.robux.sql.calcite.schema.RobuxSchemaCatalog;
+import org.apache.robux.sql.calcite.util.CalciteTestBase;
+import org.apache.robux.sql.calcite.util.CalciteTests;
+import org.apache.robux.sql.hook.RobuxHookDispatcher;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+
+@SuppressWarnings("ALL")
+public class SqlResourceTest extends CalciteTestBase
+{
+  public static final RobuxNode DUMMY_ROBUX_NODE = new RobuxNode("dummy", "dummy", false, 1, null, true, false);
+  public static final ResponseContextConfig TEST_RESPONSE_CONTEXT_CONFIG = ResponseContextConfig.newConfig(false);
+
+  private static final ObjectMapper JSON_MAPPER = new DefaultObjectMapper();
+  private static final String DUMMY_SQL_QUERY_ID = "dummy";
+  // Timeout to allow (rapid) debugging, while not blocking tests with errors.
+  private static final int WAIT_TIMEOUT_SECS = 60;
+  private static final Consumer<DirectStatement> NULL_ACTION = s -> {
+  };
+
+  private static final List<String> EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS =
+      Arrays.asList("__time", "dim1", "dim2", "dim3", "cnt", "m1", "m2", "unique_dim1", "EXPR$8");
+
+  private static final List<String> EXPECTED_TYPES_FOR_RESULT_FORMAT_TESTS =
+      Arrays.asList("LONG", "STRING", "STRING", "STRING", "LONG", "FLOAT", "DOUBLE", "COMPLEX<hyperUnique>", "STRING");
+
+  private static final List<String> EXPECTED_SQL_TYPES_FOR_RESULT_FORMAT_TESTS =
+      Arrays.asList("TIMESTAMP", "VARCHAR", "VARCHAR", "VARCHAR", "BIGINT", "FLOAT", "DOUBLE", "OTHER", "VARCHAR");
+
+  private static Closer staticCloser = Closer.create();
+  private static QueryRunnerFactoryConglomerate conglomerate;
+
+  private static SpecificSegmentsQuerySegmentWalker walker;
+  private static QueryScheduler scheduler;
+
+  private Closer resourceCloser;
+  private TestRequestLogger testRequestLogger;
+  private SqlResource resource;
+  private MockHttpServletRequest req;
+  private ListeningExecutorService executorService;
+  private SqlLifecycleManager lifecycleManager;
+  private NativeSqlEngine engine;
+  private SqlStatementFactory sqlStatementFactory;
+  private StubServiceEmitter stubServiceEmitter;
+
+  private CountDownLatch lifecycleAddLatch;
+  private final SettableSupplier<NonnullPair<CountDownLatch, Boolean>> validateAndAuthorizeLatchSupplier = new SettableSupplier<>();
+  private final SettableSupplier<NonnullPair<CountDownLatch, Boolean>> planLatchSupplier = new SettableSupplier<>();
+  private final SettableSupplier<NonnullPair<CountDownLatch, Boolean>> executeLatchSupplier = new SettableSupplier<>();
+  private final SettableSupplier<Function<Sequence<Object[]>, Sequence<Object[]>>> sequenceMapFnSupplier = new SettableSupplier<>();
+  private final SettableSupplier<ResponseContext> responseContextSupplier = new SettableSupplier<>();
+  private Consumer<DirectStatement> onExecute = NULL_ACTION;
+
+  private static final AtomicReference<Supplier<Void>> SCHEDULER_BAGGAGE = new AtomicReference<>();
+
+  @BeforeAll
+  public static void setupClass(@TempDir File tempDir)
+  {
+    conglomerate = QueryStackTests.createQueryRunnerFactoryConglomerate(staticCloser);
+    scheduler = new QueryScheduler(
+        5,
+        ManualQueryPrioritizationStrategy.INSTANCE,
+        new HiLoQueryLaningStrategy(40),
+        // Enable total laning
+        new ServerConfig(false)
+    )
+    {
+      @Override
+      public <T> Sequence<T> run(Query<?> query, Sequence<T> resultSequence)
+      {
+        return super.run(
+            query,
+            new LazySequence<>(() -> {
+              SCHEDULER_BAGGAGE.get().get();
+              return resultSequence;
+            })
+        );
+      }
+    };
+    walker = CalciteTests.createMockWalker(conglomerate, tempDir, scheduler);
+    staticCloser.register(walker);
+  }
+
+  @AfterAll
+  public static void teardownClass() throws Exception
+  {
+    staticCloser.close();
+  }
+
+  @BeforeEach
+  public void setUp() throws Exception
+  {
+    SCHEDULER_BAGGAGE.set(() -> null);
+    resourceCloser = Closer.create();
+
+    executorService = MoreExecutors.listeningDecorator(Execs.multiThreaded(8, "test_sql_resource_%s"));
+
+    final PlannerConfig plannerConfig = PlannerConfig.builder().build();
+    final RobuxSchemaCatalog rootSchema = CalciteTests.createMockRootSchema(
+        conglomerate,
+        walker,
+        plannerConfig,
+        CalciteTests.TEST_AUTHORIZER_MAPPER
+    );
+    final RobuxOperatorTable operatorTable = CalciteTests.createOperatorTable();
+    final ExprMacroTable macroTable = CalciteTests.createExprMacroTable();
+
+    req = request();
+
+    testRequestLogger = new TestRequestLogger();
+
+    final PlannerFactory plannerFactory = new PlannerFactory(
+        rootSchema,
+        operatorTable,
+        macroTable,
+        plannerConfig,
+        CalciteTests.TEST_AUTHORIZER_MAPPER,
+        CalciteTests.getJsonMapper(),
+        CalciteTests.ROBUX_SCHEMA_NAME,
+        new CalciteRulesManager(ImmutableSet.of()),
+        CalciteTests.createJoinableFactoryWrapper(),
+        CatalogResolver.NULL_RESOLVER,
+        new AuthConfig(),
+        NoopPolicyEnforcer.instance(),
+        new RobuxHookDispatcher()
+    );
+
+    lifecycleManager = new SqlLifecycleManager()
+    {
+      @Override
+      public void add(String sqlQueryId, Cancelable lifecycle)
+      {
+        super.add(sqlQueryId, lifecycle);
+        if (lifecycleAddLatch != null) {
+          lifecycleAddLatch.countDown();
+        }
+      }
+    };
+    stubServiceEmitter = new StubServiceEmitter("test", "test");
+    final AuthConfig authConfig = new AuthConfig();
+    final DefaultQueryConfig defaultQueryConfig = new DefaultQueryConfig(ImmutableMap.of());
+    final SqlToolbox sqlToolbox = new SqlToolbox(
+        null,
+        plannerFactory,
+        stubServiceEmitter,
+        testRequestLogger,
+        scheduler,
+        defaultQueryConfig,
+        lifecycleManager
+    );
+    sqlStatementFactory = new SqlStatementFactory(null)
+    {
+      @Override
+      public HttpStatement httpStatement(
+          final SqlQueryPlus sqlQueryPlus,
+          final HttpServletRequest req
+      )
+      {
+        TestHttpStatement stmt = new TestHttpStatement(
+            sqlToolbox.withEngine(engine),
+            sqlQueryPlus,
+            req,
+            validateAndAuthorizeLatchSupplier,
+            planLatchSupplier,
+            executeLatchSupplier,
+            sequenceMapFnSupplier,
+            responseContextSupplier,
+            onExecute
+        );
+        onExecute = NULL_ACTION;
+        return stmt;
+      }
+
+      @Override
+      public DirectStatement directStatement(SqlQueryPlus sqlRequest)
+      {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public PreparedStatement preparedStatement(SqlQueryPlus sqlRequest)
+      {
+        throw new UnsupportedOperationException();
+      }
+    };
+    engine = CalciteTests.createMockSqlEngine(walker, conglomerate, sqlStatementFactory);
+    resource = new SqlResource(
+        JSON_MAPPER,
+        CalciteTests.TEST_AUTHORIZER_MAPPER,
+        new ServerConfig(),
+        lifecycleManager,
+        new SqlEngineRegistry(Set.of(engine)),
+        TEST_RESPONSE_CONTEXT_CONFIG,
+        DUMMY_ROBUX_NODE
+    );
+  }
+
+  MockHttpServletRequest request()
+  {
+    return makeExpectedReq(CalciteTests.REGULAR_USER_AUTH_RESULT);
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception
+  {
+    SCHEDULER_BAGGAGE.set(() -> null);
+
+    executorService.shutdownNow();
+    executorService.awaitTermination(2, TimeUnit.SECONDS);
+    resourceCloser.close();
+  }
+
+  @Test
+  public void testUnauthorized()
+  {
+    ForbiddenException e = Assert.assertThrows(ForbiddenException.class, () -> {
+      postForAsyncResponse(createSimpleQueryWithId("id", "select count(*) from forbiddenDatasource"), request());
+    });
+    Assert.assertEquals("Unauthorized", e.getMessage());
+    Assert.assertEquals(1, testRequestLogger.getSqlQueryLogs().size());
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testRestricted() throws Exception
+  {
+    req = makeSuperUserReq();
+    final List<Map<String, Object>> resultAsSuperUser = doPost(createSimpleQueryWithId(
+        "id",
+        "select count(*) as cnt from restrictedDatasource_m1_is_6"
+    )).rhs;
+    Assert.assertEquals(ImmutableList.of(ImmutableMap.of("cnt", 6)), resultAsSuperUser);
+
+    checkSqlRequestLog(true, CalciteTests.TEST_SUPERUSER_NAME);
+    testRequestLogger.clear();
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+
+    req = makeRegularUserReq();
+    final List<Map<String, Object>> resultAsRegularUser = doPost(createSimpleQueryWithId(
+        "id",
+        "select count(*) as cnt from restrictedDatasource_m1_is_6"
+    )).rhs;
+    Assert.assertEquals(ImmutableList.of(ImmutableMap.of("cnt", 1)), resultAsRegularUser);
+    checkSqlRequestLog(true);
+    testRequestLogger.clear();
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testCountStar() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        createSimpleQueryWithId("id", "SELECT COUNT(*) AS cnt, 'foo' AS TheFoo FROM robux.foo")
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("cnt", 6, "TheFoo", "foo")
+        ),
+        rows
+    );
+    checkSqlRequestLog(true);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void test_getEnabled()
+  {
+    Response response = resource.getSupportedEngines(req);
+    Set<EngineInfo> supportedEngines = ((SupportedEnginesResponse) response.getEntity()).getEngines();
+    Assert.assertTrue(supportedEngines.contains(new EngineInfo(NativeSqlEngine.NAME)));
+  }
+
+  @Test
+  public void testCountStarWithMissingIntervalsContext() throws Exception
+  {
+    final SqlQuery sqlQuery = new SqlQuery(
+        "SELECT COUNT(*) AS cnt, 'foo' AS TheFoo FROM robux.foo",
+        null,
+        false,
+        false,
+        false,
+        // We set uncoveredIntervalsLimit more for the funzies than anything.  The underlying setup of the test doesn't
+        // actually look at it or operate with it.  Instead, we set the supplier of the ResponseContext to mock what
+        // we would expect from the normal query pipeline
+        ImmutableMap.of(BaseQuery.SQL_QUERY_ID, "id", "uncoveredIntervalsLimit", 1),
+        null
+    );
+
+    final ResponseContext mockRespContext = ResponseContext.createEmpty();
+    mockRespContext.put(ResponseContext.Keys.instance().keyOf("uncoveredIntervals"), "2030-01-01/78149827981274-01-01");
+    mockRespContext.put(ResponseContext.Keys.instance().keyOf("uncoveredIntervalsOverflowed"), "true");
+    responseContextSupplier.set(mockRespContext);
+
+    final MockHttpServletResponse response = postForAsyncResponse(sqlQuery, makeRegularUserReq());
+
+    // In tests, MockHttpServletResponse stores headers as a MultiMap.
+    // This allows the same header key to be set multiple times (e.g., once at the start and once at the end of query processing).
+    // As a result, we observe duplicate context entries for this test in the expected set.
+    // This differs from typical behavior for other headers, where a new value would overwrite any previously set value.
+    final Object expectedMissingHeaders = ImmutableList.of(
+        ImmutableMap.of(
+            "uncoveredIntervals", "2030-01-01/78149827981274-01-01",
+            "uncoveredIntervalsOverflowed", "true"
+        ),
+        ImmutableMap.of(
+            "uncoveredIntervals", "2030-01-01/78149827981274-01-01",
+            "uncoveredIntervalsOverflowed", "true"
+        )
+    );
+    final Object observedMissingHeaders = response.headers.get("X-Robux-Response-Context").stream()
+                                                           .map(s -> {
+                                                             try {
+                                                               return JSON_MAPPER.readValue(s, new TypeReference<Map<String, String>>() {});
+                                                             }
+                                                             catch (JsonProcessingException e) {
+                                                               throw new RuntimeException(e);
+                                                             }
+                                                           })
+                                                           .collect(Collectors.toList());
+
+    Assert.assertEquals(expectedMissingHeaders, observedMissingHeaders);
+
+    Object results = JSON_MAPPER.readValue(response.baos.toByteArray(), Object.class);
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("cnt", 6, "TheFoo", "foo")
+        ),
+        results
+    );
+    checkSqlRequestLog(true);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testSqlLifecycleMetrics() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        createSimpleQueryWithId("id", "SELECT COUNT(*) AS cnt, 'foo' AS TheFoo FROM robux.foo")
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("cnt", 6, "TheFoo", "foo")
+        ),
+        rows
+    );
+    checkSqlRequestLog(true);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+    stubServiceEmitter.verifyEmitted("sqlQuery/time", 1);
+    stubServiceEmitter.verifyValue("sqlQuery/bytes", 27L);
+    stubServiceEmitter.verifyEmitted("sqlQuery/planningTimeMs", 1);
+  }
+
+
+  @Test
+  public void testCountStarExtendedCharacters() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        createSimpleQueryWithId(
+            "id",
+            "SELECT COUNT(*) AS cnt FROM robux.lotsocolumns WHERE dimMultivalEnumerated = 'ㅑ ㅓ ㅕ ㅗ ㅛ ㅜ ㅠ ㅡ ㅣ'"
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("cnt", 1)
+        ),
+        rows
+    );
+    checkSqlRequestLog(true);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testTimestampsInResponse() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "SELECT __time, CAST(__time AS DATE) AS t2 FROM robux.foo LIMIT 1",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            null,
+            null
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("__time", "2000-01-01T00:00:00.000Z", "t2", "2000-01-01T00:00:00.000Z")
+        ),
+        rows
+    );
+  }
+
+  @Test
+  public void testTimestampsInResponseWithParameterizedLimit() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "SELECT __time, CAST(__time AS DATE) AS t2 FROM robux.foo LIMIT ?",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            null,
+            ImmutableList.of(new SqlParameter(SqlType.INTEGER, 1))
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("__time", "2000-01-01T00:00:00.000Z", "t2", "2000-01-01T00:00:00.000Z")
+        ),
+        rows
+    );
+  }
+
+  @Test
+  public void testTimestampsInResponseLosAngelesTimeZone() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "SELECT __time, CAST(__time AS DATE) AS t2 FROM robux.foo LIMIT 1",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            ImmutableMap.of(PlannerContext.CTX_SQL_TIME_ZONE, "America/Los_Angeles"),
+            null
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("__time", "1999-12-31T16:00:00.000-08:00", "t2", "1999-12-31T00:00:00.000-08:00")
+        ),
+        rows
+    );
+  }
+
+  @Test
+  public void testTimestampsInResponseWithNulls() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "SELECT MAX(__time) as t1, MAX(__time) FILTER(WHERE dim1 = 'non_existing') as t2 FROM robux.foo",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            null,
+            null
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            Maps.transformValues(
+                ImmutableMap.of("t1", "2001-01-03T00:00:00.000Z", "t2", ""),
+                (val) -> "".equals(val) ? null : val
+            )
+        ),
+        rows
+    );
+  }
+
+  @Test
+  public void testFieldAliasingSelect() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "SELECT dim2 \"x\", dim2 \"y\" FROM robux.foo LIMIT 1",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            null,
+            null
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.of("x", "a", "y", "a")
+        ),
+        rows
+    );
+  }
+
+  @Test
+  public void testFieldAliasingGroupBy() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "SELECT dim2 \"x\", dim2 \"y\" FROM robux.foo GROUP BY dim2",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            null,
+            null
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            // x and y both should be null instead of empty string
+            Maps.transformValues(ImmutableMap.of("x", "", "y", ""), (val) -> null),
+            ImmutableMap.of("x", "", "y", ""),
+            ImmutableMap.of("x", "a", "y", "a"),
+            ImmutableMap.of("x", "abc", "y", "abc")
+        ),
+        rows
+    );
+  }
+
+
+  @Test
+  public void testPivotRowTypePreservedInDecoupledPlanner() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+            new SqlQuery(
+                    "SET plannerStrategy='DECOUPLED';" +
+                            " WITH t1 AS (\n" +
+                            "  SELECT *\n" +
+                            "  FROM (\n" +
+                            "    VALUES\n" +
+                            "    ('18-19', 'female', 84),\n" +
+                            "    ('18-19', 'male', 217),\n" +
+                            "    ('20-29', 'female', 321),\n" +
+                            "    ('20-29', 'male', 820),\n" +
+                            "    ('30-39', 'female', 63),\n" +
+                            "    ('30-39', 'male', 449),\n" +
+                            "    ('40-49', 'female', 10),\n" +
+                            "    ('40-49', 'male', 83),\n" +
+                            "    ('50-59', 'female', 2),\n" +
+                            "    ('50-59', 'male', 13)\n" +
+                            "  ) AS data(Age, Gender, Visitors)\n" +
+                            "),\n" +
+                            "t2 AS (\n" +
+                            "  SELECT Age, Gender, CAST(SUM(Visitors) AS double) / (SELECT SUM(Visitors) FROM t1) AS Share\n" +
+                            "  FROM t1\n" +
+                            "  GROUP BY 1, 2\n" +
+                            ")\n" +
+                            "SELECT *\n" +
+                            "FROM t2\n" +
+                            "PIVOT (MAX(Share) FOR Gender IN ('female' AS Women, 'male' AS Men));",
+                    ResultFormat.OBJECT,
+                    false,
+                    false,
+                    false,
+                    null,
+                    null
+            )
+    ).rhs;
+
+    Assert.assertEquals(
+            ImmutableList.of(
+                    ImmutableMap.of("Age", "18-19", "Women", 0.040737148399612025, "Men", 0.1052376333656644),
+                    ImmutableMap.of("Age", "20-29", "Women", 0.1556741028128031, "Men", 0.3976721629485936),
+                    ImmutableMap.of("Age", "30-39", "Women", 0.030552861299709022, "Men", 0.2177497575169738),
+                    ImmutableMap.of("Age", "40-49", "Women", 0.004849660523763337, "Men", 0.040252182347235696),
+                    ImmutableMap.of("Age", "50-59", "Women", 0.0009699321047526673, "Men", 0.006304558680892337)
+            ),
+            rows
+    );
+  }
+
+  @Test
+  public void testPivotRowTypePreservedInCoupledPlanner() throws Exception
+  {
+    final List<Map<String, Object>> rows = doPost(
+            new SqlQuery(
+                    "SET plannerStrategy='COUPLED';" +
+                            " WITH t1 AS (\n" +
+                            "  SELECT *\n" +
+                            "  FROM (\n" +
+                            "    VALUES\n" +
+                            "    ('18-19', 'female', 84),\n" +
+                            "    ('18-19', 'male', 217),\n" +
+                            "    ('20-29', 'female', 321),\n" +
+                            "    ('20-29', 'male', 820),\n" +
+                            "    ('30-39', 'female', 63),\n" +
+                            "    ('30-39', 'male', 449),\n" +
+                            "    ('40-49', 'female', 10),\n" +
+                            "    ('40-49', 'male', 83),\n" +
+                            "    ('50-59', 'female', 2),\n" +
+                            "    ('50-59', 'male', 13)\n" +
+                            "  ) AS data(Age, Gender, Visitors)\n" +
+                            "),\n" +
+                            "t2 AS (\n" +
+                            "  SELECT Age, Gender, CAST(SUM(Visitors) AS double) / (SELECT SUM(Visitors) FROM t1) AS Share\n" +
+                            "  FROM t1\n" +
+                            "  GROUP BY 1, 2\n" +
+                            ")\n" +
+                            "SELECT *\n" +
+                            "FROM t2\n" +
+                            "PIVOT (MAX(Share) FOR Gender IN ('female' AS Women, 'male' AS Men));",
+                    ResultFormat.OBJECT,
+                    false,
+                    false,
+                    false,
+                    null,
+                    null
+            )
+    ).rhs;
+
+    Assert.assertEquals(
+            ImmutableList.of(
+                    ImmutableMap.of("Age", "18-19", "Women", 0.040737148399612025, "Men", 0.1052376333656644),
+                    ImmutableMap.of("Age", "20-29", "Women", 0.1556741028128031, "Men", 0.3976721629485936),
+                    ImmutableMap.of("Age", "30-39", "Women", 0.030552861299709022, "Men", 0.2177497575169738),
+                    ImmutableMap.of("Age", "40-49", "Women", 0.004849660523763337, "Men", 0.040252182347235696),
+                    ImmutableMap.of("Age", "50-59", "Women", 0.0009699321047526673, "Men", 0.006304558680892337)
+            ),
+            rows
+    );
+  }
+
+  @Test
+  public void testArrayResultFormat() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            Arrays.asList(
+                "2000-01-01T00:00:00.000Z",
+                "",
+                "a",
+                "[\"a\",\"b\"]",
+                1,
+                1.0,
+                1.0,
+                "\"AQAAAEAAAA==\"",
+                null
+            ),
+            Arrays.asList(
+                "2000-01-02T00:00:00.000Z",
+                "10.1",
+                null,
+                "[\"b\",\"c\"]",
+                1,
+                2.0,
+                2.0,
+                "\"AQAAAQAAAAHNBA==\"",
+                null
+            )
+        ),
+        doPost(
+            new SqlQuery(query, ResultFormat.ARRAY, false, false, false, null, null),
+            new TypeReference<List<List<Object>>>()
+            {
+            }
+        ).rhs
+    );
+  }
+
+  @Test
+  public void testArrayResultFormatWithErrorAfterSecondRow() throws Exception
+  {
+    sequenceMapFnSupplier.set(errorAfterSecondRowMapFn());
+
+    final String query = "SELECT cnt FROM foo";
+    final Pair<ErrorResponse, String> response =
+        doPostRaw(new SqlQuery(query, ResultFormat.ARRAY, false, false, false, null, null), req);
+
+    // Truncated response: missing final ]
+    Assert.assertNull(response.lhs);
+    Assert.assertEquals("[[1],[1]", response.rhs);
+  }
+
+  @Test
+  public void testObjectResultFormatWithErrorAfterFirstRow() throws Exception
+  {
+    sequenceMapFnSupplier.set(errorAfterSecondRowMapFn());
+
+    final String query = "SELECT cnt FROM foo";
+    final Pair<ErrorResponse, String> response =
+        doPostRaw(new SqlQuery(query, ResultFormat.OBJECT, false, false, false, null, null), req);
+
+    // Truncated response: missing final ]
+    Assert.assertNull(response.lhs);
+    Assert.assertEquals("[{\"cnt\":1},{\"cnt\":1}", response.rhs);
+  }
+
+  @Test
+  public void testArrayLinesResultFormatWithErrorAfterFirstRow() throws Exception
+  {
+    sequenceMapFnSupplier.set(errorAfterSecondRowMapFn());
+
+    final String query = "SELECT cnt FROM foo";
+    final Pair<ErrorResponse, String> response =
+        doPostRaw(new SqlQuery(query, ResultFormat.ARRAYLINES, false, false, false, null, null), req);
+
+    // Truncated response: missing final LFLF
+    Assert.assertNull(response.lhs);
+    Assert.assertEquals("[1]\n[1]", response.rhs);
+  }
+
+  @Test
+  public void testObjectLinesResultFormatWithErrorAfterFirstRow() throws Exception
+  {
+    sequenceMapFnSupplier.set(errorAfterSecondRowMapFn());
+
+    final String query = "SELECT cnt FROM foo";
+    final Pair<ErrorResponse, String> response =
+        doPostRaw(new SqlQuery(query, ResultFormat.OBJECTLINES, false, false, false, null, null), req);
+
+    // Truncated response: missing final LFLF
+    Assert.assertNull(response.lhs);
+    Assert.assertEquals("{\"cnt\":1}\n{\"cnt\":1}", response.rhs);
+  }
+
+  @Test
+  public void testCsvResultFormatWithErrorAfterFirstRow() throws Exception
+  {
+    sequenceMapFnSupplier.set(errorAfterSecondRowMapFn());
+
+    final String query = "SELECT cnt FROM foo";
+    final Pair<ErrorResponse, String> response =
+        doPostRaw(new SqlQuery(query, ResultFormat.CSV, false, false, false, null, null), req);
+
+    // Truncated response: missing final LFLF
+    Assert.assertNull(response.lhs);
+    Assert.assertEquals("1\n1\n", response.rhs);
+  }
+
+  @Test
+  @SuppressWarnings("rawtypes")
+  public void testArrayResultFormatWithHeader() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+
+    List[] expectedQueryResults = new List[]{
+        Arrays.asList("2000-01-01T00:00:00.000Z", "", "a", "[\"a\",\"b\"]", 1, 1.0, 1.0, "\"AQAAAEAAAA==\"", null),
+        Arrays.asList("2000-01-02T00:00:00.000Z", "10.1", null, "[\"b\",\"c\"]", 1, 2.0, 2.0, "\"AQAAAQAAAAHNBA==\"", null)
+    };
+
+    MockHttpServletResponse response = postForAsyncResponse(
+        new SqlQuery(query, ResultFormat.ARRAY, true, true, true, null, null),
+        req.mimic()
+    );
+
+    Assert.assertEquals(200, response.getStatus());
+    Assert.assertEquals("yes", response.getHeader("X-Robux-SQL-Header-Included"));
+    Assert.assertEquals(
+        ImmutableList.builder()
+                     .add(EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS)
+                     .add(EXPECTED_TYPES_FOR_RESULT_FORMAT_TESTS)
+                     .add(EXPECTED_SQL_TYPES_FOR_RESULT_FORMAT_TESTS)
+                     .addAll(Arrays.asList(expectedQueryResults))
+                     .build(),
+        JSON_MAPPER.readValue(response.baos.toByteArray(), Object.class)
+    );
+
+    MockHttpServletResponse responseNoSqlTypesHeader = postForAsyncResponse(
+        new SqlQuery(query, ResultFormat.ARRAY, true, true, false, null, null),
+        req.mimic()
+    );
+
+    Assert.assertEquals(200, responseNoSqlTypesHeader.getStatus());
+    Assert.assertEquals("yes", responseNoSqlTypesHeader.getHeader("X-Robux-SQL-Header-Included"));
+    Assert.assertEquals(
+        ImmutableList.builder()
+                     .add(EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS)
+                     .add(EXPECTED_TYPES_FOR_RESULT_FORMAT_TESTS)
+                     .addAll(Arrays.asList(expectedQueryResults))
+                     .build(),
+        JSON_MAPPER.readValue(responseNoSqlTypesHeader.baos.toByteArray(), Object.class)
+    );
+
+    MockHttpServletResponse responseNoTypesHeader = postForAsyncResponse(
+        new SqlQuery(query, ResultFormat.ARRAY, true, false, true, null, null),
+        req.mimic()
+    );
+
+    Assert.assertEquals(200, responseNoTypesHeader.getStatus());
+    Assert.assertEquals("yes", responseNoTypesHeader.getHeader("X-Robux-SQL-Header-Included"));
+    Assert.assertEquals(
+        ImmutableList.builder()
+                     .add(EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS)
+                     .add(EXPECTED_SQL_TYPES_FOR_RESULT_FORMAT_TESTS)
+                     .addAll(Arrays.asList(expectedQueryResults))
+                     .build(),
+        JSON_MAPPER.readValue(responseNoTypesHeader.baos.toByteArray(), Object.class)
+    );
+
+    MockHttpServletResponse responseNoTypes = postForAsyncResponse(
+        new SqlQuery(query, ResultFormat.ARRAY, true, false, false, null, null),
+        req.mimic()
+    );
+
+    Assert.assertEquals(200, responseNoTypes.getStatus());
+    Assert.assertEquals("yes", responseNoTypes.getHeader("X-Robux-SQL-Header-Included"));
+    Assert.assertEquals(
+        ImmutableList.builder()
+                     .add(EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS)
+                     .addAll(Arrays.asList(expectedQueryResults))
+                     .build(),
+        JSON_MAPPER.readValue(responseNoTypes.baos.toByteArray(), Object.class)
+    );
+
+    MockHttpServletResponse responseNoHeader = postForAsyncResponse(
+        new SqlQuery(query, ResultFormat.ARRAY, false, false, false, null, null),
+        req.mimic()
+    );
+
+    Assert.assertEquals(200, responseNoHeader.getStatus());
+    Assert.assertNull(responseNoHeader.getHeader("X-Robux-SQL-Header-Included"));
+    Assert.assertEquals(
+        Arrays.asList(expectedQueryResults),
+        JSON_MAPPER.readValue(responseNoHeader.baos.toByteArray(), Object.class)
+    );
+
+  }
+
+  @Test
+  public void testArrayResultFormatWithHeader_nullColumnType() throws Exception
+  {
+    // Test a query that returns null header for some of the columns
+    final String query = "SELECT (1, 2) FROM INFORMATION_SCHEMA.COLUMNS LIMIT 1";
+
+    MockHttpServletResponse response = postForAsyncResponse(
+        new SqlQuery(query, ResultFormat.ARRAY, true, true, true, null, null),
+        req
+    );
+
+    Assert.assertEquals(200, response.getStatus());
+    Assert.assertEquals("yes", response.getHeader("X-Robux-SQL-Header-Included"));
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            Collections.singletonList("EXPR$0"),
+            Collections.singletonList(null),
+            Collections.singletonList("ROW"),
+            Collections.singletonList(
+                Arrays.asList(
+                    1,
+                    2
+                )
+            )
+        ),
+        JSON_MAPPER.readValue(response.baos.toByteArray(), Object.class)
+    );
+  }
+
+  @Test
+  public void testArrayLinesResultFormat() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.ARRAYLINES, false, false, false, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(4, lines.size());
+    Assert.assertEquals(
+        Arrays.asList(
+            "2000-01-01T00:00:00.000Z",
+            "",
+            "a",
+            "[\"a\",\"b\"]",
+            1,
+            1.0,
+            1.0,
+            "\"AQAAAEAAAA==\"",
+            null
+        ),
+        JSON_MAPPER.readValue(lines.get(0), List.class)
+    );
+    Assert.assertEquals(
+        Arrays.asList(
+            "2000-01-02T00:00:00.000Z",
+            "10.1",
+            null,
+            "[\"b\",\"c\"]",
+            1,
+            2.0,
+            2.0,
+            "\"AQAAAQAAAAHNBA==\"",
+            null
+        ),
+        JSON_MAPPER.readValue(lines.get(1), List.class)
+    );
+    Assert.assertEquals("", lines.get(2));
+    Assert.assertEquals("", lines.get(3));
+  }
+
+  @Test
+  public void testArrayLinesResultFormatWithHeader() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.ARRAYLINES, true, true, true, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(7, lines.size());
+    Assert.assertEquals(EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS, JSON_MAPPER.readValue(lines.get(0), List.class));
+    Assert.assertEquals(EXPECTED_TYPES_FOR_RESULT_FORMAT_TESTS, JSON_MAPPER.readValue(lines.get(1), List.class));
+    Assert.assertEquals(EXPECTED_SQL_TYPES_FOR_RESULT_FORMAT_TESTS, JSON_MAPPER.readValue(lines.get(2), List.class));
+    Assert.assertEquals(
+        Arrays.asList(
+            "2000-01-01T00:00:00.000Z",
+            "",
+            "a",
+            "[\"a\",\"b\"]",
+            1,
+            1.0,
+            1.0,
+            "\"AQAAAEAAAA==\"",
+            null
+        ),
+        JSON_MAPPER.readValue(lines.get(3), List.class)
+    );
+    Assert.assertEquals(
+        Arrays.asList(
+            "2000-01-02T00:00:00.000Z",
+            "10.1",
+            null,
+            "[\"b\",\"c\"]",
+            1,
+            2.0,
+            2.0,
+            "\"AQAAAQAAAAHNBA==\"",
+            null
+        ),
+        JSON_MAPPER.readValue(lines.get(4), List.class)
+    );
+    Assert.assertEquals("", lines.get(5));
+    Assert.assertEquals("", lines.get(6));
+  }
+
+  @Test
+  public void testArrayLinesResultFormatWithHeader_nullColumnType() throws Exception
+  {
+    final String query = "SELECT (1, 2) FROM INFORMATION_SCHEMA.COLUMNS LIMIT 1";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.ARRAYLINES, true, true, true, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(6, lines.size());
+    Assert.assertEquals(Collections.singletonList("EXPR$0"), JSON_MAPPER.readValue(lines.get(0), List.class));
+    Assert.assertEquals(Collections.singletonList(null), JSON_MAPPER.readValue(lines.get(1), List.class));
+    Assert.assertEquals(Collections.singletonList("ROW"), JSON_MAPPER.readValue(lines.get(2), List.class));
+    Assert.assertEquals(
+        Collections.singletonList(
+            Arrays.asList(
+                1,
+                2
+            )
+        ),
+        JSON_MAPPER.readValue(lines.get(3), List.class)
+    );
+    Assert.assertEquals("", lines.get(4));
+    Assert.assertEquals("", lines.get(5));
+  }
+
+  @Test
+  public void testObjectResultFormat() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo  LIMIT 2";
+    final Function<Map<String, Object>, Map<String, Object>> transformer = m -> Maps.transformEntries(
+        m,
+        (k, v) -> "EXPR$8".equals(k) || ("dim2".equals(k) && v.toString().isEmpty()) ? null : v
+    );
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-01T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "")
+                .put("dim2", "a")
+                .put("dim3", "[\"a\",\"b\"]")
+                .put("m1", 1.0)
+                .put("m2", 1.0)
+                .put("unique_dim1", "\"AQAAAEAAAA==\"")
+                .put("EXPR$8", "")
+                .build(),
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-02T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "10.1")
+                .put("dim2", "")
+                .put("dim3", "[\"b\",\"c\"]")
+                .put("m1", 2.0)
+                .put("m2", 2.0)
+                .put("unique_dim1", "\"AQAAAQAAAAHNBA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ).stream().map(transformer).collect(Collectors.toList()),
+        doPost(
+            new SqlQuery(query, ResultFormat.OBJECT, false, false, false, null, null),
+            new TypeReference<List<Map<String, Object>>>()
+            {
+            }
+        ).rhs
+    );
+  }
+
+  @Test
+  public void testObjectLinesResultFormat() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.OBJECTLINES, false, false, false, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final Function<Map<String, Object>, Map<String, Object>> transformer = m -> {
+      return Maps.transformEntries(
+          m,
+          (k, v) -> "EXPR$8".equals(k) || ("dim2".equals(k) && v.toString().isEmpty()) ? null : v
+      );
+    };
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(4, lines.size());
+    Assert.assertEquals(
+        transformer.apply(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-01T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "")
+                .put("dim2", "a")
+                .put("dim3", "[\"a\",\"b\"]")
+                .put("m1", 1.0)
+                .put("m2", 1.0)
+                .put("unique_dim1", "\"AQAAAEAAAA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ),
+        JSON_MAPPER.readValue(lines.get(0), Object.class)
+    );
+    Assert.assertEquals(
+        transformer.apply(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-02T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "10.1")
+                .put("dim2", "")
+                .put("dim3", "[\"b\",\"c\"]")
+                .put("m1", 2.0)
+                .put("m2", 2.0)
+                .put("unique_dim1", "\"AQAAAQAAAAHNBA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ),
+        JSON_MAPPER.readValue(lines.get(1), Object.class)
+    );
+    Assert.assertEquals("", lines.get(2));
+    Assert.assertEquals("", lines.get(3));
+  }
+
+  @Test
+  public void testObjectLinesResultFormatWithMinimalHeader() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair =
+        doPostRaw(new SqlQuery(query, ResultFormat.OBJECTLINES, true, false, false, null, null));
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final Function<Map<String, Object>, Map<String, Object>> transformer = m -> Maps.transformEntries(
+        m,
+        (k, v) -> "EXPR$8".equals(k) || ("dim2".equals(k) && v.toString().isEmpty()) ? null : v
+    );
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    final Map<String, Object> expectedHeader = new HashMap<>();
+    for (final String column : EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS) {
+      expectedHeader.put(column, null);
+    }
+
+    Assert.assertEquals(5, lines.size());
+    Assert.assertEquals(expectedHeader, JSON_MAPPER.readValue(lines.get(0), Object.class));
+    Assert.assertEquals(
+        transformer.apply(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-01T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "")
+                .put("dim2", "a")
+                .put("dim3", "[\"a\",\"b\"]")
+                .put("m1", 1.0)
+                .put("m2", 1.0)
+                .put("unique_dim1", "\"AQAAAEAAAA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ),
+        JSON_MAPPER.readValue(lines.get(1), Object.class)
+    );
+    Assert.assertEquals(
+        transformer.apply(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-02T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "10.1")
+                .put("dim2", "")
+                .put("dim3", "[\"b\",\"c\"]")
+                .put("m1", 2.0)
+                .put("m2", 2.0)
+                .put("unique_dim1", "\"AQAAAQAAAAHNBA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ),
+        JSON_MAPPER.readValue(lines.get(2), Object.class)
+    );
+    Assert.assertEquals("", lines.get(3));
+    Assert.assertEquals("", lines.get(4));
+  }
+
+  @Test
+  public void testObjectLinesResultFormatWithFullHeader() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair =
+        doPostRaw(new SqlQuery(query, ResultFormat.OBJECTLINES, true, true, true, null, null));
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final Function<Map<String, Object>, Map<String, Object>> transformer = m -> Maps.transformEntries(
+        m,
+        (k, v) -> "EXPR$8".equals(k) || ("dim2".equals(k) && v.toString().isEmpty()) ? null : v
+    );
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    final Map<String, Object> expectedHeader = new HashMap<>();
+    for (int i = 0; i < EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS.size(); i++) {
+      expectedHeader.put(
+          EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS.get(i),
+          ImmutableMap.of(
+              ObjectWriter.TYPE_HEADER_NAME, EXPECTED_TYPES_FOR_RESULT_FORMAT_TESTS.get(i),
+              ObjectWriter.SQL_TYPE_HEADER_NAME, EXPECTED_SQL_TYPES_FOR_RESULT_FORMAT_TESTS.get(i)
+          )
+      );
+    }
+
+    Assert.assertEquals(5, lines.size());
+    Assert.assertEquals(expectedHeader, JSON_MAPPER.readValue(lines.get(0), Object.class));
+    Assert.assertEquals(
+        transformer.apply(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-01T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "")
+                .put("dim2", "a")
+                .put("dim3", "[\"a\",\"b\"]")
+                .put("m1", 1.0)
+                .put("m2", 1.0)
+                .put("unique_dim1", "\"AQAAAEAAAA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ),
+        JSON_MAPPER.readValue(lines.get(1), Object.class)
+    );
+    Assert.assertEquals(
+        transformer.apply(
+            ImmutableMap
+                .<String, Object>builder()
+                .put("__time", "2000-01-02T00:00:00.000Z")
+                .put("cnt", 1)
+                .put("dim1", "10.1")
+                .put("dim2", "")
+                .put("dim3", "[\"b\",\"c\"]")
+                .put("m1", 2.0)
+                .put("m2", 2.0)
+                .put("unique_dim1", "\"AQAAAQAAAAHNBA==\"")
+                .put("EXPR$8", "")
+                .build()
+        ),
+        JSON_MAPPER.readValue(lines.get(2), Object.class)
+    );
+    Assert.assertEquals("", lines.get(3));
+    Assert.assertEquals("", lines.get(4));
+  }
+
+  @Test
+  public void testObjectLinesResultFormatWithFullHeader_nullColumnType() throws Exception
+  {
+    final String query = "SELECT (1, 2) FROM INFORMATION_SCHEMA.COLUMNS LIMIT 1";
+    final Pair<ErrorResponse, String> pair =
+        doPostRaw(new SqlQuery(query, ResultFormat.OBJECTLINES, true, true, true, null, null));
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    final Map<String, String> typeMap = new HashMap<>();
+    typeMap.put(ObjectWriter.TYPE_HEADER_NAME, null);
+    typeMap.put(ObjectWriter.SQL_TYPE_HEADER_NAME, "ROW");
+    final Map<String, Object> expectedHeader = ImmutableMap.of("EXPR$0", typeMap);
+
+    Assert.assertEquals(4, lines.size());
+    Assert.assertEquals(expectedHeader, JSON_MAPPER.readValue(lines.get(0), Object.class));
+    Assert.assertEquals(
+        ImmutableMap
+            .<String, Object>builder()
+            .put("EXPR$0", Arrays.asList(1, 2))
+            .build(),
+        JSON_MAPPER.readValue(lines.get(1), Object.class)
+    );
+
+    Assert.assertEquals("", lines.get(2));
+    Assert.assertEquals("", lines.get(3));
+  }
+
+  @Test
+  public void testCsvResultFormat() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.CSV, false, false, false, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            "2000-01-01T00:00:00.000Z,,a,\"[\"\"a\"\",\"\"b\"\"]\",1,1.0,1.0,\"\"\"AQAAAEAAAA==\"\"\",",
+            "2000-01-02T00:00:00.000Z,10.1,,\"[\"\"b\"\",\"\"c\"\"]\",1,2.0,2.0,\"\"\"AQAAAQAAAAHNBA==\"\"\",",
+            "",
+            ""
+        ),
+        lines
+    );
+  }
+
+  @Test
+  public void testCsvResultFormatWithHeaders() throws Exception
+  {
+    final String query = "SELECT *, CASE dim2 WHEN '' THEN dim2 END FROM foo LIMIT 2";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.CSV, true, true, true, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            String.join(",", EXPECTED_COLUMNS_FOR_RESULT_FORMAT_TESTS),
+            String.join(",", EXPECTED_TYPES_FOR_RESULT_FORMAT_TESTS),
+            String.join(",", EXPECTED_SQL_TYPES_FOR_RESULT_FORMAT_TESTS),
+            "2000-01-01T00:00:00.000Z,,a,\"[\"\"a\"\",\"\"b\"\"]\",1,1.0,1.0,\"\"\"AQAAAEAAAA==\"\"\",",
+            "2000-01-02T00:00:00.000Z,10.1,,\"[\"\"b\"\",\"\"c\"\"]\",1,2.0,2.0,\"\"\"AQAAAQAAAAHNBA==\"\"\",",
+            "",
+            ""
+        ),
+        lines
+    );
+  }
+
+  @Test
+  public void testCsvResultFormatWithHeaders_nullColumnType() throws Exception
+  {
+    final String query = "SELECT (1, 2) FROM INFORMATION_SCHEMA.COLUMNS LIMIT 1";
+    final Pair<ErrorResponse, String> pair = doPostRaw(
+        new SqlQuery(query, ResultFormat.CSV, true, true, true, null, null)
+    );
+    Assert.assertNull(pair.lhs);
+    final String response = pair.rhs;
+    final List<String> lines = Splitter.on('\n').splitToList(response);
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            "EXPR$0",
+            "",
+            "ROW"
+        ),
+        lines.subList(0, 3)
+    );
+  }
+
+  @Test
+  public void testExplainCountStar() throws Exception
+  {
+    Map<String, Object> queryContext = ImmutableMap.of(
+        QueryContexts.CTX_SQL_QUERY_ID,
+        DUMMY_SQL_QUERY_ID,
+        PlannerConfig.CTX_KEY_USE_NATIVE_QUERY_EXPLAIN,
+        "false"
+    );
+    final List<Map<String, Object>> rows = doPost(
+        new SqlQuery(
+            "EXPLAIN PLAN FOR SELECT COUNT(*) AS cnt FROM robux.foo",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            queryContext,
+            null
+        )
+    ).rhs;
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableMap.<String, Object>of(
+                "PLAN",
+                StringUtils.format(
+                    "RobuxQueryRel(query=[{\"queryType\":\"timeseries\",\"dataSource\":{\"type\":\"table\",\"name\":\"foo\"},\"intervals\":{\"type\":\"intervals\",\"intervals\":[\"-146136543-09-08T08:23:32.096Z/146140482-04-24T15:36:27.903Z\"]},\"granularity\":{\"type\":\"all\"},\"aggregations\":[{\"type\":\"count\",\"name\":\"a0\"}],\"context\":{\"sqlQueryId\":\"%s\",\"%s\":\"%s\"}}], signature=[{a0:LONG}])\n",
+                    DUMMY_SQL_QUERY_ID,
+                    PlannerConfig.CTX_KEY_USE_NATIVE_QUERY_EXPLAIN,
+                    "false"
+                ),
+                "RESOURCES",
+                "[{\"name\":\"foo\",\"type\":\"DATASOURCE\"}]",
+                "ATTRIBUTES",
+                "{\"statementType\":\"SELECT\"}"
+            )
+        ),
+        rows
+    );
+  }
+
+  @Test
+  public void testCannotParse() throws Exception
+  {
+    ErrorResponse errorResponse = postSyncForException("FROM robux.foo", Status.BAD_REQUEST.getStatusCode());
+
+    validateInvalidSqlError(
+        errorResponse,
+        "Incorrect syntax near the keyword 'FROM' at line 1, column 1"
+    );
+    Assert.assertEquals(0, testRequestLogger.getSqlQueryLogs().size()); // Invalid queries are not logged
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testCannotValidate() throws Exception
+  {
+    ErrorResponse errorResponse = postSyncForException(
+        "SELECT dim4 FROM robux.foo",
+        Status.BAD_REQUEST.getStatusCode()
+    );
+
+    validateInvalidSqlError(
+        errorResponse,
+        "Column 'dim4' not found in any table"
+    );
+    checkSqlRequestLog(false);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testCannotConvert() throws Exception
+  {
+    // SELECT + ORDER unsupported
+    final SqlQuery unsupportedQuery = createSimpleQueryWithId("id", "SELECT dim1 FROM robux.foo ORDER BY dim1");
+    ErrorResponse exception = postSyncForException(unsupportedQuery, Status.BAD_REQUEST.getStatusCode());
+
+    Assert.assertTrue((Boolean) req.getAttribute(AuthConfig.ROBUX_AUTHORIZATION_CHECKED));
+
+    validateErrorResponse(
+        exception,
+        "general",
+        RobuxException.Persona.USER,
+        RobuxException.Category.INVALID_INPUT,
+        "Query could not be planned. A possible reason is "
+        + "[SQL query requires ordering a table by non-time column [[dim1]], which is not supported.]"
+    );
+    checkSqlRequestLog(false);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  /**
+   * This test is for {@link org.apache.robux.error.InvalidSqlInput} exceptions that are thrown by robux rules during query
+   * planning. e.g. doing max aggregation on string type. The test checks that the API returns correct error messages
+   * for such planning errors.
+   */
+  @Test
+  public void testCannotConvert_InvalidSQL() throws Exception
+  {
+    // max(string) unsupported
+    ErrorResponse errorResponse = postSyncForException(
+        "SELECT max(dim1) FROM robux.foo",
+        Status.BAD_REQUEST.getStatusCode()
+    );
+
+    validateInvalidSqlError(
+        errorResponse,
+        "Aggregation [MAX] does not support type [STRING], column [v0]"
+    );
+    checkSqlRequestLog(false);
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testResourceLimitExceeded() throws Exception
+  {
+    final ErrorResponse errorResponse = doPost(
+        new SqlQuery(
+            "SELECT DISTINCT dim1 FROM foo",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            ImmutableMap.of(GroupByQueryConfig.CTX_KEY_BUFFER_GROUPER_MAX_SIZE, 1, BaseQuery.SQL_QUERY_ID, "id"),
+            null
+        )
+    ).lhs;
+
+    validateLegacyQueryExceptionErrorResponse(
+        errorResponse,
+        QueryException.RESOURCE_LIMIT_EXCEEDED_ERROR_CODE,
+        ResourceLimitExceededException.class.getName(),
+        ""
+    );
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  private void failOnExecute(String errorMessage)
+  {
+    onExecute = s -> {
+      throw new QueryUnsupportedException(errorMessage);
+    };
+  }
+
+  @Test
+  public void testUnsupportedQueryThrowsException() throws Exception
+  {
+    String errorMessage = "This will be supported in Robux 9999";
+    failOnExecute(errorMessage);
+    ErrorResponse exception = postSyncForException(
+        new SqlQuery(
+            "SELECT ANSWER TO LIFE",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            ImmutableMap.of(BaseQuery.SQL_QUERY_ID, "id"),
+            null
+        ),
+        RobuxException.Category.INVALID_INPUT.getExpectedStatus()
+    );
+
+    validateInvalidSqlError(exception, "Incorrect syntax near the keyword 'TO'");
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testErrorResponseReturnSameQueryIdWhenSetInContext()
+  {
+    String queryId = "id123";
+    String errorMessage = "This will be supported in Robux 9999";
+    failOnExecute(errorMessage);
+    final Response response = postForSyncResponse(
+        new SqlQuery(
+            "SELECT ANSWER TO LIFE",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            ImmutableMap.of("sqlQueryId", queryId),
+            null
+        ),
+        req
+    );
+
+    // This is checked in the common method that returns the response, but checking it again just protects
+    // from changes there breaking the checks, so doesn't hurt.
+    assertStatusAndCommonHeaders(response, RobuxException.Category.INVALID_INPUT.getExpectedStatus());
+    Assert.assertEquals(queryId, getHeader(response, QueryResource.QUERY_ID_RESPONSE_HEADER));
+    Assert.assertEquals(queryId, getHeader(response, SqlResource.SQL_QUERY_ID_RESPONSE_HEADER));
+  }
+
+  @Test
+  public void testErrorResponseReturnNoQueryIdWhenNotSetInContext()
+  {
+    String errorMessage = "This will be supported in Robux 9999";
+    failOnExecute(errorMessage);
+    final SqlQuery sqlQuery = new SqlQuery(
+        "SELECT ANSWER TO LIFE",
+        ResultFormat.OBJECT,
+        false,
+        false,
+        false,
+        ImmutableMap.of(),
+        null
+    );
+
+    final Response response = resource.doPost(sqlQuery, req);
+
+    // Query ID won't be set, but we can look for other aspects of the response that we expect.
+    Assert.assertEquals(RobuxException.Category.INVALID_INPUT.getExpectedStatus(), response.getStatus());
+    Assert.assertEquals("application/json", getContentType(response));
+  }
+
+  @Test
+  public void testUnsupportedQueryThrowsExceptionWithFilterResponse() throws Exception
+  {
+    resource = new SqlResource(
+        JSON_MAPPER,
+        CalciteTests.TEST_AUTHORIZER_MAPPER,
+        new ServerConfig()
+        {
+          @Override
+          public boolean isShowDetailedJettyErrors()
+          {
+            return true;
+          }
+
+          @Override
+          public ErrorResponseTransformStrategy getErrorResponseTransformStrategy()
+          {
+            return new AllowedRegexErrorResponseTransformStrategy(ImmutableList.of());
+          }
+        },
+        lifecycleManager,
+        new SqlEngineRegistry(Set.of(engine)),
+        TEST_RESPONSE_CONTEXT_CONFIG,
+        DUMMY_ROBUX_NODE
+    );
+
+    String errorMessage = "This will be supported in Robux 9999";
+    failOnExecute(errorMessage);
+    ErrorResponse exception = postSyncForException(
+        new SqlQuery(
+            "SELECT 1",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            ImmutableMap.of("sqlQueryId", "id"),
+            null
+        ),
+        501
+    );
+
+    validateLegacyQueryExceptionErrorResponse(
+        exception,
+        QueryException.QUERY_UNSUPPORTED_ERROR_CODE,
+        "org.apache.robux.query.QueryUnsupportedException",
+        "This will be supported in Robux 9999"
+    );
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  /**
+   * See class-level javadoc for {@link org.apache.robux.sql.calcite.util.testoperator.AssertionErrorOperatorConversion}
+   * for rationale as to why this test exists.
+   * <p>
+   * If this test starts failing, it could be indicative of us not handling the AssertionErrors well anymore,
+   * OR it could be indicative of this specific code path not throwing an AssertionError anymore.  If we run
+   * into the latter case, we should seek out a new code path that generates the error from Calcite.  In the best
+   * world, this test starts failing because Calcite has moved all of its execptions away from AssertionErrors
+   * and we can no longer reproduce the behavior through Calcite, in that world, we should remove our own handling
+   * and this test at the same time.
+   */
+  @Test
+  public void testAssertionErrorThrowsErrorWithFilterResponse() throws Exception
+  {
+    ErrorResponse exception = postSyncForException(
+        new SqlQuery(
+            "SELECT assertion_error() FROM foo LIMIT 2",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            ImmutableMap.of("sqlQueryId", "id"),
+            null
+        ),
+        Status.BAD_REQUEST.getStatusCode()
+    );
+
+    assertThat(
+        exception.getUnderlyingException(),
+        RobuxExceptionMatcher
+            .invalidSqlInput()
+            .expectMessageIs("Calcite assertion violated: [not a literal: assertion_error()]")
+    );
+    Assert.assertTrue(lifecycleManager.getAll("id").isEmpty());
+  }
+
+  @Test
+  public void testTooManyRequestsAfterTotalLaning() throws Exception
+  {
+    final int numQueries = 3;
+    CountDownLatch queriesScheduledLatch = new CountDownLatch(numQueries - 1);
+    CountDownLatch runQueryLatch = new CountDownLatch(1);
+
+    SCHEDULER_BAGGAGE.set(() -> {
+      queriesScheduledLatch.countDown();
+      try {
+        runQueryLatch.await();
+      }
+      catch (InterruptedException e) {
+        throw new RE(e);
+      }
+      return null;
+    });
+
+    final String sqlQueryId = "tooManyRequestsTest";
+
+    List<Future<Object>> futures = new ArrayList<>(numQueries);
+    for (int i = 0; i < numQueries - 1; i++) {
+      futures.add(executorService.submit(() -> {
+        try {
+          return postForAsyncResponse(
+              new SqlQuery(
+                  "SELECT COUNT(*) AS cnt, 'foo' AS TheFoo FROM robux.foo",
+                  null,
+                  false,
+                  false,
+                  false,
+                  ImmutableMap.of("priority", -5, BaseQuery.SQL_QUERY_ID, sqlQueryId),
+                  null
+              ),
+              makeRegularUserReq()
+          );
+        }
+        catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }));
+    }
+
+    queriesScheduledLatch.await();
+    SCHEDULER_BAGGAGE.set(() -> null);
+    futures.add(executorService.submit(() -> {
+      try {
+        final Response retVal = postForSyncResponse(
+            new SqlQuery(
+                "SELECT COUNT(*) AS cnt, 'foo' AS TheFoo FROM robux.foo",
+                null,
+                false,
+                false,
+                false,
+                ImmutableMap.of("priority", -5, BaseQuery.SQL_QUERY_ID, sqlQueryId),
+                null
+            ),
+            makeRegularUserReq()
+        );
+        runQueryLatch.countDown();
+        return retVal;
+      }
+      catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }));
+
+    int success = 0;
+    int limited = 0;
+    for (int i = 0; i < numQueries; i++) {
+      if (i == 2) {
+        Response response = (Response) futures.get(i).get();
+        assertStatusAndCommonHeaders(response, 429);
+        QueryException interruped = deserializeResponse(response, QueryException.class);
+        Assert.assertEquals(QueryException.QUERY_CAPACITY_EXCEEDED_ERROR_CODE, interruped.getErrorCode());
+        Assert.assertEquals(
+            QueryCapacityExceededException.makeLaneErrorMessage(HiLoQueryLaningStrategy.LOW, 2),
+            interruped.getMessage()
+        );
+        limited++;
+      } else {
+        MockHttpServletResponse response = (MockHttpServletResponse) futures.get(i).get();
+        assertStatusAndCommonHeaders(response, 200);
+        Assert.assertEquals(
+            ImmutableList.of(ImmutableMap.of("cnt", 6, "TheFoo", "foo")),
+            deserializeResponse(response, Object.class)
+        );
+        success++;
+      }
+    }
+    Assert.assertEquals(2, success);
+    Assert.assertEquals(1, limited);
+    Assert.assertEquals(3, testRequestLogger.getSqlQueryLogs().size());
+    Assert.assertTrue(lifecycleManager.getAll(sqlQueryId).isEmpty());
+  }
+
+  @Test
+  public void testQueryTimeoutException() throws Exception
+  {
+    final String sqlQueryId = "timeoutTest";
+    Map<String, Object> queryContext = ImmutableMap.of(
+        QueryContexts.TIMEOUT_KEY,
+        1,
+        BaseQuery.SQL_QUERY_ID,
+        sqlQueryId
+    );
+
+    ErrorResponse exception = postSyncForException(
+        new SqlQuery(
+            "SELECT CAST(__time AS DATE), dim1, dim2, dim3 FROM robux.foo GROUP by __time, dim1, dim2, dim3 ORDER BY dim2 DESC",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            queryContext,
+            null
+        ),
+        504
+    );
+
+    validateLegacyQueryExceptionErrorResponse(
+        exception,
+        QueryException.QUERY_TIMEOUT_ERROR_CODE,
+        QueryTimeoutException.class.getName(),
+        ""
+    );
+    Assert.assertTrue(lifecycleManager.getAll(sqlQueryId).isEmpty());
+  }
+
+  @Test
+  public void testCancelBetweenValidateAndPlan() throws Exception
+  {
+    final String sqlQueryId = "toCancel";
+    lifecycleAddLatch = new CountDownLatch(1);
+    CountDownLatch validateAndAuthorizeLatch = new CountDownLatch(1);
+    validateAndAuthorizeLatchSupplier.set(new NonnullPair<>(validateAndAuthorizeLatch, true));
+    CountDownLatch planLatch = new CountDownLatch(1);
+    planLatchSupplier.set(new NonnullPair<>(planLatch, false));
+    Future<Response> future = executorService.submit(
+        () -> postForSyncResponse(
+            createSimpleQueryWithId(sqlQueryId, "SELECT DISTINCT dim1 FROM foo"),
+            makeRegularUserReq()
+        )
+    );
+    Assert.assertTrue(validateAndAuthorizeLatch.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS));
+    Assert.assertTrue(lifecycleAddLatch.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS));
+    Response cancelResponse = resource.cancelQuery(sqlQueryId, makeRequestForCancel());
+    planLatch.countDown();
+    Assert.assertEquals(Status.ACCEPTED.getStatusCode(), cancelResponse.getStatus());
+
+    Assert.assertTrue(lifecycleManager.getAll(sqlQueryId).isEmpty());
+
+    Response queryResponse = future.get();
+    assertStatusAndCommonHeaders(queryResponse, Status.INTERNAL_SERVER_ERROR.getStatusCode());
+
+    ErrorResponse exception = deserializeResponse(queryResponse, ErrorResponse.class);
+    validateLegacyQueryExceptionErrorResponse(
+        exception,
+        "Query cancelled",
+        null,
+        ""
+    );
+  }
+
+  @Test
+  public void testCancelBetweenPlanAndExecute() throws Exception
+  {
+    final String sqlQueryId = "toCancel";
+    CountDownLatch planLatch = new CountDownLatch(1);
+    planLatchSupplier.set(new NonnullPair<>(planLatch, true));
+    CountDownLatch execLatch = new CountDownLatch(1);
+    executeLatchSupplier.set(new NonnullPair<>(execLatch, false));
+    Future<Response> future = executorService.submit(
+        () -> postForSyncResponse(
+            createSimpleQueryWithId(sqlQueryId, "SELECT DISTINCT dim1 FROM foo"),
+            makeRegularUserReq()
+        )
+    );
+    Assert.assertTrue(planLatch.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS));
+    Response cancelResponse = resource.cancelQuery(sqlQueryId, makeRequestForCancel());
+    execLatch.countDown();
+    Assert.assertEquals(Status.ACCEPTED.getStatusCode(), cancelResponse.getStatus());
+
+    Assert.assertTrue(lifecycleManager.getAll(sqlQueryId).isEmpty());
+
+    Response queryResponse = future.get();
+    assertStatusAndCommonHeaders(queryResponse, Status.INTERNAL_SERVER_ERROR.getStatusCode());
+
+    ErrorResponse exception = deserializeResponse(queryResponse, ErrorResponse.class);
+    validateLegacyQueryExceptionErrorResponse(exception, "Query cancelled", null, "");
+  }
+
+  @Test
+  public void testCancelInvalidQuery() throws Exception
+  {
+    final String sqlQueryId = "validQuery";
+    CountDownLatch planLatch = new CountDownLatch(1);
+    planLatchSupplier.set(new NonnullPair<>(planLatch, true));
+    CountDownLatch execLatch = new CountDownLatch(1);
+    executeLatchSupplier.set(new NonnullPair<>(execLatch, false));
+    Future<MockHttpServletResponse> future = executorService.submit(
+        () -> postForAsyncResponse(
+            createSimpleQueryWithId(sqlQueryId, "SELECT DISTINCT dim1 FROM foo"),
+            makeRegularUserReq()
+        )
+    );
+    Assert.assertTrue(planLatch.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS));
+    Response cancelResponse = resource.cancelQuery("invalidQuery", makeRequestForCancel());
+    Assert.assertEquals(Status.NOT_FOUND.getStatusCode(), cancelResponse.getStatus());
+
+    Assert.assertFalse(lifecycleManager.getAll(sqlQueryId).isEmpty());
+
+    execLatch.countDown();
+    MockHttpServletResponse queryResponse = future.get();
+    Assert.assertEquals(Status.OK.getStatusCode(), queryResponse.getStatus());
+  }
+
+  @Test
+  public void testCancelForbidden() throws Exception
+  {
+    final String sqlQueryId = "toCancel";
+    CountDownLatch planLatch = new CountDownLatch(1);
+    planLatchSupplier.set(new NonnullPair<>(planLatch, true));
+    CountDownLatch execLatch = new CountDownLatch(1);
+    executeLatchSupplier.set(new NonnullPair<>(execLatch, false));
+    Future<MockHttpServletResponse> future = executorService.submit(
+        () -> postForAsyncResponse(
+            createSimpleQueryWithId(sqlQueryId, "SELECT DISTINCT dim1 FROM forbiddenDatasource"),
+            makeSuperUserReq()
+        )
+    );
+    Assert.assertTrue(planLatch.await(3, TimeUnit.SECONDS));
+    Response cancelResponse = resource.cancelQuery(sqlQueryId, makeRequestForCancel());
+    Assert.assertEquals(Status.FORBIDDEN.getStatusCode(), cancelResponse.getStatus());
+
+    Assert.assertFalse(lifecycleManager.getAll(sqlQueryId).isEmpty());
+
+    execLatch.countDown();
+    MockHttpServletResponse queryResponse = future.get();
+    Assert.assertEquals(Status.OK.getStatusCode(), queryResponse.getStatus());
+  }
+
+  @Test
+  public void testQueryContextException() throws Exception
+  {
+    final String sqlQueryId = "badQueryContextTimeout";
+    Map<String, Object> queryContext = ImmutableMap.of(
+        QueryContexts.TIMEOUT_KEY,
+        "2000'",
+        BaseQuery.SQL_QUERY_ID,
+        sqlQueryId
+    );
+    final ErrorResponse errorResponse = doPost(
+        new SqlQuery(
+            "SELECT 1337",
+            ResultFormat.OBJECT,
+            false,
+            false,
+            false,
+            queryContext,
+            null
+        )
+    ).lhs;
+
+    validateLegacyQueryExceptionErrorResponse(
+        errorResponse,
+        QueryException.BAD_QUERY_CONTEXT_ERROR_CODE,
+        BadQueryContextException.ERROR_CLASS,
+        "2000'"
+    );
+    checkSqlRequestLog(false);
+    Assert.assertTrue(lifecycleManager.getAll(sqlQueryId).isEmpty());
+  }
+
+  @Test
+  public void testQueryContextKeyNotAllowed() throws Exception
+  {
+    Map<String, Object> queryContext = ImmutableMap.of(RobuxSqlInsert.SQL_INSERT_SEGMENT_GRANULARITY, "all");
+    ErrorResponse exception = postSyncForException(
+        new SqlQuery("SELECT 1337", ResultFormat.OBJECT, false, false, false, queryContext, null),
+        Status.BAD_REQUEST.getStatusCode()
+    );
+
+    validateInvalidInputError(
+        exception,
+        "Query context parameter [sqlInsertSegmentGranularity] is not allowed"
+    );
+    checkSqlRequestLog(false);
+  }
+
+  private void checkSqlRequestLog(boolean success)
+  {
+    checkSqlRequestLog(success, CalciteTests.REGULAR_USER_AUTH_RESULT.getIdentity());
+  }
+
+  @SuppressWarnings("unchecked")
+  private void checkSqlRequestLog(boolean success, String user)
+  {
+    Assert.assertEquals(1, testRequestLogger.getSqlQueryLogs().size());
+
+    final Map<String, Object> stats = testRequestLogger.getSqlQueryLogs().get(0).getQueryStats().getStats();
+    final Map<String, Object> queryContext = (Map<String, Object>) testRequestLogger.getSqlQueryLogs()
+                                                                                    .get(0)
+                                                                                    .getSqlQueryContext();
+    Assert.assertEquals(success, stats.get("success"));
+    Assert.assertEquals(user, stats.get("identity"));
+    Assert.assertTrue(stats.containsKey("sqlQuery/time"));
+    Assert.assertTrue(stats.containsKey("sqlQuery/planningTimeMs"));
+    Assert.assertTrue(queryContext.containsKey(QueryContexts.CTX_SQL_QUERY_ID));
+    if (success) {
+      Assert.assertTrue(stats.containsKey("sqlQuery/bytes"));
+    } else {
+      Assert.assertTrue(stats.containsKey("exception"));
+    }
+  }
+
+  private static SqlQuery createSimpleQueryWithId(String sqlQueryId, String sql)
+  {
+    return new SqlQuery(sql, null, false, false, false, ImmutableMap.of(BaseQuery.SQL_QUERY_ID, sqlQueryId), null);
+  }
+
+  private Pair<ErrorResponse, List<Map<String, Object>>> doPost(final SqlQuery query) throws Exception
+  {
+    return doPost(query, new TypeReference<List<Map<String, Object>>>()
+    {
+    });
+  }
+
+  // Returns either an error or a result, assuming the result is a JSON object.
+  private <T> Pair<ErrorResponse, T> doPost(
+      final SqlQuery query,
+      final TypeReference<T> typeReference
+  ) throws Exception
+  {
+    return doPost(query, req, typeReference);
+  }
+
+  private Pair<ErrorResponse, String> doPostRaw(final SqlQuery query) throws Exception
+  {
+    return doPostRaw(query, req);
+  }
+
+  // Returns either an error or a result, assuming the result is a JSON object.
+  @SuppressWarnings("unchecked")
+  private <T> Pair<ErrorResponse, T> doPost(
+      final SqlQuery query,
+      final MockHttpServletRequest req,
+      final TypeReference<T> typeReference
+  ) throws Exception
+  {
+    final Pair<ErrorResponse, String> pair = doPostRaw(query, req);
+    if (pair.rhs == null) {
+      //noinspection unchecked
+      return (Pair<ErrorResponse, T>) pair;
+    } else {
+      return Pair.of(pair.lhs, JSON_MAPPER.readValue(pair.rhs, typeReference));
+    }
+  }
+
+  // Returns either an error or a result.
+  private Pair<ErrorResponse, String> doPostRaw(final SqlQuery query, final MockHttpServletRequest req)
+      throws Exception
+  {
+    MockHttpServletResponse response = postForAsyncResponse(query, req);
+
+    if (response.getStatus() == 200) {
+      return Pair.of(null, new String(response.baos.toByteArray(), StandardCharsets.UTF_8));
+    } else {
+      return Pair.of(JSON_MAPPER.readValue(response.baos.toByteArray(), ErrorResponse.class), null);
+    }
+  }
+
+  @Nonnull
+  private MockHttpServletResponse postForAsyncResponse(SqlQuery query, MockHttpServletRequest req)
+  {
+    MockHttpServletResponse response = MockHttpServletResponse.forRequest(req);
+
+    final Object explicitQueryId = query.getContext().get("queryId");
+    final Object explicitSqlQueryId = query.getContext().get("sqlQueryId");
+    Assert.assertNull(resource.doPost(query, req));
+
+    final Object actualQueryId = response.getHeader(QueryResource.QUERY_ID_RESPONSE_HEADER);
+    final Object actualSqlQueryId = response.getHeader(SqlResource.SQL_QUERY_ID_RESPONSE_HEADER);
+    validateQueryIds(explicitQueryId, explicitSqlQueryId, actualQueryId, actualSqlQueryId);
+
+    return response;
+  }
+
+  private void assertStatusAndCommonHeaders(MockHttpServletResponse queryResponse, int statusCode)
+  {
+    Assert.assertEquals(statusCode, queryResponse.getStatus());
+    Assert.assertEquals("application/json", queryResponse.getContentType());
+    Assert.assertNotNull(queryResponse.getHeader(QueryResource.QUERY_ID_RESPONSE_HEADER));
+    Assert.assertNotNull(queryResponse.getHeader(SqlResource.SQL_QUERY_ID_RESPONSE_HEADER));
+  }
+
+  private <T> T deserializeResponse(MockHttpServletResponse resp, Class<T> clazz) throws IOException
+  {
+    return JSON_MAPPER.readValue(resp.baos.toByteArray(), clazz);
+  }
+
+  private Response postForSyncResponse(SqlQuery query, MockHttpServletRequest req)
+  {
+    final Object explicitQueryId = query.getContext().get("queryId");
+    final Object explicitSqlQueryId = query.getContext().get("sqlQueryId");
+
+    final Response response = resource.doPost(query, req);
+
+    final Object actualQueryId = getHeader(response, QueryResource.QUERY_ID_RESPONSE_HEADER);
+    final Object actualSqlQueryId = getHeader(response, SqlResource.SQL_QUERY_ID_RESPONSE_HEADER);
+
+    validateQueryIds(explicitQueryId, explicitSqlQueryId, actualQueryId, actualSqlQueryId);
+
+    return response;
+  }
+
+  private ErrorResponse postSyncForException(String s, int expectedStatus) throws IOException
+  {
+    return postSyncForException(createSimpleQueryWithId("id", s), expectedStatus);
+  }
+
+  private ErrorResponse postSyncForException(SqlQuery query, int expectedStatus) throws IOException
+  {
+    final Response response = postForSyncResponse(query, req);
+    assertStatusAndCommonHeaders(response, expectedStatus);
+    return deserializeResponse(response, ErrorResponse.class);
+  }
+
+  private <T> T deserializeResponse(Response resp, Class<T> clazz) throws IOException
+  {
+    return JSON_MAPPER.readValue(responseToByteArray(resp), clazz);
+  }
+
+  public static byte[] responseToByteArray(Response resp) throws IOException
+  {
+    if (resp.getEntity() instanceof StreamingOutput) {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ((StreamingOutput) resp.getEntity()).write(baos);
+      return baos.toByteArray();
+    } else {
+      return JSON_MAPPER.writeValueAsBytes(resp.getEntity());
+    }
+  }
+
+  private String getContentType(Response resp)
+  {
+    return getHeader(resp, HttpHeaders.CONTENT_TYPE).toString();
+  }
+
+  @Nullable
+  private Object getHeader(Response resp, String header)
+  {
+    final List<Object> objects = resp.getMetadata().get(header);
+    if (objects == null) {
+      return null;
+    }
+    return Iterables.getOnlyElement(objects);
+  }
+
+  private void assertStatusAndCommonHeaders(Response queryResponse, int statusCode)
+  {
+    Assert.assertEquals(statusCode, queryResponse.getStatus());
+    Assert.assertEquals("application/json", getContentType(queryResponse));
+    Assert.assertNotNull(getHeader(queryResponse, QueryResource.QUERY_ID_RESPONSE_HEADER));
+    Assert.assertNotNull(getHeader(queryResponse, SqlResource.SQL_QUERY_ID_RESPONSE_HEADER));
+  }
+
+  private void validateQueryIds(
+      Object explicitQueryId,
+      Object explicitSqlQueryId,
+      Object actualQueryId,
+      Object actualSqlQueryId
+  )
+  {
+    if (explicitQueryId == null) {
+      if (null != explicitSqlQueryId) {
+        Assert.assertEquals(explicitSqlQueryId, actualQueryId);
+        Assert.assertEquals(explicitSqlQueryId, actualSqlQueryId);
+      } else {
+        Assert.assertNotNull(actualQueryId);
+        Assert.assertNotNull(actualSqlQueryId);
+      }
+    } else {
+      if (explicitSqlQueryId == null) {
+        Assert.assertEquals(explicitQueryId, actualQueryId);
+        Assert.assertEquals(explicitQueryId, actualSqlQueryId);
+      } else {
+        Assert.assertEquals(explicitQueryId, actualQueryId);
+        Assert.assertEquals(explicitSqlQueryId, actualSqlQueryId);
+      }
+    }
+  }
+
+  private MockHttpServletRequest makeSuperUserReq()
+  {
+    return makeExpectedReq(CalciteTests.SUPER_USER_AUTH_RESULT);
+  }
+
+  private MockHttpServletRequest makeRegularUserReq()
+  {
+    return makeExpectedReq(CalciteTests.REGULAR_USER_AUTH_RESULT);
+  }
+
+  private MockHttpServletRequest makeExpectedReq(AuthenticationResult authenticationResult)
+  {
+    MockHttpServletRequest req = new MockHttpServletRequest();
+    req.attributes.put(AuthConfig.ROBUX_AUTHENTICATION_RESULT, authenticationResult);
+    req.remoteAddr = "1.2.3.4";
+    return req;
+  }
+
+  private MockHttpServletRequest makeRequestForCancel()
+  {
+    MockHttpServletRequest req = new MockHttpServletRequest();
+    req.attributes.put(AuthConfig.ROBUX_AUTHENTICATION_RESULT, CalciteTests.REGULAR_USER_AUTH_RESULT);
+    return req;
+  }
+
+  private static Function<Sequence<Object[]>, Sequence<Object[]>> errorAfterSecondRowMapFn()
+  {
+    return results -> {
+      final AtomicLong rows = new AtomicLong();
+      return results
+          .flatMap(
+              row -> Sequences.simple(new AbstractList<Object[]>()
+              {
+                @Override
+                public Object[] get(int index)
+                {
+                  return row;
+                }
+
+                @Override
+                public int size()
+                {
+                  return 1000;
+                }
+              })
+          )
+          .map(row -> {
+            if (rows.incrementAndGet() == 3) {
+              throw new ISE("Oh no!");
+            } else {
+              return row;
+            }
+          });
+    };
+  }
+
+  private static class TestHttpStatement extends HttpStatement
+  {
+    private final SettableSupplier<NonnullPair<CountDownLatch, Boolean>> validateAndAuthorizeLatchSupplier;
+    private final SettableSupplier<NonnullPair<CountDownLatch, Boolean>> planLatchSupplier;
+    private final SettableSupplier<NonnullPair<CountDownLatch, Boolean>> executeLatchSupplier;
+    private final SettableSupplier<Function<Sequence<Object[]>, Sequence<Object[]>>> sequenceMapFnSupplier;
+    private final SettableSupplier<ResponseContext> responseContextSupplier;
+    private final Consumer<DirectStatement> onExecute;
+
+    private TestHttpStatement(
+        final SqlToolbox lifecycleContext,
+        final SqlQueryPlus sqlQueryPlus,
+        final HttpServletRequest req,
+        SettableSupplier<NonnullPair<CountDownLatch, Boolean>> validateAndAuthorizeLatchSupplier,
+        SettableSupplier<NonnullPair<CountDownLatch, Boolean>> planLatchSupplier,
+        SettableSupplier<NonnullPair<CountDownLatch, Boolean>> executeLatchSupplier,
+        SettableSupplier<Function<Sequence<Object[]>, Sequence<Object[]>>> sequenceMapFnSupplier,
+        SettableSupplier<ResponseContext> responseContextSupplier,
+        final Consumer<DirectStatement> onAuthorize
+    )
+    {
+      super(lifecycleContext, sqlQueryPlus, req);
+      this.validateAndAuthorizeLatchSupplier = validateAndAuthorizeLatchSupplier;
+      this.planLatchSupplier = planLatchSupplier;
+      this.executeLatchSupplier = executeLatchSupplier;
+      this.sequenceMapFnSupplier = sequenceMapFnSupplier;
+      this.responseContextSupplier = responseContextSupplier;
+      this.onExecute = onAuthorize;
+    }
+
+    @Override
+    protected void authorize(
+        RobuxPlanner planner,
+        Function<Set<ResourceAction>, AuthorizationResult> authorizer
+    )
+    {
+      if (validateAndAuthorizeLatchSupplier.get() != null) {
+        if (validateAndAuthorizeLatchSupplier.get().rhs) {
+          super.authorize(planner, authorizer);
+          validateAndAuthorizeLatchSupplier.get().lhs.countDown();
+        } else {
+          try {
+            if (!validateAndAuthorizeLatchSupplier.get().lhs.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS)) {
+              throw new RuntimeException("Latch timed out");
+            }
+          }
+          catch (InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+          super.authorize(planner, authorizer);
+        }
+      } else {
+        super.authorize(planner, authorizer);
+      }
+    }
+
+    @Override
+    public PlannerResult createPlan(RobuxPlanner planner)
+    {
+      final NonnullPair<CountDownLatch, Boolean> planLatch = planLatchSupplier.get();
+      if (planLatch != null) {
+        if (planLatch.rhs) {
+          PlannerResult result = super.createPlan(planner);
+          planLatch.lhs.countDown();
+          return result;
+        } else {
+          try {
+            if (!planLatch.lhs.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS)) {
+              throw new RuntimeException("Latch timed out");
+            }
+          }
+          catch (InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+          return super.createPlan(planner);
+        }
+      } else {
+        return super.createPlan(planner);
+      }
+    }
+
+    @Override
+    public ResultSet plan()
+    {
+      onExecute.accept(this);
+      return super.plan();
+    }
+
+    @Override
+    public ResultSet createResultSet(PlannerResult plannerResult)
+    {
+      return new ResultSet(plannerResult)
+      {
+        @Override
+        public QueryResponse<Object[]> run()
+        {
+          final Function<Sequence<Object[]>, Sequence<Object[]>> sequenceMapFn =
+              Optional.ofNullable(sequenceMapFnSupplier.get()).orElse(Function.identity());
+
+          final NonnullPair<CountDownLatch, Boolean> executeLatch = executeLatchSupplier.get();
+          if (executeLatch != null) {
+            if (executeLatch.rhs) {
+              final QueryResponse<Object[]> resp = super.run();
+              Sequence<Object[]> sequence = sequenceMapFn.apply(resp.getResults());
+              executeLatch.lhs.countDown();
+              final ResponseContext respContext = resp.getResponseContext();
+              respContext.merge(responseContextSupplier.get());
+              return new QueryResponse<>(sequence, respContext);
+            } else {
+              try {
+                if (!executeLatch.lhs.await(WAIT_TIMEOUT_SECS, TimeUnit.SECONDS)) {
+                  throw new RuntimeException("Latch timed out");
+                }
+              }
+              catch (InterruptedException e) {
+                throw new RuntimeException(e);
+              }
+            }
+          }
+
+          final QueryResponse<Object[]> resp = super.run();
+          Sequence<Object[]> sequence = sequenceMapFn.apply(resp.getResults());
+          final ResponseContext respContext = resp.getResponseContext();
+          respContext.merge(responseContextSupplier.get());
+          return new QueryResponse<>(sequence, respContext);
+        }
+      };
+    }
+  }
+
+  private RobuxException validateErrorResponse(
+      ErrorResponse errorResponse,
+      String errorCode,
+      RobuxException.Persona targetPersona,
+      RobuxException.Category category,
+      String messageContainsString
+  )
+  {
+    Assert.assertNotNull(errorResponse);
+
+    RobuxException exception = errorResponse.getUnderlyingException();
+
+    Assert.assertEquals(errorCode, exception.getErrorCode());
+    Assert.assertEquals(targetPersona, exception.getTargetPersona());
+    Assert.assertEquals(category, exception.getCategory());
+    if (messageContainsString == null) {
+      Assert.assertNull(exception.getMessage());
+    } else {
+      assertThat(exception.getMessage(), CoreMatchers.containsString(messageContainsString));
+    }
+
+    return exception;
+  }
+
+  private RobuxException validateInvalidSqlError(
+      ErrorResponse response,
+      String containsString
+  )
+  {
+    final RobuxException exception = validateInvalidInputError(response, containsString);
+    Assert.assertEquals("sql", exception.getContextValue("sourceType"));
+
+    return exception;
+  }
+
+  @Nonnull
+  private RobuxException validateInvalidInputError(ErrorResponse response, String containsString)
+  {
+    return validateErrorResponse(
+        response,
+        "invalidInput",
+        RobuxException.Persona.USER,
+        RobuxException.Category.INVALID_INPUT,
+        containsString
+    );
+  }
+
+  private RobuxException validateLegacyQueryExceptionErrorResponse(
+      ErrorResponse errorResponse,
+      String legacyCode,
+      String errorClass,
+      String messageContainsString
+  )
+  {
+    RobuxException exception = validateErrorResponse(
+        errorResponse,
+        QueryExceptionCompat.ERROR_CODE,
+        RobuxException.Persona.OPERATOR,
+        convertToCategory(legacyCode),
+        messageContainsString
+    );
+
+    Assert.assertEquals(legacyCode, exception.getContextValue("legacyErrorCode"));
+    Assert.assertEquals(errorClass, exception.getContextValue("errorClass"));
+
+    return exception;
+  }
+
+  private static RobuxException.Category convertToCategory(String legacyErrorCode)
+  {
+    // This code is copied from QueryExceptionCompat at the time of writing.  This is because these mappings
+    // are fundamentally part of the API, so reusing the code from there runs the risk that changes in the mapping
+    // would change the API but not break the unit tests.  So, the unit test uses its own mapping to ensure
+    // that we are validating and aware of API-affecting changes.
+    switch (QueryException.fromErrorCode(legacyErrorCode)) {
+      case USER_ERROR:
+        return RobuxException.Category.INVALID_INPUT;
+      case UNAUTHORIZED:
+        return RobuxException.Category.UNAUTHORIZED;
+      case CAPACITY_EXCEEDED:
+        return RobuxException.Category.CAPACITY_EXCEEDED;
+      case QUERY_RUNTIME_FAILURE:
+        return RobuxException.Category.RUNTIME_FAILURE;
+      case CANCELED:
+        return RobuxException.Category.CANCELED;
+      case UNKNOWN:
+        return RobuxException.Category.UNCATEGORIZED;
+      case UNSUPPORTED:
+        return RobuxException.Category.UNSUPPORTED;
+      case TIMEOUT:
+        return RobuxException.Category.TIMEOUT;
+      default:
+        return RobuxException.Category.UNCATEGORIZED;
+    }
+  }
+}

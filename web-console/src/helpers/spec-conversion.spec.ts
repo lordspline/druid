@@ -32,7 +32,7 @@ describe('spec conversion', () => {
           type: 'index_parallel',
           inputSource: {
             type: 'http',
-            uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+            uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
           },
           inputFormat: {
             type: 'json',
@@ -137,7 +137,7 @@ describe('spec conversion', () => {
           type: 'index_parallel',
           inputSource: {
             type: 'http',
-            uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+            uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
           },
           inputFormat: {
             type: 'json',
@@ -326,7 +326,7 @@ describe('spec conversion', () => {
           type: 'hadoop',
           inputSpec: {
             type: 'static',
-            inputFormat: 'org.apache.druid.data.input.parquet.DruidParquetInputFormat',
+            inputFormat: 'org.apache.robux.data.input.parquet.RobuxParquetInputFormat',
             paths: 's3://path',
           },
         },
@@ -359,7 +359,7 @@ describe('spec conversion', () => {
           type: 'index_parallel',
           inputSource: {
             type: 'http',
-            uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+            uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
           },
           inputFormat: {
             type: 'json',
@@ -447,7 +447,7 @@ describe('spec conversion', () => {
           type: 'index_parallel',
           inputSource: {
             type: 'http',
-            uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+            uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
           },
           inputFormat: {
             type: 'json',
@@ -493,7 +493,7 @@ describe('spec conversion', () => {
           type: 'index_parallel',
           inputSource: {
             type: 'http',
-            uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+            uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
           },
           inputFormat: {
             type: 'json',

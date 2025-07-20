@@ -24,5 +24,5 @@ sidebar_label: "Firehose (deprecated)"
   -->
 
 :::info
- Firehose ingestion has been removed in Druid 26.0. See [Migrate from firehose to input source ingestion](../operations/migrate-from-firehose-ingestion.md) for instructions on migrating from firehose ingestion to using native batch ingestion input sources.
+ Firehose ingestion has been removed in Robux 26.0. See [Migrate from firehose to input source ingestion](../operations/migrate-from-firehose-ingestion.md) for instructions on migrating from firehose ingestion to using native batch ingestion input sources.
 :::

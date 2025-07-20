@@ -1,6 +1,6 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
-    <option name="myName" value="Druid" />
+    <option name="myName" value="Robux" />
     <inspection_tool class="AccessStaticViaInstance" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="Annotator" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AntDuplicateTargetsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -111,7 +111,7 @@
     <inspection_tool class="LengthOneStringInIndexOf" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="ListIndexOfReplaceableByContains" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="MalformedFormatString" enabled="true" level="ERROR" enabled_by_default="true">
-      <option name="additionalClasses" value="org.apache.druid.java.util.common.StringUtils,org.apache.druid.java.util.common.logger.Logger" />
+      <option name="additionalClasses" value="org.apache.robux.java.util.common.StringUtils,org.apache.robux.java.util.common.logger.Logger" />
       <option name="additionalMethods" value="trace,debug,info,warn,error,wtf,format,nonStrictFormat" />
     </inspection_tool>
     <inspection_tool class="MalformedRegex" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -207,51 +207,51 @@
         <constraint name="y" within="" contains="" />
         <constraint name="z" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use RE (a Druid's class)" created="1539352150701" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use RE (a Robux's class)" created="1539352150701" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.RuntimeException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use RE (a Druid's class) with cause" created="1539353059868" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use RE (a Robux's class) with cause" created="1539353059868" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.RuntimeException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
         <constraint name="y" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use ISE (a Druid's class)" created="1539353519594" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use ISE (a Robux's class)" created="1539353519594" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.IllegalStateException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use ISE (a Druid's class) with cause" created="1539353595734" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use ISE (a Robux's class) with cause" created="1539353595734" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.IllegalStateException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
         <constraint name="y" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use IAE (a Druid's class)" created="1539353691746" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use IAE (a Robux's class)" created="1539353691746" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.IllegalArgumentException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use IAE (a Druid's class) with cause" created="1539353766336" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use IAE (a Robux's class) with cause" created="1539353766336" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.IllegalArgumentException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
         <constraint name="y" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use IOE (a Druid's class)" created="1539353913074" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use IOE (a Robux's class)" created="1539353913074" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.io\.IOException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use IOE (a Druid's class) with cause" created="1539354009031" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use IOE (a Robux's class) with cause" created="1539354009031" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$),$y$)" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.io\.IOException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />
         <constraint name="y" minCount="0" maxCount="2147483647" within="" contains="" />
       </searchConfiguration>
-      <searchConfiguration name="Use UOE (a Druid's class)" created="1539354091201" text="new $E$(org.apache.druid.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
+      <searchConfiguration name="Use UOE (a Robux's class)" created="1539354091201" text="new $E$(org.apache.robux.java.util.common.StringUtils.format($x$))" recursive="false" caseInsensitive="true" type="JAVA">
         <constraint name="__context__" target="true" within="" contains="" />
         <constraint name="E" regexp="java\.lang\.UnsupportedOperationException" within="" contains="" />
         <constraint name="x" minCount="0" maxCount="2147483647" within="" contains="" />

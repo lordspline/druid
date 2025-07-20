@@ -24,7 +24,7 @@ sidebar_label: Clustered deployment
   -->
 
 
-Apache Druid is designed to be deployed as a scalable, fault-tolerant cluster.
+Apache Robux is designed to be deployed as a scalable, fault-tolerant cluster.
 
 In this document, we'll set up a simple cluster and discuss how it can be further configured to meet
 your needs.
@@ -33,7 +33,7 @@ This simple cluster will feature:
 
  - A Master server to host the Coordinator and Overlord processes
  - Two scalable, fault-tolerant Data servers running Historical and Middle Manager processes
- - A query server, hosting the Druid Broker and Router processes
+ - A query server, hosting the Robux Broker and Router processes
 
 In production, we recommend deploying multiple Master servers and multiple Query servers in a fault-tolerant configuration based on your specific fault-tolerance needs, but you can get started quickly with one Master and one Query server and add more servers later.
 
@@ -41,7 +41,7 @@ In production, we recommend deploying multiple Master servers and multiple Query
 
 ### Fresh Deployment
 
-If you do not have an existing Druid cluster, and wish to start running Druid in a clustered deployment, this guide provides an example clustered deployment with pre-made configurations.
+If you do not have an existing Robux cluster, and wish to start running Robux in a clustered deployment, this guide provides an example clustered deployment with pre-made configurations.
 
 #### Master server
 
@@ -54,7 +54,7 @@ This hardware offers:
 - 8 vCPUs
 - 32 GiB RAM
 
-Example Master server configurations that have been sized for this hardware can be found under `conf/druid/cluster/master`.
+Example Master server configurations that have been sized for this hardware can be found under `conf/robux/cluster/master`.
 
 #### Data server
 
@@ -69,11 +69,11 @@ This hardware offers:
 - 122 GiB RAM
 - 2 * 1.9TB SSD storage
 
-Example Data server configurations that have been sized for this hardware can be found under `conf/druid/cluster/data`.
+Example Data server configurations that have been sized for this hardware can be found under `conf/robux/cluster/data`.
 
 #### Query server
 
-Druid Brokers accept queries and farm them out to the rest of the cluster. They also optionally maintain an
+Robux Brokers accept queries and farm them out to the rest of the cluster. They also optionally maintain an
 in-memory query cache. These servers benefit greatly from CPU and RAM.
 
 In this example, we will be deploying the equivalent of one AWS [m5.2xlarge](https://aws.amazon.com/ec2/instance-types/m5/) instance.
@@ -85,15 +85,15 @@ This hardware offers:
 
 You can consider co-locating any open source UIs or query libraries on the same server that the Broker is running on.
 
-Example Query server configurations that have been sized for this hardware can be found under `conf/druid/cluster/query`.
+Example Query server configurations that have been sized for this hardware can be found under `conf/robux/cluster/query`.
 
 #### Other Hardware Sizes
 
-The example cluster above is chosen as a single example out of many possible ways to size a Druid cluster.
+The example cluster above is chosen as a single example out of many possible ways to size a Robux cluster.
 
 You can choose smaller/larger hardware or less/more servers for your specific needs and constraints.
 
-If your use case has complex scaling requirements, you can also choose to not co-locate Druid processes (e.g., standalone Historical servers).
+If your use case has complex scaling requirements, you can also choose to not co-locate Robux processes (e.g., standalone Historical servers).
 
 The information in the [basic cluster tuning guide](../operations/basic-cluster-tuning.md) can help with your decision-making process and with sizing your configurations.
 
@@ -138,7 +138,7 @@ We recommend running your favorite Linux distribution. You will also need
 
 :::info
  If needed, you can specify where to find Java using the environment variables
- `DRUID_JAVA_HOME` or `JAVA_HOME`. For more details run the `bin/verify-java` script.
+ `ROBUX_JAVA_HOME` or `JAVA_HOME`. For more details run the `bin/verify-java` script.
 :::
 
 For information about installing Java, see the documentation for your OS package manager. If your Ubuntu-based OS does not have a recent enough version of Java, Linux Uprising offers [packages for those
@@ -150,33 +150,33 @@ First, download and unpack the release archive. It's best to do this on a single
 since you will be editing the configurations and then copying the modified distribution out to all
 of your servers.
 
-[Download](https://www.apache.org/dyn/closer.cgi?path=/druid/{{DRUIDVERSION}}/apache-druid{DRUIDVERSION}}-bin.tar.gz)
-the \{\{DRUIDVERSION}} release.
+[Download](https://www.apache.org/dyn/closer.cgi?path=/robux/{{ROBUXVERSION}}/apache-robux{ROBUXVERSION}}-bin.tar.gz)
+the \{\{ROBUXVERSION}} release.
 
-Extract Druid by running the following commands in your terminal:
+Extract Robux by running the following commands in your terminal:
 
 ```bash
-tar -xzf apache-druid-{{DRUIDVERSION}}-bin.tar.gz
-cd apache-druid-{{DRUIDVERSION}}
+tar -xzf apache-robux-{{ROBUXVERSION}}-bin.tar.gz
+cd apache-robux-{{ROBUXVERSION}}
 ```
 
 In the package, you should find:
 
 * `LICENSE` and `NOTICE` files
 * `bin/*` - scripts related to the [single-machine quickstart](index.md)
-* `conf/druid/cluster/*` - template configurations for a clustered setup
-* `extensions/*` - core Druid extensions
-* `hadoop-dependencies/*` - Druid Hadoop dependencies
-* `lib/*` - libraries and dependencies for core Druid
+* `conf/robux/cluster/*` - template configurations for a clustered setup
+* `extensions/*` - core Robux extensions
+* `hadoop-dependencies/*` - Robux Hadoop dependencies
+* `lib/*` - libraries and dependencies for core Robux
 * `quickstart/*` - files related to the [single-machine quickstart](index.md)
 
-We'll be editing the files in `conf/druid/cluster/` in order to get things running.
+We'll be editing the files in `conf/robux/cluster/` in order to get things running.
 
 ### Migrating from Single-Server Deployments
 
-In the following sections we will be editing the configs under `conf/druid/cluster`.
+In the following sections we will be editing the configs under `conf/robux/cluster`.
 
-If you have an existing single-server deployment, please copy your existing configs to `conf/druid/cluster` to preserve any config changes you have made.
+If you have an existing single-server deployment, please copy your existing configs to `conf/robux/cluster` to preserve any config changes you have made.
 
 ## Configure metadata storage and deep storage
 
@@ -190,27 +190,27 @@ These guides also provide information on migrating segments from local deep stor
 
 ### Metadata storage
 
-In `conf/druid/cluster/_common/common.runtime.properties`, replace
+In `conf/robux/cluster/_common/common.runtime.properties`, replace
 "metadata.storage.*" with the address of the machine that you will use as your metadata store:
 
-- `druid.metadata.storage.connector.connectURI`
-- `druid.metadata.storage.connector.host`
+- `robux.metadata.storage.connector.connectURI`
+- `robux.metadata.storage.connector.host`
 
-In a production deployment, we recommend running a dedicated metadata store such as MySQL or PostgreSQL with replication, deployed separately from the Druid servers.
+In a production deployment, we recommend running a dedicated metadata store such as MySQL or PostgreSQL with replication, deployed separately from the Robux servers.
 
 The [MySQL extension](../development/extensions-core/mysql.md) and [PostgreSQL extension](../development/extensions-core/postgresql.md) docs have instructions for extension configuration and initial database setup.
 
 ### Deep storage
 
-Druid relies on a distributed filesystem or large object (blob) store for data storage. The most
+Robux relies on a distributed filesystem or large object (blob) store for data storage. The most
 commonly used deep storage implementations are S3 (popular for those on AWS) and HDFS (popular if
 you already have a Hadoop deployment).
 
 #### S3
 
-In `conf/druid/cluster/_common/common.runtime.properties`,
+In `conf/robux/cluster/_common/common.runtime.properties`,
 
-- Add "druid-s3-extensions" to `druid.extensions.loadList`.
+- Add "robux-s3-extensions" to `robux.extensions.loadList`.
 
 - Comment out the configurations for local storage under "Deep Storage" and "Indexing service logs".
 
@@ -220,32 +220,32 @@ In `conf/druid/cluster/_common/common.runtime.properties`,
 After this, you should have made the following changes:
 
 ```
-druid.extensions.loadList=["druid-s3-extensions"]
+robux.extensions.loadList=["robux-s3-extensions"]
 
-#druid.storage.type=local
-#druid.storage.storageDirectory=var/druid/segments
+#robux.storage.type=local
+#robux.storage.storageDirectory=var/robux/segments
 
-druid.storage.type=s3
-druid.storage.bucket=your-bucket
-druid.storage.baseKey=druid/segments
-druid.s3.accessKey=...
-druid.s3.secretKey=...
+robux.storage.type=s3
+robux.storage.bucket=your-bucket
+robux.storage.baseKey=robux/segments
+robux.s3.accessKey=...
+robux.s3.secretKey=...
 
-#druid.indexer.logs.type=file
-#druid.indexer.logs.directory=var/druid/indexing-logs
+#robux.indexer.logs.type=file
+#robux.indexer.logs.directory=var/robux/indexing-logs
 
-druid.indexer.logs.type=s3
-druid.indexer.logs.s3Bucket=your-bucket
-druid.indexer.logs.s3Prefix=druid/indexing-logs
+robux.indexer.logs.type=s3
+robux.indexer.logs.s3Bucket=your-bucket
+robux.indexer.logs.s3Prefix=robux/indexing-logs
 ```
 
 Please see the [S3 extension](../development/extensions-core/s3.md) documentation for more info.
 
 #### HDFS
 
-In `conf/druid/cluster/_common/common.runtime.properties`,
+In `conf/robux/cluster/_common/common.runtime.properties`,
 
-- Add "druid-hdfs-storage" to `druid.extensions.loadList`.
+- Add "robux-hdfs-storage" to `robux.extensions.loadList`.
 
 - Comment out the configurations for local storage under "Deep Storage" and "Indexing service logs".
 
@@ -255,26 +255,26 @@ In `conf/druid/cluster/_common/common.runtime.properties`,
 After this, you should have made the following changes:
 
 ```
-druid.extensions.loadList=["druid-hdfs-storage"]
+robux.extensions.loadList=["robux-hdfs-storage"]
 
-#druid.storage.type=local
-#druid.storage.storageDirectory=var/druid/segments
+#robux.storage.type=local
+#robux.storage.storageDirectory=var/robux/segments
 
-druid.storage.type=hdfs
-druid.storage.storageDirectory=/druid/segments
+robux.storage.type=hdfs
+robux.storage.storageDirectory=/robux/segments
 
-#druid.indexer.logs.type=file
-#druid.indexer.logs.directory=var/druid/indexing-logs
+#robux.indexer.logs.type=file
+#robux.indexer.logs.directory=var/robux/indexing-logs
 
-druid.indexer.logs.type=hdfs
-druid.indexer.logs.directory=/druid/indexing-logs
+robux.indexer.logs.type=hdfs
+robux.indexer.logs.directory=/robux/indexing-logs
 ```
 
 Also,
 
 - Place your Hadoop configuration XMLs (core-site.xml, hdfs-site.xml, yarn-site.xml,
-mapred-site.xml) on the classpath of your Druid processes. You can do this by copying them into
-`conf/druid/cluster/_common/`.
+mapred-site.xml) on the classpath of your Robux processes. You can do this by copying them into
+`conf/robux/cluster/_common/`.
 
 Please see the [HDFS extension](../development/extensions-core/hdfs.md) documentation for more info.
 
@@ -282,16 +282,16 @@ Please see the [HDFS extension](../development/extensions-core/hdfs.md) document
 
 ## Configure for connecting to Hadoop (optional)
 
-If you will be loading data from a Hadoop cluster, then at this point you should configure Druid to be aware
+If you will be loading data from a Hadoop cluster, then at this point you should configure Robux to be aware
 of your cluster:
 
-- Update `druid.indexer.task.hadoopWorkingPath` in `conf/druid/cluster/middleManager/runtime.properties` to
+- Update `robux.indexer.task.hadoopWorkingPath` in `conf/robux/cluster/middleManager/runtime.properties` to
 a path on HDFS that you'd like to use for temporary files required during the indexing process.
-`druid.indexer.task.hadoopWorkingPath=/tmp/druid-indexing` is a common choice.
+`robux.indexer.task.hadoopWorkingPath=/tmp/robux-indexing` is a common choice.
 
 - Place your Hadoop configuration XMLs (core-site.xml, hdfs-site.xml, yarn-site.xml,
-mapred-site.xml) on the classpath of your Druid processes. You can do this by copying them into
-`conf/druid/cluster/_common/core-site.xml`, `conf/druid/cluster/_common/hdfs-site.xml`, and so on.
+mapred-site.xml) on the classpath of your Robux processes. You can do this by copying them into
+`conf/robux/cluster/_common/core-site.xml`, `conf/robux/cluster/_common/hdfs-site.xml`, and so on.
 
 Note that you don't need to use HDFS deep storage in order to load data from Hadoop. For example, if
 your cluster is running on Amazon Web Services, we recommend using S3 for deep storage even if you
@@ -301,10 +301,10 @@ For more info, please see the [Hadoop-based ingestion](../ingestion/hadoop.md) p
 
 ## Configure Zookeeper connection
 
-In a production cluster, we recommend using a dedicated ZK cluster in a quorum, deployed separately from the Druid servers.
+In a production cluster, we recommend using a dedicated ZK cluster in a quorum, deployed separately from the Robux servers.
 
-In `conf/druid/cluster/_common/common.runtime.properties`, set
-`druid.zk.service.host` to a [connection string](https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html)
+In `conf/robux/cluster/_common/common.runtime.properties`, set
+`robux.zk.service.host` to a [connection string](https://zookeeper.apache.org/doc/current/zookeeperProgrammers.html)
 containing a comma separated list of host:port pairs, each corresponding to a ZooKeeper server in your ZK quorum.
 (e.g. "127.0.0.1:4545" or "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002")
 
@@ -318,9 +318,9 @@ You can also choose to run ZK on the Master servers instead of having a dedicate
 
 If you are using an example configuration from [single-server deployment examples](../operations/single-server.md), these examples combine the Coordinator and Overlord processes into one combined process.
 
-The example configs under `conf/druid/cluster/master/coordinator-overlord` also combine the Coordinator and Overlord processes.
+The example configs under `conf/robux/cluster/master/coordinator-overlord` also combine the Coordinator and Overlord processes.
 
-You can copy your existing `coordinator-overlord` configs from the single-server deployment to `conf/druid/cluster/master/coordinator-overlord`.
+You can copy your existing `coordinator-overlord` configs from the single-server deployment to `conf/robux/cluster/master/coordinator-overlord`.
 
 #### Data
 
@@ -329,57 +329,57 @@ Suppose we are migrating from a single-server deployment that had 32 CPU and 256
 Historical (Single-server)
 
 ```
-druid.processing.buffer.sizeBytes=500MiB
-druid.processing.numMergeBuffers=8
-druid.processing.numThreads=31
+robux.processing.buffer.sizeBytes=500MiB
+robux.processing.numMergeBuffers=8
+robux.processing.numThreads=31
 ```
 
 Middle Manager (Single-server)
 
 ```
-druid.worker.capacity=8
-druid.indexer.fork.property.druid.processing.numMergeBuffers=2
-druid.indexer.fork.property.druid.processing.buffer.sizeBytes=100MiB
-druid.indexer.fork.property.druid.processing.numThreads=1
+robux.worker.capacity=8
+robux.indexer.fork.property.robux.processing.numMergeBuffers=2
+robux.indexer.fork.property.robux.processing.buffer.sizeBytes=100MiB
+robux.indexer.fork.property.robux.processing.numThreads=1
 ```
 
 In the clustered deployment, we can choose a split factor (2 in this example), and deploy 2 Data servers with 16CPU and 128GiB RAM each. The areas to scale are the following:
 
 Historical
 
-- `druid.processing.numThreads`: Set to `(num_cores - 1)` based on the new hardware
-- `druid.processing.numMergeBuffers`: Divide the old value from the single-server deployment by the split factor
-- `druid.processing.buffer.sizeBytes`: Keep this unchanged
+- `robux.processing.numThreads`: Set to `(num_cores - 1)` based on the new hardware
+- `robux.processing.numMergeBuffers`: Divide the old value from the single-server deployment by the split factor
+- `robux.processing.buffer.sizeBytes`: Keep this unchanged
 
 Middle Manager:
 
-- `druid.worker.capacity`: Divide the old value from the single-server deployment by the split factor
-- `druid.indexer.fork.property.druid.processing.numMergeBuffers`: Keep this unchanged
-- `druid.indexer.fork.property.druid.processing.buffer.sizeBytes`: Keep this unchanged
-- `druid.indexer.fork.property.druid.processing.numThreads`: Keep this unchanged
+- `robux.worker.capacity`: Divide the old value from the single-server deployment by the split factor
+- `robux.indexer.fork.property.robux.processing.numMergeBuffers`: Keep this unchanged
+- `robux.indexer.fork.property.robux.processing.buffer.sizeBytes`: Keep this unchanged
+- `robux.indexer.fork.property.robux.processing.numThreads`: Keep this unchanged
 
 The resulting configs after the split:
 
 New Historical (on 2 Data servers)
 
 ```
-druid.processing.buffer.sizeBytes=500MiB
-druid.processing.numMergeBuffers=4
-druid.processing.numThreads=15
+robux.processing.buffer.sizeBytes=500MiB
+robux.processing.numMergeBuffers=4
+robux.processing.numThreads=15
 ```
 
 New Middle Manager (on 2 Data servers)
 
 ```
-druid.worker.capacity=4
-druid.indexer.fork.property.druid.processing.numMergeBuffers=2
-druid.indexer.fork.property.druid.processing.buffer.sizeBytes=100MiB
-druid.indexer.fork.property.druid.processing.numThreads=1
+robux.worker.capacity=4
+robux.indexer.fork.property.robux.processing.numMergeBuffers=2
+robux.indexer.fork.property.robux.processing.buffer.sizeBytes=100MiB
+robux.indexer.fork.property.robux.processing.numThreads=1
 ```
 
 #### Query
 
-You can copy your existing Broker and Router configs to the directories under `conf/druid/cluster/query`, no modifications are needed, as long as the new hardware is sized accordingly.
+You can copy your existing Broker and Router configs to the directories under `conf/robux/cluster/query`, no modifications are needed, as long as the new hardware is sized accordingly.
 
 ### Fresh deployment
 
@@ -388,7 +388,7 @@ If you are using the example cluster described above:
 - 2 Data servers (i3.4xlarge)
 - 1 Query server (m5.2xlarge)
 
-The configurations under `conf/druid/cluster` have already been sized for this hardware and you do not need to make further modifications for general use cases.
+The configurations under `conf/robux/cluster` have already been sized for this hardware and you do not need to make further modifications for general use cases.
 
 If you have chosen different hardware, the [basic cluster tuning guide](../operations/basic-cluster-tuning.md) can help you size your configurations.
 
@@ -405,7 +405,7 @@ inbound connections on the following:
 
 ### Data Server
 - 8083 (Historical)
-- 8091, 8100&ndash;8199 (Druid Middle Manager; you may need higher than port 8199 if you have a very high `druid.worker.capacity`)
+- 8091, 8100&ndash;8199 (Robux Middle Manager; you may need higher than port 8199 if you have a very high `robux.worker.capacity`)
 
 ### Query Server
 - 8082 (Broker)
@@ -418,12 +418,12 @@ inbound connections on the following:
 
 ## Start Master Server
 
-Copy the Druid distribution and your edited configurations to your Master server.
+Copy the Robux distribution and your edited configurations to your Master server.
 
 If you have been editing the configurations on your local machine, you can use *rsync* to copy them:
 
 ```bash
-rsync -az apache-druid-{{DRUIDVERSION}}/ MASTER_SERVER:apache-druid-{{DRUIDVERSION}}/
+rsync -az apache-robux-{{ROBUXVERSION}}/ MASTER_SERVER:apache-robux-{{ROBUXVERSION}}/
 ```
 
 ### No Zookeeper on Master
@@ -449,7 +449,7 @@ bin/start-cluster-master-with-zk-server
 
 ## Start Data Server
 
-Copy the Druid distribution and your edited configurations to your Data servers.
+Copy the Robux distribution and your edited configurations to your Data servers.
 
 From the distribution root, run the following command to start the Data server:
 
@@ -461,12 +461,12 @@ You can add more Data servers as needed.
 
 :::info
  For clusters with complex resource allocation needs, you can break apart Historicals and Middle Managers and scale the components individually.
- This also allows you take advantage of Druid's built-in Middle Manager autoscaling facility.
+ This also allows you take advantage of Robux's built-in Middle Manager autoscaling facility.
 :::
 
 ## Start Query Server
 
-Copy the Druid distribution and your edited configurations to your Query servers.
+Copy the Robux distribution and your edited configurations to your Query servers.
 
 From the distribution root, run the following command to start the Query server:
 
@@ -478,5 +478,5 @@ You can add more Query servers as needed based on query load. If you increase th
 
 ## Loading data
 
-Congratulations, you now have a Druid cluster! The next step is to learn about recommended ways to load data into
-Druid based on your use case. Read more about [loading data](../ingestion/index.md).
+Congratulations, you now have a Robux cluster! The next step is to learn about recommended ways to load data into
+Robux based on your use case. Read more about [loading data](../ingestion/index.md).

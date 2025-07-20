@@ -39,7 +39,7 @@ import unicodedata
 import urllib.request
 import urllib.error
 
-class DruidSqlException(Exception):
+class RobuxSqlException(Exception):
   def friendly_message(self):
     return getattr(self, 'message', 'Query failed')
 
@@ -141,15 +141,15 @@ def raise_friendly_error(e):
       error_text = error_text + str(error_obj['errorMessage'])
       if error_obj['host']:
         error_text = error_text + ' (' + str(error_obj['host']) + ')'
-      raise DruidSqlException(error_text)
+      raise RobuxSqlException(error_text)
     elif e.code == 405:
       error_text = 'HTTP Error {0}: {1}\n{2}'.format(e.code, e.reason + " - Are you using the correct broker URL and " +\
-      "is druid.sql.enabled set to true on your broker?", text)
-      raise DruidSqlException(error_text)
+      "is robux.sql.enabled set to true on your broker?", text)
+      raise RobuxSqlException(error_text)
     else:
-      raise DruidSqlException("HTTP Error {0}: {1}\n{2}".format(e.code, e.reason, text))
+      raise RobuxSqlException("HTTP Error {0}: {1}\n{2}".format(e.code, e.reason, text))
   else:
-    raise DruidSqlException(str(e))
+    raise RobuxSqlException(str(e))
 
 def to_utf8(value):
   if value is None:
@@ -396,11 +396,11 @@ def make_readline_completer(url, context, args):
   return readline_completer
 
 def main():
-  parser = argparse.ArgumentParser(description='Druid SQL command-line client.')
+  parser = argparse.ArgumentParser(description='Robux SQL command-line client.')
   parser_cnn = parser.add_argument_group('Connection options')
   parser_fmt = parser.add_argument_group('Formatting options')
   parser_oth = parser.add_argument_group('Other options')
-  parser_cnn.add_argument('--host', '-H', type=str, default='http://localhost:8082/', help='Druid query host or url, like https://localhost:8282/')
+  parser_cnn.add_argument('--host', '-H', type=str, default='http://localhost:8082/', help='Robux query host or url, like https://localhost:8282/')
   parser_cnn.add_argument('--user', '-u', type=str, help='HTTP basic authentication credentials, like user:password')
   parser_cnn.add_argument('--timeout', type=int, default=0, help='Timeout in seconds')
   parser_cnn.add_argument('--cafile', type=str, help='Path to SSL CA file for validating server certificates. See load_verify_locations() in https://docs.python.org/3/library/ssl.html#ssl.SSLContext.')
@@ -409,7 +409,7 @@ def main():
   parser_fmt.add_argument('--format', type=str, default='table', choices=('csv', 'tsv', 'json', 'table'), help='Result format')
   parser_fmt.add_argument('--header', action='store_true', help='Include header row for formats "csv" and "tsv"')
   parser_fmt.add_argument('--tsv-delimiter', type=str, default='\t', help='Delimiter for format "tsv"')
-  parser_oth.add_argument('--context-option', '-c', type=str, action='append', help='Set context option for this connection, see https://druid.apache.org/docs/latest/querying/sql.html#connection-context for options')
+  parser_oth.add_argument('--context-option', '-c', type=str, action='append', help='Set context option for this connection, see https://robux.apache.org/docs/latest/querying/sql.html#connection-context for options')
   parser_oth.add_argument('--execute', '-e', type=str, help='Execute single SQL query')
   parser_cnn.add_argument('--certchain', type=str, help='Path to SSL certificate used to connect to server. See load_cert_chain() in https://docs.python.org/3/library/ssl.html#ssl.SSLContext.')
   parser_cnn.add_argument('--keyfile', type=str, help='Path to private SSL key used to connect to server. See load_cert_chain() in https://docs.python.org/3/library/ssl.html#ssl.SSLContext.')
@@ -417,7 +417,7 @@ def main():
   args = parser.parse_args()
 
   # Build broker URL
-  url = args.host.rstrip('/') + '/druid/v2/sql/'
+  url = args.host.rstrip('/') + '/robux/v2/sql/'
   if not url.startswith('http:') and not url.startswith('https:'):
     url = 'http://' + url
 
@@ -437,7 +437,7 @@ def main():
     display_query(url, args.execute, context, args)
   else:
     # interactive mode
-    print("Welcome to dsql, the command-line client for Druid SQL.")
+    print("Welcome to dsql, the command-line client for Robux SQL.")
 
     readline_history_file = os.path.expanduser("~/.dsql_history")
     readline.parse_and_bind('tab: complete')
@@ -471,13 +471,13 @@ def main():
             if arg:
               sql = "SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = " + sql_literal_escape(arg)
               if not include_system:
-                sql = sql + " AND TABLE_SCHEMA = 'druid'"
+                sql = sql + " AND TABLE_SCHEMA = 'robux'"
               # break to execute sql
               break
             else:
               sql = "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES"
               if not include_system:
-                sql = sql + " WHERE TABLE_SCHEMA = 'druid'"
+                sql = sql + " WHERE TABLE_SCHEMA = 'robux'"
               # break to execute sql
               break
 
@@ -503,7 +503,7 @@ def main():
       try:
         readline.write_history_file(readline_history_file)
         display_query(url, sql.rstrip(';'), context, args)
-      except DruidSqlException as e:
+      except RobuxSqlException as e:
         e.write_to(sys.stdout)
       except KeyboardInterrupt:
         sys.stdout.write("Query interrupted\n")
@@ -511,7 +511,7 @@ def main():
 
 try:
   main()
-except DruidSqlException as e:
+except RobuxSqlException as e:
   e.write_to(sys.stderr)
   sys.exit(1)
 except KeyboardInterrupt:

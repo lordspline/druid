@@ -26,7 +26,7 @@ import TabItem from '@theme/TabItem';
   ~ under the License.
   -->
 
-Datasources in Apache Druid are things that you can query. The most common kind of datasource is a table datasource,
+Datasources in Apache Robux are things that you can query. The most common kind of datasource is a table datasource,
 and in many contexts the word "datasource" implicitly refers to table datasources. This is especially true
 [during data ingestion](../ingestion/index.md), where ingestion is always creating or writing into a table
 datasource. But at query time, there are many other types of datasources available.
@@ -42,7 +42,7 @@ responses.
 <TabItem value="1" label="SQL">
 
 ```sql
-SELECT column1, column2 FROM "druid"."dataSourceName"
+SELECT column1, column2 FROM "robux"."dataSourceName"
 ```
 </TabItem>
 <TabItem value="2" label="Native">
@@ -62,8 +62,8 @@ The table datasource is the most common type. This is the kind of datasource you
 [data ingestion](../ingestion/index.md). They are split up into segments, distributed around the cluster,
 and queried in parallel.
 
-In [Druid SQL](sql.md#from), table datasources reside in the `druid` schema. This is the default schema, so table
-datasources can be referenced as either `druid.dataSourceName` or simply `dataSourceName`.
+In [Robux SQL](sql.md#from), table datasources reside in the `robux` schema. This is the default schema, so table
+datasources can be referenced as either `robux.dataSourceName` or simply `dataSourceName`.
 
 In native queries, table datasources can be referenced using their names as strings (as in the example above), or by
 using JSON objects of the form:
@@ -76,7 +76,7 @@ using JSON objects of the form:
 ```
 
 To see a list of all table datasources, use the SQL query
-`SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'druid'`.
+`SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'robux'`.
 
 ### `lookup`
 
@@ -103,7 +103,7 @@ SELECT k, v FROM lookup.countries
 </TabItem>
 </Tabs>
 
-Lookup datasources correspond to Druid's key-value [lookup](lookups.md) objects. In [Druid SQL](sql.md#from),
+Lookup datasources correspond to Robux's key-value [lookup](lookups.md) objects. In [Robux SQL](sql.md#from),
 they reside in the `lookup` schema. They are preloaded in memory on all servers, so they can be accessed rapidly.
 They can be joined onto regular tables using the [join operator](#join).
 
@@ -245,14 +245,14 @@ SELECT * from (VALUES ('United States', 'San Francisco'),
 
 Inline datasources allow you to query a small amount of data that is embedded in the query itself. They are useful when
 you want to write a query on a small amount of data without loading it first. They are also useful as inputs into a
-[join](#join). Druid also uses them internally to handle subqueries that need to be inlined on the Broker. See the
+[join](#join). Robux also uses them internally to handle subqueries that need to be inlined on the Broker. See the
 [`query` datasource](#query) documentation for more details.
 
 There are two fields in an inline datasource: an array of `columnNames` and an array of `rows`. Each row is an array
 that must be exactly as long as the list of `columnNames`. The first element in each row corresponds to the first
 column in `columnNames`, and so on.
 
-Inline datasources are not available in Druid SQL.
+Inline datasources are not available in Robux SQL.
 
 Refer to the [Query execution](query-execution.md#inline) page for more details on how queries are executed when you
 use inline datasources.
@@ -373,7 +373,7 @@ to re-arrange condition such that some of the sub-conditions are evaluated as a 
 sub-conditions are left out in the join condition. In worst case scenario, SQL will execute the join condition as a 
 cross join (cartesian product) plus a filter.
 
-This feature is intended mainly to allow joining regular Druid tables with [lookup](#lookup), [inline](#inline), and
+This feature is intended mainly to allow joining regular Robux tables with [lookup](#lookup), [inline](#inline), and
 [query](#query) datasources. Refer to the [Query execution](query-execution.md#join) page for more details on how
 queries are executed when you use join datasources.
 
@@ -393,7 +393,7 @@ least one of the following:
 - Equality between a function call on one side, and a field on the other side, like `t1 JOIN t2 ON LOWER(t1.x) = t2.x`.
 - The equality operator may be `=` (which does not match nulls) or `IS NOT DISTINCT FROM` (which does match nulls).
 
-In other cases, Druid will either insert a subquery below the join, or will use a cross join (cartesian product)
+In other cases, Robux will either insert a subquery below the join, or will use a cross join (cartesian product)
 followed by a filter. Joins executed in these ways may run into resource or performance constraints. To determine
 if your query is using one of these execution paths, run `EXPLAIN PLAN FOR <query>` and look for the following:
 
@@ -403,8 +403,8 @@ if your query is using one of these execution paths, run `EXPLAIN PLAN FOR <quer
 
 In these cases, you may be able to improve the performance of your query by rewriting it.
 
-For more information about how Druid translates SQL to native queries, refer to the
-[Druid SQL](sql-translation.md) documentation.
+For more information about how Robux translates SQL to native queries, refer to the
+[Robux SQL](sql-translation.md) documentation.
 
 #### Joins in native queries
 
@@ -413,9 +413,9 @@ Native join datasources have the following properties. All are required.
 |Field|Description|
 |-----|-----------|
 |`left`|Left-hand datasource. Must be of type `table`, `join`, `lookup`, `query`, or `inline`. Placing another join as the left datasource allows you to join arbitrarily many datasources.|
-|`right`|Right-hand datasource. Must be of type `lookup`, `query`, or `inline`. Note that this is more rigid than what Druid SQL requires.|
+|`right`|Right-hand datasource. Must be of type `lookup`, `query`, or `inline`. Note that this is more rigid than what Robux SQL requires.|
 |`rightPrefix`|String prefix that will be applied to all columns from the right-hand datasource, to prevent them from colliding with columns from the left-hand datasource. Can be any string, so long as it is nonempty and is not be a prefix of the string `__time`. Any columns from the left-hand side that start with your `rightPrefix` will be shadowed. It is up to you to provide a prefix that will not shadow any important columns from the left side.|
-|`condition`|[Expression](math-expr.md) that must be an equality where one side is an expression of the left-hand side, and the other side is a simple column reference to the right-hand side. Note that this is more rigid than what Druid SQL requires: here, the right-hand reference must be a simple column reference; in SQL it can be an expression.|
+|`condition`|[Expression](math-expr.md) that must be an equality where one side is an expression of the left-hand side, and the other side is a simple column reference to the right-hand side. Note that this is more rigid than what Robux SQL requires: here, the right-hand reference must be a simple column reference; in SQL it can be an expression.|
 |`joinType`|`INNER` or `LEFT`.|
 
 #### Join performance
@@ -425,21 +425,21 @@ Joins are a feature that can significantly affect performance of your queries. S
 1. Joins are especially useful with [lookup datasources](#lookup), but in most cases, the
 [`LOOKUP` function](sql-scalar.md#string-functions) performs better than a join. Consider using the `LOOKUP` function if
 it is appropriate for your use case.
-2. When using joins in Druid SQL, keep in mind that it can generate subqueries that you did not explicitly include in
-your queries. Refer to the [Druid SQL](sql-translation.md) documentation for more details about when this happens
+2. When using joins in Robux SQL, keep in mind that it can generate subqueries that you did not explicitly include in
+your queries. Refer to the [Robux SQL](sql-translation.md) documentation for more details about when this happens
 and how to detect it.
 3. One common reason for implicit subquery generation is if the types of the two halves of an equality do not match.
-For example, since lookup keys are always strings, the condition `druid.d JOIN lookup.l ON d.field = l.field` will
+For example, since lookup keys are always strings, the condition `robux.d JOIN lookup.l ON d.field = l.field` will
 perform best if `d.field` is a string.
 4. The join operator must evaluate the condition for each row. 
-5. Currently, Druid does not support pushing down predicates (condition and filter) past a Join (i.e. into
-Join's children). Druid only supports pushing predicates into the join if they originated from
-above the join. Hence, the location of predicates and filters in your Druid SQL is very important.
+5. Currently, Robux does not support pushing down predicates (condition and filter) past a Join (i.e. into
+Join's children). Robux only supports pushing predicates into the join if they originated from
+above the join. Hence, the location of predicates and filters in your Robux SQL is very important.
 Also, as a result of this, comma joins should be avoided.
 
 #### Limitations for joins
 
-Joins in Druid have the following limitations:
+Joins in Robux have the following limitations:
 
 - The order of joins is not entirely optimized. Join operations are not reordered to get the most performant plan.
 - Preloaded dimension tables that are wider than lookups (i.e. supporting more than a single key and single value) are not supported.

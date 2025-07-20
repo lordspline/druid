@@ -29,12 +29,12 @@ class Template(BaseTemplate):
 
 ''')
 
-    def extend_druid_service(self, service):
-        self.add_env(service, 'druid_test_loadList', 'druid-azure-extensions')
-        self.add_property(service, 'druid.storage.type', 'azure')
-        self.add_property(service, 'druid.azure.account', '${AZURE_ACCOUNT}')
-        self.add_property(service, 'druid.azure.key', '${AZURE_KEY}')
-        self.add_property(service, 'druid.azure.container', '${AZURE_CONTAINER}')
+    def extend_robux_service(self, service):
+        self.add_env(service, 'robux_test_loadList', 'robux-azure-extensions')
+        self.add_property(service, 'robux.storage.type', 'azure')
+        self.add_property(service, 'robux.azure.account', '${AZURE_ACCOUNT}')
+        self.add_property(service, 'robux.azure.key', '${AZURE_KEY}')
+        self.add_property(service, 'robux.azure.container', '${AZURE_CONTAINER}')
 
     # This test uses different data than the default.
     def define_data_dir(self, service):

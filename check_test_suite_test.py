@@ -23,7 +23,7 @@ class CheckTestSuite(unittest.TestCase):
         for job in check_test_suite.always_run_jobs:
             self.assertEqual(True, check_test_suite.check_should_run_suite(job, ['docs/ingestion/index.md']))
             self.assertEqual(True, check_test_suite.check_should_run_suite(job, ['web-console/src/views/index.ts']))
-            self.assertEqual(True, check_test_suite.check_should_run_suite(job, ['core/src/main/java/org/apache/druid/math/expr/Expr.java']))
+            self.assertEqual(True, check_test_suite.check_should_run_suite(job, ['core/src/main/java/org/apache/robux/math/expr/Expr.java']))
 
     def test_docs(self):
         self.assertEqual(False, check_test_suite.check_docs('check_test_suite_test.py'))
@@ -39,7 +39,7 @@ class CheckTestSuite(unittest.TestCase):
                 False,
                 check_test_suite.check_should_run_suite(
                     job,
-                    ['check_test_suite_test.py', 'core/src/main/java/org/apache/druid/math/expr/Expr.java']
+                    ['check_test_suite_test.py', 'core/src/main/java/org/apache/robux/math/expr/Expr.java']
                 )
             )
 
@@ -63,7 +63,7 @@ class CheckTestSuite(unittest.TestCase):
             False,
             check_test_suite.check_should_run_suite(
                 web_console_job,
-                ['check_test_suite_test.py', 'core/src/main/java/org/apache/druid/math/expr/Expr.java']
+                ['check_test_suite_test.py', 'core/src/main/java/org/apache/robux/math/expr/Expr.java']
             )
         )
         self.assertEqual(
@@ -77,7 +77,7 @@ class CheckTestSuite(unittest.TestCase):
             True,
             check_test_suite.check_should_run_suite(
                 e2e_job,
-                ['check_test_suite_test.py', 'core/src/main/java/org/apache/druid/math/expr/Expr.java']
+                ['check_test_suite_test.py', 'core/src/main/java/org/apache/robux/math/expr/Expr.java']
             )
         )
 
@@ -91,21 +91,21 @@ class CheckTestSuite(unittest.TestCase):
             False,
             check_test_suite.check_should_run_suite(
                 script_job,
-                ['core/src/main/java/org/apache/druid/math/expr/Expr.java']
+                ['core/src/main/java/org/apache/robux/math/expr/Expr.java']
             )
         )
         self.assertEqual(
             True,
             check_test_suite.check_should_run_suite(
                 some_java_job,
-                ['check_test_suite_test.py', 'core/src/main/java/org/apache/druid/math/expr/Expr.java']
+                ['check_test_suite_test.py', 'core/src/main/java/org/apache/robux/math/expr/Expr.java']
             )
         )
         self.assertEqual(
             True,
             check_test_suite.check_should_run_suite(
                 some_java_job,
-                ['check_test_suite_test.py', 'core/src/main/java/org/apache/druid/math/expr/Expr.java']
+                ['check_test_suite_test.py', 'core/src/main/java/org/apache/robux/math/expr/Expr.java']
             )
         )
         self.assertEqual(
@@ -127,9 +127,9 @@ class CheckTestSuite(unittest.TestCase):
             ['check_test_suite_test.py', 'website/core/Footer.js', 'web-console/unified-console.html', 'owasp-dependency-check-suppressions.xml']
         ]
         some_java_diffs = [
-            ['core/src/main/java/org/apache/druid/math/expr/Expr.java'],
-            ['processing/src/main/java/org/apache/druid/segment/virtual/ExpressionPlan.java'],
-            ['check_test_suite_test.py', 'website/core/Footer.js', 'web-console/unified-console.html', 'core/src/main/java/org/apache/druid/math/expr/Expr.java']
+            ['core/src/main/java/org/apache/robux/math/expr/Expr.java'],
+            ['processing/src/main/java/org/apache/robux/segment/virtual/ExpressionPlan.java'],
+            ['check_test_suite_test.py', 'website/core/Footer.js', 'web-console/unified-console.html', 'core/src/main/java/org/apache/robux/math/expr/Expr.java']
         ]
 
         for false_diff in some_non_java_diffs:

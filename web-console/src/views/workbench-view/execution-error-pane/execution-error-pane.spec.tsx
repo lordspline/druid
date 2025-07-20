@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { EXECUTION_INGEST_ERROR } from '../../../druid-models/execution/execution-ingest-error.mock';
+import { EXECUTION_INGEST_ERROR } from '../../../robux-models/execution/execution-ingest-error.mock';
 import { shallow } from '../../../utils/shallow-renderer';
 
 import { ExecutionErrorPane } from './execution-error-pane';

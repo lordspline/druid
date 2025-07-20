@@ -22,67 +22,67 @@ title: "Creating extensions"
   ~ under the License.
   -->
 
-Druid uses a module system that allows for the addition of extensions at runtime.
+Robux uses a module system that allows for the addition of extensions at runtime.
 
 ## Writing your own extensions
 
-Druid's extensions leverage Guice in order to add things at runtime. Basically, Guice is a framework for Dependency Injection, but we use it to hold the expected object graph of the Druid process. Extensions can make any changes they want/need to the object graph via adding Guice bindings. While the extensions actually give you the capability to change almost anything however you want, in general, we expect people to want to extend one of the things listed below. This means that we honor our [versioning strategy](./versioning.md) for changes that affect the interfaces called out on this page, but other interfaces are deemed "internal" and can be changed in an incompatible manner even between patch releases.
+Robux's extensions leverage Guice in order to add things at runtime. Basically, Guice is a framework for Dependency Injection, but we use it to hold the expected object graph of the Robux process. Extensions can make any changes they want/need to the object graph via adding Guice bindings. While the extensions actually give you the capability to change almost anything however you want, in general, we expect people to want to extend one of the things listed below. This means that we honor our [versioning strategy](./versioning.md) for changes that affect the interfaces called out on this page, but other interfaces are deemed "internal" and can be changed in an incompatible manner even between patch releases.
 
-1. Add a new deep storage implementation by extending the `org.apache.druid.segment.loading.DataSegment*` and
-   `org.apache.druid.tasklogs.TaskLog*` classes.
-1. Add a new input source by extending `org.apache.druid.data.input.InputSource`.
-1. Add a new input entity by extending `org.apache.druid.data.input.InputEntity`.
-1. Add a new input source reader if necessary by extending `org.apache.druid.data.input.InputSourceReader`. You can use `org.apache.druid.data.input.impl.InputEntityIteratingReader` in most cases.
-1. Add a new input format by extending `org.apache.druid.data.input.InputFormat`.
-1. Add a new input entity reader by extending `org.apache.druid.data.input.TextReader` for text formats or `org.apache.druid.data.input.IntermediateRowParsingReader` for binary formats.
-1. Add Aggregators by extending `org.apache.druid.query.aggregation.AggregatorFactory`, `org.apache.druid.query.aggregation.Aggregator`,
-   and `org.apache.druid.query.aggregation.BufferAggregator`.
-1. Add PostAggregators by extending `org.apache.druid.query.aggregation.PostAggregator`.
-1. Add ExtractionFns by extending `org.apache.druid.query.extraction.ExtractionFn`.
-1. Add Complex metrics by extending `org.apache.druid.segment.serde.ComplexMetricSerde`.
-1. Add new Query types by extending `org.apache.druid.query.QueryRunnerFactory`, `org.apache.druid.query.QueryToolChest`, and
-   `org.apache.druid.query.Query`.
+1. Add a new deep storage implementation by extending the `org.apache.robux.segment.loading.DataSegment*` and
+   `org.apache.robux.tasklogs.TaskLog*` classes.
+1. Add a new input source by extending `org.apache.robux.data.input.InputSource`.
+1. Add a new input entity by extending `org.apache.robux.data.input.InputEntity`.
+1. Add a new input source reader if necessary by extending `org.apache.robux.data.input.InputSourceReader`. You can use `org.apache.robux.data.input.impl.InputEntityIteratingReader` in most cases.
+1. Add a new input format by extending `org.apache.robux.data.input.InputFormat`.
+1. Add a new input entity reader by extending `org.apache.robux.data.input.TextReader` for text formats or `org.apache.robux.data.input.IntermediateRowParsingReader` for binary formats.
+1. Add Aggregators by extending `org.apache.robux.query.aggregation.AggregatorFactory`, `org.apache.robux.query.aggregation.Aggregator`,
+   and `org.apache.robux.query.aggregation.BufferAggregator`.
+1. Add PostAggregators by extending `org.apache.robux.query.aggregation.PostAggregator`.
+1. Add ExtractionFns by extending `org.apache.robux.query.extraction.ExtractionFn`.
+1. Add Complex metrics by extending `org.apache.robux.segment.serde.ComplexMetricSerde`.
+1. Add new Query types by extending `org.apache.robux.query.QueryRunnerFactory`, `org.apache.robux.query.QueryToolChest`, and
+   `org.apache.robux.query.Query`.
 1. Add new Jersey resources by calling `Jerseys.addResource(binder, clazz)`.
-1. Add new Jetty filters by extending `org.apache.druid.server.initialization.jetty.ServletFilterHolder`.
-1. Add new secret providers by extending `org.apache.druid.metadata.PasswordProvider`.
-1. Add new dynamic configuration providers by extending `org.apache.druid.metadata.DynamicConfigProvider`.
-1. Add new ingest transform by implementing the `org.apache.druid.segment.transform.Transform` interface from the `druid-processing` package.
-1. Bundle your extension with all the other Druid extensions
+1. Add new Jetty filters by extending `org.apache.robux.server.initialization.jetty.ServletFilterHolder`.
+1. Add new secret providers by extending `org.apache.robux.metadata.PasswordProvider`.
+1. Add new dynamic configuration providers by extending `org.apache.robux.metadata.DynamicConfigProvider`.
+1. Add new ingest transform by implementing the `org.apache.robux.segment.transform.Transform` interface from the `robux-processing` package.
+1. Bundle your extension with all the other Robux extensions
 
-Extensions are added to the system via an implementation of `org.apache.druid.initialization.DruidModule`.
+Extensions are added to the system via an implementation of `org.apache.robux.initialization.RobuxModule`.
 
-### Creating a Druid Module
+### Creating a Robux Module
 
-The DruidModule class is has two methods
+The RobuxModule class is has two methods
 
 1. A `configure(Binder)` method
 2. A `getJacksonModules()` method
 
 The `configure(Binder)` method is the same method that a normal Guice module would have.
 
-The `getJacksonModules()` method provides a list of Jackson modules that are used to help initialize the Jackson ObjectMapper instances used by Druid. This is how you add extensions that are instantiated via Jackson (like AggregatorFactory and InputSource objects) to Druid.
+The `getJacksonModules()` method provides a list of Jackson modules that are used to help initialize the Jackson ObjectMapper instances used by Robux. This is how you add extensions that are instantiated via Jackson (like AggregatorFactory and InputSource objects) to Robux.
 
-### Registering your Druid Module
+### Registering your Robux Module
 
-Once you have your DruidModule created, you will need to package an extra file in the `META-INF/services` directory of your jar. This is easiest to accomplish with a maven project by creating files in the `src/main/resources` directory. There are examples of this in the Druid code under the `cassandra-storage`, `hdfs-storage` and `s3-extensions` modules, for examples.
+Once you have your RobuxModule created, you will need to package an extra file in the `META-INF/services` directory of your jar. This is easiest to accomplish with a maven project by creating files in the `src/main/resources` directory. There are examples of this in the Robux code under the `cassandra-storage`, `hdfs-storage` and `s3-extensions` modules, for examples.
 
 The file that should exist in your jar is
 
-`META-INF/services/org.apache.druid.initialization.DruidModule`
+`META-INF/services/org.apache.robux.initialization.RobuxModule`
 
-It should be a text file with a new-line delimited list of package-qualified classes that implement DruidModule like
+It should be a text file with a new-line delimited list of package-qualified classes that implement RobuxModule like
 
 ```txt
-org.apache.druid.storage.cassandra.CassandraDruidModule
+org.apache.robux.storage.cassandra.CassandraRobuxModule
 ```
 
-If your jar has this file, then when it is added to the classpath or as an extension, Druid will notice the file and will instantiate instances of the Module. Your Module should have a default constructor, but if you need access to runtime configuration properties, it can have a method with @Inject on it to get a Properties object injected into it from Guice.
+If your jar has this file, then when it is added to the classpath or as an extension, Robux will notice the file and will instantiate instances of the Module. Your Module should have a default constructor, but if you need access to runtime configuration properties, it can have a method with @Inject on it to get a Properties object injected into it from Guice.
 
 ### Adding a new deep storage implementation
 
-Check the `druid-azure-extensions`, `druid-google-extensions`, `druid-cassandra-storage`, `druid-hdfs-storage` and `druid-s3-extensions` modules for examples of how to do this.
+Check the `robux-azure-extensions`, `robux-google-extensions`, `robux-cassandra-storage`, `robux-hdfs-storage` and `robux-s3-extensions` modules for examples of how to do this.
 
-The basic idea behind the extension is that you need to add bindings for your [`DataSegmentPusher`](https://github.com/apache/druid/blob/master/processing/src/main/java/org/apache/druid/segment/loading/DataSegmentPusher.java) and [`URIDataPuller`](https://github.com/apache/druid/blob/master/processing/src/main/java/org/apache/druid/segment/loading/URIDataPuller.java) objects. The way to add them is something like (taken from HdfsStorageDruidModule)
+The basic idea behind the extension is that you need to add bindings for your [`DataSegmentPusher`](https://github.com/apache/robux/blob/master/processing/src/main/java/org/apache/robux/segment/loading/DataSegmentPusher.java) and [`URIDataPuller`](https://github.com/apache/robux/blob/master/processing/src/main/java/org/apache/robux/segment/loading/URIDataPuller.java) objects. The way to add them is something like (taken from HdfsStorageRobuxModule)
 
 ```java
 Binders.dataSegmentPullerBinder(binder)
@@ -94,17 +94,17 @@ Binders.dataSegmentPusherBinder(binder)
        .to(HdfsDataSegmentPusher.class).in(LazySingleton.class);
 ```
 
-`Binders.dataSegment*Binder()` is a call provided by the druid-core jar which sets up a Guice [multibind](https://github.com/google/guice/wiki/Multibindings) "MapBinder". If that doesn't make sense, don't worry about it; just think of it as a magical incantation.
+`Binders.dataSegment*Binder()` is a call provided by the robux-core jar which sets up a Guice [multibind](https://github.com/google/guice/wiki/Multibindings) "MapBinder". If that doesn't make sense, don't worry about it; just think of it as a magical incantation.
 
-`addBinding("hdfs")` for the Puller binder creates a new handler for loadSpec objects of type "hdfs". For the Pusher binder it creates a new type value that you can specify for the `druid.storage.type` parameter.
+`addBinding("hdfs")` for the Puller binder creates a new handler for loadSpec objects of type "hdfs". For the Pusher binder it creates a new type value that you can specify for the `robux.storage.type` parameter.
 
 `to(...).in(...);` is normal Guice stuff.
 
 In addition to `DataSegmentPusher` and `URIDataPuller`, you can also bind:
 
-* [`DataSegmentKiller`](https://github.com/apache/druid/blob/master/processing/src/main/java/org/apache/druid/segment/loading/DataSegmentKiller.java): Removes segments, used as part of the Kill Task to delete unused segments, i.e. perform garbage collection of segments that are either superseded by newer versions or that have been dropped from the cluster.
-* [`DataSegmentMover`](https://github.com/apache/druid/blob/master/processing/src/main/java/org/apache/druid/segment/loading/DataSegmentMover.java): Allow migrating segments from one place to another, currently this is only used as part of the MoveTask to move unused segments to a different S3 bucket or prefix, typically to reduce storage costs of unused data (e.g. move to glacier or cheaper storage)
-* [`DataSegmentArchiver`](https://github.com/apache/druid/blob/master/processing/src/main/java/org/apache/druid/segment/loading/DataSegmentArchiver.java): Just a wrapper around Mover, but comes with a preconfigured target bucket/path, so it doesn't have to be specified at runtime as part of the ArchiveTask.
+* [`DataSegmentKiller`](https://github.com/apache/robux/blob/master/processing/src/main/java/org/apache/robux/segment/loading/DataSegmentKiller.java): Removes segments, used as part of the Kill Task to delete unused segments, i.e. perform garbage collection of segments that are either superseded by newer versions or that have been dropped from the cluster.
+* [`DataSegmentMover`](https://github.com/apache/robux/blob/master/processing/src/main/java/org/apache/robux/segment/loading/DataSegmentMover.java): Allow migrating segments from one place to another, currently this is only used as part of the MoveTask to move unused segments to a different S3 bucket or prefix, typically to reduce storage costs of unused data (e.g. move to glacier or cheaper storage)
+* [`DataSegmentArchiver`](https://github.com/apache/robux/blob/master/processing/src/main/java/org/apache/robux/segment/loading/DataSegmentArchiver.java): Just a wrapper around Mover, but comes with a preconfigured target bucket/path, so it doesn't have to be specified at runtime as part of the ArchiveTask.
 
 ### Validating your deep storage implementation
 
@@ -139,7 +139,7 @@ Adding support for a new input source requires to implement three interfaces, i.
 in [native parallel indexing](../ingestion/native-batch.md).
 `InputSourceReader` defines how to read your new input source and you can simply use the provided `InputEntityIteratingReader` in most cases.
 
-There is an example of this in the `druid-s3-extensions` module with the `S3InputSource` and `S3Entity`.
+There is an example of this in the `robux-s3-extensions` module with the `S3InputSource` and `S3Entity`.
 
 Adding an InputSource is done almost entirely through the Jackson Modules instead of Guice. Specifically, note the implementation
 
@@ -155,20 +155,20 @@ public List<? extends Module> getJacksonModules()
 
 This is registering the InputSource with Jackson's polymorphic serialization/deserialization layer. More concretely, having this will mean that if you specify a `"inputSource": { "type": "s3", ... }` in your IO config, then the system will load this InputSource for your `InputSource` implementation.
 
-Note that inside of Druid, we have made the `@JacksonInject` annotation for Jackson deserialized objects actually use the base Guice injector to resolve the object to be injected. So, if your InputSource needs access to some object, you can add a `@JacksonInject` annotation on a setter and it will get set on instantiation.
+Note that inside of Robux, we have made the `@JacksonInject` annotation for Jackson deserialized objects actually use the base Guice injector to resolve the object to be injected. So, if your InputSource needs access to some object, you can add a `@JacksonInject` annotation on a setter and it will get set on instantiation.
 
 ### Adding support for a new data format
 
 Adding support for a new data format requires implementing two interfaces, i.e., `InputFormat` and `InputEntityReader`.
-`InputFormat` is to define how your data is formatted. `InputEntityReader` is to define how to parse your data and convert into Druid `InputRow`.
+`InputFormat` is to define how your data is formatted. `InputEntityReader` is to define how to parse your data and convert into Robux `InputRow`.
 
-There is an example in the `druid-orc-extensions` module with the `OrcInputFormat` and `OrcReader`.
+There is an example in the `robux-orc-extensions` module with the `OrcInputFormat` and `OrcReader`.
 
-Adding an InputFormat is very similar to adding an InputSource. They operate purely through Jackson and thus should just be additions to the Jackson modules returned by your DruidModule.
+Adding an InputFormat is very similar to adding an InputSource. They operate purely through Jackson and thus should just be additions to the Jackson modules returned by your RobuxModule.
 
 ### Adding Aggregators
 
-Adding AggregatorFactory objects is very similar to InputSource objects. They operate purely through Jackson and thus should just be additions to the Jackson modules returned by your DruidModule.
+Adding AggregatorFactory objects is very similar to InputSource objects. They operate purely through Jackson and thus should just be additions to the Jackson modules returned by your RobuxModule.
 
 ### Adding Complex Metrics
 
@@ -178,18 +178,18 @@ Adding ComplexMetrics is a little ugly in the current version. The method of get
 
 Adding a new Query type requires the implementation of three interfaces.
 
-1. `org.apache.druid.query.Query`
-1. `org.apache.druid.query.QueryToolChest`
-1. `org.apache.druid.query.QueryRunnerFactory`
+1. `org.apache.robux.query.Query`
+1. `org.apache.robux.query.QueryToolChest`
+1. `org.apache.robux.query.QueryRunnerFactory`
 
 Registering these uses the same general strategy as a deep storage mechanism does. You do something like
 
 ```java
-DruidBinders.queryToolChestBinder(binder)
+RobuxBinders.queryToolChestBinder(binder)
             .addBinding(SegmentMetadataQuery.class)
             .to(SegmentMetadataQueryQueryToolChest.class);
 
-DruidBinders.queryRunnerFactoryBinder(binder)
+RobuxBinders.queryRunnerFactoryBinder(binder)
             .addBinding(SegmentMetadataQuery.class)
             .to(SegmentMetadataQueryRunnerFactory.class);
 ```
@@ -206,9 +206,9 @@ Jerseys.addResource(binder, NewResource.class);
 
 ### Adding a new Password Provider implementation
 
-You will need to implement `org.apache.druid.metadata.PasswordProvider` interface. For every place where Druid uses PasswordProvider, a new instance of the implementation will be created,
+You will need to implement `org.apache.robux.metadata.PasswordProvider` interface. For every place where Robux uses PasswordProvider, a new instance of the implementation will be created,
 thus make sure all the necessary information required for fetching each password is supplied during object instantiation.
-In your implementation of `org.apache.druid.initialization.DruidModule`, `getJacksonModules` should look something like this -
+In your implementation of `org.apache.robux.initialization.RobuxModule`, `getJacksonModules` should look something like this -
 
 ```java
     return ImmutableList.of(
@@ -219,13 +219,13 @@ In your implementation of `org.apache.druid.initialization.DruidModule`, `getJac
     );
 ```
 
-where `SomePasswordProvider` is the implementation of `PasswordProvider` interface, you can have a look at `org.apache.druid.metadata.EnvironmentVariablePasswordProvider` for example.
+where `SomePasswordProvider` is the implementation of `PasswordProvider` interface, you can have a look at `org.apache.robux.metadata.EnvironmentVariablePasswordProvider` for example.
 
 ### Adding a new DynamicConfigProvider implementation
 
-You will need to implement `org.apache.druid.metadata.DynamicConfigProvider` interface. For every place where Druid uses DynamicConfigProvider, a new instance of the implementation will be created,
+You will need to implement `org.apache.robux.metadata.DynamicConfigProvider` interface. For every place where Robux uses DynamicConfigProvider, a new instance of the implementation will be created,
 thus make sure all the necessary information required for fetching all information is supplied during object instantiation.
-In your implementation of `org.apache.druid.initialization.DruidModule`, `getJacksonModules` should look something like this -
+In your implementation of `org.apache.robux.initialization.RobuxModule`, `getJacksonModules` should look something like this -
 
 ```java
     return ImmutableList.of(
@@ -236,17 +236,17 @@ In your implementation of `org.apache.druid.initialization.DruidModule`, `getJac
     );
 ```
 
-where `SomeDynamicConfigProvider` is the implementation of `DynamicConfigProvider` interface, you can have a look at `org.apache.druid.metadata.MapStringDynamicConfigProvider` for example.
+where `SomeDynamicConfigProvider` is the implementation of `DynamicConfigProvider` interface, you can have a look at `org.apache.robux.metadata.MapStringDynamicConfigProvider` for example.
 
 ### Adding a Transform Extension
 
-To create a transform extension implement the `org.apache.druid.segment.transform.Transform` interface. You'll need to install the `druid-processing` package to import `org.apache.druid.segment.transform`.
+To create a transform extension implement the `org.apache.robux.segment.transform.Transform` interface. You'll need to install the `robux-processing` package to import `org.apache.robux.segment.transform`.
 
 ```java
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.druid.segment.transform.RowFunction;
-import org.apache.druid.segment.transform.Transform;
+import org.apache.robux.segment.transform.RowFunction;
+import org.apache.robux.segment.transform.Transform;
 
 public class MyTransform implements Transform {
     private final String name;
@@ -286,9 +286,9 @@ import com.fasterxml.jackson.databind.jsontype.NamedModule;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Binder;
 import com.google.common.collect.ImmutableList;
-import org.apache.druid.initialization.DruidModule;
+import org.apache.robux.initialization.RobuxModule;
 
-public class MyTransformModule implements DruidModule {
+public class MyTransformModule implements RobuxModule {
     @Override
     public List<? extends Module> getJacksonModules() {
         return return ImmutableList.of(
@@ -307,23 +307,23 @@ public class MyTransformModule implements DruidModule {
 ### Adding your own custom pluggable Coordinator Duty
 
 The coordinator periodically runs jobs, so-called `CoordinatorDuty` which include loading new segments, segment balancing, etc.
-Druid users can add custom pluggable coordinator duties, which are not part of Core Druid, without modifying any Core Druid classes.
+Robux users can add custom pluggable coordinator duties, which are not part of Core Robux, without modifying any Core Robux classes.
 Users can do this by writing their own custom coordinator duty implementing the interface `CoordinatorCustomDuty` and setting the `JsonTypeName`.
-Next, users will need to register their custom coordinator as subtypes in their Module's `DruidModule#getJacksonModules()`.
+Next, users will need to register their custom coordinator as subtypes in their Module's `RobuxModule#getJacksonModules()`.
 Once these steps are done, user will be able to load their custom coordinator duty using the following properties:
 
 ```properties
-druid.coordinator.dutyGroups=[<GROUP_NAME_1>, <GROUP_NAME_2>, ...]
-druid.coordinator.<GROUP_NAME_1>.duties=[<DUTY_NAME_MATCHING_JSON_TYPE_NAME_1>, <DUTY_NAME_MATCHING_JSON_TYPE_NAME_2>, ...]
-druid.coordinator.<GROUP_NAME_1>.period=<GROUP_NAME_1_RUN_PERIOD>
+robux.coordinator.dutyGroups=[<GROUP_NAME_1>, <GROUP_NAME_2>, ...]
+robux.coordinator.<GROUP_NAME_1>.duties=[<DUTY_NAME_MATCHING_JSON_TYPE_NAME_1>, <DUTY_NAME_MATCHING_JSON_TYPE_NAME_2>, ...]
+robux.coordinator.<GROUP_NAME_1>.period=<GROUP_NAME_1_RUN_PERIOD>
 
-druid.coordinator.<GROUP_NAME_1>.duty.<DUTY_NAME_MATCHING_JSON_TYPE_NAME_1>.<SOME_CONFIG_1_KEY>=<SOME_CONFIG_1_VALUE>
-druid.coordinator.<GROUP_NAME_1>.duty.<DUTY_NAME_MATCHING_JSON_TYPE_NAME_1>.<SOME_CONFIG_2_KEY>=<SOME_CONFIG_2_VALUE>
+robux.coordinator.<GROUP_NAME_1>.duty.<DUTY_NAME_MATCHING_JSON_TYPE_NAME_1>.<SOME_CONFIG_1_KEY>=<SOME_CONFIG_1_VALUE>
+robux.coordinator.<GROUP_NAME_1>.duty.<DUTY_NAME_MATCHING_JSON_TYPE_NAME_1>.<SOME_CONFIG_2_KEY>=<SOME_CONFIG_2_VALUE>
 ```
 
 In the new system for pluggable Coordinator duties, similar to what coordinator already does today, the duties can be grouped together.
-The duties will be grouped into multiple groups as per the elements in list `druid.coordinator.dutyGroups`.
-All duties in the same group will have the same run period configured by `druid.coordinator.<GROUP_NAME>.period`.
+The duties will be grouped into multiple groups as per the elements in list `robux.coordinator.dutyGroups`.
+All duties in the same group will have the same run period configured by `robux.coordinator.<GROUP_NAME>.period`.
 Currently, there is a single thread running the duties sequentially for each group.
 
 For example, see `KillSupervisorsCustomDuty` for a custom coordinator duty implementation and the `custom-coordinator-duties`
@@ -331,10 +331,10 @@ integration test group which loads `KillSupervisorsCustomDuty` using the configs
 This config file adds the configs below to enable a custom coordinator duty.
 
 ```properties
-druid.coordinator.dutyGroups=["cleanupMetadata"]
-druid.coordinator.cleanupMetadata.duties=["killSupervisors"]
-druid.coordinator.cleanupMetadata.duty.killSupervisors.durationToRetain=PT0M
-druid.coordinator.cleanupMetadata.period=PT10S
+robux.coordinator.dutyGroups=["cleanupMetadata"]
+robux.coordinator.cleanupMetadata.duties=["killSupervisors"]
+robux.coordinator.cleanupMetadata.duty.killSupervisors.durationToRetain=PT0M
+robux.coordinator.cleanupMetadata.period=PT10S
 ```
 
 These configurations create a custom coordinator duty group called `cleanupMetadata` which runs a custom coordinator duty called `killSupervisors` every 10 seconds.
@@ -358,23 +358,23 @@ final HttpClientConfig.Builder builder = HttpClientConfig
     .withHttpProxyConfig(config.getProxyConfig());
 ```
 
-### Bundle your extension with all the other Druid extensions
+### Bundle your extension with all the other Robux extensions
 
-When you do `mvn install`, Druid extensions will be packaged within the Druid tarball and `extensions` directory, which are both underneath `distribution/target/`.
+When you do `mvn install`, Robux extensions will be packaged within the Robux tarball and `extensions` directory, which are both underneath `distribution/target/`.
 
 If you want your extension to be included, you can add your extension's maven coordinate as an argument at
-[distribution/pom.xml](https://github.com/apache/druid/blob/master/distribution/pom.xml#L95)
+[distribution/pom.xml](https://github.com/apache/robux/blob/master/distribution/pom.xml#L95)
 
 During `mvn install`, maven will install your extension to the local maven repository, and then call [pull-deps](../operations/pull-deps.md) to pull your extension from
-there. In the end, you should see your extension underneath `distribution/target/extensions` and within Druid tarball.
+there. In the end, you should see your extension underneath `distribution/target/extensions` and within Robux tarball.
 
 ### Managing dependencies
 
-Managing library collisions can be daunting for extensions which draw in commonly used libraries. Here is a list of group IDs for libraries that are suggested to be specified with a `provided` scope to prevent collision with versions used in druid:
+Managing library collisions can be daunting for extensions which draw in commonly used libraries. Here is a list of group IDs for libraries that are suggested to be specified with a `provided` scope to prevent collision with versions used in robux:
 
 ```txt
-"org.apache.druid",
-"com.metamx.druid",
+"org.apache.robux",
+"com.metamx.robux",
 "asm",
 "org.ow2.asm",
 "org.jboss.netty",
@@ -406,4 +406,4 @@ Managing library collisions can be daunting for extensions which draw in commonl
 "net.java.dev.jets3t"
 ```
 
-See the documentation in `org.apache.druid.cli.PullDependencies` for more information.
+See the documentation in `org.apache.robux.cli.PullDependencies` for more information.

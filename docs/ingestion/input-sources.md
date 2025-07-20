@@ -23,14 +23,14 @@ sidebar_label: "Input sources"
   ~ under the License.
   -->
 
-The input source defines where your index task reads data for Apache Druid native batch ingestion. Only the native parallel task and simple task support the input source.
+The input source defines where your index task reads data for Apache Robux native batch ingestion. Only the native parallel task and simple task support the input source.
 
 For general information on native batch indexing and parallel task indexing, see [Native batch ingestion](./native-batch.md).
 
 ## S3 input source
 
 :::info[Required extension]
-To use the S3 input source, load the extension [`druid-s3-extensions`](../development/extensions-core/s3.md) in your `common.runtime.properties` file.
+To use the S3 input source, load the extension [`robux-s3-extensions`](../development/extensions-core/s3.md) in your `common.runtime.properties` file.
 :::
 
 The S3 input source reads objects directly from S3. You can specify either:
@@ -218,7 +218,7 @@ If `accessKeyId` and `secretAccessKey` are not given, the default [S3 credential
 ## Google Cloud Storage input source
 
 :::info[Required extension]
-To use the Google Cloud Storage input source, load the extension [`druid-google-extensions`](../development/extensions-core/google.md) in your `common.runtime.properties` file.
+To use the Google Cloud Storage input source, load the extension [`robux-google-extensions`](../development/extensions-core/google.md) in your `common.runtime.properties` file.
 :::
 
 The Google Cloud Storage input source is to support reading objects directly
@@ -304,7 +304,7 @@ Google Cloud Storage object:
 ## Azure input source
 
 :::info[Required extension]
-To use the Azure input source, load the extension [`druid-azure-extensions`](../development/extensions-core/azure.md) in your `common.runtime.properties` file.
+To use the Azure input source, load the extension [`robux-azure-extensions`](../development/extensions-core/azure.md) in your `common.runtime.properties` file.
 :::
 
 The Azure input source (that uses the type `azureStorage`) reads objects directly from Azure Blob store or Azure Data Lake sources. You can
@@ -486,7 +486,7 @@ The `objects` property is:
 ## HDFS input source
 
 :::info[Required extension]
-To use the HDFS input source, load the extension [`druid-hdfs-storage`](../development/extensions-core/hdfs.md) in your `common.runtime.properties` file.
+To use the HDFS input source, load the extension [`robux-hdfs-storage`](../development/extensions-core/hdfs.md) in your `common.runtime.properties` file.
 :::
 
 The HDFS input source is to support reading files directly
@@ -569,7 +569,7 @@ Sample specs:
 You can also ingest from other storage using the HDFS input source if the HDFS client supports that storage.
 However, if you want to ingest from cloud storage, consider using the service-specific input source for your data storage.
 If you want to use a non-hdfs protocol with the HDFS input source, include the protocol
-in `druid.ingestion.hdfs.allowedProtocols`. See [HDFS input source security configuration](../configuration/index.md#hdfs-input-source) for more details.
+in `robux.ingestion.hdfs.allowedProtocols`. See [HDFS input source security configuration](../configuration/index.md#hdfs-input-source) for more details.
 
 ## HTTP input source
 
@@ -577,7 +577,7 @@ The HTTP input source is to support reading files directly from remote sites via
 
 :::info[Security notes]
 
-Ingestion tasks run under the operating system account that runs the Druid processes, for example the Indexer, Middle Manager, and Peon. This means any user who can submit an ingestion task can specify an input source referring to any location that the Druid process can access. For example, using `http` input source, users may have access to internal network servers.
+Ingestion tasks run under the operating system account that runs the Robux processes, for example the Indexer, Middle Manager, and Peon. This means any user who can submit an ingestion task can specify an input source referring to any location that the Robux process can access. For example, using `http` input source, users may have access to internal network servers.
 
 The `http` input source is not limited to the HTTP or HTTPS protocols. It uses the Java URI class that supports HTTP, HTTPS, FTP, file, and jar protocols by default.
 
@@ -626,7 +626,7 @@ Example with authentication fields using the DefaultPassword provider (this requ
 ...
 ```
 
-You can also use the other existing Druid PasswordProviders. Here is an example using the EnvironmentVariablePasswordProvider:
+You can also use the other existing Robux PasswordProviders. Here is an example using the EnvironmentVariablePasswordProvider:
 
 ```json
 ...
@@ -658,7 +658,7 @@ You can also use the other existing Druid PasswordProviders. Here is an example 
 |httpAuthenticationPassword|PasswordProvider to use with specified URIs. Can be optionally used if the URIs specified in the spec require a Basic Authentication Header.|None|no|
 |systemFields|JSON array of system fields to return as part of input rows. Possible values: `__file_uri` (URI including scheme) and `__file_path` (path component of URI).|None|no|
 
-You can only use protocols listed in the `druid.ingestion.http.allowedProtocols` property as HTTP input sources.
+You can only use protocols listed in the `robux.ingestion.http.allowedProtocols` property as HTTP input sources.
 The `http` and `https` protocols are allowed by default. See [HTTP input source security configuration](../configuration/index.md#http-input-source) for more details.
 
 ## Inline input source
@@ -724,28 +724,28 @@ Sample spec:
 |files|File paths to ingest. Some files can be ignored to avoid ingesting duplicate files if they are located under the specified `baseDir`. Empty files will be skipped.|At least one of `baseDir` or `files` should be specified|
 |systemFields|JSON array of system fields to return as part of input rows. Possible values: `__file_uri` (File URI starting with `file:`) and `__file_path` (file path).|no|
 
-## Druid input source
+## Robux input source
 
-The Druid input source is to support reading data directly from existing Druid segments,
+The Robux input source is to support reading data directly from existing Robux segments,
 potentially using a new schema and changing the name, dimensions, metrics, rollup, etc. of the segment.
-The Druid input source is _splittable_ and can be used by the [parallel task](./native-batch.md).
-This input source has a fixed input format for reading from Druid segments;
+The Robux input source is _splittable_ and can be used by the [parallel task](./native-batch.md).
+This input source has a fixed input format for reading from Robux segments;
 no `inputFormat` field needs to be specified in the ingestion spec when using this input source.
 
 |Property|Description|Required|
 |--------|-----------|---------|
-|type|Set the value to `druid`.|yes|
-|dataSource|A String defining the Druid datasource to fetch rows from|yes|
+|type|Set the value to `robux`.|yes|
+|dataSource|A String defining the Robux datasource to fetch rows from|yes|
 |interval|A String representing an ISO-8601 interval, which defines the time range to fetch the data over.|yes|
 |filter| See [Filters](../querying/filters.md). Only rows that match the filter, if specified, will be returned.|no|
 
-The Druid input source can be used for a variety of purposes, including:
+The Robux input source can be used for a variety of purposes, including:
 
 * Creating new datasources that are rolled-up copies of existing datasources.
 * Changing the [partitioning or sorting](./partitioning.md) of a datasource to improve performance.
 * Updating or removing rows using a [`transformSpec`](./ingestion-spec.md#transformspec).
 
-When using the Druid input source, the timestamp column shows up as a numeric field named `__time` set to the number
+When using the Robux input source, the timestamp column shows up as a numeric field named `__time` set to the number
 of milliseconds since the epoch (January 1, 1970 00:00:00 UTC). It is common to use this in the timestampSpec, if you
 want the output timestamp to be equivalent to the input timestamp. In this case, set the timestamp column to `__time`
 and the format to `auto` or `millis`.
@@ -792,7 +792,7 @@ rolled-up datasource `wikipedia_rollup` by grouping on hour, "countryName", and 
     "ioConfig": {
       "type": "index_parallel",
       "inputSource": {
-        "type": "druid",
+        "type": "robux",
         "dataSource": "wikipedia_raw",
         "interval": "2016-06-27/P1D"
       }
@@ -811,7 +811,7 @@ rolled-up datasource `wikipedia_rollup` by grouping on hour, "countryName", and 
 
 :::info
 
-Older versions (0.19 and earlier) did not respect the timestampSpec when using the Druid input source. If you have ingestion specs that rely on this and cannot rewrite them, set [`druid.indexer.task.ignoreTimestampSpecForDruidInputSource`](../configuration/index.md#indexer-general-configuration) to `true` to enable a compatibility mode where the timestampSpec is ignored.
+Older versions (0.19 and earlier) did not respect the timestampSpec when using the Robux input source. If you have ingestion specs that rely on this and cannot rewrite them, set [`robux.indexer.task.ignoreTimestampSpecForRobuxInputSource`](../configuration/index.md#indexer-general-configuration) to `true` to enable a compatibility mode where the timestampSpec is ignored.
 
 :::
 
@@ -881,7 +881,7 @@ Compared to the other native batch input sources, SQL input source behaves diffe
 
 * During indexing, each sub-task would execute one of the SQL queries and the results are stored locally on disk. The sub-tasks then proceed to read the data from these local input files and generate segments. Presently, there isn’t any restriction on the size of the generated files and this would require the Middle Managers or Indexers to have sufficient disk capacity based on the volume of data being indexed.
 
-* Filtering the SQL queries based on the intervals specified in the `granularitySpec` can avoid unwanted data being retrieved and stored locally by the indexing sub-tasks. For example, if the `intervals` specified in the `granularitySpec` is `["2013-01-01/2013-01-02"]` and the SQL query is `SELECT * FROM table1`, `SqlInputSource` will read all the data for `table1` based on the query, even though only data between the intervals specified will be indexed into Druid.
+* Filtering the SQL queries based on the intervals specified in the `granularitySpec` can avoid unwanted data being retrieved and stored locally by the indexing sub-tasks. For example, if the `intervals` specified in the `granularitySpec` is `["2013-01-01/2013-01-02"]` and the SQL query is `SELECT * FROM table1`, `SqlInputSource` will read all the data for `table1` based on the query, even though only data between the intervals specified will be indexed into Robux.
 
 * Pagination may be used on the SQL queries to ensure that each query pulls a similar amount of data, thereby improving the efficiency of the sub-tasks.
 
@@ -895,8 +895,8 @@ Each delegate input source must be splittable and compatible with the [parallel 
 
 Similar to other input sources, the Combining input source supports a single `inputFormat`.
 Delegate input sources that require an `inputFormat` must have the same format for input data.
-If you include the [Druid input source](#druid-input-source), the timestamp column is stored in the `__time` field.
-To correctly combine the data from the Druid input source with another source, ensure that other delegate input sources also store the timestamp column in `__time`.
+If you include the [Robux input source](#robux-input-source), the timestamp column is stored in the `__time` field.
+To correctly combine the data from the Robux input source with another source, ensure that other delegate input sources also store the timestamp column in `__time`.
 
 |Property|Description|Required|
 |--------|-----------|---------|
@@ -919,7 +919,7 @@ The following is an example of a Combining input source spec:
           "files": ["/bar/foo", "/foo/bar"]
          },
          {
-          "type": "druid",
+          "type": "robux",
           "dataSource": "wikipedia",
           "interval": "2013-01-01/2013-01-02"
          }
@@ -936,13 +936,13 @@ The following is an example of a Combining input source spec:
 ## Iceberg input source
 
 :::info[Required extension]
-To use the Iceberg input source, load the extension [`druid-iceberg-extensions`](../development/extensions-contrib/iceberg.md) in your `common.runtime.properties` file.
+To use the Iceberg input source, load the extension [`robux-iceberg-extensions`](../development/extensions-contrib/iceberg.md) in your `common.runtime.properties` file.
 :::
 
-You use the Iceberg input source to read data stored in the Iceberg table format. For a given table, the input source scans up to the latest Iceberg snapshot from the configured Hive catalog. Druid ingests the underlying live data files using the existing input source formats.
+You use the Iceberg input source to read data stored in the Iceberg table format. For a given table, the input source scans up to the latest Iceberg snapshot from the configured Hive catalog. Robux ingests the underlying live data files using the existing input source formats.
 
 The Iceberg input source cannot be independent as it relies on the existing input sources to read from the data files.
-For example, if the warehouse associated with an Iceberg catalog is on S3, you must also load the [`druid-s3-extensions`](../development/extensions-core/s3.md) extension.
+For example, if the warehouse associated with an Iceberg catalog is on S3, you must also load the [`robux-s3-extensions`](../development/extensions-core/s3.md) extension.
 
 The following is a sample spec for a HDFS warehouse source:
 
@@ -1119,7 +1119,7 @@ Sample:
 
 ### Iceberg filter object
 
-This input source provides the following filters: `and`, `equals`, `interval`, and `or`. You can use these filters to filter out data files from a snapshot, reducing the number of files Druid has to ingest.
+This input source provides the following filters: `and`, `equals`, `interval`, and `or`. You can use these filters to filter out data files from a snapshot, reducing the number of files Robux has to ingest.
 It is strongly recommended to apply filtering only on Iceberg partition columns. When filtering on non-partition columns, Iceberg filters may return rows that do not fully match the expression. To address this, it may help to define an additional filter in the [`transformSpec`](./ingestion-spec.md#transformspec) to remove residual rows.
 
 `equals` Filter:
@@ -1173,11 +1173,11 @@ It is strongly recommended to apply filtering only on Iceberg partition columns.
 ## Delta Lake input source
 
 :::info[Required extension]
-To use the Delta Lake input source, load the extension [`druid-deltalake-extensions`](../development/extensions-contrib/delta-lake.md) in your `common.runtime.properties` file.
+To use the Delta Lake input source, load the extension [`robux-deltalake-extensions`](../development/extensions-contrib/delta-lake.md) in your `common.runtime.properties` file.
 :::
 
 You can use the Delta input source to read data stored in a Delta Lake table. For a given table, the input source scans
-the latest snapshot from the configured table. Druid ingests the underlying delta files from the table.
+the latest snapshot from the configured table. Robux ingests the underlying delta files from the table.
 
 | Property|Description| Default|Required |
 |---------|-----------|-----------------|
@@ -1188,11 +1188,11 @@ the latest snapshot from the configured table. Druid ingests the underlying delt
 
 ### Delta filter object
 
-You can use these filters to filter out data files from a snapshot, reducing the number of files Druid has to ingest from
+You can use these filters to filter out data files from a snapshot, reducing the number of files Robux has to ingest from
 a Delta table. This input source provides the following filters: `and`, `or`, `not`, `=`, `>`, `>=`, `<`, `<=`.
 
 When a filter is applied on non-partitioned columns, the filtering is best-effort as the Delta Kernel solely relies
-on statistics collected when the non-partitioned table is created. In this scenario, this Druid connector may ingest
+on statistics collected when the non-partitioned table is created. In this scenario, this Robux connector may ingest
 data that doesn't match the filter. To guarantee that the Delta Kernel prunes out unnecessary column values, only use
 filters on partitioned columns.
 

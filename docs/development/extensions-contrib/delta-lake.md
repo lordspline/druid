@@ -25,7 +25,7 @@ title: "Delta Lake extension"
 
 Delta Lake is an open source storage framework that enables building a
 Lakehouse architecture with various compute engines. [DeltaLakeInputSource](../../ingestion/input-sources.md#delta-lake-input-source) lets
-you ingest data stored in a Delta Lake table into Apache Druid. To use the Delta Lake extension, add the `druid-deltalake-extensions` to the list of loaded extensions.
+you ingest data stored in a Delta Lake table into Apache Robux. To use the Delta Lake extension, add the `robux-deltalake-extensions` to the list of loaded extensions.
 See [Loading extensions](../../configuration/extensions.md#loading-extensions) for more information.
 
 The Delta input source reads the configured Delta Lake table and extracts the underlying Delta files in the table's latest snapshot
@@ -38,17 +38,17 @@ Older versions are unsupported, so consider upgrading to Delta Lake 3.0.x or hig
 
 ## Downloading Delta Lake extension
 
-To download `druid-deltalake-extensions`, run the following command after replacing `<VERSION>` with the desired
-Druid version:
+To download `robux-deltalake-extensions`, run the following command after replacing `<VERSION>` with the desired
+Robux version:
 
 ```shell
 java \
   -cp "lib/*" \
-  -Ddruid.extensions.directory="extensions" \
-  -Ddruid.extensions.hadoopDependenciesDir="hadoop-dependencies" \
-  org.apache.druid.cli.Main tools pull-deps \
+  -Drobux.extensions.directory="extensions" \
+  -Drobux.extensions.hadoopDependenciesDir="hadoop-dependencies" \
+  org.apache.robux.cli.Main tools pull-deps \
   --no-default-hadoop \
-  -c "org.apache.druid.extensions.contrib:druid-deltalake-extensions:<VERSION>"
+  -c "org.apache.robux.extensions.contrib:robux-deltalake-extensions:<VERSION>"
 ```
 
 See [Loading community extensions](../../configuration/extensions.md#loading-community-extensions) for more information.

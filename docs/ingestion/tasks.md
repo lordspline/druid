@@ -23,9 +23,9 @@ sidebar_label: Task reference
   ~ under the License.
   -->
 
-Tasks do all [ingestion](index.md)-related work in Druid.
+Tasks do all [ingestion](index.md)-related work in Robux.
 
-For batch ingestion, you will generally submit tasks directly to Druid using the
+For batch ingestion, you will generally submit tasks directly to Robux using the
 [Tasks APIs](../api-reference/tasks-api.md). For streaming ingestion, tasks are generally submitted for you by a
 supervisor.
 
@@ -36,7 +36,7 @@ Task APIs are available in two main places:
 - The [Overlord](../design/overlord.md) process offers HTTP APIs to submit tasks, cancel tasks, check their status,
 review logs and reports, and more. Refer to the [Tasks API reference](../api-reference/tasks-api.md) for a
 full list.
-- Druid SQL includes a [`sys.tasks`](../querying/sql-metadata-tables.md#tasks-table) table that provides information about active
+- Robux SQL includes a [`sys.tasks`](../querying/sql-metadata-tables.md#tasks-table) table that provides information about active
 and recently completed tasks. This table is read-only and has a subset of the full task report available through
 the Overlord APIs.
 
@@ -53,7 +53,7 @@ The reporting feature is supported by [native batch tasks](native-batch.md), the
 After a task completes, if it supports reports, its report can be retrieved at:
 
 ```
-http://<OVERLORD-HOST>:<OVERLORD-PORT>/druid/indexer/v1/task/{taskId}/reports
+http://<OVERLORD-HOST>:<OVERLORD-PORT>/robux/indexer/v1/task/{taskId}/reports
 ```
 
 An example output is shown below:
@@ -176,7 +176,7 @@ For some task types, the indexing task can wait for the newly ingested segments 
 When a task is running, a live report containing ingestion state, unparseable events and moving average for number of events processed for 1 min, 5 min, 15 min time window can be retrieved at:
 
 ```
-http://<OVERLORD-HOST>:<OVERLORD-PORT>/druid/indexer/v1/task/{taskId}/reports
+http://<OVERLORD-HOST>:<OVERLORD-PORT>/robux/indexer/v1/task/{taskId}/reports
 ```
 
 An example output is shown below:
@@ -264,7 +264,7 @@ The [native batch task](native-batch.md), the Hadoop batch task, and Kafka and K
 The live report can be accessed with a GET to the following URL on a Peon running a task:
 
 ```
-http://<middlemanager-host>:<worker-port>/druid/worker/v1/chat/{taskId}/rowStats
+http://<middlemanager-host>:<worker-port>/robux/worker/v1/chat/{taskId}/rowStats
 ```
 
 An example report is shown below. The `movingAverages` section contains 1 minute, 5 minute, and 15 minute moving averages of increases to the four row counters, which have the same definitions as those in the completion report. The `totals` section shows the current totals.
@@ -311,7 +311,7 @@ An example report is shown below. The `movingAverages` section contains 1 minute
 For the Kafka Indexing Service, a GET to the following Overlord API will retrieve live row stat reports from each task being managed by the supervisor and provide a combined report.
 
 ```
-http://<OVERLORD-HOST>:<OVERLORD-PORT>/druid/indexer/v1/supervisor/{supervisorId}/stats
+http://<OVERLORD-HOST>:<OVERLORD-PORT>/robux/indexer/v1/supervisor/{supervisorId}/stats
 ```
 
 ### Unparseable events
@@ -319,7 +319,7 @@ http://<OVERLORD-HOST>:<OVERLORD-PORT>/druid/indexer/v1/supervisor/{supervisorId
 Lists of recently-encountered unparseable events can be retrieved from a running task with a GET to the following Peon API:
 
 ```
-http://<middlemanager-host>:<worker-port>/druid/worker/v1/chat/{taskId}/unparseableEvents
+http://<middlemanager-host>:<worker-port>/robux/worker/v1/chat/{taskId}/unparseableEvents
 ```
 
 Note that this functionality is not supported by all task types. Currently, it is only supported by the
@@ -330,7 +330,7 @@ and Kinesis indexing services.
 
 ## Task lock system
 
-This section explains the task locking system in Druid. Druid's locking system
+This section explains the task locking system in Robux. Robux's locking system
 and versioning system are tightly coupled with each other to guarantee the correctness of ingested data.
 
 ### "Overshadowing" between segments
@@ -358,10 +358,10 @@ Here are some examples.
 
 ### Locking
 
-If you are running two or more [Druid tasks](./tasks.md) which generate segments for the same data source and the same time chunk,
+If you are running two or more [Robux tasks](./tasks.md) which generate segments for the same data source and the same time chunk,
 the generated segments could potentially overshadow each other, which could lead to incorrect query results.
 
-To avoid this problem, tasks will attempt to get locks prior to creating any segment in Druid.
+To avoid this problem, tasks will attempt to get locks prior to creating any segment in Robux.
 There are two types of locks, i.e., _time chunk lock_ and _segment lock_.
 
 When the time chunk lock is used, a task locks the entire time chunk of a data source where generated segments will be written.
@@ -389,7 +389,7 @@ Also, the segment locking is supported by only native indexing tasks and Kafka/K
 Hadoop indexing tasks don't support it.
 
 `forceTimeChunkLock` in the task context is only applied to individual tasks.
-If you want to unset it for all tasks, you would want to set `druid.indexer.tasklock.forceTimeChunkLock` to false in the [overlord configuration](../configuration/index.md#overlord-operations).
+If you want to unset it for all tasks, you would want to set `robux.indexer.tasklock.forceTimeChunkLock` to false in the [overlord configuration](../configuration/index.md#overlord-operations).
 
 Lock requests can conflict with each other if two or more tasks try to get locks for the overlapped time chunks of the same data source.
 Note that the lock conflict can happen between different locks types.
@@ -449,7 +449,7 @@ The root cause of such spikes is likely to be one or more of the following:
 - concurrency limitations while acquiring a task lock required for allocating a segment
 
 Since the contention typically arises from tasks allocating segments for the same datasource and interval, you can improve the run times by batching the actions together.
-To enable batched segment allocation on the overlord, set  `druid.indexer.tasklock.batchSegmentAllocation` to `true`. See [overlord configuration](../configuration/index.md#overlord-operations) for more details.
+To enable batched segment allocation on the overlord, set  `robux.indexer.tasklock.batchSegmentAllocation` to `true`. See [overlord configuration](../configuration/index.md#overlord-operations) for more details.
 
 <a name="context"></a>
 
@@ -464,27 +464,27 @@ The following parameters apply to all task types.
 
 |Property|Description|Default|
 |--------|-------|-----------|
-|`forceTimeChunkLock`|_Setting this to false is still experimental._<br/> Force to use time chunk lock. When `true`, this parameter overrides the overlord runtime property `druid.indexer.tasklock.forceTimeChunkLock` [configuration for the overlord](../configuration/index.md#overlord-operations). If neither this parameter nor the runtime property is `true`, each task automatically chooses a lock type to use. See [Locking](#locking) for more details.|`true`|
+|`forceTimeChunkLock`|_Setting this to false is still experimental._<br/> Force to use time chunk lock. When `true`, this parameter overrides the overlord runtime property `robux.indexer.tasklock.forceTimeChunkLock` [configuration for the overlord](../configuration/index.md#overlord-operations). If neither this parameter nor the runtime property is `true`, each task automatically chooses a lock type to use. See [Locking](#locking) for more details.|`true`|
 |`priority`|Task priority|Depends on the task type. See [Priority](#priority) for more details.|
 |`storeCompactionState`|Enables the task to store the compaction state of created segments in the metadata store. When `true`, the segments created by the task fill `lastCompactionState` in the segment metadata. This parameter is set automatically on compaction tasks. |`true` for compaction tasks, `false` for other task types|
-|`storeEmptyColumns`|Enables the task to store empty columns during ingestion. When `true`, Druid stores every column specified in the [`dimensionsSpec`](ingestion-spec.md#dimensionsspec). When `false`, Druid SQL queries referencing empty columns will fail. If you intend to leave `storeEmptyColumns` disabled, you should either ingest dummy data for empty columns or else not query on empty columns.<br/><br/>When set in the task context, `storeEmptyColumns` overrides the system property [`druid.indexer.task.storeEmptyColumns`](../configuration/index.md#additional-peon-configuration).|`true`|
-|`taskLockTimeout`|Task lock timeout in milliseconds. For more details, see [Locking](#locking).<br/><br/>When a task acquires a lock, it sends a request via HTTP and awaits until it receives a response containing the lock acquisition result. As a result, an HTTP timeout error can occur if `taskLockTimeout` is greater than `druid.server.http.maxIdleTime` of Overlords.|300000|
-|`useLineageBasedSegmentAllocation`|Enables the new lineage-based segment allocation protocol for the native Parallel task with dynamic partitioning. This option should be off during the replacing rolling upgrade from one of the Druid versions between 0.19 and 0.21 to Druid 0.22 or higher. Once the upgrade is done, it must be set to `true` to ensure data correctness.|`false` in 0.21 or earlier, `true` in 0.22 or later|
+|`storeEmptyColumns`|Enables the task to store empty columns during ingestion. When `true`, Robux stores every column specified in the [`dimensionsSpec`](ingestion-spec.md#dimensionsspec). When `false`, Robux SQL queries referencing empty columns will fail. If you intend to leave `storeEmptyColumns` disabled, you should either ingest dummy data for empty columns or else not query on empty columns.<br/><br/>When set in the task context, `storeEmptyColumns` overrides the system property [`robux.indexer.task.storeEmptyColumns`](../configuration/index.md#additional-peon-configuration).|`true`|
+|`taskLockTimeout`|Task lock timeout in milliseconds. For more details, see [Locking](#locking).<br/><br/>When a task acquires a lock, it sends a request via HTTP and awaits until it receives a response containing the lock acquisition result. As a result, an HTTP timeout error can occur if `taskLockTimeout` is greater than `robux.server.http.maxIdleTime` of Overlords.|300000|
+|`useLineageBasedSegmentAllocation`|Enables the new lineage-based segment allocation protocol for the native Parallel task with dynamic partitioning. This option should be off during the replacing rolling upgrade from one of the Robux versions between 0.19 and 0.21 to Robux 0.22 or higher. Once the upgrade is done, it must be set to `true` to ensure data correctness.|`false` in 0.21 or earlier, `true` in 0.22 or later|
 |`lookupLoadingMode`|Controls the lookup loading behavior in tasks. This property supports three values: `ALL` mode loads all the lookups, `NONE` mode does not load any lookups and `ONLY_REQUIRED` mode loads the lookups specified with context key `lookupsToLoad`. This property must not be specified for `MSQ` and `kill` tasks as the task engine enforces `ONLY_REQUIRED` mode for `MSQWorkerTask` and `NONE` mode for `MSQControllerTask` and `kill` tasks.|`ALL`|
 |`lookupsToLoad`|List of lookup names to load in tasks. This property is required only if the `lookupLoadingMode` is set to `ONLY_REQUIRED`. For `MSQWorkerTask` type, the lookup names to load are identified by the controller task by parsing the SQL. |`null`|
 |`subTaskTimeoutMillis`|Maximum time (in milliseconds) to wait before cancelling a long-running sub-task. Applicable only for `index_parallel` tasks and `compact` tasks (when running in parallel mode). Set to 0 for no timeout (infinite).|0 (unlimited)|
 
 ## Task logs
 
-Logs are created by ingestion tasks as they run. You can configure Druid to push these into a repository for long-term storage after they complete.
+Logs are created by ingestion tasks as they run. You can configure Robux to push these into a repository for long-term storage after they complete.
 
 Once the task has been submitted to the Overlord it remains `WAITING` for locks to be acquired. Worker slot allocation is then `PENDING` until the task can actually start executing.
 
-The task then starts creating logs in a local directory of the middle manager (or indexer) in a `log` directory for the specific `taskId` at [`druid.worker.baseTaskDirs`](../configuration/index.md#middle-manager-configuration).
+The task then starts creating logs in a local directory of the middle manager (or indexer) in a `log` directory for the specific `taskId` at [`robux.worker.baseTaskDirs`](../configuration/index.md#middle-manager-configuration).
 
-When the task completes - whether it succeeds or fails - the middle manager (or indexer) will push the task log file into the location specified in [`druid.indexer.logs`](../configuration/index.md#task-logging).
+When the task completes - whether it succeeds or fails - the middle manager (or indexer) will push the task log file into the location specified in [`robux.indexer.logs`](../configuration/index.md#task-logging).
 
-Task logs on the Druid web console are retrieved via an [API](../api-reference/service-status-api.md#overlord) on the Overlord. It automatically detects where the log file is, either in the Middle Manager / indexer or in long-term storage, and passes it back.
+Task logs on the Robux web console are retrieved via an [API](../api-reference/service-status-api.md#overlord) on the Overlord. It automatically detects where the log file is, either in the Middle Manager / indexer or in long-term storage, and passes it back.
 
 If you don't see the log file in long-term storage, it means either:
 
@@ -497,10 +497,10 @@ You can check the Middle Manager / indexer logs locally to see if there was a pu
  If you are running the indexing service in remote mode, the task logs must be stored in S3, Azure Blob Store, Google Cloud Storage or HDFS.
 :::
 
-You can configure retention periods for logs in milliseconds by setting `druid.indexer.logs.kill` properties in [configuration](../configuration/index.md#task-logging).  The Overlord will then automatically manage task logs in log directories along with entries in task-related metadata storage tables.
+You can configure retention periods for logs in milliseconds by setting `robux.indexer.logs.kill` properties in [configuration](../configuration/index.md#task-logging).  The Overlord will then automatically manage task logs in log directories along with entries in task-related metadata storage tables.
 
 :::info
- Automatic log file deletion typically works based on the log file's 'modified' timestamp in the back-end store. Large clock skews between Druid processes and the long-term store might result in unintended behavior.
+ Automatic log file deletion typically works based on the log file's 'modified' timestamp in the back-end store. Large clock skews between Robux processes and the long-term store might result in unintended behavior.
 :::
 
 ## Configuring task storage sizes
@@ -508,9 +508,9 @@ You can configure retention periods for logs in milliseconds by setting `druid.i
 Tasks sometimes need to use local disk for storage of things while the task is active.  For example, for realtime ingestion tasks to accept broadcast segments for broadcast joins.  Or intermediate data sets for Multi-stage Query jobs
 
 Task storage sizes are configured through a combination of three properties:
-1. `druid.worker.capacity` - i.e. the "number of task slots"
-2. `druid.worker.baseTaskDirs` - i.e. the list of directories to use for task storage. 
-3. `druid.worker.baseTaskDirSize` - i.e. the amount of storage to use on each storage location
+1. `robux.worker.capacity` - i.e. the "number of task slots"
+2. `robux.worker.baseTaskDirs` - i.e. the list of directories to use for task storage. 
+3. `robux.worker.baseTaskDirSize` - i.e. the amount of storage to use on each storage location
 
 While it seems like one task might use multiple directories, only one directory from the list of base directories will be used for any given task, as such, each task is only given a singular directory for scratch space.
 

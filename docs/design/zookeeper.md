@@ -23,15 +23,15 @@ title: "ZooKeeper"
   -->
 
 
-Apache Druid uses [Apache ZooKeeper](http://zookeeper.apache.org/) (ZK) for management of current cluster state.
+Apache Robux uses [Apache ZooKeeper](http://zookeeper.apache.org/) (ZK) for management of current cluster state.
 
 ## Minimum ZooKeeper versions
 
-Apache Druid supports ZooKeeper versions 3.5.x and above.
+Apache Robux supports ZooKeeper versions 3.5.x and above.
 
 :::info
- Note: Starting with Apache Druid 0.22.0, support for ZooKeeper 3.4.x has been removed
- Starting with Apache Druid 31.0.0, support for Zookeeper-based segment loading has been removed.
+ Note: Starting with Apache Robux 0.22.0, support for ZooKeeper 3.4.x has been removed
+ Starting with Apache Robux 31.0.0, support for Zookeeper-based segment loading has been removed.
 :::
 
 ## ZooKeeper Operations
@@ -48,7 +48,7 @@ The operations that happen over ZK are
 We use the Curator [LeaderLatch](https://curator.apache.org/curator-recipes/leader-latch.html) recipe to perform leader election at path
 
 ```
-${druid.zk.paths.coordinatorPath}/_COORDINATOR
+${robux.zk.paths.coordinatorPath}/_COORDINATOR
 ```
 
 ## Segment "publishing" protocol from Historical and Realtime
@@ -58,19 +58,19 @@ The `announcementsPath` and `liveSegmentsPath` are used for this.
 All [Historical](../design/historical.md) processes publish themselves on the `announcementsPath`, specifically, they will create an ephemeral znode at
 
 ```
-${druid.zk.paths.announcementsPath}/${druid.host}
+${robux.zk.paths.announcementsPath}/${robux.host}
 ```
 
 Which signifies that they exist. They will also subsequently create a permanent znode at
 
 ```
-${druid.zk.paths.liveSegmentsPath}/${druid.host}
+${robux.zk.paths.liveSegmentsPath}/${robux.host}
 ```
 
 And as they load up segments, they will attach ephemeral znodes that look like
 
 ```
-${druid.zk.paths.liveSegmentsPath}/${druid.host}/_segment_identifier_
+${robux.zk.paths.liveSegmentsPath}/${robux.host}/_segment_identifier_
 ```
 
 Processes like the [Coordinator](../design/coordinator.md) and [Broker](../design/broker.md) can then watch these paths to see which processes are currently serving which segments.

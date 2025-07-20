@@ -1,6 +1,6 @@
 ---
 name: Flaky Test
-about: A template for Druid CI flaky test reports
+about: A template for Robux CI flaky test reports
 title: "Flaky Test: test name"
 labels: Flaky Test
 assignees: ''

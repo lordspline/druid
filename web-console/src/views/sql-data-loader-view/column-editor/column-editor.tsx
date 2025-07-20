@@ -28,8 +28,8 @@ import {
   Position,
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { QueryResult } from 'druid-query-toolkit';
-import { F, SqlExpression, SqlFunction, SqlType } from 'druid-query-toolkit';
+import type { QueryResult } from 'robux-query-toolkit';
+import { F, SqlExpression, SqlFunction, SqlType } from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import React, { useState } from 'react';
 

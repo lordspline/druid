@@ -159,7 +159,7 @@
       "items": [
       {
         "type": "category",
-        "label": "Druid SQL",
+        "label": "Robux SQL",
         "items": [
           "querying/sql",
           "querying/sql-functions",

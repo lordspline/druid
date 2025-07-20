@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { UNIFIED_CONSOLE_URL } from './druid';
+import { UNIFIED_CONSOLE_URL } from './robux';
 import { createBrowser, createPage } from './playwright';
 
 export async function waitTillWebConsoleReady() {

@@ -33,8 +33,8 @@ import { Timezone } from 'chronoshift';
 import type { JSX } from 'react';
 import React from 'react';
 
-import { DruidLogo, TimezoneMenuItems } from '../../../../components';
-import { getConsoleViewIcon } from '../../../../druid-models';
+import { RobuxLogo, TimezoneMenuItems } from '../../../../components';
+import { getConsoleViewIcon } from '../../../../robux-models';
 import type { Capabilities } from '../../../../helpers';
 import { capitalizeFirst } from '../../../../utils';
 import { type ExploreModuleLayout, ExploreState, LAYOUT_TO_ICON } from '../../models';
@@ -143,7 +143,7 @@ export const ExploreHeaderBar = React.memo(function ExploreHeaderBar(props: Expl
           }
         >
           <div className="explore-logo">
-            <DruidLogo compact />
+            <RobuxLogo compact />
             <span className="explore-logo-text">Explore</span>
           </div>
         </Popover>

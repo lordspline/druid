@@ -29,7 +29,7 @@ import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
 import React, { useState } from 'react';
 
-import type { DestinationInfo, DestinationMode } from '../../../druid-models';
+import type { DestinationInfo, DestinationMode } from '../../../robux-models';
 
 import './destination-form.scss';
 

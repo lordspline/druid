@@ -30,8 +30,8 @@ import {
   Position,
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { Column } from 'druid-query-toolkit';
-import { SqlAlias, SqlExpression } from 'druid-query-toolkit';
+import type { Column } from 'robux-query-toolkit';
+import { SqlAlias, SqlExpression } from 'robux-query-toolkit';
 import { useState } from 'react';
 
 import { AppToaster } from '../../../../singletons';

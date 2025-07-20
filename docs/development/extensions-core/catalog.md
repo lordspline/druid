@@ -24,13 +24,13 @@ title: Catalog
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-Consider this an [EXPERIMENTAL](../experimental.md) feature mostly because it has not been tested yet on a wide variety of long running Druid clusters.
+Consider this an [EXPERIMENTAL](../experimental.md) feature mostly because it has not been tested yet on a wide variety of long running Robux clusters.
 
-This extension allows users to configure, update, retrieve, and manage metadata stored in Druid's catalog. At present, only metadata about tables is stored in the catalog. This extension only supports MSQ based ingestion.
+This extension allows users to configure, update, retrieve, and manage metadata stored in Robux's catalog. At present, only metadata about tables is stored in the catalog. This extension only supports MSQ based ingestion.
 
 ## Configuration
 
-To use this extension please make sure to  [include](../../configuration/extensions.md#loading-extensions) `druid-catalog` in the extensions load list.
+To use this extension please make sure to  [include](../../configuration/extensions.md#loading-extensions) `robux-catalog` in the extensions load list.
 
 # Catalog Metadata
 
@@ -67,7 +67,7 @@ A tableSpec defines a table
 | Property     | Type                | Description                                                                                                            | Required | Default |
 |--------------|---------------------|------------------------------------------------------------------------------------------------------------------------|----------|---------|
 | `name`       | String              | The name of the column                                                                                                 | yes      | null    |
-| `dataType`   | String              | The type of the column. Can be any column data type that is available to Druid. Depends on what extensions are loaded. | no       | null    |
+| `dataType`   | String              | The type of the column. Can be any column data type that is available to Robux. Depends on what extensions are loaded. | no       | null    |
 | `properties` | Map&lt;String, Object\> | the column's defined properties. Non properties defined at this time.                                                  | no       | null    |
 
 ### APIs
@@ -78,7 +78,7 @@ Update or create a new table containing the given table specification.
 
 ##### URL
 
-`POST` `/druid/coordinator/v1/catalog/schemas/{schema}/tables/{name}`
+`POST` `/robux/coordinator/v1/catalog/schemas/{schema}/tables/{name}`
 
 ##### Request body
 
@@ -141,7 +141,7 @@ will return an error if a table of the same name already exists in the schema sp
 The following example shows how to create a sealed table with several defined columns, and a defined segment granularity of `"P1D"`
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas/druid/tables/test_table" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/catalog/schemas/robux/tables/test_table" \
 -X 'POST' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -189,7 +189,7 @@ Retrieve a table
 
 ##### URL
 
-`GET` `/druid/coordinator/v1/catalog/schemas/{schema}/tables/{name}`
+`GET` `/robux/coordinator/v1/catalog/schemas/{schema}/tables/{name}`
 
 ##### Responses
 
@@ -227,10 +227,10 @@ Retrieve a table
 
 ##### Sample request
 
-The following example shows how to retrieve a table named `test_table` in schema `druid`:
+The following example shows how to retrieve a table named `test_table` in schema `robux`:
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas/druid/tables/test_table"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/catalog/schemas/robux/tables/test_table"
 ```
 
 ##### Sample response
@@ -241,7 +241,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas/druid/ta
 ```json
 {
   "id": {
-    "schema": "druid",
+    "schema": "robux",
     "name": "test_table"
   },
   "creationTime": 1730965026295,
@@ -286,7 +286,7 @@ Delete a table
 
 ##### URL
 
-`DELETE` `/druid/coordinator/v1/catalog/schemas/{schema}/tables/{name}`
+`DELETE` `/robux/coordinator/v1/catalog/schemas/{schema}/tables/{name}`
 
 ##### Responses
 
@@ -324,10 +324,10 @@ Delete a table
 
 ##### Sample request
 
-The following example shows how to delete the a table named `test_table` in schema `druid`
+The following example shows how to delete the a table named `test_table` in schema `robux`
 
 ```shell
-curl -X 'DELETE' "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas/druid/tables/test_table"
+curl -X 'DELETE' "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/catalog/schemas/robux/tables/test_table"
 ```
 
 ##### Sample response
@@ -340,7 +340,7 @@ retrieve list of schema names
 
 ##### URL
 
-`GET` `/druid/coordinator/v1/catalog/schemas`
+`GET` `/robux/coordinator/v1/catalog/schemas`
 
 ##### Responses
 
@@ -381,7 +381,7 @@ retrieve list of schema names
 The following example shows how to retrieve the list of schema names.
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/catalog/schemas"
 ```
 
 ##### Sample response
@@ -389,7 +389,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas"
 ```json
 [
   "INFORMATION_SCHEMA",
-  "druid",
+  "robux",
   "ext",
   "lookups",
   "sys",
@@ -403,7 +403,7 @@ Retrieve a list of table names in the schema.
 
 ##### URL
 
-`GET` `/druid/coordinator/v1/catalog/schemas/{schema}/table`
+`GET` `/robux/coordinator/v1/catalog/schemas/{schema}/table`
 
 ##### Responses
 
@@ -441,10 +441,10 @@ Retrieve a list of table names in the schema.
 
 ##### Sample request
 
-The following example shows how to retrieve all of the table names of tables belonging to the `druid` schema.
+The following example shows how to retrieve all of the table names of tables belonging to the `robux` schema.
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/coordinator/v1/catalog/schemas/druid/tables"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/coordinator/v1/catalog/schemas/robux/tables"
 ```
 
 ##### Sample response

@@ -22,33 +22,33 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.apache.druid.extensions.contrib</groupId>
+  <groupId>org.apache.robux.extensions.contrib</groupId>
   <artifactId>dropwizard-emitter</artifactId>
   <name>dropwizard-emitter</name>
-  <description>Druid emitter extension to convert druid metric to Dropwizard metrics</description>
+  <description>Robux emitter extension to convert robux metric to Dropwizard metrics</description>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <type>test-jar</type>
       <version>${project.parent.version}</version>
       <scope>test</scope>

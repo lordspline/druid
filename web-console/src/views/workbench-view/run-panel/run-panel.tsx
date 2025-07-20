@@ -43,14 +43,14 @@ import { EditContextDialog, StringInputDialog } from '../../../dialogs';
 import { IndexSpecDialog } from '../../../dialogs/index-spec-dialog/index-spec-dialog';
 import type {
   ArrayIngestMode,
-  DruidEngine,
+  RobuxEngine,
   IndexSpec,
   QueryContext,
   SelectDestination,
   SqlJoinAlgorithm,
   WorkbenchQuery,
-} from '../../../druid-models';
-import { getQueryContextKey, summarizeIndexSpec } from '../../../druid-models';
+} from '../../../robux-models';
+import { getQueryContextKey, summarizeIndexSpec } from '../../../robux-models';
 import { getLink } from '../../../links';
 import { deepGet, pluralIfNeeded, removeUndefinedValues, tickIcon } from '../../../utils';
 import type { MaxTasksButtonProps } from '../max-tasks-button/max-tasks-button';
@@ -66,13 +66,13 @@ const ARRAY_INGEST_MODE_LABEL: Record<ArrayIngestMode, string> = {
 const ARRAY_INGEST_MODE_DESCRIPTION: Record<ArrayIngestMode, JSX.Element> = {
   array: (
     <>
-      Array: Load SQL <Tag minimal>VARCHAR ARRAY</Tag> as Druid{' '}
+      Array: Load SQL <Tag minimal>VARCHAR ARRAY</Tag> as Robux{' '}
       <Tag minimal>ARRAY&lt;STRING&gt;</Tag>
     </>
   ),
   mvd: (
     <>
-      MVD: Load SQL <Tag minimal>VARCHAR ARRAY</Tag> as Druid multi-value <Tag minimal>STRING</Tag>
+      MVD: Load SQL <Tag minimal>VARCHAR ARRAY</Tag> as Robux multi-value <Tag minimal>STRING</Tag>
     </>
   ),
 };
@@ -82,7 +82,7 @@ const SQL_JOIN_ALGORITHM_LABEL: Record<SqlJoinAlgorithm, string> = {
   sortMerge: 'Sort merge',
 };
 
-const DEFAULT_ENGINES_LABEL_FN = (engine: DruidEngine | undefined) => {
+const DEFAULT_ENGINES_LABEL_FN = (engine: RobuxEngine | undefined) => {
   if (!engine) return { text: 'Auto' };
   switch (engine) {
     case 'native':
@@ -125,7 +125,7 @@ export type EnginesMenuOption =
 
 function optionVisible(
   option: EnginesMenuOption,
-  engine: DruidEngine,
+  engine: RobuxEngine,
   hiddenOptions: EnginesMenuOption[],
 ): boolean {
   if (hiddenOptions.includes(option)) return false;
@@ -174,12 +174,12 @@ export interface RunPanelProps
   onQueryChange(query: WorkbenchQuery): void;
   running: boolean;
   onRun(preview: boolean): void | Promise<void>;
-  queryEngines: DruidEngine[];
+  queryEngines: RobuxEngine[];
   clusterCapacity: number | undefined;
   defaultQueryContext: QueryContext;
   moreMenu?: JSX.Element;
   maxTasksMenuHeader?: JSX.Element;
-  enginesLabelFn?: (engine: DruidEngine | undefined) => { text: string; label?: string };
+  enginesLabelFn?: (engine: RobuxEngine | undefined) => { text: string; label?: string };
   hiddenOptions?: EnginesMenuOption[];
 }
 

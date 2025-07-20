@@ -34,7 +34,7 @@ Compressed big decimal is an absolute number based complex type based on big dec
 2. Accuracy: Provides greater level of accuracy in decimal arithmetic
 
 ## Operations
-To use this extension, make sure to [load](../../configuration/extensions.md#loading-extensions) `druid-compressed-bigdecimal` to your config file.
+To use this extension, make sure to [load](../../configuration/extensions.md#loading-extensions) `robux-compressed-bigdecimal` to your config file.
 
 ## Configuration
 There are currently no configuration properties specific to Compressed Big Decimal
@@ -56,7 +56,7 @@ There are currently no configuration properties specific to Compressed Big Decim
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be either "groupBy" OR "timeseries"; this is the first thing Druid looks at to figure out how to interpret the query.|yes|
+|queryType|This String should always be either "groupBy" OR "timeseries"; this is the first thing Robux looks at to figure out how to interpret the query.|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../../querying/datasource.md) for more information.|yes|
 |dimensions|A JSON list of [DimensionSpec](../../querying/dimensionspecs.md) (Notice that property is optional)|no|
 |limitSpec|See [LimitSpec](../../querying/limitspec.md)|no|

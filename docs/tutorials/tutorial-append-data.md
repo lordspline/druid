@@ -2,7 +2,7 @@
 id: tutorial-append-data
 title: Append data
 sidebar_label: Append data
-description: Learn how to append data to a datasource without changing the existing data in Apache Druid.
+description: Learn how to append data to a datasource without changing the existing data in Apache Robux.
 ---
 
 <!--
@@ -24,20 +24,20 @@ description: Learn how to append data to a datasource without changing the exist
   ~ under the License.
   -->
 
-This tutorial shows you how to use the Apache Druid SQL [INSERT](../multi-stage-query/reference.md#insert) function to append data to a [datasource](../design/storage.md) without changing the existing data.
+This tutorial shows you how to use the Apache Robux SQL [INSERT](../multi-stage-query/reference.md#insert) function to append data to a [datasource](../design/storage.md) without changing the existing data.
 The examples in the tutorial use the [multi-stage query (MSQ)](../multi-stage-query/index.md) task engine to executes SQL statements.
 
 ## Prerequisites
 
-Before you follow the steps in this tutorial, download Druid as described in [Quickstart (local)](index.md) and have it running on your local machine. You don't need to load any data into the Druid cluster.
+Before you follow the steps in this tutorial, download Robux as described in [Quickstart (local)](index.md) and have it running on your local machine. You don't need to load any data into the Robux cluster.
 
-You should be familiar with data querying in Druid. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
+You should be familiar with data querying in Robux. If you haven't already, go through the [Query data](../tutorials/tutorial-query.md) tutorial first.
 
 ## Load sample data
 
 Load a sample dataset using [INSERT](../multi-stage-query/reference.md#insert) and [EXTERN](../multi-stage-query/reference.md#extern-function) functions. The EXTERN function lets you read external data or write to an external location.
 
-In the Druid [web console](../operations/web-console.md), go to the **Query** view and run the following query:
+In the Robux [web console](../operations/web-console.md), go to the **Query** view and run the following query:
 
 ```sql
 INSERT INTO "append_tutorial"
@@ -97,7 +97,7 @@ FROM TABLE(
 PARTITIONED BY DAY
 ```
 
-Druid adds rows for the subsequent days after `seahorse`.
+Robux adds rows for the subsequent days after `seahorse`.
 When the task completes, open a new tab and run the following query to view the results:
 
 ```sql

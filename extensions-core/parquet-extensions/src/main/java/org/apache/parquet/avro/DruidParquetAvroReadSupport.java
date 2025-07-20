@@ -21,11 +21,11 @@ package /*CHECKSTYLE.OFF: PackageName*/org.apache.parquet.avro/*CHECKSTYLE.ON: P
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.druid.data.input.avro.AvroParseSpec;
-import org.apache.druid.data.input.impl.DimensionSchema;
-import org.apache.druid.data.input.impl.ParseSpec;
-import org.apache.druid.indexer.HadoopDruidIndexerConfig;
-import org.apache.druid.query.aggregation.AggregatorFactory;
+import org.apache.robux.data.input.avro.AvroParseSpec;
+import org.apache.robux.data.input.impl.DimensionSchema;
+import org.apache.robux.data.input.impl.ParseSpec;
+import org.apache.robux.indexer.HadoopRobuxIndexerConfig;
+import org.apache.robux.query.aggregation.AggregatorFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.parquet.hadoop.api.InitContext;
@@ -42,7 +42,7 @@ import java.util.Set;
 /**
  * This class must be in the package org.apache.parquet.avro to access {@link AvroRecordMaterializer}'s constructor
  */
-public class DruidParquetAvroReadSupport extends AvroReadSupport<GenericRecord>
+public class RobuxParquetAvroReadSupport extends AvroReadSupport<GenericRecord>
 {
 
   /**
@@ -58,7 +58,7 @@ public class DruidParquetAvroReadSupport extends AvroReadSupport<GenericRecord>
 
     String name = fullSchema.getName();
 
-    HadoopDruidIndexerConfig config = HadoopDruidIndexerConfig.fromConfiguration(context.getConfiguration());
+    HadoopRobuxIndexerConfig config = HadoopRobuxIndexerConfig.fromConfiguration(context.getConfiguration());
     ParseSpec parseSpec = config.getParser().getParseSpec();
 
     if (parseSpec instanceof AvroParseSpec) {
@@ -110,7 +110,7 @@ public class DruidParquetAvroReadSupport extends AvroReadSupport<GenericRecord>
   )
   {
     // coercing this value to false by default here to be friendlier default behavior
-    // see https://github.com/apache/druid/issues/5433#issuecomment-388539306
+    // see https://github.com/apache/robux/issues/5433#issuecomment-388539306
     String jobProp = "parquet.avro.add-list-element-records";
     Boolean explicitlySet = configuration.getBoolean(jobProp, false);
     if (!explicitlySet) {

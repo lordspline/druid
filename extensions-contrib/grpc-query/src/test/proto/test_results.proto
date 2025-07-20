@@ -17,8 +17,8 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-package org.apache.druid.grpc.results;
-option java_package = "org.apache.druid.grpc.proto";
+package org.apache.robux.grpc.results;
+option java_package = "org.apache.robux.grpc.proto";
 
 message QueryResult {
   string dim1 = 1;

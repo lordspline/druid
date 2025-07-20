@@ -23,9 +23,9 @@ title: "Segment size optimization"
   -->
 
 
-In Apache Druid, it's important to optimize the segment size because
+In Apache Robux, it's important to optimize the segment size because
 
-  1. Druid stores data in segments. If you're using the [best-effort roll-up](../ingestion/rollup.md) mode,
+  1. Robux stores data in segments. If you're using the [best-effort roll-up](../ingestion/rollup.md) mode,
   increasing the segment size might introduce further aggregation which reduces the dataSource size.
   2. When a query is submitted, that query is distributed to all Historicals and realtime tasks
   which hold the input segments of the query. Each process and task picks a thread from its own processing thread pool
@@ -44,7 +44,7 @@ You may need to consider the followings to optimize your segments.
 
   - Number of rows per segment: it's generally recommended for each segment to have around 5 million rows.
   This setting is usually _more_ important than the below "segment byte size".
-  This is because Druid uses a single thread to process each segment,
+  This is because Robux uses a single thread to process each segment,
   and thus this setting can directly control how many rows each thread processes,
   which in turn means how well the query execution is parallelized.
   - Segment byte size: it's recommended to set 300 ~ 700MB. If this value

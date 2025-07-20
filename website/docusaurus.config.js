@@ -20,13 +20,13 @@
 const Redirects = require('./redirects.js').Redirects;
 
 module.exports={
-  "title": "Apache® Druid",
+  "title": "Apache® Robux",
   "tagline": "A fast analytical database",
-  "url": "https://druid.apache.org",
+  "url": "https://robux.apache.org",
   "baseUrl": "/",
   
   "organizationName": "Apache",
-  "projectName": "ApacheDruid",
+  "projectName": "ApacheRobux",
   "scripts": [
     "https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js",
     "/js/code-block-buttons.js"
@@ -51,7 +51,7 @@ module.exports={
         "docs": {
           "showLastUpdateAuthor": false,
           "showLastUpdateTime": false,
-          "editUrl": "https://github.com/apache/druid/edit/master/docs/",
+          "editUrl": "https://github.com/apache/robux/edit/master/docs/",
           "path": "../docs",
           "routeBasePath": "/docs/latest",
           "sidebarPath": "sidebars.json"
@@ -84,7 +84,7 @@ module.exports={
     },
     "navbar": {
       "logo": {
-        "src": "img/druid_nav.png"
+        "src": "img/robux_nav.png"
       },
       "items": [
         {
@@ -93,7 +93,7 @@ module.exports={
           "position": "right"
         },
         {
-          "href": "/druid-powered",
+          "href": "/robux-powered",
           "label": "Powered By",
           "position": "right",
         },        
@@ -122,7 +122,7 @@ module.exports={
               "label": "Foundation"
             },
             {
-              "href": "https://apachecon.com/?ref=druid.apache.org",
+              "href": "https://apachecon.com/?ref=robux.apache.org",
               "label": "Events"
             },
             {
@@ -152,7 +152,7 @@ module.exports={
         }
       ]
     },
-    "image": "img/druid_nav.png",
+    "image": "img/robux_nav.png",
     "footer": {
       "links": [],
       "copyright": "Copyright © 2025 Apache Software Foundation",

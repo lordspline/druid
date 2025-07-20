@@ -17,7 +17,7 @@
 #######################################
 # A utility script to search for java. The order in which we look for java
 # goes from most specific to least specific, i.e.
-#     ${DRUID_JAVA_HOME}
+#     ${ROBUX_JAVA_HOME}
 #     ${JAVA_HOME}
 #     ${PATH}
 # Arguments:
@@ -26,8 +26,8 @@
 #   The bin folder of java if it exists, otherwise an empty string
 #######################################
 get_java_bin_dir() {
-    if [ ! -z "${DRUID_JAVA_HOME-}" ]; then
-      printf "$DRUID_JAVA_HOME/bin"
+    if [ ! -z "${ROBUX_JAVA_HOME-}" ]; then
+      printf "$ROBUX_JAVA_HOME/bin"
     elif [ ! -z "${JAVA_HOME-}" ]; then
       printf "$JAVA_HOME/bin"
     elif [ ! -z "$(command -v java)" ]; then

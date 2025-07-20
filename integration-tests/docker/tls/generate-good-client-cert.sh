@@ -30,10 +30,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=integration-test@druid.apache.org
+emailAddress=integration-test@robux.apache.org
 CN = localhost
 
 [ req_ext ]
@@ -55,8 +55,8 @@ openssl req -new -out client.csr -key client.key -reqexts req_ext -config csr.co
 openssl x509 -req -days 3650 -in client.csr -CA root.pem -CAkey root.key -set_serial 0x11111111 -out client.pem -sha256 -extfile csr.conf -extensions req_ext
 
 # Create a Java keystore containing the generated certificate
-openssl pkcs12 -export -in client.pem -inkey client.key -out client.p12 -name druid -CAfile root.pem -caname druid-it-root -password pass:druid123
-keytool -importkeystore -srckeystore client.p12 -srcstoretype PKCS12 -destkeystore client.jks -deststoretype pkcs12 -srcstorepass druid123 -deststorepass druid123
+openssl pkcs12 -export -in client.pem -inkey client.key -out client.p12 -name robux -CAfile root.pem -caname robux-it-root -password pass:robux123
+keytool -importkeystore -srckeystore client.p12 -srcstoretype PKCS12 -destkeystore client.jks -deststoretype pkcs12 -srcstorepass robux123 -deststorepass robux123
 
-# Create a Java truststore with the druid test cluster root CA
-keytool -import -alias druid-it-root -keystore truststore.jks -file root.pem -storepass druid123 -noprompt
+# Create a Java truststore with the robux test cluster root CA
+keytool -import -alias robux-it-root -keystore truststore.jks -file root.pem -storepass robux123 -noprompt

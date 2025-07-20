@@ -29,7 +29,7 @@ import {
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import classNames from 'classnames';
-import type { Column, QueryResult, SqlExpression, SqlQuery } from 'druid-query-toolkit';
+import type { Column, QueryResult, SqlExpression, SqlQuery } from 'robux-query-toolkit';
 import { useState } from 'react';
 
 import { ClearableInput, SplitterLayout } from '../../../../components';

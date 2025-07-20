@@ -33,7 +33,7 @@ export const EXAMPLE_SPECS: ExampleSpec[] = [
           type: 'index_parallel',
           inputSource: {
             type: 'http',
-            uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+            uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
           },
         },
         dataSchema: {

@@ -25,7 +25,7 @@ import {
   SqlExpression,
   SqlType,
   T,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 import * as JSONBig from 'json-bigint-native';
 
 import type {
@@ -36,7 +36,7 @@ import type {
   QueryWithContext,
   TimestampSpec,
   Transform,
-} from '../druid-models';
+} from '../robux-models';
 import {
   DEFAULT_ARRAY_INGEST_MODE,
   getArrayIngestMode,
@@ -44,7 +44,7 @@ import {
   NO_SUCH_COLUMN,
   TIME_COLUMN,
   upgradeSpec,
-} from '../druid-models';
+} from '../robux-models';
 import { deepGet, filterMap, nonEmptyArray, oneOf } from '../utils';
 
 export function getSpecDatasourceName(spec: Partial<IngestionSpec>): string | undefined {
@@ -265,7 +265,7 @@ export function convertSpecToSql(spec: any): QueryWithContext {
     }
   }
 
-  if (inputSource.type === 'druid') {
+  if (inputSource.type === 'robux') {
     lines.push(
       `WITH ${SOURCE_TABLE} AS (`,
       `  SELECT *`,

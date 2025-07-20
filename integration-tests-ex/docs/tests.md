@@ -28,7 +28,7 @@ integration test structure. In that previous structure:
   test framework.
 * A `IntegrationTestingConfig` is created from system properties (passed in from
   Maven via `-D<key>=<value>` options).
-* A TestNG test runner uses a part of the Druid Guice configuration to inject
+* A TestNG test runner uses a part of the Robux Guice configuration to inject
   test objects into the tests.
 * The test then runs.
 
@@ -43,7 +43,7 @@ the "implementation". Basically:
   for each.
 * A cluster-specific directory contains the `docker-compose.yaml` file that defines
   that cluster. Each of these files imports from common definitions.
-* Each test is annotated with the `DruidTestRunner` to handle initialization, and
+* Each test is annotated with the `RobuxTestRunner` to handle initialization, and
   JUnit `Category` to group the test into a category.
 * Categories can share cluster configuration to reduce redundant definitions.
 * A `docker.yaml` file defines the test configuration and creates the
@@ -57,7 +57,7 @@ The remainder of this section describes the test internals.
 Due to the way the [Failsafe](
 https://maven.apache.org/surefire/maven-failsafe-plugin/integration-test-mojo.html)
 Maven plugin works, it will look for ITs with
-names of the form "IT*.java". This is the preferred form for Druid ITs. That is,
+names of the form "IT*.java". This is the preferred form for Robux ITs. That is,
 name your test "ITSomething", not "SomethingTest" or "IntegTestSomething", etc.
 Many tests are called "ITSomethingTest", but this is a bit repetitious and redundant
 since "IT" stands for "Integration Test".
@@ -95,7 +95,7 @@ cluster, runs a group of tests, and shuts down the cluster. We use the JUnit
 `Category` to identify the category for each test:
 
 ```java
-@RunWith(DruidTestRunner.class)
+@RunWith(RobuxTestRunner.class)
 @Category(BatchIndex.class)
 public class ITIndexerTest extends AbstractITBatchIndexTest
 {
@@ -116,7 +116,7 @@ Test categories may share the same cluster definition. We mark this by adding an
 annotation to the category (_not_ test) class. The test class itself:
 
 ```java
-@RunWith(DruidTestRunner.class)
+@RunWith(RobuxTestRunner.class)
 @Category(InputFormat.class)
 public class ITLocalInputSourceAllInputFormatTest extends AbstractLocalInputSourceParallelIndexTest
 {
@@ -152,10 +152,10 @@ The new names correspond to class names. The Test NG names were strings.
 
 The ITs are JUnit test, but use a special test runner to handle configuration.
 Test configuration is complex. The easiest way to configure, once the configuration
-files are set, is to use the `DruidTestRunner` class:
+files are set, is to use the `RobuxTestRunner` class:
 
 ```java
-@RunWith(DruidTestRunner.class)
+@RunWith(RobuxTestRunner.class)
 @Category(MyCategory.class)
 public class MyTest
 {
@@ -170,7 +170,7 @@ public class MyTest
 ```
 
 The test runner loads the configuration files, configures Guice, starts the
-Druid lifecycle, and injects the requested values into the class each time
+Robux lifecycle, and injects the requested values into the class each time
 a test method runs. For simple tests, this is all you need.
 
 The test runner validates that the test has a category, and handles the
@@ -178,7 +178,7 @@ above mapping from category to cluster definition.
 
 ### Parameterization
 
-The `DruidTestRunner` extends `JUnitParamsRunner` to allow parameterized tests.
+The `RobuxTestRunner` extends `JUnitParamsRunner` to allow parameterized tests.
 This class stays discretely out of the way if you don't care about parameters.
 To use parameters, see the `CalciteJoinQueryTest` class for an example.
 
@@ -192,7 +192,7 @@ be run from the command line or IDE with no additional command-line parameters.
 To do that, we use a `docker.yaml` configuration file that defines all needed
 parameters, etc.
 
-A test needs both configuration and a Guice setup. The `DruidTestRunner` ,
+A test needs both configuration and a Guice setup. The `RobuxTestRunner` ,
 along with a number ofm support classes,  mostly hide the details from the tests.
 However, you should know what's being done so you can debug.
 
@@ -200,23 +200,23 @@ However, you should know what's being done so you can debug.
   test runner. (When converting tests, remember to add the required
   annotation.)
 * JUnit calls the test class constructor one or more times per test class.
-* On the first creation of the test class, `DruidTestRunner` creates an
+* On the first creation of the test class, `RobuxTestRunner` creates an
   instance of the `Initializer` class, via its `Builder` to
   load test configuration, create the Guice injector,
   inject dependencies into the class instanance, and
-  start the Druid lifecycle.
+  start the Robux lifecycle.
 * JUnit calls one of the test methods in the class.
-* On the second creation of the test class in the same JVM, `DruidTestRunner`
+* On the second creation of the test class in the same JVM, `RobuxTestRunner`
   reuses the existing injector to inject dependencies into the test,
   which avoids the large setup overhead.
-* During the first configuration, `DruidTestRunner` causes initialization
+* During the first configuration, `RobuxTestRunner` causes initialization
   to check the health of each service prior to starting the tests.
 * The test is now configured just as it would be from TestNG, and is ready to run.
-* `DruidTestRunner` ends the lifecycle after the last test within this class runs.
+* `RobuxTestRunner` ends the lifecycle after the last test within this class runs.
 
 See [this explanation](dependencies.md) for the gory details.
 
-`DruidTestRunner` loads the basic set of Druid modules to run the basic client
+`RobuxTestRunner` loads the basic set of Robux modules to run the basic client
 code. Tests may wish to load additional modules specific to that test.
 
 ## Custom Configuration
@@ -242,7 +242,7 @@ public static void configure(Initializer.Builder builder)
 
 ### Properties
 
-Druid makes heavy use of properties to configure objects via the 'JsonConfigProvider`
+Robux makes heavy use of properties to configure objects via the 'JsonConfigProvider`
 mechanism. Integration tests don't read the usual `runtime.properties` files: there
 is no such file to read. Instead, properties are set in the test configuration
 file. There are times, however, when it makes more sense to hard-code a property
@@ -256,22 +256,22 @@ You can also bind a property to an environment variable. This value is used when
 the environment variable is set. You should also bind a default value:
 
 ```java
-  builder.property("druid.my.property", 42);
-  builder.propertyEnvVarBinding("druid.my.property", "ULTIMATE_ANSWER");
+  builder.property("robux.my.property", 42);
+  builder.propertyEnvVarBinding("robux.my.property", "ULTIMATE_ANSWER");
 ```
 
 A property can also be passed in as either a system property or an environment
 variable of the "Docker property environment variable form":
 
 ```bash
-druid_property_a=foo
+robux_property_a=foo
 ./it.sh Category test
 ```
 
 Or, directly on the command line:
 
 ```text
--Ddruid_property_b=bar
+-Drobux_property_b=bar
 ```
 
 Property precedence is:
@@ -305,44 +305,44 @@ field in your class. Otherwise, give the builder a hint:
 ## Test Operation
 
 When working with tests, it is helpful to know a bit more about the "magic"
-behind `DruidTestRunner`.
+behind `RobuxTestRunner`.
 
-Druid's code is designed to run in a server, not a client. Yet, the tests are
+Robux's code is designed to run in a server, not a client. Yet, the tests are
 clients. This means that tests want to run code in a way that it was not
 intended to be run. The existing ITs have mostly figured out how to make that
 happen, but result is not very clean. This is an opportunity for improvement.
 
-Druid introduced a set of "injector builders" to organize Guice initialization
+Robux introduced a set of "injector builders" to organize Guice initialization
 a bit. The builders normally build the full server Guice setup. For the ITs,
 the builders also allow us to pick and choose which modules to use to define
 a client. The `Initializer` class in `it-base` uses the injector builders to
 define the "client" modules needed to run tests.
 
-Druid uses the `Lifecycle` class to start and stop services. For this to work,
+Robux uses the `Lifecycle` class to start and stop services. For this to work,
 the managed instance must be created *before* the lifecycle starts. There are
 a few items that are lazy singletons. When run in the server, they work fine.
 But, when run in tests, we run into a race condition: we want to start the
 lifecycle once before the tests start, the inject dependencies into each test
 class instance as tests run. But, those injections create the insteance we want
-the lifecycle to manage, resulting in a muddle. This is why the `DruidTestRunner`
+the lifecycle to manage, resulting in a muddle. This is why the `RobuxTestRunner`
 has that odd "first test. vs. subsequent test" logic.
 
 The prior ITs would start running tests immediately. But, it can take up to a
-minute or more for a Druid cluster to stabilize as all the services start
+minute or more for a Robux cluster to stabilize as all the services start
 running simultaneously. The previous ITs would use a generic retry up to 240
 times to work around the fact that any given test could fail due to the cluster
-not being ready. This version does that startup check as part if `DruidTestRunner`.
+not being ready. This version does that startup check as part if `RobuxTestRunner`.
 By the time the tests run, the cluster is up and has reported itself healthy.
 That is, your tests can assume a healthy cluster. If a test fails: it indicates
 an actual error or race condition.
 
 Specifically, if tests still randomly fail, those tests are telling you something: something
-in Druid itself is non-deterministic (such as the delay to see changes to the DB, etc.),
+in Robux itself is non-deterministic (such as the delay to see changes to the DB, etc.),
 or the tests are making invalid assumptions such as assuming an ordering when there
 is none, using a time delay to try to synchronize actions when there should be
 some specific synchronization, etc. This means that, in general, you should avoid
 the use of the generic retry facility: if you have to retry to get your tests to
-work, then the Druid user has to also retry. Unless we document the need to retry
+work, then the Robux user has to also retry. Unless we document the need to retry
 in the API documentation, then having to retry should be considered a bug to be fixed
 (perhaps by documenting the need to retry, perhaps by fixing a bug, perhaps by adding
 a synchronization API.)
@@ -378,7 +378,7 @@ The various [config files](test-config.md) provide configurations for
 the Docker, K8s and local cluster cases. This means that `resolveProxyHost()`
 will resolve to the proxy for Docker, but the actual host for a local cluster.
 
-The original test setup was designed before Druid introduced the router.
+The original test setup was designed before Robux introduced the router.
 A good future improvement is to modify the code to use the router to do the
 routing rather than doing it "by hand" in the tests. This means that each
 test would use the router port and router API for things like the Overlord
@@ -392,7 +392,7 @@ implement client-side service lookup.
 
 ## `ClusterClient`
 
-The integration tests make many REST calls to the Druid cluster. The tests
+The integration tests make many REST calls to the Robux cluster. The tests
 contain much copy/paste code to make these calls. The `ClusterClient` class
 is intended to gather up these calls so we have a single implementation
 rather than many copies. Add methods as needed for additional APIs.
@@ -402,10 +402,10 @@ The cluster client is "test aware": it uses the information in
 JSON deserialization, so tests can focus simply on making a call and
 checking the results.
 
-## `org.apache.druid.testing.clients`
+## `org.apache.robux.testing.clients`
 
 This package in `integration-tests` has clients for most other parts of
-Druid. For example, `CoordinatorResourceTestClient` is a
+Robux. For example, `CoordinatorResourceTestClient` is a
 client for Coordinator calls. These clients are also aware of the test
 configuration, by way of the `IntegrationTestingConfig` class, an
 instance of which is created to read from `ResolvedClusterConfig`.

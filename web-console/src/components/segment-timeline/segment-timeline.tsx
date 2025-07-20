@@ -31,10 +31,10 @@ import { DateRangePicker3 } from '@blueprintjs/datetime2';
 import { IconNames } from '@blueprintjs/icons';
 import { Select } from '@blueprintjs/select';
 import { day, Duration, Timezone } from 'chronoshift';
-import { C, L, N, SqlExpression, SqlQuery } from 'druid-query-toolkit';
+import { C, L, N, SqlExpression, SqlQuery } from 'robux-query-toolkit';
 import { useEffect, useMemo, useState } from 'react';
 
-import { END_OF_TIME_DATE, START_OF_TIME_DATE } from '../../druid-models';
+import { END_OF_TIME_DATE, START_OF_TIME_DATE } from '../../robux-models';
 import type { Capabilities } from '../../helpers';
 import { useQueryManager } from '../../hooks';
 import {
@@ -43,7 +43,7 @@ import {
   isNonNullRange,
   localToUtcDateRange,
   maxDate,
-  queryDruidSql,
+  queryRobuxSql,
   Stage,
   utcToLocalDateRange,
 } from '../../utils';
@@ -99,7 +99,7 @@ export const SegmentTimeline = function SegmentTimeline(props: SegmentTimelinePr
     initQuery: capabilities,
     processQuery: async (capabilities, cancelToken) => {
       if (capabilities.hasSql()) {
-        const tables = await queryDruidSql<{ TABLE_NAME: string }>(
+        const tables = await queryRobuxSql<{ TABLE_NAME: string }>(
           {
             query: `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'TABLE'`,
           },
@@ -108,7 +108,7 @@ export const SegmentTimeline = function SegmentTimeline(props: SegmentTimelinePr
 
         return tables.map(d => d.TABLE_NAME);
       } else {
-        return await getApiArray(`/druid/coordinator/v1/datasources`, cancelToken);
+        return await getApiArray(`/robux/coordinator/v1/datasources`, cancelToken);
       }
     },
   });
@@ -134,7 +134,7 @@ export const SegmentTimeline = function SegmentTimeline(props: SegmentTimelinePr
           .addSelect(C('end'), { addToOrderBy: 'end', direction: 'DESC' })
           .toString();
 
-        const endRes = await queryDruidSql<{ end: string }>({ query: endQuery }, cancelToken).catch(
+        const endRes = await queryRobuxSql<{ end: string }>({ query: endQuery }, cancelToken).catch(
           () => [],
         );
         if (endRes.length !== 1) {
@@ -147,7 +147,7 @@ export const SegmentTimeline = function SegmentTimeline(props: SegmentTimelinePr
           .addSelect(C('start'), { addToOrderBy: 'end', direction: 'ASC' })
           .toString();
 
-        const startRes = await queryDruidSql<{ start: string }>(
+        const startRes = await queryRobuxSql<{ start: string }>(
           { query: startQuery },
           cancelToken,
         ).catch(() => []);

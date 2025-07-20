@@ -22,13 +22,13 @@ import type { RowRenderProps } from 'react-table';
 import ReactTable from 'react-table';
 
 import { TableCell, TableCellUnparseable } from '../../../components';
-import type { IngestionSpec, TimestampSpec } from '../../../druid-models';
+import type { IngestionSpec, TimestampSpec } from '../../../robux-models';
 import {
   getTimestampDetailFromSpec,
   getTimestampSpecColumnFromSpec,
-  possibleDruidFormatForValues,
+  possibleRobuxFormatForValues,
   TIME_COLUMN,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import {
   DEFAULT_TABLE_CLASS_NAME,
   STANDARD_TABLE_PAGE_SIZE,
@@ -92,7 +92,7 @@ export const ParseTimeTable = React.memo(function ParseTimeTable(props: ParseTim
         const used = timestampSpecColumn === columnName;
         const possibleFormat = isTimestamp
           ? null
-          : possibleDruidFormatForValues(
+          : possibleRobuxFormatForValues(
               filterMap(sampleResponse.data, d => (d.parsed ? d.parsed[columnName] : undefined)),
             );
         if (possibleTimestampColumnsOnly && !isTimestamp && !possibleFormat) return;

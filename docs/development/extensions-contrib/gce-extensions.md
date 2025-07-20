@@ -23,9 +23,9 @@ title: "GCE Extensions"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `gce-extensions` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `gce-extensions` in the extensions load list.
 
-At the moment, this extension enables only Druid to autoscale instances in GCE.
+At the moment, this extension enables only Robux to autoscale instances in GCE.
 
 The extension manages the instances to be scaled up and down through the use of the [Managed Instance Groups](https://cloud.google.com/compute/docs/instance-groups/creating-groups-of-managed-instances#resize_managed_group)
 of GCE (MIG from now on). This choice has been made to ease the configuration of the machines and simplify their
@@ -47,15 +47,15 @@ The Overlord can dynamically change worker behavior.
 The JSON object can be submitted to the Overlord via a POST request at:
 
 ```
-http://<OVERLORD_IP>:<port>/druid/indexer/v1/worker
+http://<OVERLORD_IP>:<port>/robux/indexer/v1/worker
 ```
 
 Optional Header Parameters for auditing the config change can also be specified.
 
 |Header Param Name| Description | Default |
 |----------|-------------|---------|
-|`X-Druid-Author`| author making the config change|""|
-|`X-Druid-Comment`| comment describing the change being done|""|
+|`X-Robux-Author`| author making the config change|""|
+|`X-Robux-Comment`| comment describing the change being done|""|
 
 A sample worker config spec is shown below:
 
@@ -66,7 +66,7 @@ A sample worker config spec is shown below:
       "numInstances" : 1,
       "projectId" : "super-project",
       "zoneName" : "us-central-1",
-      "managedInstanceGroupName" : "druid-middlemanagers"
+      "managedInstanceGroupName" : "robux-middlemanagers"
     },
     "maxNumWorkers" : 4,
     "minNumWorkers" : 2,

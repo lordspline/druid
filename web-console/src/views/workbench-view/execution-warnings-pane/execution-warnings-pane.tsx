@@ -18,7 +18,7 @@
 
 import React from 'react';
 
-import type { Execution } from '../../../druid-models';
+import type { Execution } from '../../../robux-models';
 
 import { WarningCallout } from './warning-callout';
 

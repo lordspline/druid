@@ -26,15 +26,15 @@ class Template(BaseTemplate):
 # GOOGLE_BUCKET
 # GOOGLE_PREFIX
 # GOOGLE_APPLICATION_CREDENTIALS - must point to a file that holds the Google
-#   credentials. Mounted into each Druid container.
+#   credentials. Mounted into each Robux container.
 
 ''')
 
-    def extend_druid_service(self, service):
-        self.add_env(service, 'druid_test_loadList', 'druid-google-extensions')
-        self.add_property(service, 'druid.storage.type', 'google')
-        self.add_property(service, 'druid.google.bucket', '${GOOGLE_BUCKET}')
-        self.add_property(service, 'druid.google.prefix', '${GOOGLE_PREFIX}')
+    def extend_robux_service(self, service):
+        self.add_env(service, 'robux_test_loadList', 'robux-google-extensions')
+        self.add_property(service, 'robux.storage.type', 'google')
+        self.add_property(service, 'robux.google.bucket', '${GOOGLE_BUCKET}')
+        self.add_property(service, 'robux.google.prefix', '${GOOGLE_PREFIX}')
         self.add_env(service, 'GOOGLE_APPLICATION_CREDENTIALS', '/resources/credentials.json')
         self.add_volume(service, '${GOOGLE_APPLICATION_CREDENTIALS}', '/resources/credentials.json')
 

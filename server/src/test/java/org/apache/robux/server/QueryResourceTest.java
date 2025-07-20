@@ -1,0 +1,1810 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.server;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.smile.SmileMediaTypes;
+import com.google.common.base.Suppliers;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import org.apache.robux.error.RobuxException;
+import org.apache.robux.error.RobuxExceptionMatcher;
+import org.apache.robux.error.ErrorResponse;
+import org.apache.robux.guice.GuiceInjectors;
+import org.apache.robux.guice.annotations.Smile;
+import org.apache.robux.jackson.DefaultObjectMapper;
+import org.apache.robux.java.util.common.Intervals;
+import org.apache.robux.java.util.common.concurrent.Execs;
+import org.apache.robux.java.util.common.guava.Accumulator;
+import org.apache.robux.java.util.common.guava.BaseSequence;
+import org.apache.robux.java.util.common.guava.LazySequence;
+import org.apache.robux.java.util.common.guava.Sequence;
+import org.apache.robux.java.util.common.guava.Sequences;
+import org.apache.robux.java.util.common.guava.Yielder;
+import org.apache.robux.java.util.common.guava.Yielders;
+import org.apache.robux.java.util.common.guava.YieldingAccumulator;
+import org.apache.robux.java.util.emitter.EmittingLogger;
+import org.apache.robux.java.util.emitter.service.ServiceEmitter;
+import org.apache.robux.query.BadJsonQueryException;
+import org.apache.robux.query.DefaultGenericQueryMetricsFactory;
+import org.apache.robux.query.DefaultQueryConfig;
+import org.apache.robux.query.DefaultQueryRunnerFactoryConglomerate;
+import org.apache.robux.query.Query;
+import org.apache.robux.query.QueryCapacityExceededException;
+import org.apache.robux.query.QueryException;
+import org.apache.robux.query.QueryInterruptedException;
+import org.apache.robux.query.QueryRunner;
+import org.apache.robux.query.QuerySegmentWalker;
+import org.apache.robux.query.QueryTimeoutException;
+import org.apache.robux.query.QueryUnsupportedException;
+import org.apache.robux.query.ResourceLimitExceededException;
+import org.apache.robux.query.Result;
+import org.apache.robux.query.SegmentDescriptor;
+import org.apache.robux.query.TruncatedResponseContextException;
+import org.apache.robux.query.filter.NullFilter;
+import org.apache.robux.query.policy.NoopPolicyEnforcer;
+import org.apache.robux.query.policy.RowFilterPolicy;
+import org.apache.robux.query.timeboundary.TimeBoundaryResultValue;
+import org.apache.robux.server.initialization.ServerConfig;
+import org.apache.robux.server.log.TestRequestLogger;
+import org.apache.robux.server.metrics.NoopServiceEmitter;
+import org.apache.robux.server.mocks.ExceptionalInputStream;
+import org.apache.robux.server.mocks.MockAsyncContext;
+import org.apache.robux.server.mocks.MockHttpServletRequest;
+import org.apache.robux.server.mocks.MockHttpServletResponse;
+import org.apache.robux.server.scheduling.HiLoQueryLaningStrategy;
+import org.apache.robux.server.scheduling.ManualQueryPrioritizationStrategy;
+import org.apache.robux.server.scheduling.NoQueryLaningStrategy;
+import org.apache.robux.server.scheduling.ThresholdBasedQueryPrioritizationStrategy;
+import org.apache.robux.server.security.Access;
+import org.apache.robux.server.security.Action;
+import org.apache.robux.server.security.AuthConfig;
+import org.apache.robux.server.security.AuthTestUtils;
+import org.apache.robux.server.security.AuthenticationResult;
+import org.apache.robux.server.security.Authorizer;
+import org.apache.robux.server.security.AuthorizerMapper;
+import org.apache.robux.server.security.ForbiddenException;
+import org.apache.robux.server.security.Resource;
+import org.apache.http.HttpStatus;
+import org.easymock.EasyMock;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.server.HttpOutput;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.joda.time.Interval;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.internal.matchers.ThrowableMessageMatcher;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+public class QueryResourceTest
+{
+  private static final DefaultQueryRunnerFactoryConglomerate CONGLOMERATE = DefaultQueryRunnerFactoryConglomerate.buildFromQueryRunnerFactories(
+      ImmutableMap.of());
+  private static final AuthenticationResult AUTHENTICATION_RESULT =
+      new AuthenticationResult("robux", "robux", null, null);
+
+  private final MockHttpServletRequest testServletRequest = new MockHttpServletRequest();
+
+  private static final QuerySegmentWalker TEST_SEGMENT_WALKER = new QuerySegmentWalker()
+  {
+    @Override
+    public <T> QueryRunner<T> getQueryRunnerForIntervals(Query<T> query, Iterable<Interval> intervals)
+    {
+      return (queryPlus, responseContext) -> Sequences.empty();
+    }
+
+    @Override
+    public <T> QueryRunner<T> getQueryRunnerForSegments(Query<T> query, Iterable<SegmentDescriptor> specs)
+    {
+      return getQueryRunnerForIntervals(null, null);
+    }
+  };
+
+  private static final String SIMPLE_TIMESERIES_QUERY =
+      "{\n"
+      + "    \"queryType\": \"timeseries\",\n"
+      + "    \"dataSource\": \"mmx_metrics\",\n"
+      + "    \"granularity\": \"hour\",\n"
+      + "    \"intervals\": [\n"
+      + "      \"2014-12-17/2015-12-30\"\n"
+      + "    ],\n"
+      + "    \"aggregations\": [\n"
+      + "      {\n"
+      + "        \"type\": \"count\",\n"
+      + "        \"name\": \"rows\"\n"
+      + "      }\n"
+      + "    ]\n"
+      + "}";
+
+  private static final String SIMPLE_TIMESERIES_QUERY_SMALLISH_INTERVAL =
+      "{\n"
+      + "    \"queryType\": \"timeseries\",\n"
+      + "    \"dataSource\": \"mmx_metrics\",\n"
+      + "    \"granularity\": \"hour\",\n"
+      + "    \"intervals\": [\n"
+      + "      \"2014-12-17/2014-12-30\"\n"
+      + "    ],\n"
+      + "    \"aggregations\": [\n"
+      + "      {\n"
+      + "        \"type\": \"count\",\n"
+      + "        \"name\": \"rows\"\n"
+      + "      }\n"
+      + "    ]\n"
+      + "}";
+
+  private static final String SIMPLE_TIMESERIES_QUERY_LOW_PRIORITY =
+      "{\n"
+      + "    \"queryType\": \"timeseries\",\n"
+      + "    \"dataSource\": \"mmx_metrics\",\n"
+      + "    \"granularity\": \"hour\",\n"
+      + "    \"intervals\": [\n"
+      + "      \"2014-12-17/2015-12-30\"\n"
+      + "    ],\n"
+      + "    \"aggregations\": [\n"
+      + "      {\n"
+      + "        \"type\": \"count\",\n"
+      + "        \"name\": \"rows\"\n"
+      + "      }\n"
+      + "    ],\n"
+      + "    \"context\": { \"priority\": -1 }"
+      + "}";
+
+
+  private static final ServiceEmitter NOOP_SERVICE_EMITTER = new NoopServiceEmitter();
+  private static final RobuxNode ROBUX_NODE = new RobuxNode(
+      "broker",
+      "localhost",
+      true,
+      8082,
+      null,
+      true,
+      false
+  );
+
+  private ObjectMapper jsonMapper;
+  private ObjectMapper smileMapper;
+  private QueryResource queryResource;
+  private QueryScheduler queryScheduler;
+  private TestRequestLogger testRequestLogger;
+
+  @BeforeClass
+  public static void staticSetup()
+  {
+    EmittingLogger.registerEmitter(NOOP_SERVICE_EMITTER);
+  }
+
+  @Before
+  public void setup()
+  {
+    Injector injector = GuiceInjectors.makeStartupInjector();
+    jsonMapper = injector.getInstance(ObjectMapper.class);
+    smileMapper = injector.getInstance(Key.get(ObjectMapper.class, Smile.class));
+
+    testServletRequest.contentType = MediaType.APPLICATION_JSON;
+    testServletRequest.headers.put("Accept", MediaType.APPLICATION_JSON);
+    testServletRequest.remoteAddr = "localhost";
+
+    queryScheduler = QueryStackTests.DEFAULT_NOOP_SCHEDULER;
+    testRequestLogger = new TestRequestLogger();
+    queryResource = createQueryResource(ResponseContextConfig.newConfig(true));
+  }
+
+  private QueryResource createQueryResource(ResponseContextConfig responseContextConfig)
+  {
+    return new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            responseContextConfig,
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+  }
+
+  @Test
+  public void testGoodQuery() throws IOException
+  {
+    expectPermissiveHappyPathAuth();
+
+    Assert.assertEquals(200, expectAsyncRequestFlow(SIMPLE_TIMESERIES_QUERY).getStatus());
+  }
+
+  @Test
+  public void testGoodQueryWithQueryConfigOverrideDefault() throws IOException
+  {
+    final String overrideConfigKey = "priority";
+    final String overrideConfigValue = "678";
+    DefaultQueryConfig overrideConfig = new DefaultQueryConfig(ImmutableMap.of(overrideConfigKey, overrideConfigValue));
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(overrideConfig)
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(SIMPLE_TIMESERIES_QUERY);
+    Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    final List<Result<TimeBoundaryResultValue>> responses = jsonMapper.readValue(
+        response.baos.toByteArray(),
+        new TypeReference<>()
+        {
+        }
+    );
+
+    Assert.assertEquals(0, responses.size());
+    Assert.assertEquals(1, testRequestLogger.getNativeQuerylogs().size());
+    Assert.assertNotNull(testRequestLogger.getNativeQuerylogs().get(0).getQuery());
+    Assert.assertNotNull(testRequestLogger.getNativeQuerylogs().get(0).getQuery().getContext());
+    Assert.assertTrue(testRequestLogger.getNativeQuerylogs()
+                                       .get(0)
+                                       .getQuery()
+                                       .getContext()
+                                       .containsKey(overrideConfigKey));
+    Assert.assertEquals(
+        overrideConfigValue,
+        testRequestLogger.getNativeQuerylogs().get(0).getQuery().getContext().get(overrideConfigKey)
+    );
+  }
+
+  @Test
+  public void testGoodQueryThrowsRobuxExceptionFromLifecycleExecute() throws IOException
+  {
+    String overrideConfigKey = "priority";
+    String overrideConfigValue = "678";
+    DefaultQueryConfig overrideConfig = new DefaultQueryConfig(ImmutableMap.of(overrideConfigKey, overrideConfigValue));
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            new QuerySegmentWalker()
+            {
+              @Override
+              public <T> QueryRunner<T> getQueryRunnerForIntervals(
+                  Query<T> query,
+                  Iterable<Interval> intervals
+              )
+              {
+                throw RobuxException.forPersona(RobuxException.Persona.OPERATOR)
+                                    .ofCategory(RobuxException.Category.RUNTIME_FAILURE)
+                                    .build("failing for coverage!");
+              }
+
+              @Override
+              public <T> QueryRunner<T> getQueryRunnerForSegments(
+                  Query<T> query,
+                  Iterable<SegmentDescriptor> specs
+              )
+              {
+                throw new UnsupportedOperationException();
+              }
+            },
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(overrideConfig)
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    final Response response = expectSynchronousRequestFlow(SIMPLE_TIMESERIES_QUERY);
+    Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+
+    final ErrorResponse entity = (ErrorResponse) response.getEntity();
+    MatcherAssert.assertThat(
+        entity.getUnderlyingException(),
+        new RobuxExceptionMatcher(RobuxException.Persona.OPERATOR, RobuxException.Category.RUNTIME_FAILURE, "general")
+            .expectMessageIs("failing for coverage!")
+    );
+
+    Assert.assertEquals(1, testRequestLogger.getNativeQuerylogs().size());
+    Assert.assertNotNull(testRequestLogger.getNativeQuerylogs().get(0).getQuery());
+    Assert.assertNotNull(testRequestLogger.getNativeQuerylogs().get(0).getQuery().getContext());
+    Assert.assertTrue(testRequestLogger.getNativeQuerylogs()
+                                       .get(0)
+                                       .getQuery()
+                                       .getContext()
+                                       .containsKey(overrideConfigKey));
+    Assert.assertEquals(
+        overrideConfigValue,
+        testRequestLogger.getNativeQuerylogs().get(0).getQuery().getContext().get(overrideConfigKey)
+    );
+  }
+
+  @Test
+  public void testResponseWithIncludeTrailerHeader() throws IOException
+  {
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            new QuerySegmentWalker()
+            {
+              @Override
+              public <T> QueryRunner<T> getQueryRunnerForIntervals(
+                  Query<T> query,
+                  Iterable<Interval> intervals
+              )
+              {
+                return (queryPlus, responseContext) -> new Sequence<T>()
+                {
+                  @Override
+                  public <OutType> OutType accumulate(OutType initValue, Accumulator<OutType, T> accumulator)
+                  {
+                    if (accumulator instanceof QueryResultPusher.StreamingHttpResponseAccumulator) {
+                      try {
+                        ((QueryResultPusher.StreamingHttpResponseAccumulator) accumulator).flush(); // initialized
+                      }
+                      catch (IOException ignore) {
+                      }
+                    }
+
+                    throw new QueryTimeoutException();
+                  }
+
+                  @Override
+                  public <OutType> Yielder<OutType> toYielder(
+                      OutType initValue,
+                      YieldingAccumulator<OutType, T> accumulator
+                  )
+                  {
+                    return Yielders.done(initValue, null);
+                  }
+                };
+              }
+
+              @Override
+              public <T> QueryRunner<T> getQueryRunnerForSegments(
+                  Query<T> query,
+                  Iterable<SegmentDescriptor> specs
+              )
+              {
+                throw new UnsupportedOperationException();
+              }
+            },
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(jsonMapper, smileMapper)
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    org.eclipse.jetty.server.Response response = this.jettyResponseforRequest(testServletRequest);
+    Assert.assertNull(queryResource.doPost(new ByteArrayInputStream(
+                                               SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8)),
+                                           null /*pretty*/,
+                                           testServletRequest
+    ));
+    Assert.assertTrue(response.containsHeader(HttpHeader.TRAILER.toString()));
+    Assert.assertEquals(response.getHeader(HttpHeader.TRAILER.toString()), QueryResultPusher.RESULT_TRAILER_HEADERS);
+
+    final HttpFields fields = response.getTrailers().get();
+    Assert.assertTrue(fields.containsKey(QueryResource.ERROR_MESSAGE_TRAILER_HEADER));
+    Assert.assertEquals(
+        fields.get(QueryResource.ERROR_MESSAGE_TRAILER_HEADER),
+        "Query did not complete within configured timeout period. You can increase query timeout or tune the performance of query."
+    );
+
+    Assert.assertTrue(fields.containsKey(QueryResource.RESPONSE_COMPLETE_TRAILER_HEADER));
+    Assert.assertEquals(fields.get(QueryResource.RESPONSE_COMPLETE_TRAILER_HEADER), "false");
+  }
+
+  @Test
+  public void testSuccessResponseWithTrailerHeader() throws IOException
+  {
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(jsonMapper, smileMapper)
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    org.eclipse.jetty.server.Response response = this.jettyResponseforRequest(testServletRequest);
+    Assert.assertNull(queryResource.doPost(new ByteArrayInputStream(
+                                               SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8)),
+                                           null /*pretty*/,
+                                           testServletRequest
+    ));
+    Assert.assertTrue(response.containsHeader(HttpHeader.TRAILER.toString()));
+
+    final HttpFields fields = response.getTrailers().get();
+    Assert.assertFalse(fields.containsKey(QueryResource.ERROR_MESSAGE_TRAILER_HEADER));
+
+    Assert.assertTrue(fields.containsKey(QueryResource.RESPONSE_COMPLETE_TRAILER_HEADER));
+    Assert.assertEquals(fields.get(QueryResource.RESPONSE_COMPLETE_TRAILER_HEADER), "true");
+  }
+
+  @Test
+  public void testResponseContextContainsMissingSegments_whenLastSegmentIsMissing() throws IOException
+  {
+    final SegmentDescriptor missingSegDesc = new SegmentDescriptor(
+        Intervals.of("2025-01-01/P1D"), "0", 1
+    );
+
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            new QuerySegmentWalker()
+            {
+              @Override
+              public <T> QueryRunner<T> getQueryRunnerForIntervals(Query<T> query, Iterable<Interval> intervals)
+              {
+                return (queryPlus, responseContext) -> new BaseSequence<>(
+                    new BaseSequence.IteratorMaker<T, Iterator<T>>() {
+                      @Override
+                      public Iterator<T> make()
+                      {
+                        List<T> data = Collections.singletonList((T) ImmutableMap.of("dummy", 1));
+                        Iterator<T> realIterator = data.iterator();
+
+                        return new Iterator<T>() {
+                          private boolean done = false;
+
+                          @Override
+                          public boolean hasNext()
+                          {
+                            if (realIterator.hasNext()) {
+                              return true;
+                            } else if (!done) {
+                              // Simulate a segment failure in the end after initialize() has run
+                              responseContext.addMissingSegments(ImmutableList.of(missingSegDesc));
+                              done = true;
+                            }
+                            return false;
+                          }
+
+                          @Override
+                          public T next()
+                          {
+                            return realIterator.next();
+                          }
+                        };
+                      }
+
+                      @Override
+                      public void cleanup(Iterator<T> iterFromMake)
+                      {
+                      }
+                    }
+                );
+              }
+
+              @Override
+              public <T> QueryRunner<T> getQueryRunnerForSegments(Query<T> query, Iterable<SegmentDescriptor> specs)
+              {
+                throw new UnsupportedOperationException();
+              }
+            },
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    org.eclipse.jetty.server.Response response = this.jettyResponseforRequest(testServletRequest);
+
+    // Execute the query
+    Assert.assertNull(queryResource.doPost(
+        new ByteArrayInputStream(SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8)),
+        null,
+        testServletRequest
+    ));
+
+
+    Assert.assertTrue(response.containsHeader(HttpHeader.TRAILER.toString()));
+    Assert.assertEquals(QueryResultPusher.RESULT_TRAILER_HEADERS, response.getHeader(HttpHeader.TRAILER.toString()));
+
+    final HttpFields observedFields = response.getTrailers().get();
+
+    Assert.assertTrue(response.containsHeader(QueryResource.HEADER_RESPONSE_CONTEXT));
+    Assert.assertEquals(
+        jsonMapper.writeValueAsString(ImmutableMap.of("missingSegments", ImmutableList.of(missingSegDesc))),
+        response.getHeader(QueryResource.HEADER_RESPONSE_CONTEXT)
+    );
+
+    Assert.assertTrue(observedFields.containsKey(QueryResource.RESPONSE_COMPLETE_TRAILER_HEADER));
+    Assert.assertEquals("true", observedFields.get(QueryResource.RESPONSE_COMPLETE_TRAILER_HEADER));
+  }
+
+
+  @Test
+  public void testQueryThrowsRuntimeExceptionFromLifecycleExecute() throws IOException
+  {
+    String embeddedExceptionMessage = "Embedded Exception Message!";
+    String overrideConfigKey = "priority";
+    String overrideConfigValue = "678";
+
+    DefaultQueryConfig overrideConfig = new DefaultQueryConfig(ImmutableMap.of(overrideConfigKey, overrideConfigValue));
+    QuerySegmentWalker querySegmentWalker = new QuerySegmentWalker()
+    {
+      @Override
+      public <T> QueryRunner<T> getQueryRunnerForIntervals(
+          Query<T> query,
+          Iterable<Interval> intervals
+      )
+      {
+        throw new RuntimeException("something", new RuntimeException(embeddedExceptionMessage));
+      }
+
+      @Override
+      public <T> QueryRunner<T> getQueryRunnerForSegments(
+          Query<T> query,
+          Iterable<SegmentDescriptor> specs
+      )
+      {
+        throw new UnsupportedOperationException();
+      }
+    };
+
+    queryResource = new QueryResource(
+
+        new QueryLifecycleFactory(null, null, null, null, null, null, NoopPolicyEnforcer.instance(), null, Suppliers.ofInstance(overrideConfig))
+        {
+          @Override
+          public QueryLifecycle factorize()
+          {
+            return new QueryLifecycle(
+                CONGLOMERATE,
+                querySegmentWalker,
+                new DefaultGenericQueryMetricsFactory(),
+                new NoopServiceEmitter(),
+                testRequestLogger,
+                AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+                overrideConfig,
+                new AuthConfig(),
+                NoopPolicyEnforcer.instance(),
+                System.currentTimeMillis(),
+                System.nanoTime()
+            )
+            {
+              @Override
+              public void emitLogsAndMetrics(@Nullable Throwable e, @Nullable String remoteAddress, long bytesWritten)
+              {
+                Assert.assertTrue(Throwables.getStackTraceAsString(e).contains(embeddedExceptionMessage));
+              }
+            };
+          }
+        },
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    final Response response = expectSynchronousRequestFlow(SIMPLE_TIMESERIES_QUERY);
+    Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+
+    final ErrorResponse entity = (ErrorResponse) response.getEntity();
+    MatcherAssert.assertThat(
+        entity.getUnderlyingException(),
+        new RobuxExceptionMatcher(
+            RobuxException.Persona.OPERATOR,
+            RobuxException.Category.RUNTIME_FAILURE, "legacyQueryException"
+        )
+            .expectMessageIs("something")
+    );
+  }
+
+  @Test
+  public void testGoodQueryWithQueryConfigDoesNotOverrideQueryContext() throws IOException
+  {
+    String overrideConfigKey = "priority";
+    String overrideConfigValue = "678";
+    DefaultQueryConfig overrideConfig = new DefaultQueryConfig(ImmutableMap.of(overrideConfigKey, overrideConfigValue));
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(overrideConfig)
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    expectPermissiveHappyPathAuth();
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(SIMPLE_TIMESERIES_QUERY_LOW_PRIORITY);
+
+    final List<Result<TimeBoundaryResultValue>> responses = jsonMapper.readValue(
+        response.baos.toByteArray(),
+        new TypeReference<>()
+        {
+        }
+    );
+
+    Assert.assertNotNull(response);
+    Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    Assert.assertEquals(0, responses.size());
+    Assert.assertEquals(1, testRequestLogger.getNativeQuerylogs().size());
+    Assert.assertNotNull(testRequestLogger.getNativeQuerylogs().get(0).getQuery());
+    Assert.assertNotNull(testRequestLogger.getNativeQuerylogs().get(0).getQuery().getContext());
+    Assert.assertTrue(testRequestLogger.getNativeQuerylogs()
+                                       .get(0)
+                                       .getQuery()
+                                       .getContext()
+                                       .containsKey(overrideConfigKey));
+    Assert.assertEquals(
+        -1,
+        testRequestLogger.getNativeQuerylogs().get(0).getQuery().getContext().get(overrideConfigKey)
+    );
+  }
+
+  @Test
+  public void testTruncatedResponseContextShouldFail() throws IOException
+  {
+    expectPermissiveHappyPathAuth();
+
+    final QueryResource queryResource = createQueryResource(ResponseContextConfig.forTest(true, 0));
+
+    MockHttpServletResponse response = expectAsyncRequestFlow(
+        testServletRequest,
+        SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8),
+        queryResource
+    );
+    Assert.assertEquals(1, queryResource.getInterruptedQueryCount());
+    Assert.assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, response.getStatus());
+    final String expectedException = new QueryInterruptedException(
+        new TruncatedResponseContextException("Serialized response context exceeds the max size[0]"),
+        ROBUX_NODE.getHostAndPortToUse()
+    ).toString();
+    Assert.assertEquals(
+        expectedException,
+        jsonMapper.readValue(response.baos.toByteArray(), QueryInterruptedException.class).toString()
+    );
+  }
+
+  @Test
+  public void testTruncatedResponseContextShouldSucceed() throws IOException
+  {
+    expectPermissiveHappyPathAuth();
+    final QueryResource queryResource = createQueryResource(ResponseContextConfig.forTest(false, 0));
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(
+        testServletRequest,
+        SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8),
+        queryResource
+    );
+    Assert.assertEquals(HttpStatus.SC_OK, response.getStatus());
+  }
+
+  @Test
+  public void testGoodQueryWithNullAcceptHeader() throws IOException
+  {
+    testServletRequest.headers.remove("Accept");
+    expectPermissiveHappyPathAuth();
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(SIMPLE_TIMESERIES_QUERY);
+    Assert.assertEquals(HttpStatus.SC_OK, response.getStatus());
+    //since accept header is null, the response content type should be same as the value of 'Content-Type' header
+    Assert.assertEquals(MediaType.APPLICATION_JSON, response.getContentType());
+  }
+
+  @Test
+  public void testGoodQueryWithEmptyAcceptHeader() throws IOException
+  {
+    expectPermissiveHappyPathAuth();
+    testServletRequest.headers.put("Accept", "");
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(SIMPLE_TIMESERIES_QUERY);
+
+    Assert.assertEquals(HttpStatus.SC_OK, response.getStatus());
+    //since accept header is empty, the response content type should be same as the value of 'Content-Type' header
+    Assert.assertEquals(MediaType.APPLICATION_JSON, response.getContentType());
+  }
+
+  @Test
+  public void testGoodQueryWithJsonRequestAndSmileAcceptHeader() throws IOException
+  {
+    expectPermissiveHappyPathAuth();
+
+    // Set Accept to Smile
+    testServletRequest.headers.put("Accept", SmileMediaTypes.APPLICATION_JACKSON_SMILE);
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(SIMPLE_TIMESERIES_QUERY);
+    Assert.assertEquals(HttpStatus.SC_OK, response.getStatus());
+
+    // Content-Type in response should be Smile
+    Assert.assertEquals(SmileMediaTypes.APPLICATION_JACKSON_SMILE, response.getContentType());
+  }
+
+  @Test
+  public void testGoodQueryWithSmileRequestAndSmileAcceptHeader() throws IOException
+  {
+    testServletRequest.contentType = SmileMediaTypes.APPLICATION_JACKSON_SMILE;
+    expectPermissiveHappyPathAuth();
+
+    // Set Accept to Smile
+    testServletRequest.headers.put("Accept", SmileMediaTypes.APPLICATION_JACKSON_SMILE);
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(
+        testServletRequest,
+        smileMapper.writeValueAsBytes(jsonMapper.readTree(
+            SIMPLE_TIMESERIES_QUERY))
+    );
+    Assert.assertEquals(HttpStatus.SC_OK, response.getStatus());
+
+    // Content-Type in response should be Smile
+    Assert.assertEquals(SmileMediaTypes.APPLICATION_JACKSON_SMILE, response.getContentType());
+  }
+
+  @Test
+  public void testGoodQueryWithSmileRequestNoSmileAcceptHeader() throws IOException
+  {
+    testServletRequest.contentType = SmileMediaTypes.APPLICATION_JACKSON_SMILE;
+    expectPermissiveHappyPathAuth();
+
+    // DO NOT set Accept to Smile, Content-Type in response will be default to Content-Type in request
+    testServletRequest.headers.remove("Accept");
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(
+        testServletRequest,
+        smileMapper.writeValueAsBytes(jsonMapper.readTree(SIMPLE_TIMESERIES_QUERY))
+    );
+    Assert.assertEquals(HttpStatus.SC_OK, response.getStatus());
+
+    // Content-Type in response should default to Content-Type from request
+    Assert.assertEquals(SmileMediaTypes.APPLICATION_JACKSON_SMILE, response.getContentType());
+  }
+
+  @Test
+  public void testBadQuery() throws IOException
+  {
+    Response response = queryResource.doPost(
+        new ByteArrayInputStream("Meka Leka Hi Meka Hiney Ho".getBytes(StandardCharsets.UTF_8)),
+        null /*pretty*/,
+        testServletRequest
+    );
+    Assert.assertNotNull(response);
+    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    QueryException e = jsonMapper.readValue((byte[]) response.getEntity(), QueryException.class);
+    Assert.assertEquals(QueryException.JSON_PARSE_ERROR_CODE, e.getErrorCode());
+    Assert.assertEquals(BadJsonQueryException.ERROR_CLASS, e.getErrorClass());
+  }
+
+  @Test
+  public void testResourceLimitExceeded() throws IOException
+  {
+    Response response = queryResource.doPost(
+        new ExceptionalInputStream(() -> new ResourceLimitExceededException("You require too much of something")),
+        null /*pretty*/,
+        testServletRequest
+    );
+    Assert.assertNotNull(response);
+    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    QueryException e = jsonMapper.readValue((byte[]) response.getEntity(), QueryException.class);
+    Assert.assertEquals(QueryException.RESOURCE_LIMIT_EXCEEDED_ERROR_CODE, e.getErrorCode());
+    Assert.assertEquals(ResourceLimitExceededException.class.getName(), e.getErrorClass());
+  }
+
+  @Test
+  public void testUnsupportedQueryThrowsException() throws IOException
+  {
+    String errorMessage = "This will be support in Robux 9999";
+    Response response = queryResource.doPost(
+        new ExceptionalInputStream(() -> new QueryUnsupportedException(errorMessage)),
+        null /*pretty*/,
+        testServletRequest
+    );
+    Assert.assertNotNull(response);
+    Assert.assertEquals(QueryUnsupportedException.STATUS_CODE, response.getStatus());
+    QueryException ex = jsonMapper.readValue((byte[]) response.getEntity(), QueryException.class);
+    Assert.assertEquals(errorMessage, ex.getMessage());
+    Assert.assertEquals(QueryException.QUERY_UNSUPPORTED_ERROR_CODE, ex.getErrorCode());
+  }
+
+  @Test
+  public void testSecuredQuery() throws Exception
+  {
+    expectPermissiveHappyPathAuth();
+
+    AuthorizerMapper authMapper = new AuthorizerMapper(null)
+    {
+      @Override
+      public Authorizer getAuthorizer(String name)
+      {
+        return new Authorizer()
+        {
+          @Override
+          public Access authorize(AuthenticationResult authenticationResult, Resource resource, Action action)
+          {
+            if (resource.getName().equals("allow")) {
+              return Access.allowWithRestriction(RowFilterPolicy.from(new NullFilter("col", null)));
+            } else {
+              return new Access(false);
+            }
+          }
+
+        };
+      }
+    };
+
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            authMapper,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        authMapper,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+
+    try {
+      queryResource.doPost(
+          new ByteArrayInputStream(SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8)),
+          null /*pretty*/,
+          testServletRequest.mimic()
+      );
+      Assert.fail("doPost did not throw ForbiddenException for an unauthorized query");
+    }
+    catch (ForbiddenException e) {
+    }
+
+    final MockHttpServletResponse response = expectAsyncRequestFlow(
+        "{\"queryType\":\"timeBoundary\", \"dataSource\":\"allow\"}",
+        testServletRequest.mimic()
+    );
+    Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    final List<Result<TimeBoundaryResultValue>> responses = jsonMapper.readValue(
+        response.baos.toByteArray(),
+        new TypeReference<>()
+        {
+        }
+    );
+
+    Assert.assertEquals(0, responses.size());
+    Assert.assertEquals(1, testRequestLogger.getNativeQuerylogs().size());
+    Assert.assertEquals(
+        true,
+        testRequestLogger.getNativeQuerylogs().get(0).getQueryStats().getStats().get("success")
+    );
+    Assert.assertEquals(
+        "robux",
+        testRequestLogger.getNativeQuerylogs().get(0).getQueryStats().getStats().get("identity")
+    );
+  }
+
+  @Test
+  public void testQueryTimeoutException() throws Exception
+  {
+    final QuerySegmentWalker timeoutSegmentWalker = new QuerySegmentWalker()
+    {
+      @Override
+      public <T> QueryRunner<T> getQueryRunnerForIntervals(Query<T> query, Iterable<Interval> intervals)
+      {
+        throw new QueryTimeoutException();
+      }
+
+      @Override
+      public <T> QueryRunner<T> getQueryRunnerForSegments(Query<T> query, Iterable<SegmentDescriptor> specs)
+      {
+        return getQueryRunnerForIntervals(null, null);
+      }
+    };
+
+    final QueryResource timeoutQueryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            timeoutSegmentWalker,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            jsonMapper
+        )
+    );
+    expectPermissiveHappyPathAuth();
+
+    final Response response = expectSynchronousRequestFlow(
+        testServletRequest,
+        SIMPLE_TIMESERIES_QUERY.getBytes(StandardCharsets.UTF_8),
+        timeoutQueryResource
+    );
+    Assert.assertEquals(QueryTimeoutException.STATUS_CODE, response.getStatus());
+
+    ErrorResponse entity = (ErrorResponse) response.getEntity();
+    MatcherAssert.assertThat(
+        entity.getUnderlyingException(),
+        new RobuxExceptionMatcher(
+            RobuxException.Persona.OPERATOR,
+            RobuxException.Category.TIMEOUT,
+            "legacyQueryException"
+        )
+            .expectMessageIs(
+                "Query did not complete within configured timeout period. You can increase query timeout or tune the performance of query.")
+    );
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    jsonMapper.writeValue(baos, entity);
+    QueryTimeoutException ex = jsonMapper.readValue(baos.toByteArray(), QueryTimeoutException.class);
+    Assert.assertEquals("Query did not complete within configured timeout period. You can " +
+                        "increase query timeout or tune the performance of query.", ex.getMessage());
+    Assert.assertEquals(QueryException.QUERY_TIMEOUT_ERROR_CODE, ex.getErrorCode());
+    Assert.assertEquals(1, timeoutQueryResource.getTimedOutQueryCount());
+
+  }
+
+  @Test(timeout = 60_000L)
+  public void testSecuredCancelQuery() throws Exception
+  {
+    final CountDownLatch waitForCancellationLatch = new CountDownLatch(1);
+    final CountDownLatch waitFinishLatch = new CountDownLatch(2);
+    final CountDownLatch startAwaitLatch = new CountDownLatch(1);
+    final CountDownLatch cancelledCountDownLatch = new CountDownLatch(1);
+
+    expectPermissiveHappyPathAuth();
+
+    AuthorizerMapper authMapper = new AuthorizerMapper(null)
+    {
+      @Override
+      public Authorizer getAuthorizer(String name)
+      {
+        return new Authorizer()
+        {
+          @Override
+          public Access authorize(AuthenticationResult authenticationResult, Resource resource, Action action)
+          {
+            // READ action corresponds to the query
+            // WRITE corresponds to cancellation of query
+            if (action.equals(Action.READ)) {
+              try {
+                // Countdown startAwaitLatch as we want query cancellation to happen
+                // after we enter isAuthorized method so that we can handle the
+                // InterruptedException here because of query cancellation
+                startAwaitLatch.countDown();
+                waitForCancellationLatch.await();
+              }
+              catch (InterruptedException e) {
+                // When the query is cancelled the control will reach here,
+                // countdown the latch and rethrow the exception so that error response is returned for the query
+                cancelledCountDownLatch.countDown();
+                throw new QueryInterruptedException(e);
+              }
+              return new Access(true);
+            } else {
+              return new Access(true);
+            }
+          }
+
+        };
+      }
+    };
+
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            authMapper,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        authMapper,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    final String queryString = "{\"queryType\":\"timeBoundary\", \"dataSource\":\"allow\","
+                               + "\"context\":{\"queryId\":\"id_1\"}}";
+    ObjectMapper mapper = new DefaultObjectMapper();
+    Query<?> query = mapper.readValue(queryString, Query.class);
+
+    AtomicReference<Response> responseFromEndpoint = new AtomicReference<>();
+
+    // We expect this future to get canceled so we have to grab the exception somewhere else.
+    ListenableFuture<Response> future = MoreExecutors.listeningDecorator(
+        Execs.singleThreaded("test_query_resource_%s")
+    ).submit(
+        () -> {
+          try {
+            responseFromEndpoint.set(queryResource.doPost(
+                new ByteArrayInputStream(queryString.getBytes(StandardCharsets.UTF_8)),
+                null,
+                testServletRequest
+            ));
+            return null;
+          }
+          catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+          finally {
+            waitFinishLatch.countDown();
+          }
+        }
+    );
+
+    queryScheduler.registerQueryFuture(query, future);
+    startAwaitLatch.await();
+
+    Executors.newSingleThreadExecutor().submit(
+        () -> {
+          Response response = queryResource.cancelQuery("id_1", testServletRequest);
+          Assert.assertEquals(Status.ACCEPTED.getStatusCode(), response.getStatus());
+          waitForCancellationLatch.countDown();
+          waitFinishLatch.countDown();
+        }
+    );
+    waitFinishLatch.await();
+    cancelledCountDownLatch.await();
+
+    Assert.assertTrue(future.isCancelled());
+    final Response response = responseFromEndpoint.get();
+    Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+  }
+
+  @Test(timeout = 60_000L)
+  public void testDenySecuredCancelQuery() throws Exception
+  {
+    final CountDownLatch waitForCancellationLatch = new CountDownLatch(1);
+    final CountDownLatch waitFinishLatch = new CountDownLatch(2);
+    final CountDownLatch startAwaitLatch = new CountDownLatch(1);
+
+    expectPermissiveHappyPathAuth();
+
+    AuthorizerMapper authMapper = new AuthorizerMapper(null)
+    {
+      @Override
+      public Authorizer getAuthorizer(String name)
+      {
+        return new Authorizer()
+        {
+          @Override
+          public Access authorize(AuthenticationResult authenticationResult, Resource resource, Action action)
+          {
+            // READ action corresponds to the query
+            // WRITE corresponds to cancellation of query
+            if (action.equals(Action.READ)) {
+              try {
+                waitForCancellationLatch.await();
+              }
+              catch (InterruptedException e) {
+                throw new RuntimeException(e);
+              }
+              return new Access(true);
+            } else {
+              // Deny access to cancel the query
+              return new Access(false);
+            }
+          }
+
+        };
+      }
+    };
+
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            TEST_SEGMENT_WALKER,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            authMapper,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        queryScheduler,
+        authMapper,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+
+    final String queryString = "{\"queryType\":\"timeBoundary\", \"dataSource\":\"allow\","
+                               + "\"context\":{\"queryId\":\"id_1\"}}";
+    ObjectMapper mapper = new DefaultObjectMapper();
+    Query<?> query = mapper.readValue(queryString, Query.class);
+
+    ListenableFuture<HttpServletResponse> future = MoreExecutors.listeningDecorator(
+        Execs.singleThreaded("test_query_resource_%s")
+    ).submit(
+        () -> {
+          try {
+            startAwaitLatch.countDown();
+            final MockHttpServletRequest localRequest = testServletRequest.mimic();
+            final MockHttpServletResponse retVal = MockHttpServletResponse.forRequest(localRequest);
+            queryResource.doPost(
+                new ByteArrayInputStream(queryString.getBytes(StandardCharsets.UTF_8)),
+                null,
+                localRequest
+            );
+            return retVal;
+          }
+          catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+          finally {
+            waitFinishLatch.countDown();
+          }
+        }
+    );
+
+    queryScheduler.registerQueryFuture(query, future);
+    startAwaitLatch.await();
+
+    Executors.newSingleThreadExecutor().submit(
+        () -> {
+          try {
+            queryResource.cancelQuery("id_1", testServletRequest.mimic());
+          }
+          catch (ForbiddenException e) {
+            waitForCancellationLatch.countDown();
+            waitFinishLatch.countDown();
+          }
+        }
+    );
+    waitFinishLatch.await();
+
+    Assert.assertEquals(Response.Status.OK.getStatusCode(), future.get().getStatus());
+  }
+
+  @Test(timeout = 10_000L)
+  public void testTooManyQuery() throws InterruptedException, ExecutionException
+  {
+    expectPermissiveHappyPathAuth();
+
+    final CountDownLatch waitTwoScheduled = new CountDownLatch(2);
+    final QueryScheduler laningScheduler = new QueryScheduler(
+        2,
+        ManualQueryPrioritizationStrategy.INSTANCE,
+        NoQueryLaningStrategy.INSTANCE,
+        // enable total laning
+        new ServerConfig(false)
+    );
+
+    ArrayList<Future<Boolean>> back2 = new ArrayList<>();
+
+    createScheduledQueryResource(laningScheduler, Collections.emptyList(), ImmutableList.of(waitTwoScheduled));
+    back2.add(eventuallyAssertAsyncResponse(
+        SIMPLE_TIMESERIES_QUERY,
+        response -> Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus())
+    ));
+    back2.add(eventuallyAssertAsyncResponse(
+        SIMPLE_TIMESERIES_QUERY,
+        response -> Assert.assertEquals(Status.OK.getStatusCode(), response.getStatus())
+    ));
+    waitTwoScheduled.await();
+    back2.add(eventuallyaAssertSynchronousResponse(
+        SIMPLE_TIMESERIES_QUERY,
+        response -> {
+          Assert.assertEquals(QueryCapacityExceededException.STATUS_CODE, response.getStatus());
+          QueryCapacityExceededException ex;
+
+          final ErrorResponse entity = (ErrorResponse) response.getEntity();
+          MatcherAssert.assertThat(
+              entity.getUnderlyingException(),
+              new RobuxExceptionMatcher(
+                  RobuxException.Persona.OPERATOR,
+                  RobuxException.Category.CAPACITY_EXCEEDED,
+                  "legacyQueryException"
+              )
+                  .expectMessageIs(
+                      "Too many concurrent queries, total query capacity of 2 exceeded. Please try your query again later.")
+          );
+
+          try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            jsonMapper.writeValue(baos, entity);
+
+            // Here we are converting to a QueryCapacityExceededException.  This is just to validate legacy stuff.
+            // When we delete the QueryException class, we can just rely on validating the RobuxException instead
+            ex = jsonMapper.readValue(baos.toByteArray(), QueryCapacityExceededException.class);
+          }
+          catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+          Assert.assertEquals(QueryCapacityExceededException.makeTotalErrorMessage(2), ex.getMessage());
+          Assert.assertEquals(QueryException.QUERY_CAPACITY_EXCEEDED_ERROR_CODE, ex.getErrorCode());
+        }
+    ));
+
+    for (Future<Boolean> theFuture : back2) {
+      Assert.assertTrue(theFuture.get());
+    }
+    Assert.assertEquals(2, queryResource.getSuccessfulQueryCount());
+    Assert.assertEquals(1, queryResource.getFailedQueryCount());
+  }
+
+  @Test(timeout = 10_000L)
+  public void testTooManyQueryInLane() throws InterruptedException, ExecutionException
+  {
+    expectPermissiveHappyPathAuth();
+    final CountDownLatch waitTwoStarted = new CountDownLatch(2);
+    final CountDownLatch waitOneScheduled = new CountDownLatch(1);
+    final QueryScheduler scheduler = new QueryScheduler(
+        40,
+        ManualQueryPrioritizationStrategy.INSTANCE,
+        new HiLoQueryLaningStrategy(2),
+        new ServerConfig()
+    );
+
+    ArrayList<Future<Boolean>> back2 = new ArrayList<>();
+
+    createScheduledQueryResource(scheduler, ImmutableList.of(waitTwoStarted), ImmutableList.of(waitOneScheduled));
+
+    back2.add(eventuallyAssertAsyncResponse(
+        SIMPLE_TIMESERIES_QUERY_LOW_PRIORITY,
+        response -> Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus())
+    ));
+    waitOneScheduled.await();
+    back2.add(eventuallyaAssertSynchronousResponse(
+        SIMPLE_TIMESERIES_QUERY_LOW_PRIORITY,
+        response -> {
+          Assert.assertEquals(QueryCapacityExceededException.STATUS_CODE, response.getStatus());
+          QueryCapacityExceededException ex;
+
+          final ErrorResponse entity = (ErrorResponse) response.getEntity();
+          MatcherAssert.assertThat(
+              entity.getUnderlyingException(),
+              new RobuxExceptionMatcher(
+                  RobuxException.Persona.OPERATOR,
+                  RobuxException.Category.CAPACITY_EXCEEDED,
+                  "legacyQueryException"
+              )
+                  .expectMessageIs(
+                      "Too many concurrent queries for lane 'low', query capacity of 1 exceeded. Please try your query again later.")
+          );
+
+          try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            jsonMapper.writeValue(baos, entity);
+
+            // Here we are converting to a QueryCapacityExceededException.  This is just to validate legacy stuff.
+            // When we delete the QueryException class, we can just rely on validating the RobuxException instead
+            ex = jsonMapper.readValue(baos.toByteArray(), QueryCapacityExceededException.class);
+          }
+          catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+          Assert.assertEquals(
+              QueryCapacityExceededException.makeLaneErrorMessage(HiLoQueryLaningStrategy.LOW, 1),
+              ex.getMessage()
+          );
+          Assert.assertEquals(QueryException.QUERY_CAPACITY_EXCEEDED_ERROR_CODE, ex.getErrorCode());
+
+        }
+    ));
+    waitTwoStarted.await();
+    back2.add(eventuallyAssertAsyncResponse(
+        SIMPLE_TIMESERIES_QUERY,
+        response -> Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus())
+    ));
+
+    for (Future<Boolean> theFuture : back2) {
+      Assert.assertTrue(theFuture.get());
+    }
+  }
+
+  @Test(timeout = 10_000L)
+  public void testTooManyQueryInLaneImplicitFromDurationThreshold() throws InterruptedException, ExecutionException
+  {
+    expectPermissiveHappyPathAuth();
+    final CountDownLatch waitTwoStarted = new CountDownLatch(2);
+    final CountDownLatch waitOneScheduled = new CountDownLatch(1);
+    final QueryScheduler scheduler = new QueryScheduler(
+        40,
+        new ThresholdBasedQueryPrioritizationStrategy(null, "P90D", null, null, null),
+        new HiLoQueryLaningStrategy(1),
+        new ServerConfig()
+    );
+
+    ArrayList<Future<Boolean>> back2 = new ArrayList<>();
+    createScheduledQueryResource(scheduler, ImmutableList.of(waitTwoStarted), ImmutableList.of(waitOneScheduled));
+
+    back2.add(eventuallyAssertAsyncResponse(
+        SIMPLE_TIMESERIES_QUERY,
+        response -> Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus())
+    ));
+    waitOneScheduled.await();
+    back2.add(eventuallyaAssertSynchronousResponse(
+        SIMPLE_TIMESERIES_QUERY,
+        response -> {
+          Assert.assertEquals(QueryCapacityExceededException.STATUS_CODE, response.getStatus());
+          QueryCapacityExceededException ex;
+
+          final ErrorResponse entity = (ErrorResponse) response.getEntity();
+          MatcherAssert.assertThat(
+              entity.getUnderlyingException(),
+              new RobuxExceptionMatcher(
+                  RobuxException.Persona.OPERATOR,
+                  RobuxException.Category.CAPACITY_EXCEEDED,
+                  "legacyQueryException"
+              )
+                  .expectMessageIs(
+                      "Too many concurrent queries for lane 'low', query capacity of 1 exceeded. Please try your query again later.")
+          );
+
+          try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            jsonMapper.writeValue(baos, entity);
+
+            // Here we are converting to a QueryCapacityExceededException.  This is just to validate legacy stuff.
+            // When we delete the QueryException class, we can just rely on validating the RobuxException instead
+            ex = jsonMapper.readValue(baos.toByteArray(), QueryCapacityExceededException.class);
+          }
+          catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+          Assert.assertEquals(
+              QueryCapacityExceededException.makeLaneErrorMessage(HiLoQueryLaningStrategy.LOW, 1),
+              ex.getMessage()
+          );
+          Assert.assertEquals(QueryException.QUERY_CAPACITY_EXCEEDED_ERROR_CODE, ex.getErrorCode());
+        }
+    ));
+    waitTwoStarted.await();
+    back2.add(eventuallyAssertAsyncResponse(
+        SIMPLE_TIMESERIES_QUERY_SMALLISH_INTERVAL,
+        response -> Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus())
+    ));
+
+    for (Future<Boolean> theFuture : back2) {
+      Assert.assertTrue(theFuture.get());
+    }
+  }
+
+  @Test
+  public void testNativeQueryWriter_goodResponse() throws IOException
+  {
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    final QueryResultPusher.Writer writer = new QueryResource.NativeQueryWriter(jsonMapper, baos);
+    writer.writeResponseStart();
+    writer.writeRow(Arrays.asList("foo", "bar"));
+    writer.writeRow(Collections.singletonList("baz"));
+    writer.writeResponseEnd();
+    writer.close();
+
+    Assert.assertEquals(
+        ImmutableList.of(
+            ImmutableList.of("foo", "bar"),
+            ImmutableList.of("baz")
+        ),
+        jsonMapper.readValue(baos.toByteArray(), Object.class)
+    );
+  }
+
+  @Test
+  public void testNativeQueryWriter_truncatedResponse() throws IOException
+  {
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    final QueryResultPusher.Writer writer = new QueryResource.NativeQueryWriter(jsonMapper, baos);
+    writer.writeResponseStart();
+    writer.writeRow(Arrays.asList("foo", "bar"));
+    writer.close(); // Simulate an error that occurs midstream; close writer without calling writeResponseEnd.
+
+    final JsonProcessingException e = Assert.assertThrows(
+        JsonProcessingException.class,
+        () -> jsonMapper.readValue(baos.toByteArray(), Object.class)
+    );
+
+    MatcherAssert.assertThat(
+        e,
+        ThrowableMessageMatcher.hasMessage(CoreMatchers.containsString("expected close marker for Array"))
+    );
+  }
+
+  private void createScheduledQueryResource(
+      QueryScheduler scheduler,
+      Collection<CountDownLatch> beforeScheduler,
+      Collection<CountDownLatch> inScheduler
+  )
+  {
+
+    QuerySegmentWalker texasRanger = new QuerySegmentWalker()
+    {
+      @Override
+      public <T> QueryRunner<T> getQueryRunnerForIntervals(Query<T> query, Iterable<Interval> intervals)
+      {
+        return (queryPlus, responseContext) -> {
+          beforeScheduler.forEach(CountDownLatch::countDown);
+
+          return Sequences.simple(
+              scheduler.run(
+                  scheduler.prioritizeAndLaneQuery(queryPlus, ImmutableSet.of()),
+                  new LazySequence<T>(() -> {
+                    inScheduler.forEach(CountDownLatch::countDown);
+                    try {
+                      // pretend to be a query that is waiting on results
+                      Thread.sleep(500);
+                    }
+                    catch (InterruptedException ignored) {
+                    }
+                    // all that waiting for nothing :(
+                    return Sequences.empty();
+                  })
+              ).toList()
+          );
+        };
+      }
+
+      @Override
+      public <T> QueryRunner<T> getQueryRunnerForSegments(Query<T> query, Iterable<SegmentDescriptor> specs)
+      {
+        return getQueryRunnerForIntervals(null, null);
+      }
+    };
+
+    queryResource = new QueryResource(
+        new QueryLifecycleFactory(
+            CONGLOMERATE,
+            texasRanger,
+            new DefaultGenericQueryMetricsFactory(),
+            new NoopServiceEmitter(),
+            testRequestLogger,
+            new AuthConfig(),
+            NoopPolicyEnforcer.instance(),
+            AuthTestUtils.TEST_AUTHORIZER_MAPPER,
+            Suppliers.ofInstance(new DefaultQueryConfig(ImmutableMap.of()))
+        ),
+        jsonMapper,
+        scheduler,
+        null,
+        new QueryResourceQueryResultPusherFactory(
+            jsonMapper,
+            ResponseContextConfig.newConfig(true),
+            ROBUX_NODE
+        ),
+        new ResourceIOReaderWriterFactory(
+            jsonMapper,
+            smileMapper
+        )
+    );
+  }
+
+  private Future<Boolean> eventuallyAssertAsyncResponse(
+      String query,
+      Consumer<MockHttpServletResponse> asserts
+  )
+  {
+    return Executors.newSingleThreadExecutor().submit(() -> {
+      try {
+        asserts.accept(expectAsyncRequestFlow(query, testServletRequest.mimic()));
+      }
+      catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return true;
+    });
+  }
+
+  private void expectPermissiveHappyPathAuth()
+  {
+    testServletRequest.setAttribute(AuthConfig.ROBUX_AUTHENTICATION_RESULT, AUTHENTICATION_RESULT);
+  }
+
+  @Nonnull
+  private MockHttpServletResponse expectAsyncRequestFlow(String simpleTimeseriesQuery) throws IOException
+  {
+    return expectAsyncRequestFlow(
+        simpleTimeseriesQuery,
+        testServletRequest
+    );
+  }
+
+  @Nonnull
+  private MockHttpServletResponse expectAsyncRequestFlow(String query, MockHttpServletRequest req) throws IOException
+  {
+    return expectAsyncRequestFlow(req, query.getBytes(StandardCharsets.UTF_8));
+  }
+
+  @Nonnull
+  private MockHttpServletResponse expectAsyncRequestFlow(
+      MockHttpServletRequest req,
+      byte[] queryBytes
+  ) throws IOException
+  {
+    return expectAsyncRequestFlow(req, queryBytes, queryResource);
+  }
+
+  @Nonnull
+  private MockHttpServletResponse expectAsyncRequestFlow(
+      MockHttpServletRequest req,
+      byte[] queryBytes,
+      QueryResource queryResource
+  ) throws IOException
+  {
+    final MockHttpServletResponse response = MockHttpServletResponse.forRequest(req);
+
+    Assert.assertNull(queryResource.doPost(
+        new ByteArrayInputStream(queryBytes),
+        null /*pretty*/,
+        req
+    ));
+    return response;
+  }
+
+  private Future<Boolean> eventuallyaAssertSynchronousResponse(
+      String query,
+      Consumer<Response> asserts
+  )
+  {
+    return Executors.newSingleThreadExecutor().submit(() -> {
+      try {
+        asserts.accept(
+            expectSynchronousRequestFlow(
+                testServletRequest.mimic(),
+                query.getBytes(StandardCharsets.UTF_8),
+                queryResource
+            )
+        );
+      }
+      catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return true;
+    });
+  }
+
+  private Response expectSynchronousRequestFlow(String simpleTimeseriesQuery) throws IOException
+  {
+    return expectSynchronousRequestFlow(
+        testServletRequest,
+        simpleTimeseriesQuery.getBytes(StandardCharsets.UTF_8),
+        queryResource
+    );
+  }
+
+  private Response expectSynchronousRequestFlow(
+      MockHttpServletRequest req,
+      byte[] bytes,
+      QueryResource queryResource
+  ) throws IOException
+  {
+    return queryResource.doPost(new ByteArrayInputStream(bytes), null, req);
+  }
+
+  private org.eclipse.jetty.server.Response jettyResponseforRequest(MockHttpServletRequest req) throws IOException
+  {
+    HttpChannel channelMock = EasyMock.mock(HttpChannel.class);
+    HttpOutput outputMock = EasyMock.mock(HttpOutput.class);
+    org.eclipse.jetty.server.Response response = new org.eclipse.jetty.server.Response(channelMock, outputMock);
+
+    EasyMock.expect(channelMock.isSendError()).andReturn(false);
+    EasyMock.expect(channelMock.isCommitted()).andReturn(true);
+
+    outputMock.close();
+    EasyMock.expectLastCall().andVoid();
+
+    outputMock.write(EasyMock.anyObject(byte[].class), EasyMock.anyInt(), EasyMock.anyInt());
+    EasyMock.expectLastCall().andVoid();
+
+    EasyMock.replay(outputMock, channelMock);
+
+    req.newAsyncContext(() -> {
+      final MockAsyncContext retVal = new MockAsyncContext();
+      retVal.response = response;
+      return retVal;
+    });
+    return response;
+  }
+}

@@ -55,7 +55,7 @@ export class QueryOverview {
 
     await Promise.all([
       this.page.waitForRequest(
-        request => request.url().includes('druid/v2') && request.method() === 'POST',
+        request => request.url().includes('robux/v2') && request.method() === 'POST',
       ),
       clickButton(this.page, 'Run'),
     ]);
@@ -64,17 +64,17 @@ export class QueryOverview {
 
     const [resp] = await Promise.all([
       this.page.waitForResponse(
-        response => response.url().includes('druid/v2') && response.request().method() === 'DELETE',
+        response => response.url().includes('robux/v2') && response.request().method() === 'DELETE',
       ),
 
       clickText(this.page, 'Cancel query'),
       this.page.off(
         'requestfinished',
-        request => request.url().includes('druid/v2') && request.method() === 'POST',
+        request => request.url().includes('robux/v2') && request.method() === 'POST',
       ),
       this.page.off(
         'requestfinished',
-        request => request.url().includes('druid/v2') && request.method() === 'DELETE',
+        request => request.url().includes('robux/v2') && request.method() === 'DELETE',
       ),
     ]);
 

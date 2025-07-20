@@ -24,19 +24,19 @@ sidebar_label: Load data with native batch ingestion
   -->
 
 
-This topic shows you how to load and query data files in Apache Druid using its native batch ingestion feature. 
+This topic shows you how to load and query data files in Apache Robux using its native batch ingestion feature. 
 
 ## Prerequisites
 
-Install Druid, start up Druid services, and open the web console as described in the [Druid quickstart](index.md).
+Install Robux, start up Robux services, and open the web console as described in the [Robux quickstart](index.md).
 
 ## Load data
 
-Ingestion specs define the schema of the data Druid reads and stores. You can write ingestion specs by hand or using the _data loader_, 
-as we'll do here to perform batch file loading with Druid's native batch ingestion.
+Ingestion specs define the schema of the data Robux reads and stores. You can write ingestion specs by hand or using the _data loader_, 
+as we'll do here to perform batch file loading with Robux's native batch ingestion.
 
-The Druid distribution bundles sample data we can use. The sample data located in `quickstart/tutorial/wikiticker-2015-09-12-sampled.json.gz` 
-in the Druid root directory represents Wikipedia page edits for a given day. 
+The Robux distribution bundles sample data we can use. The sample data located in `quickstart/tutorial/wikiticker-2015-09-12-sampled.json.gz` 
+in the Robux root directory represents Wikipedia page edits for a given day. 
 
 1. Click **Load data** from the web console header (![Load data](../assets/tutorial-batch-data-loader-00.png)).
 
@@ -75,14 +75,14 @@ in the Druid root directory represents Wikipedia page edits for a given day.
    ![Data loader parse data](../assets/tutorial-batch-data-loader-03.png "Data loader parse data")
 
    Feel free to select other **Input format** options to get a sense of their configuration settings 
-   and how Druid parses other types of data.  
+   and how Robux parses other types of data.  
 
 6. With the JSON parser selected, click **Next: Parse time**. The **Parse time** settings are where you view and adjust the 
    primary timestamp column for the data.
 
    ![Data loader parse time](../assets/tutorial-batch-data-loader-04.png "Data loader parse time")
 
-   Druid requires data to have a primary timestamp column (internally stored in a column called `__time`).
+   Robux requires data to have a primary timestamp column (internally stored in a column called `__time`).
    If you do not have a timestamp in your data, select `Constant value`. In our example, the data loader 
    determines that the `time` column is the only candidate that can be used as the primary time column.
 
@@ -93,7 +93,7 @@ in the Druid root directory represents Wikipedia page edits for a given day.
 
 8. The Configure schema settings are where you configure what [dimensions](../ingestion/schema-model.md#dimensions) 
    and [metrics](../ingestion/schema-model.md#metrics) are ingested. The outcome of this configuration represents exactly how the 
-   data will appear in Druid after ingestion. 
+   data will appear in Robux after ingestion. 
 
    Since our dataset is very small, you can turn off [rollup](../ingestion/rollup.md) 
    by unsetting the **Rollup** switch and confirming the change when prompted.
@@ -110,7 +110,7 @@ in the Druid root directory represents Wikipedia page edits for a given day.
 
 10. Click **Next: Tune** and **Next: Publish**.
 
-11. The Publish settings are where you specify the datasource name in Druid. Let's change the default name from  `wikiticker-2015-09-12-sampled` to `wikipedia`. 
+11. The Publish settings are where you specify the datasource name in Robux. Let's change the default name from  `wikiticker-2015-09-12-sampled` to `wikipedia`. 
 
     ![Data loader publish](../assets/tutorial-batch-data-loader-07.png "Data loader publish")
 
@@ -121,7 +121,7 @@ in the Druid root directory represents Wikipedia page edits for a given day.
     Feel free to go back and change settings from previous steps to see how doing so updates the spec.
     Similarly, you can edit the spec directly and see it reflected in the previous steps. 
 
-    For other ways to load ingestion specs in Druid, see [Tutorial: Loading a file](./tutorial-batch.md). 
+    For other ways to load ingestion specs in Robux, see [Tutorial: Loading a file](./tutorial-batch.md). 
 13. Once you are satisfied with the spec, click **Submit**.
 
 

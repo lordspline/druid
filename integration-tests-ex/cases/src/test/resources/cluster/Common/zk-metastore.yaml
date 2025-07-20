@@ -14,15 +14,15 @@
 # limitations under the License.
 
 # Defines the standard ZooKeeper and metadata storage (metastore)
-# services used in all Druid test clusters. Include this in to
+# services used in all Robux test clusters. Include this in to
 # test-specific configuration files.
 
 zk:
   instances:
     - port: 2181
 metastore:
-  connectURI: jdbc:mysql://<host>:<port>/druid
-  user: druid
+  connectURI: jdbc:mysql://<host>:<port>/robux
+  user: robux
   password: diurd
   instances:
     - port: 3306

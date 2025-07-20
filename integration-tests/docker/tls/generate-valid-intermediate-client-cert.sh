@@ -30,10 +30,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=intermediate@druid.apache.org
+emailAddress=intermediate@robux.apache.org
 CN = intermediate
 
 [ req_ext ]
@@ -61,10 +61,10 @@ distinguished_name = dn
 [ dn ]
 C=DR
 ST=DR
-L=Druid City
-O=Druid
+L=Robux City
+O=Robux
 OU=IntegrationTests
-emailAddress=intermediate-client@druid.apache.org
+emailAddress=intermediate-client@robux.apache.org
 CN = localhost
 
 [ req_ext ]
@@ -90,5 +90,5 @@ printf "\n" >> intermediate_ca_client.pem
 cat ca_intermediate.pem >> intermediate_ca_client.pem
 
 # Create a Java keystore containing the generated certificate
-openssl pkcs12 -export -in intermediate_ca_client.pem -inkey intermediate_ca_client.key -out intermediate_ca_client.p12 -name intermediate_ca_client -CAfile ca_intermediate.pem -caname druid-it-root -password pass:druid123
-keytool -importkeystore -srckeystore intermediate_ca_client.p12 -srcstoretype PKCS12 -destkeystore intermediate_ca_client.jks -deststoretype pkcs12 -srcstorepass druid123 -deststorepass druid123
+openssl pkcs12 -export -in intermediate_ca_client.pem -inkey intermediate_ca_client.key -out intermediate_ca_client.p12 -name intermediate_ca_client -CAfile ca_intermediate.pem -caname robux-it-root -password pass:robux123
+keytool -importkeystore -srckeystore intermediate_ca_client.p12 -srcstoretype PKCS12 -destkeystore intermediate_ca_client.jks -deststoretype pkcs12 -srcstorepass robux123 -deststorepass robux123

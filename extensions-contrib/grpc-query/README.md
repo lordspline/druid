@@ -17,20 +17,20 @@
   ~ under the License.
   -->
 
-# gRPC Query Extension for Druid
+# gRPC Query Extension for Robux
 
 This extension provides a gRPC API for SQL and Native queries.
 
-Druid uses REST as its RPC protocol. Druid has a large variety of REST operations
+Robux uses REST as its RPC protocol. Robux has a large variety of REST operations
 including query, ingest jobs, monitoring, configuration and many more. Although
 REST is a universally supported RPC format, it is not the only one in use. This
 extension allows gRPC-based clients to issue SQL queries.
 
-Druid is optimized for high-concurrency, low-complexity queries that return a
+Robux is optimized for high-concurrency, low-complexity queries that return a
 small result set (a few thousand rows at most). The small-query focus allows
-Druid to offer a simple, stateless request/response REST API. This gRPC API
-follows that Druid pattern: it is optimized for simple queries and follows
-Druid's request/response model. APIs such as JDBC can handle larger results
+Robux to offer a simple, stateless request/response REST API. This gRPC API
+follows that Robux pattern: it is optimized for simple queries and follows
+Robux's request/response model. APIs such as JDBC can handle larger results
 because they are stateful: a client can request pages of results using multiple
 API calls. This API does not support paging: the entire result set is returned
 in the response, resulting in an API which is fast for small queries, and not
@@ -58,12 +58,12 @@ of which is carefully designed to power one application, say a dashboard. The
 
 ```text
 +-----------+   query ->  +-------+
-| Dashboard | -- gRPC --> | Druid |
+| Dashboard | -- gRPC --> | Robux |
 +-----------+  <- data    +-------+
 ```
 
 In practice, there may be multiple proxy layers: one on the application side, and
-the Router on the Druid side.
+the Router on the Robux side.
 
 The dashboard displays a fixed set of reports and charts. Each of those sends a
 well-defined query specified as part of the application. The returned data is thus
@@ -77,7 +77,7 @@ query. (Protobuf is a compiled format: the solution works only because the set o
 are well known. It would not work for the ad-hoc case in which each query has a different
 result set schema.)
 
-To be very clear: the application has a fixed set of queries to be sent to Druid via gRPC.
+To be very clear: the application has a fixed set of queries to be sent to Robux via gRPC.
 For each query, there is a fixed Protobuf response format defined by the application.
 No other queries, aside from this well-known set, will be sent to the gRPC endpoint using
 the Protobuf response format. If the set of queries is not well-defined, use the CSV
@@ -86,22 +86,22 @@ or JSON response format instead.
 ## Installation
 
 The gRPC query extension is a "contrib" extension and is not installed by default when
-you install Druid. Instead, you must install it manually.
+you install Robux. Instead, you must install it manually.
 
-In development, you can build Druid with all the "contrib" extensions. When building
-Druid, include the `-P bundle-contrib-exts` in addition to the `-P dist` option:
+In development, you can build Robux with all the "contrib" extensions. When building
+Robux, include the `-P bundle-contrib-exts` in addition to the `-P dist` option:
 
 ```bash
 mvn package -Pdist,bundle-contrib-exts ...
 ```
 
-In production, follow the [Druid documentation](https://druid.apache.org/docs/latest/development/extensions.html).
+In production, follow the [Robux documentation](https://robux.apache.org/docs/latest/development/extensions.html).
 
 To enable the extension, add the following to the load list in
 `_commmon/common.runtime.properties`:
 
 ```text
-druid.extensions.loadList=[..., "grpc-query"]
+robux.extensions.loadList=[..., "grpc-query"]
 ```
 
 Adding the extension to the load list automatically enables the extension,
@@ -109,7 +109,7 @@ but only in the Broker.
 
 If you use the Protobuf response format, bundle up your Protobuf classes
 into a jar file, and place that jar file in the
-`$DRUID_HOME/extensions/grpc-query` directory. The Protobuf classes will
+`$ROBUX_HOME/extensions/grpc-query` directory. The Protobuf classes will
 appear on the class path and will be available from the `grpc-query`
 extension.
 
@@ -118,14 +118,14 @@ extension.
 Enable and configure the extension in `broker/runtime.properties`:
 
 ```text
-druid.grpcQuery.port=50051
+robux.grpcQuery.port=50051
 ```
 
 The default port is 50051 (preliminary).
 
 If you use the Protobuf response format, bundle up your Protobuf classes
 into a jar file, and place that jar file in the
-`$DRUID_HOME/extensions/grpc-query` directory. The Protobuf classes will
+`$ROBUX_HOME/extensions/grpc-query` directory. The Protobuf classes will
 appear on the class path and will be available from the `grpc-query`
 extension.
 
@@ -137,8 +137,8 @@ format. The response is optimized for gRPC: it contains an error (if the request
 or the result schema and result data as a binary payload. You can query the gRPC endpoint
 with any gRPC client.
 
-Although both Druid SQL and Druid itself support a `float` data type, that type is not
-usable in a Protobuf response object. Internally Druid converts all `float` values to
+Although both Robux SQL and Robux itself support a `float` data type, that type is not
+usable in a Protobuf response object. Internally Robux converts all `float` values to
 `double`. As a result, the Protobuf reponse object supports only the `double` type.
 An attempt to use `float` will lead to a runtime error when processing the query.
 Use the `double` type instead.
@@ -155,7 +155,7 @@ QueryRequest.newBuilder()
 
 When using Protobuf response format, bundle up your Protobuf classes
 into a jar file, and place that jar file in the
-`$DRUID_HOME/extensions/grpc-query` directory. 
+`$ROBUX_HOME/extensions/grpc-query` directory. 
 Specify the response Protobuf message name in the request. 
 
 ```
@@ -183,7 +183,7 @@ message QueryResult {
 ## Security
 
 The extension supports both "anonymous" and basic authorization. Anonymous is the mode
-for an out-of-the-box Druid: no authorization needed. The extension does not yet support
+for an out-of-the-box Robux: no authorization needed. The extension does not yet support
 other security extensions: each needs its own specific integration.
 
 Clients that use basic authentication must include a set of credentials. See
@@ -205,8 +205,8 @@ classes from an extension.
 
 ### Running in a Server
 
-Druid extensions are designed to run in the Druid server. The gRPC extension is
-loaded only in the Druid broker using the contiguration described above. If something
+Robux extensions are designed to run in the Robux server. The gRPC extension is
+loaded only in the Robux broker using the contiguration described above. If something
 fails during startup, the Broker will crash. Consult the Broker logs to determine
 what went wrong. Startup failures are typically due to required jars not being installed
 as part of the extension. Check the `pom.xml` file to track down what's missing.
@@ -221,9 +221,9 @@ in the server by adding the required parameters to the Broker's `jvm.config` fil
 ### Debugging using Unit Tests
 
 To debug the functionality of the extension, your best bet is to debug in the context
-of a unit test. Druid provides a special test-only SQL stack with a few pre-defined
+of a unit test. Robux provides a special test-only SQL stack with a few pre-defined
 datasources. See the various `CalciteQueryTest` classes to see what these are. You can
-also query Druid's various system tables. See `GrpcQueryTest` for a simple "starter"
+also query Robux's various system tables. See `GrpcQueryTest` for a simple "starter"
 unit test that configures the server and uses an in-process client to send requests.
 
 Most unit testing can be done without the gRPC server, by calling the `QueryDriver`
@@ -234,7 +234,7 @@ bit of extra copmlexity. See the `DriverTest` class for an example unit test.
 ### Debugging in a Server in an IDE
 
 We would like to be able to debug the gRPC extension, within the Broker, in an IDE.
-As it turns out, doing so breaks Druid's class loader mechanisms in ways that are both
+As it turns out, doing so breaks Robux's class loader mechanisms in ways that are both
 hard to understand and hard to work around. When run in a server, Java creates an instance
 of `GrpcQueryModule` using the extension's class loader. Java then uses that same class
 loader to load other classes in the extension, including those here and those in the
@@ -279,7 +279,7 @@ the way to debug the Broker in an IDE is the following:
 
 Debugging of the gRPC stack is difficult since the shaded jar loses source attachments.
 
-Logging helps. gRPC logging is not enabled via Druid's logging system. Intead, [create
+Logging helps. gRPC logging is not enabled via Robux's logging system. Intead, [create
 the following `logging.properties` file](https://stackoverflow.com/questions/50243717/grpc-logger-level):
 
 ```text
@@ -299,12 +299,12 @@ Adjust the path to the file depending on where you put the file.
 
 ## Acknowledgements
 
-This is not the first project to have created a gRPC API for Druid. Others include:
+This is not the first project to have created a gRPC API for Robux. Others include:
 
 * [[Proposal] define a RPC protocol for querying data, support apache Arrow as data
-  exchange interface](https://github.com/apache/druid/issues/3891)
-* [gRPC Druid extension PoC](https://github.com/ndolgov/gruid)
-* [Druid gRPC-json server extension](https://github.com/apache/druid/pull/6798)
+  exchange interface](https://github.com/apache/robux/issues/3891)
+* [gRPC Robux extension PoC](https://github.com/ndolgov/gruid)
+* [Robux gRPC-json server extension](https://github.com/apache/robux/pull/6798)
 
 Full credit goes to those who have gone this way before.
 

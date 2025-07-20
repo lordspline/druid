@@ -58,7 +58,7 @@ export const KillDatasourceDialog = function KillDatasourceDialog(
       className="kill-datasource-dialog"
       action={async () => {
         const resp = await Api.instance.delete(
-          `/druid/indexer/v1/datasources/${Api.encodePath(datasource)}/intervals/${Api.encodePath(
+          `/robux/indexer/v1/datasources/${Api.encodePath(datasource)}/intervals/${Api.encodePath(
             interval.replace(/\//g, '_'),
           )}`,
           {},

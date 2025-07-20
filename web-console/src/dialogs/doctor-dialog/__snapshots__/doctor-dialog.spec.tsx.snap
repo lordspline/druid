@@ -50,7 +50,7 @@ exports[`DoctorDialog matches snapshot 1`] = `
             class="bp5-heading"
             id="title-bp-dialog-0"
           >
-            Druid Doctor
+            Robux Doctor
           </h6>
           <button
             aria-label="Close"
@@ -96,7 +96,7 @@ exports[`DoctorDialog matches snapshot 1`] = `
               <span
                 class="bp5-button-text"
               >
-                Analyze Druid cluster
+                Analyze Robux cluster
               </span>
             </button>
           </div>

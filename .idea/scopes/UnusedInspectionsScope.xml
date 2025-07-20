@@ -1,5 +1,5 @@
 <component name="DependencyValidationManager">
-  <scope name="UnusedInspectionsScope" pattern="src[druid-processing]:*..*" />
+  <scope name="UnusedInspectionsScope" pattern="src[robux-processing]:*..*" />
   <scope name="UnusedInspectionsScope" pattern="src[extendedset]:*..*" />
-  <scope name="UnusedInspectionsScope" pattern="src[druid-indexing-service]:*..*" />
+  <scope name="UnusedInspectionsScope" pattern="src[robux-indexing-service]:*..*" />
 </component>

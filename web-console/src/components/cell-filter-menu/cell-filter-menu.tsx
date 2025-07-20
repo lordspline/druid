@@ -18,8 +18,8 @@
 
 import { Menu, MenuItem } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
-import type { Column, SqlExpression, SqlQuery } from 'druid-query-toolkit';
-import { C, L, SqlComparison, SqlLiteral, SqlRecord, trimString } from 'druid-query-toolkit';
+import type { Column, SqlExpression, SqlQuery } from 'robux-query-toolkit';
+import { C, L, SqlComparison, SqlLiteral, SqlRecord, trimString } from 'robux-query-toolkit';
 
 import type { QueryAction } from '../../utils';
 import { copyAndAlert, prettyPrintSql, stringifyValue } from '../../utils';

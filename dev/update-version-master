@@ -17,7 +17,7 @@
 #--------------------------------------------------------------------
 
 # Updates the versions for the master branch
-# https://github.com/apache/druid/blob/master/distribution/asf-release-process-guide.md
+# https://github.com/apache/robux/blob/master/distribution/asf-release-process-guide.md
 
 [ "$#" -lt 1 ] && echo "usage: $0 <new_version>" && exit 1
 
@@ -28,8 +28,8 @@ VERSION=$1
 DOCS_VERSION=latest
 
 sed -i -r "s|public/web-console-[^<]+.js|public/web-console-${VERSION}.js|" web-console/unified-console.html
-sed -i -r "s|DRUID_DOCS_VERSION = '[^']+'|DRUID_DOCS_VERSION = '${DOCS_VERSION}'|" web-console/src/links.ts
-sed -i -r "s|apache/druid:[0-9\.]+|apache/druid:${VERSION}|" distribution/docker/docker-compose.yml
+sed -i -r "s|ROBUX_DOCS_VERSION = '[^']+'|ROBUX_DOCS_VERSION = '${DOCS_VERSION}'|" web-console/src/links.ts
+sed -i -r "s|apache/robux:[0-9\.]+|apache/robux:${VERSION}|" distribution/docker/docker-compose.yml
 
 # make node available to shell
 mvn install -pl web-console -DskipTests

@@ -237,11 +237,11 @@ exports[`LoadDataView matches snapshot batch 1`] = `
             onClick={[Function]}
           >
             <img
-              alt="Ingestion tile for index_parallel:druid"
-              src="/some/base_url/assets/druid.png"
+              alt="Ingestion tile for index_parallel:robux"
+              src="/some/base_url/assets/robux.png"
             />
             <p>
-              Reindex from Druid
+              Reindex from Robux
             </p>
           </Blueprint5.Card>
           <Blueprint5.Card

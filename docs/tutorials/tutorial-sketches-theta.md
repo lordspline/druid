@@ -23,7 +23,7 @@ sidebar_label: Theta sketches tutorial
   ~ under the License.
   -->
 
-Apache Druid can power real-time collection, streaming, and interactive visualization of clickstreams.
+Apache Robux can power real-time collection, streaming, and interactive visualization of clickstreams.
 A common problem in clickstream analytics is counting unique things, like visitors or sessions.
 Generally this involves scanning through all detail data, because unique counts do not add up as you aggregate the numbers.
 
@@ -47,11 +47,11 @@ Enter Theta sketches.
 
 Use Theta sketches to obtain a fast approximate estimate for the distinct count of values used to build the sketches.
 Theta sketches are a probabilistic data structure to enable approximate analysis of big data with known error distributions.
-Druid's implementation relies on the [Apache DataSketches](https://datasketches.apache.org/) library.
+Robux's implementation relies on the [Apache DataSketches](https://datasketches.apache.org/) library.
 
 The following properties describe Theta sketches:
-* Similar to other sketches, Theta sketches are **mergeable**. This means you can work with rolled up data and merge the sketches over various time intervals. Thus, you can take advantage of Druid's rollup feature.
-* Specific to sketches supported in Druid, Theta sketches support **set operations**. Given two Theta sketches over subsets of data, you can compute the union, intersection, or set difference of the two subsets. This enables you to answer questions like the number of visitors that watched a specific combination of episodes from the example.
+* Similar to other sketches, Theta sketches are **mergeable**. This means you can work with rolled up data and merge the sketches over various time intervals. Thus, you can take advantage of Robux's rollup feature.
+* Specific to sketches supported in Robux, Theta sketches support **set operations**. Given two Theta sketches over subsets of data, you can compute the union, intersection, or set difference of the two subsets. This enables you to answer questions like the number of visitors that watched a specific combination of episodes from the example.
 
 In this tutorial, you will learn how to do the following:
 * Create Theta sketches from your input data at ingestion time.
@@ -60,7 +60,7 @@ In this tutorial, you will learn how to do the following:
 
 ## Prerequisites
 
-Before proceeding, download Druid as described in the [single-machine quickstart](./index.md) and have it running on your local machine. You don't need to load any data into the Druid cluster.
+Before proceeding, download Robux as described in the [single-machine quickstart](./index.md) and have it running on your local machine. You don't need to load any data into the Robux cluster.
 
 It's helpful to have finished [Tutorial: Loading a file](../tutorials/tutorial-batch.md) and [Tutorial: Querying data](../tutorials/tutorial-query.md).
 
@@ -97,7 +97,7 @@ date,uid,show,episode
 
 ## Ingest data using Theta sketches
 
-Load the sample dataset using the [`INSERT INTO`](../multi-stage-query/reference.md#insert) statement and the [`EXTERN`](../multi-stage-query/reference.md#extern-function) function to ingest the sample data inline. In the [Druid web console](../operations/web-console.md), go to the **Query** view and run the following query:
+Load the sample dataset using the [`INSERT INTO`](../multi-stage-query/reference.md#insert) statement and the [`EXTERN`](../multi-stage-query/reference.md#extern-function) function to ingest the sample data inline. In the [Robux web console](../operations/web-console.md), go to the **Query** view and run the following query:
 
 ```sql
 INSERT INTO "ts_tutorial"
@@ -130,14 +130,14 @@ The `GROUP BY` statement groups the entries for each episode of a show watched o
 
 Calculating a unique count estimate from a Theta sketch column involves the following steps:
 
-1. Merge the Theta sketches in the column by means of the `DS_THETA` [aggregator function](../querying/sql-aggregations.md#theta-sketch-functions) in Druid SQL.
+1. Merge the Theta sketches in the column by means of the `DS_THETA` [aggregator function](../querying/sql-aggregations.md#theta-sketch-functions) in Robux SQL.
 2. Retrieve the estimate from the merged sketch with the [`THETA_SKETCH_ESTIMATE`](../querying/sql-scalar.md#theta-sketch-functions) function.
 
 Between steps 1 and 2, you can apply set functions as demonstrated later in [Set operations](#set-operations).
 
 ### Basic counting 
 
-Let's first see what the data looks like in Druid. Run the following SQL statement in the query editor:
+Let's first see what the data looks like in Robux. Run the following SQL statement in the query editor:
 ```sql
 SELECT * FROM ts_tutorial
 ```
@@ -161,7 +161,7 @@ FROM ts_tutorial
 
 ### Filtered metrics
 
-Druid has the capability to use [filtered metrics](../querying/sql-aggregations.md). This means you can include a WHERE clause in the SELECT part of the query.
+Robux has the capability to use [filtered metrics](../querying/sql-aggregations.md). This means you can include a WHERE clause in the SELECT part of the query.
 :::info
  In the case of Theta sketches, the filter clause has to be inserted between the aggregator and the estimator.
 :::
@@ -244,19 +244,19 @@ FROM ts_tutorial
 
 ## Conclusions
 
-- Counting distinct things for large data sets can be done with Theta sketches in Apache Druid.
+- Counting distinct things for large data sets can be done with Theta sketches in Apache Robux.
 - This allows us to use rollup and discard the individual values, just retaining statistical approximations in the sketches.
 - With Theta sketch set operations, affinity analysis is easier, for example, to answer questions such as which segments correlate or overlap by how much.
 
 ## Learn more
 
 See the following topics for more information:
-* [Theta sketch](../development/extensions-core/datasketches-theta.md) for reference on ingestion and native queries on Theta sketches in Druid.
-* [Theta sketch scalar functions](../querying/sql-scalar.md#theta-sketch-functions) and [Theta sketch aggregation functions](../querying/sql-aggregations.md#theta-sketch-functions) for Theta sketch functions in Druid SQL queries.
-* [Sketches for high cardinality columns](../ingestion/schema-design.md#sketches-for-high-cardinality-columns) for Druid schema design involving sketches.
-* [DataSketches extension](../development/extensions-core/datasketches-extension.md) for more information about the DataSketches extension in Druid as well as other available sketches.
+* [Theta sketch](../development/extensions-core/datasketches-theta.md) for reference on ingestion and native queries on Theta sketches in Robux.
+* [Theta sketch scalar functions](../querying/sql-scalar.md#theta-sketch-functions) and [Theta sketch aggregation functions](../querying/sql-aggregations.md#theta-sketch-functions) for Theta sketch functions in Robux SQL queries.
+* [Sketches for high cardinality columns](../ingestion/schema-design.md#sketches-for-high-cardinality-columns) for Robux schema design involving sketches.
+* [DataSketches extension](../development/extensions-core/datasketches-extension.md) for more information about the DataSketches extension in Robux as well as other available sketches.
 * The accuracy of queries using Theta sketches is governed by the size _k_ of the Theta sketch and by the operations you perform. See more details in the [Apache DataSketches documentation](https://datasketches.apache.org/docs/Theta/ThetaAccuracy.html).
 
 ## Acknowledgments
 
-This tutorial is adapted from a [blog post](https://blog.hellmar-becker.de/2022/06/05/druid-data-cookbook-counting-unique-visitors-for-overlapping-segments/) by community member Hellmar Becker.
+This tutorial is adapted from a [blog post](https://blog.hellmar-becker.de/2022/06/05/robux-data-cookbook-counting-unique-visitors-for-overlapping-segments/) by community member Hellmar Becker.

@@ -23,9 +23,9 @@ title: "Export Metadata Tool"
   -->
 
 
-Druid includes an `export-metadata` tool for assisting with migration of cluster metadata and deep storage.
+Robux includes an `export-metadata` tool for assisting with migration of cluster metadata and deep storage.
 
-This tool exports the contents of the following Druid metadata tables:
+This tool exports the contents of the following Robux metadata tables:
 
 - segments
 - rules
@@ -47,14 +47,14 @@ The `export-metadata` tool provides the following options:
 
 ### Connection Properties
 
-- `--connectURI`: The URI of the Derby database, e.g. `jdbc:derby://localhost:1527/var/druid/metadata.db;create=true`
+- `--connectURI`: The URI of the Derby database, e.g. `jdbc:derby://localhost:1527/var/robux/metadata.db;create=true`
 - `--user`: Username
 - `--password`: Password
-- `--base`: corresponds to the value of `druid.metadata.storage.tables.base` in the configuration, `druid` by default.
+- `--base`: corresponds to the value of `robux.metadata.storage.tables.base` in the configuration, `robux` by default.
 
 ### Output Path
 
-- `--output-path`, `-o`: The output directory of the tool. CSV files for the Druid segments, rules, config, datasource, and supervisors tables will be written to this directory.
+- `--output-path`, `-o`: The output directory of the tool. CSV files for the Robux segments, rules, config, datasource, and supervisors tables will be written to this directory.
 
 ### Export Format Options
 
@@ -77,11 +77,11 @@ When copying the local deep storage segments to S3, the rewrite performed by thi
 For example, if the cluster had the following local deep storage configuration:
 
 ```
-druid.storage.type=local
-druid.storage.storageDirectory=/druid/segments
+robux.storage.type=local
+robux.storage.storageDirectory=/robux/segments
 ```
 
-If the target S3 bucket was `migration`, with a base key of `example`, the contents of `s3://migration/example/` must be identical to that of `/druid/segments` on the old local filesystem.
+If the target S3 bucket was `migration`, with a base key of `example`, the contents of `s3://migration/example/` must be identical to that of `/robux/segments` on the old local filesystem.
 
 #### Migration to HDFS Deep Storage
 
@@ -96,11 +96,11 @@ When copying the local deep storage segments to HDFS, the rewrite performed by t
 For example, if the cluster had the following local deep storage configuration:
 
 ```
-druid.storage.type=local
-druid.storage.storageDirectory=/druid/segments
+robux.storage.type=local
+robux.storage.storageDirectory=/robux/segments
 ```
 
-If the target hadoopStorageDirectory was `/migration/example`, the contents of `hdfs:///migration/example/` must be identical to that of `/druid/segments` on the old local filesystem.
+If the target hadoopStorageDirectory was `/migration/example`, the contents of `hdfs:///migration/example/` must be identical to that of `/robux/segments` on the old local filesystem.
 
 Additionally, the segments paths in local deep storage contain colons(`:`) in their names, e.g.:
 
@@ -108,7 +108,7 @@ Additionally, the segments paths in local deep storage contain colons(`:`) in th
 
 HDFS cannot store files containing colons, and this tool expects the colons to be replaced with underscores (`_`) in HDFS.
 
-In this example, the `wikipedia` segment above under `/druid/segments` in local deep storage would need to be migrated to HDFS under `hdfs:///migration/example/` with the following path:
+In this example, the `wikipedia` segment above under `/robux/segments` in local deep storage would need to be migrated to HDFS under `hdfs:///migration/example/` with the following path:
 
 `wikipedia/2016-06-27T02_00_00.000Z_2016-06-27T03_00_00.000Z/2019-05-03T21_57_15.950Z/1/index.zip`
 
@@ -125,26 +125,26 @@ When copying the local deep storage segments to a new path, the rewrite performe
 For example, if the cluster had the following local deep storage configuration:
 
 ```
-druid.storage.type=local
-druid.storage.storageDirectory=/druid/segments
+robux.storage.type=local
+robux.storage.storageDirectory=/robux/segments
 ```
 
-If the new path  was `/migration/example`, the contents of `/migration/example/` must be identical to that of `/druid/segments` on the local filesystem.
+If the new path  was `/migration/example`, the contents of `/migration/example/` must be identical to that of `/robux/segments` on the local filesystem.
 
 ## Running the tool
 
-To use the tool, you can run the following from the root of the Druid package:
+To use the tool, you can run the following from the root of the Robux package:
 
 ```bash
-cd ${DRUID_ROOT}
+cd ${ROBUX_ROOT}
 mkdir -p /tmp/csv
-java -classpath "lib/*" -Dlog4j.configurationFile=conf/druid/cluster/_common/log4j2.xml -Ddruid.extensions.directory="extensions" -Ddruid.extensions.loadList=[] org.apache.druid.cli.Main tools export-metadata --connectURI "jdbc:derby://localhost:1527/var/druid/metadata.db;" -o /tmp/csv
+java -classpath "lib/*" -Dlog4j.configurationFile=conf/robux/cluster/_common/log4j2.xml -Drobux.extensions.directory="extensions" -Drobux.extensions.loadList=[] org.apache.robux.cli.Main tools export-metadata --connectURI "jdbc:derby://localhost:1527/var/robux/metadata.db;" -o /tmp/csv
 ```
 
 In the example command above:
 
-- `lib` is the Druid lib directory
-- `extensions` is the Druid extensions directory
+- `lib` is the Robux lib directory
+- `extensions` is the Robux extensions directory
 - `/tmp/csv` is the output directory. Please make sure that this directory exists.
 
 ## Importing Metadata
@@ -162,41 +162,41 @@ These example import commands expect `/tmp/csv` and its contents to be accessibl
 ### Derby
 
 ```sql
-CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'DRUID_SEGMENTS','/tmp/csv/druid_segments.csv',',','"',null,0);
+CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'ROBUX_SEGMENTS','/tmp/csv/robux_segments.csv',',','"',null,0);
 
-CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'DRUID_RULES','/tmp/csv/druid_rules.csv',',','"',null,0);
+CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'ROBUX_RULES','/tmp/csv/robux_rules.csv',',','"',null,0);
 
-CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'DRUID_CONFIG','/tmp/csv/druid_config.csv',',','"',null,0);
+CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'ROBUX_CONFIG','/tmp/csv/robux_config.csv',',','"',null,0);
 
-CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'DRUID_DATASOURCE','/tmp/csv/druid_dataSource.csv',',','"',null,0);
+CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'ROBUX_DATASOURCE','/tmp/csv/robux_dataSource.csv',',','"',null,0);
 
-CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'DRUID_SUPERVISORS','/tmp/csv/druid_supervisors.csv',',','"',null,0);
+CALL SYSCS_UTIL.SYSCS_IMPORT_TABLE (null,'ROBUX_SUPERVISORS','/tmp/csv/robux_supervisors.csv',',','"',null,0);
 ```
 
 ### MySQL
 
 ```sql
-LOAD DATA INFILE '/tmp/csv/druid_segments.csv' INTO TABLE druid_segments FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (id,dataSource,created_date,start,end,partitioned,version,used,payload); SHOW WARNINGS;
+LOAD DATA INFILE '/tmp/csv/robux_segments.csv' INTO TABLE robux_segments FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (id,dataSource,created_date,start,end,partitioned,version,used,payload); SHOW WARNINGS;
 
-LOAD DATA INFILE '/tmp/csv/druid_rules.csv' INTO TABLE druid_rules FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (id,dataSource,version,payload); SHOW WARNINGS;
+LOAD DATA INFILE '/tmp/csv/robux_rules.csv' INTO TABLE robux_rules FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (id,dataSource,version,payload); SHOW WARNINGS;
 
-LOAD DATA INFILE '/tmp/csv/druid_config.csv' INTO TABLE druid_config FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (name,payload); SHOW WARNINGS;
+LOAD DATA INFILE '/tmp/csv/robux_config.csv' INTO TABLE robux_config FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (name,payload); SHOW WARNINGS;
 
-LOAD DATA INFILE '/tmp/csv/druid_dataSource.csv' INTO TABLE druid_dataSource FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (dataSource,created_date,commit_metadata_payload,commit_metadata_sha1); SHOW WARNINGS;
+LOAD DATA INFILE '/tmp/csv/robux_dataSource.csv' INTO TABLE robux_dataSource FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (dataSource,created_date,commit_metadata_payload,commit_metadata_sha1); SHOW WARNINGS;
 
-LOAD DATA INFILE '/tmp/csv/druid_supervisors.csv' INTO TABLE druid_supervisors FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (id,spec_id,created_date,payload); SHOW WARNINGS;
+LOAD DATA INFILE '/tmp/csv/robux_supervisors.csv' INTO TABLE robux_supervisors FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (id,spec_id,created_date,payload); SHOW WARNINGS;
 ```
 
 ### PostgreSQL
 
 ```sql
-COPY druid_segments(id,dataSource,created_date,start,"end",partitioned,version,used,payload) FROM '/tmp/csv/druid_segments.csv' DELIMITER ',' CSV;
+COPY robux_segments(id,dataSource,created_date,start,"end",partitioned,version,used,payload) FROM '/tmp/csv/robux_segments.csv' DELIMITER ',' CSV;
 
-COPY druid_rules(id,dataSource,version,payload) FROM '/tmp/csv/druid_rules.csv' DELIMITER ',' CSV;
+COPY robux_rules(id,dataSource,version,payload) FROM '/tmp/csv/robux_rules.csv' DELIMITER ',' CSV;
 
-COPY druid_config(name,payload) FROM '/tmp/csv/druid_config.csv' DELIMITER ',' CSV;
+COPY robux_config(name,payload) FROM '/tmp/csv/robux_config.csv' DELIMITER ',' CSV;
 
-COPY druid_dataSource(dataSource,created_date,commit_metadata_payload,commit_metadata_sha1) FROM '/tmp/csv/druid_dataSource.csv' DELIMITER ',' CSV;
+COPY robux_dataSource(dataSource,created_date,commit_metadata_payload,commit_metadata_sha1) FROM '/tmp/csv/robux_dataSource.csv' DELIMITER ',' CSV;
 
-COPY druid_supervisors(id,spec_id,created_date,payload) FROM '/tmp/csv/druid_supervisors.csv' DELIMITER ',' CSV;
+COPY robux_supervisors(id,spec_id,created_date,payload) FROM '/tmp/csv/robux_supervisors.csv' DELIMITER ',' CSV;
 ```

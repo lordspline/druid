@@ -40,20 +40,20 @@ cp -r docker/* $TARGET_DIR/docker
 cd $TARGET_DIR/docker
 
 # Grab the distribution if needed (skipped if no change.)
-DISTRIB_FILE=apache-druid-$DRUID_VERSION-bin.tar.gz
+DISTRIB_FILE=apache-robux-$ROBUX_VERSION-bin.tar.gz
 SOURCE_FILE=$PARENT_DIR/distribution/target/$DISTRIB_FILE
 if [[ ! -f $DISTRIB_FILE || $SOURCE_FILE -nt $DISTRIB_FILE ]]; then
 	cp $SOURCE_FILE .
 fi
 
-docker build -t $DRUID_IT_IMAGE_NAME \
-	--build-arg DRUID_VERSION=$DRUID_VERSION \
+docker build -t $ROBUX_IT_IMAGE_NAME \
+	--build-arg ROBUX_VERSION=$ROBUX_VERSION \
 	--build-arg MYSQL_VERSION=$MYSQL_VERSION \
 	--build-arg MARIADB_VERSION=$MARIADB_VERSION \
 	--build-arg CONFLUENT_VERSION=$CONFLUENT_VERSION \
 	--build-arg HADOOP_VERSION=$HADOOP_VERSION \
 	--build-arg MYSQL_DRIVER_CLASSNAME=$MYSQL_DRIVER_CLASSNAME \
-	--build-arg DRUID_TESTING_TOOLS_VERSION=$DRUID_VERSION \
+	--build-arg ROBUX_TESTING_TOOLS_VERSION=$ROBUX_VERSION \
 	.
 
 if [[ -z "${BACKWARD_COMPATIBILITY_IT_ENABLED:-""}" || $BACKWARD_COMPATIBILITY_IT_ENABLED != "true" ]]; then
@@ -61,15 +61,15 @@ if [[ -z "${BACKWARD_COMPATIBILITY_IT_ENABLED:-""}" || $BACKWARD_COMPATIBILITY_I
   exit 0
 fi
 
-# Download the previous druid tar
-curl -L $DRUID_PREVIOUS_VERSION_DOWNLOAD_URL --output apache-druid-$DRUID_PREVIOUS_VERSION-bin.tar.gz
+# Download the previous robux tar
+curl -L $ROBUX_PREVIOUS_VERSION_DOWNLOAD_URL --output apache-robux-$ROBUX_PREVIOUS_VERSION-bin.tar.gz
 
-docker build -t $DRUID_PREVIOUS_IT_IMAGE_NAME \
-	--build-arg DRUID_VERSION=$DRUID_PREVIOUS_VERSION \
+docker build -t $ROBUX_PREVIOUS_IT_IMAGE_NAME \
+	--build-arg ROBUX_VERSION=$ROBUX_PREVIOUS_VERSION \
 	--build-arg MYSQL_VERSION=$MYSQL_VERSION \
 	--build-arg MARIADB_VERSION=$MARIADB_VERSION \
 	--build-arg CONFLUENT_VERSION=$CONFLUENT_VERSION \
 	--build-arg HADOOP_VERSION=$HADOOP_VERSION \
 	--build-arg MYSQL_DRIVER_CLASSNAME=$MYSQL_DRIVER_CLASSNAME \
-	--build-arg DRUID_TESTING_TOOLS_VERSION=$DRUID_VERSION \
+	--build-arg ROBUX_TESTING_TOOLS_VERSION=$ROBUX_VERSION \
 	.

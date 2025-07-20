@@ -19,10 +19,10 @@
 // This file a modified version of the file located at
 // https://github.com/thlorenz/brace/blob/master/mode/sql.js
 // Originally licensed under the MIT license (https://github.com/thlorenz/brace/blob/master/LICENSE)
-// This file was modified to make the list of keywords more closely adhere to what is found in DruidSQL
+// This file was modified to make the list of keywords more closely adhere to what is found in RobuxSQL
 
 import ace from 'ace-builds/src-noconflict/ace';
-import { dedupe } from 'druid-query-toolkit';
+import { dedupe } from 'robux-query-toolkit';
 
 import { SQL_CONSTANTS, SQL_DYNAMICS, SQL_KEYWORDS } from '../../lib/keywords';
 import { SQL_DATA_TYPES, SQL_FUNCTIONS } from '../../lib/sql-docs';

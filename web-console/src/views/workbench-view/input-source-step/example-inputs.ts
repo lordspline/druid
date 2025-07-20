@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import type { InputFormat, InputSource } from '../../../druid-models';
+import type { InputFormat, InputSource } from '../../../robux-models';
 
 export interface ExampleInput {
   name: string;
@@ -90,7 +90,7 @@ export const EXAMPLE_INPUTS: ExampleInput[] = [
     description: 'One day of wikipedia edits (JSON)',
     inputSource: {
       type: 'http',
-      uris: ['https://druid.apache.org/data/wikipedia.json.gz'],
+      uris: ['https://robux.apache.org/data/wikipedia.json.gz'],
     },
   },
   {

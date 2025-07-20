@@ -32,17 +32,17 @@ import { ReindexDataConnector } from './component/load-data/data-connector/reind
 import { DataLoader } from './component/load-data/data-loader';
 import { saveScreenshotIfError } from './util/debug';
 import {
-  DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
+  ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR,
   runIndexTask,
   UNIFIED_CONSOLE_URL,
-} from './util/druid';
+} from './util/robux';
 import { createBrowser, createPage } from './util/playwright';
 import { retryIfJestAssertionError } from './util/retry';
 import { waitTillWebConsoleReady } from './util/setup';
 
 jest.setTimeout(5 * 60 * 1000);
 
-describe('Reindexing from Druid', () => {
+describe('Reindexing from Robux', () => {
   let browser: playwright.Browser;
   let page: playwright.Page;
 
@@ -105,7 +105,7 @@ describe('Reindexing from Druid', () => {
 });
 
 function loadInitialData(datasourceName: string) {
-  const ingestionSpec = path.join(DRUID_EXAMPLES_QUICKSTART_TUTORIAL_DIR, 'wikipedia-index.json');
+  const ingestionSpec = path.join(ROBUX_EXAMPLES_QUICKSTART_TUTORIAL_DIR, 'wikipedia-index.json');
   const setDatasourceName = `s/wikipedia/${datasourceName}/`;
   const sedCommands = [setDatasourceName];
   runIndexTask(ingestionSpec, sedCommands);
@@ -116,7 +116,7 @@ function validateConnectLocalData(preview: string) {
   expect(lines.length).toBe(500);
   const firstLine = lines[0];
   expect(firstLine).toBe(
-    '[Druid row: {' +
+    '[Robux row: {' +
       '"__time":1442018818771' +
       ',"channel":"#en.wikipedia"' +
       ',"comment":"added project"' +
@@ -135,7 +135,7 @@ function validateConnectLocalData(preview: string) {
   );
   const lastLine = lines[lines.length - 1];
   expect(lastLine).toBe(
-    '[Druid row: {' +
+    '[Robux row: {' +
       '"__time":1442020314823' +
       ',"channel":"#en.wikipedia"' +
       ',"comment":"/* History */[[WP:AWB/T|Typo fixing]], [[WP:AWB/T|typo(s) fixed]]: nothern → northern using [[Project:AWB|AWB]]"' +

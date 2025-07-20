@@ -23,17 +23,17 @@ title: "dump-segment tool"
   -->
 
 
-The DumpSegment tool can be used to dump the metadata or contents of an Apache Druid segment for debugging purposes. Note that the
+The DumpSegment tool can be used to dump the metadata or contents of an Apache Robux segment for debugging purposes. Note that the
 dump is not necessarily a full-fidelity translation of the segment. In particular, not all metadata is included, and
 complex metric values may not be complete.
 
 To run the tool, point it at a segment directory and provide a file for writing output:
 
 ```
-java -classpath "/my/druid/lib/*" -Ddruid.extensions.loadList="[]" org.apache.druid.cli.Main \
+java -classpath "/my/robux/lib/*" -Drobux.extensions.loadList="[]" org.apache.robux.cli.Main \
   tools dump-segment \
-  --directory /home/druid/path/to/segment/ \
-  --out /home/druid/output.txt
+  --directory /home/robux/path/to/segment/ \
+  --out /home/robux/output.txt
 ```
 
 If you use JDK 11 and above, you need to add the following additional parameters
@@ -45,11 +45,11 @@ The following is an example
 
 ```
 java --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED \
-  -classpath "/my/druid/lib/*" \
-  -Ddruid.extensions.loadList="[]" org.apache.druid.cli.Main \
+  -classpath "/my/robux/lib/*" \
+  -Drobux.extensions.loadList="[]" org.apache.robux.cli.Main \
   tools dump-segment \
-  --directory /home/druid/path/to/segment/ \
-  --out /home/druid/output.txt
+  --directory /home/robux/path/to/segment/ \
+  --out /home/robux/output.txt
 ```
 
 ### Output format
@@ -122,7 +122,7 @@ Sample output:
 
 #### Nested column dumps
 
-With `--dump nested`, this tool can be used to examine Druid [nested columns](../querying/nested-columns.md). Using
+With `--dump nested`, this tool can be used to examine Robux [nested columns](../querying/nested-columns.md). Using
 `nested` always requires exactly one `--column name` argument, and takes an optional argument to specify a specific
 nested field in [JSONPath syntax](../querying/sql-json-functions.md#jsonpath-syntax), `--nested-path $.path.to.field`.
 If `--nested-path` is not specified, the output will contain the list of nested fields and their types, the global

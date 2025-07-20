@@ -2,7 +2,7 @@
 id: clean-metadata-store
 title: "Automated cleanup for metadata records"
 sidebar_label: Automated metadata cleanup
-description: "Defines a strategy to maintain Druid metadata store performance by automatically removing leftover records for deleted entities: datasources, supervisors, rules, compaction configuration, audit records, etc. Most applicable to databases with 'high-churn' datasources."
+description: "Defines a strategy to maintain Robux metadata store performance by automatically removing leftover records for deleted entities: datasources, supervisors, rules, compaction configuration, audit records, etc. Most applicable to databases with 'high-churn' datasources."
 ---
 
 <!--
@@ -24,7 +24,7 @@ description: "Defines a strategy to maintain Druid metadata store performance by
   ~ under the License.
   -->
 
-Apache Druid relies on [metadata storage](../design/metadata-storage.md) to track information on data storage, operations, and system configuration.
+Apache Robux relies on [metadata storage](../design/metadata-storage.md) to track information on data storage, operations, and system configuration.
 The metadata store includes the following:
 
 - Segment records
@@ -35,11 +35,11 @@ The metadata store includes the following:
 - Datasource records created by supervisors
 - Indexer task logs
 
-When you delete some entities from Apache Druid, records related to the entity may remain in the metadata store.
+When you delete some entities from Apache Robux, records related to the entity may remain in the metadata store.
 If you have a high datasource churn rate, meaning you frequently create and delete many short-lived datasources or other related entities like compaction configuration or rules, the leftover records can fill your metadata store and cause performance issues.
-To maintain metadata store performance, you can configure Apache Druid to automatically remove records associated with deleted entities from the metadata store.
+To maintain metadata store performance, you can configure Apache Robux to automatically remove records associated with deleted entities from the metadata store.
 
-By default, Druid automatically cleans up metadata older than 90 days.
+By default, Robux automatically cleans up metadata older than 90 days.
 This applies to all metadata entities in this topic except compaction configuration records and indexer task logs, for which cleanup is disabled by default.
 You can configure the retention period for each metadata type, when available, through the record's `durationToRetain` property.
 Certain records may require additional conditions be satisfied before clean up occurs.
@@ -63,7 +63,7 @@ Define the properties in the `coordinator/runtime.properties` file.
 
 The cleanup of one entity may depend on the cleanup of another entity as follows:
 - You have to configure a [kill task for segment records](#segment-records-and-segments-in-deep-storage-kill-task) before you can configure automated cleanup for [rules](#rules-records) or [compaction configuration](#compaction-configuration-records).
-- You have to schedule the metadata management tasks to run at the same or higher frequency as your most frequent cleanup job. For example, if your most frequent cleanup job is every hour, set the metadata store management period to one hour or less: `druid.coordinator.period.metadataStoreManagementPeriod=P1H`.
+- You have to schedule the metadata management tasks to run at the same or higher frequency as your most frequent cleanup job. For example, if your most frequent cleanup job is every hour, set the metadata store management period to one hour or less: `robux.coordinator.period.metadataStoreManagementPeriod=P1H`.
 
 For details on configuration properties, see [Metadata management](../configuration/index.md#metadata-management).
 If you want to skip the details, check out the [example](#example-configuration-for-automated-metadata-cleanup) for configuring automated metadata cleanup.
@@ -86,97 +86,97 @@ Refer to [Data Management on Coordinator](../configuration/index.md#data-managem
 All audit records become eligible for deletion when the `durationToRetain` time has passed since their creation.
 
 Audit cleanup uses the following configuration:
- - `druid.coordinator.kill.audit.on`: When `true`, enables cleanup for audit records.
- - `druid.coordinator.kill.audit.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible audit records. Defaults to `P1D`.
- - `druid.coordinator.kill.audit.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that audit records become eligible for deletion.
+ - `robux.coordinator.kill.audit.on`: When `true`, enables cleanup for audit records.
+ - `robux.coordinator.kill.audit.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible audit records. Defaults to `P1D`.
+ - `robux.coordinator.kill.audit.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that audit records become eligible for deletion.
 
 ### Supervisor records
 
 Supervisor records become eligible for deletion when the supervisor is terminated and the `durationToRetain` time has passed since their creation.
 
 Supervisor cleanup uses the following configuration:
- - `druid.coordinator.kill.supervisor.on`: When `true`, enables cleanup for supervisor records.
- - `druid.coordinator.kill.supervisor.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible supervisor records. Defaults to `P1D`.
- - `druid.coordinator.kill.supervisor.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that supervisor records become eligible for deletion.
+ - `robux.coordinator.kill.supervisor.on`: When `true`, enables cleanup for supervisor records.
+ - `robux.coordinator.kill.supervisor.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible supervisor records. Defaults to `P1D`.
+ - `robux.coordinator.kill.supervisor.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that supervisor records become eligible for deletion.
 
 ### Rules records
 
 Rule records become eligible for deletion when all segments for the datasource have been killed by the kill task and the `durationToRetain` time has passed since their creation. Automated cleanup for rules requires a [kill task](#segment-records-and-segments-in-deep-storage-kill-task).
 
 Rule cleanup uses the following configuration:
- - `druid.coordinator.kill.rule.on`: When `true`, enables cleanup for rules records.
- - `druid.coordinator.kill.rule.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible rules records. Defaults to `P1D`.
- - `druid.coordinator.kill.rule.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that rules records become eligible for deletion.
+ - `robux.coordinator.kill.rule.on`: When `true`, enables cleanup for rules records.
+ - `robux.coordinator.kill.rule.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible rules records. Defaults to `P1D`.
+ - `robux.coordinator.kill.rule.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that rules records become eligible for deletion.
 
 ### Compaction configuration records
 
-Druid retains all compaction configuration records by default, which should be suitable for most use cases.
+Robux retains all compaction configuration records by default, which should be suitable for most use cases.
 If you create and delete short-lived datasources with high frequency, and you set auto compaction configuration on those datasources, then consider turning on automated cleanup of compaction configuration records.
 
 :::info
- With automated cleanup of compaction configuration records, if you create a compaction configuration for some datasource before the datasource exists, for example if initial ingestion is still ongoing, Druid may remove the compaction configuration.
+ With automated cleanup of compaction configuration records, if you create a compaction configuration for some datasource before the datasource exists, for example if initial ingestion is still ongoing, Robux may remove the compaction configuration.
 To prevent the configuration from being prematurely removed, wait for the datasource to be created before applying the compaction configuration to the datasource.
 :::
 
-Unlike other metadata records, compaction configuration records do not have a retention period set by `durationToRetain`. Druid deletes compaction configuration records at every cleanup cycle for inactive datasources, which do not have segments either used or unused.
+Unlike other metadata records, compaction configuration records do not have a retention period set by `durationToRetain`. Robux deletes compaction configuration records at every cleanup cycle for inactive datasources, which do not have segments either used or unused.
 
-Compaction configuration records in the `druid_config` table become eligible for deletion after all segments for the datasource have been killed by the kill task. Automated cleanup for compaction configuration requires a [kill task](#segment-records-and-segments-in-deep-storage-kill-task).
+Compaction configuration records in the `robux_config` table become eligible for deletion after all segments for the datasource have been killed by the kill task. Automated cleanup for compaction configuration requires a [kill task](#segment-records-and-segments-in-deep-storage-kill-task).
 
 Compaction configuration cleanup uses the following configuration:
- - `druid.coordinator.kill.compaction.on`: When `true`, enables cleanup for compaction configuration records.
- - `druid.coordinator.kill.compaction.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible compaction configuration records. Defaults to `P1D`.
+ - `robux.coordinator.kill.compaction.on`: When `true`, enables cleanup for compaction configuration records.
+ - `robux.coordinator.kill.compaction.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible compaction configuration records. Defaults to `P1D`.
 
 
 :::info
-If you already have an extremely large compaction configuration, you may not be able to delete compaction configuration due to size limits with the audit log. In this case you can set `druid.audit.manager.maxPayloadSizeBytes` and `druid.audit.manager.skipNullField` to avoid the auditing issue. See [Audit logging](../configuration/index.md#audit-logging).
+If you already have an extremely large compaction configuration, you may not be able to delete compaction configuration due to size limits with the audit log. In this case you can set `robux.audit.manager.maxPayloadSizeBytes` and `robux.audit.manager.skipNullField` to avoid the auditing issue. See [Audit logging](../configuration/index.md#audit-logging).
 :::
 
 ### Datasource records created by supervisors
 
-Datasource records created by supervisors become eligible for deletion when the supervisor is terminated or does not exist in the `druid_supervisors` table and the `durationToRetain` time has passed since their creation.
+Datasource records created by supervisors become eligible for deletion when the supervisor is terminated or does not exist in the `robux_supervisors` table and the `durationToRetain` time has passed since their creation.
 
 Datasource cleanup uses the following configuration:
- - `druid.coordinator.kill.datasource.on`: When `true`, enables cleanup datasources created by supervisors.
- - `druid.coordinator.kill.datasource.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible datasource records. Defaults to `P1D`.
- - `druid.coordinator.kill.datasource.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that datasource records become eligible for deletion.
+ - `robux.coordinator.kill.datasource.on`: When `true`, enables cleanup datasources created by supervisors.
+ - `robux.coordinator.kill.datasource.period`: Defines the frequency in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) for the cleanup job to check for and delete eligible datasource records. Defaults to `P1D`.
+ - `robux.coordinator.kill.datasource.durationToRetain`: Defines the retention period in [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601#Durations) after creation that datasource records become eligible for deletion.
 
 ### Indexer task logs
 
 You can configure the Overlord to periodically delete indexer task logs and associated metadata. During cleanup, the Overlord removes the following:
 * Indexer task logs from deep storage.
-* Indexer task log metadata from the tasks table in [metadata storage](../configuration/index.md#metadata-storage) (named `druid_tasks` by default).
+* Indexer task log metadata from the tasks table in [metadata storage](../configuration/index.md#metadata-storage) (named `robux_tasks` by default).
 
 To configure cleanup of task logs by the Overlord, set the following properties in the `overlord/runtime.properties` file.
 
 Indexer task log cleanup on the Overlord uses the following configuration:
-- `druid.indexer.logs.kill.enabled`: When `true`, enables cleanup of task logs.
-- `druid.indexer.logs.kill.durationToRetain`: Defines the length of time in milliseconds to retain task logs.
-- `druid.indexer.logs.kill.initialDelay`: Defines the length of time in milliseconds after the Overlord starts before it executes its first job to kill task logs.
-- `druid.indexer.logs.kill.delay`: The length of time in milliseconds between jobs to kill task logs.
+- `robux.indexer.logs.kill.enabled`: When `true`, enables cleanup of task logs.
+- `robux.indexer.logs.kill.durationToRetain`: Defines the length of time in milliseconds to retain task logs.
+- `robux.indexer.logs.kill.initialDelay`: Defines the length of time in milliseconds after the Overlord starts before it executes its first job to kill task logs.
+- `robux.indexer.logs.kill.delay`: The length of time in milliseconds between jobs to kill task logs.
 
 For more detail, see [Task logging](../configuration/index.md#task-logging).
 
 
 ## Disable automated metadata cleanup
 
-Druid automatically cleans up metadata records, excluding compaction configuration records and indexer task logs.
+Robux automatically cleans up metadata records, excluding compaction configuration records and indexer task logs.
 To disable automated metadata cleanup, set the following properties in the `coordinator/runtime.properties` file:
 
 ```properties
 # Keep unused segments
-druid.coordinator.kill.on=false
+robux.coordinator.kill.on=false
 
 # Keep audit records
-druid.coordinator.kill.audit.on=false
+robux.coordinator.kill.audit.on=false
 
 # Keep supervisor records
-druid.coordinator.kill.supervisor.on=false
+robux.coordinator.kill.supervisor.on=false
 
 # Keep rules records
-druid.coordinator.kill.rule.on=false
+robux.coordinator.kill.rule.on=false
 
 # Keep datasource records created by supervisors
-druid.coordinator.kill.datasource.on=false
+robux.coordinator.kill.datasource.on=false
 ```
 
 ## Example configuration for automated metadata cleanup
@@ -186,43 +186,43 @@ Consider a scenario where you have scripts to create and delete hundreds of data
 ```properties
 ...
 # Schedule the metadata management store task for every hour:
-druid.coordinator.period.metadataStoreManagementPeriod=PT1H
+robux.coordinator.period.metadataStoreManagementPeriod=PT1H
 
 # Set a kill task to poll every day to delete segment records and segments
-# in deep storage > 4 days old after a 7-day buffer period. When druid.coordinator.kill.on is set to true,
+# in deep storage > 4 days old after a 7-day buffer period. When robux.coordinator.kill.on is set to true,
 # you can set killDataSourceWhitelist in the dynamic configuration to limit
 # the datasources that can be killed.
 # Required also for automated cleanup of rules and compaction configuration.
 
-druid.coordinator.kill.on=true
-druid.coordinator.kill.period=P1D
-druid.coordinator.kill.durationToRetain=P4D
-druid.coordinator.kill.bufferPeriod=P7D
-druid.coordinator.kill.maxSegments=1000
+robux.coordinator.kill.on=true
+robux.coordinator.kill.period=P1D
+robux.coordinator.kill.durationToRetain=P4D
+robux.coordinator.kill.bufferPeriod=P7D
+robux.coordinator.kill.maxSegments=1000
 
 # Poll every day to delete audit records > 30 days old
-druid.coordinator.kill.audit.on=true
-druid.coordinator.kill.audit.period=P1D
-druid.coordinator.kill.audit.durationToRetain=P30D
+robux.coordinator.kill.audit.on=true
+robux.coordinator.kill.audit.period=P1D
+robux.coordinator.kill.audit.durationToRetain=P30D
 
 # Poll every day to delete supervisor records > 4 days old
-druid.coordinator.kill.supervisor.on=true
-druid.coordinator.kill.supervisor.period=P1D
-druid.coordinator.kill.supervisor.durationToRetain=P4D
+robux.coordinator.kill.supervisor.on=true
+robux.coordinator.kill.supervisor.period=P1D
+robux.coordinator.kill.supervisor.durationToRetain=P4D
 
 # Poll every day to delete rules records > 4 days old
-druid.coordinator.kill.rule.on=true
-druid.coordinator.kill.rule.period=P1D
-druid.coordinator.kill.rule.durationToRetain=P4D
+robux.coordinator.kill.rule.on=true
+robux.coordinator.kill.rule.period=P1D
+robux.coordinator.kill.rule.durationToRetain=P4D
 
 # Poll every day to delete compaction configuration records
-druid.coordinator.kill.compaction.on=true
-druid.coordinator.kill.compaction.period=P1D
+robux.coordinator.kill.compaction.on=true
+robux.coordinator.kill.compaction.period=P1D
 
 # Poll every day to delete datasource records created by supervisors > 4 days old
-druid.coordinator.kill.datasource.on=true
-druid.coordinator.kill.datasource.period=P1D
-druid.coordinator.kill.datasource.durationToRetain=P4D
+robux.coordinator.kill.datasource.on=true
+robux.coordinator.kill.datasource.period=P1D
+robux.coordinator.kill.datasource.durationToRetain=P4D
 ...
 ```
 

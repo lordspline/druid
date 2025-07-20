@@ -17,8 +17,8 @@
  */
 
 import { Duration } from 'chronoshift';
-import type { SqlExpression } from 'druid-query-toolkit';
-import { fitFilterPatterns } from 'druid-query-toolkit';
+import type { SqlExpression } from 'robux-query-toolkit';
+import { fitFilterPatterns } from 'robux-query-toolkit';
 
 export function getTimeSpanInExpression(
   expression: SqlExpression,

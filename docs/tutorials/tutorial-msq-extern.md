@@ -25,25 +25,25 @@ description: How to generate a query that references externally hosted data
   -->
 
 :::info
- This page describes SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md)
- extension, new in Druid 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
+ This page describes SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md)
+ extension, new in Robux 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
  ingestion method is right for you.
 :::
 
 This tutorial demonstrates how to generate a query that references externally hosted data using the **Connect external data** wizard.
 
-The following example uses EXTERN to query a JSON file located at https://druid.apache.org/data/wikipedia.json.gz.
+The following example uses EXTERN to query a JSON file located at https://robux.apache.org/data/wikipedia.json.gz.
 
-Although you can manually create a query in the UI, you can use Druid to generate a base query for you that you can modify to meet your requirements.
+Although you can manually create a query in the UI, you can use Robux to generate a base query for you that you can modify to meet your requirements.
 
 To generate a query from external data, do the following:
 
 1. In the **Query** view of the web console, click **Connect external data**.
-2. On the **Select input type** screen, choose **HTTP(s)** and enter the following value in the **URIs** field: `https://druid.apache.org/data/wikipedia.json.gz`. Leave the HTTP auth username and password blank.
+2. On the **Select input type** screen, choose **HTTP(s)** and enter the following value in the **URIs** field: `https://robux.apache.org/data/wikipedia.json.gz`. Leave the HTTP auth username and password blank.
 3. Click **Connect data**.
-4. On the **Parse** screen, you can perform additional actions before you load the data into Druid:
+4. On the **Parse** screen, you can perform additional actions before you load the data into Robux:
    - Expand a row to see what data it corresponds to from the source.
-   - Customize how Druid handles the data by selecting the **Input format** and its related options, such as adding **JSON parser features** for JSON files.
+   - Customize how Robux handles the data by selecting the **Input format** and its related options, such as adding **JSON parser features** for JSON files.
 5. When you're ready, click **Done**. You're returned to the **Query** view where you can see the starter query that will insert the data from the external source into a table named `wikipedia`.
 
    <details>
@@ -54,7 +54,7 @@ To generate a query from external data, do the following:
    WITH ext AS (SELECT *
    FROM TABLE(
      EXTERN(
-       '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+       '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
        '{"type":"json"}',
        '[{"name":"isRobot","type":"string"},{"name":"channel","type":"string"},{"name":"timestamp","type":"string"},{"name":"flags","type":"string"},{"name":"isUnpatrolled","type":"string"},{"name":"page","type":"string"},{"name":"diffUrl","type":"string"},{"name":"added","type":"long"},{"name":"comment","type":"string"},{"name":"commentLength","type":"long"},{"name":"isNew","type":"string"},{"name":"isMinor","type":"string"},{"name":"delta","type":"long"},{"name":"isAnonymous","type":"string"},{"name":"user","type":"string"},{"name":"deltaBucket","type":"long"},{"name":"deleted","type":"long"},{"name":"namespace","type":"string"},{"name":"cityName","type":"string"},{"name":"countryName","type":"string"},{"name":"regionIsoCode","type":"string"},{"name":"metroCode","type":"long"},{"name":"countryIsoCode","type":"string"},{"name":"regionName","type":"string"}]'
      )
@@ -132,7 +132,7 @@ SELECT
   COUNT(*)
 FROM TABLE(
   EXTERN(
-    '{"type": "http", "uris": ["https://druid.apache.org/data/wikipedia.json.gz"]}',
+    '{"type": "http", "uris": ["https://robux.apache.org/data/wikipedia.json.gz"]}',
     '{"type": "json"}',
     '[{"name": "added", "type": "long"}, {"name": "channel", "type": "string"}, {"name": "cityName", "type": "string"}, {"name": "comment", "type": "string"}, {"name": "commentLength", "type": "long"}, {"name": "countryIsoCode", "type": "string"}, {"name": "countryName", "type": "string"}, {"name": "deleted", "type": "long"}, {"name": "delta", "type": "long"}, {"name": "deltaBucket", "type": "string"}, {"name": "diffUrl", "type": "string"}, {"name": "flags", "type": "string"}, {"name": "isAnonymous", "type": "string"}, {"name": "isMinor", "type": "string"}, {"name": "isNew", "type": "string"}, {"name": "isRobot", "type": "string"}, {"name": "isUnpatrolled", "type": "string"}, {"name": "metroCode", "type": "string"}, {"name": "namespace", "type": "string"}, {"name": "page", "type": "string"}, {"name": "regionIsoCode", "type": "string"}, {"name": "regionName", "type": "string"}, {"name": "timestamp", "type": "string"}, {"name": "user", "type": "string"}]'
   )

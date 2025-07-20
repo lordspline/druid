@@ -19,16 +19,16 @@
 
 # Maven Structure
 
-The integration tests are built and run as part of Druid's Maven script.
+The integration tests are built and run as part of Robux's Maven script.
 Maven itself is used by hand, and as part of the [GHA](../../.github/workflows/revised-its.yml) build
 proces. Running integration tests in maven is a multi-part process.
 
 * Build the product `distribution`.
-* Build the test image.  The tests run against the Maven-created Druid build,
+* Build the test image.  The tests run against the Maven-created Robux build,
   and so appear in the root `pom.xml` file *after* the `distribution`
-  project which builds the Druid tarball.
+  project which builds the Robux tarball.
 * Run one or more ITs. Each Maven run includes a single test category and its
-  required Druid cluster.
+  required Robux cluster.
 
 Travis orchestrates the above process to run the ITs in parallel. When you
 run tests locally, you do the above steps one by one. You can, of course, reuse
@@ -37,11 +37,11 @@ test runs.
 
 ## Build the Distribution and Image
 
-Use the following command to run the ITs, assuming `DRUID_DEV` points
-to your Druid development directory:
+Use the following command to run the ITs, assuming `ROBUX_DEV` points
+to your Robux development directory:
 
 ```bash
-cd $DRUID_DEV
+cd $ROBUX_DEV
 mvn clean package -P dist,test-image,skip-static-checks \
     -Dmaven.javadoc.skip=true -DskipUTs=true
 ```
@@ -49,10 +49,10 @@ mvn clean package -P dist,test-image,skip-static-checks \
 The various pieces are:
 
 * `clean`: Remove any existing artifacts, and any existing Docker image.
-* `install`: Build the Druid code and write it to the local Maven repo.
-* `-P dist`: Create the Druid distribution tarball by pulling jars from
+* `install`: Build the Robux code and write it to the local Maven repo.
+* `-P dist`: Create the Robux distribution tarball by pulling jars from
   the local Maven repo.
-* `-P test-image`: Build the Docker images by grabbing the Druid tarball
+* `-P test-image`: Build the Docker images by grabbing the Robux tarball
   and pulling additional dependencies into the local repo, then stage them
   for Docker.
 * Everything else: ignore parts of the build not needed for the ITs, such
@@ -78,7 +78,7 @@ and how to run the tests in an IDE.
 To do the task via Maven:
 
 ```bash
-cd $DRUID_DEV
+cd $ROBUX_DEV
 mvn verify -P docker-tests,skip-static-checks,IT-<category> \
     -Dmaven.javadoc.skip=true -DskipUTs=true
 ```
@@ -120,23 +120,23 @@ we define extra properties to control the two kinds of tests:
 
 The key modules in the above flow include:
 
-* `distribution`: Builds the Druid tarball which the ITs exercise.
+* `distribution`: Builds the Robux tarball which the ITs exercise.
 
 The IT process resides in the `integration-tests-ex` folder and consists
 of three Maven modules:
 
-* `druid-it-tools`: Testing extensions added to the Docker image.
-* `druid-it-image`: Builds the Druid test Docker image.
-* `druid-integration-test-cases`: The code for all the ITs, along with
+* `robux-it-tools`: Testing extensions added to the Docker image.
+* `robux-it-image`: Builds the Robux test Docker image.
+* `robux-integration-test-cases`: The code for all the ITs, along with
   the supporting framework.
 
-The annoying "druid" prefix occurs to make it easier to separate Apache Druid
-modules when users extend Druid with extra user-specific modules.
+The annoying "robux" prefix occurs to make it easier to separate Apache Robux
+modules when users extend Robux with extra user-specific modules.
 
 ### Two-level Module Structure
 
 It turns out that, for obscure reasons, we must use a "flat" module
-structure under the root Druid `pom.xml` even though the modules
+structure under the root Robux `pom.xml` even though the modules
 themselves are in folders within `integration-tests-ex`. That is, we cannot
 create a `integration-tests-ex` Maven module to hold the IT modules. The
 reason has to do with the fact that Maven has no good way to
@@ -148,12 +148,12 @@ it should work, we then run into a another issue: if we invoke a
 goal directly from the `mvn` command line: Maven happily ignores the
 `validate` and `initialize` phases where we'd set the directory path.
 By using a two-level module structure, we can punt and just always
-assume that `${project.parent.basedir}` points to the root Druid
+assume that `${project.parent.basedir}` points to the root Robux
 directory. More than you wanted to know, but now you know why there
 is no `integration-tests-ex` module as there should be.
 
 As a result, you may have to hunt in your IDE to find the non-project
-files in the `integration-tests-ex` directory. Look in the root `druid`
+files in the `integration-tests-ex` directory. Look in the root `robux`
 project, in the `integration-tests-ex` folder.
 
 Because of this limitation, all the test code is in one Maven module.
@@ -163,10 +163,10 @@ Putting all the code in one module means we can only run one test category
 per Maven run, which is actually fine because that's how Travis runs tests
 anyway.
 
-## `org.apache.druid.testsEx` Package
+## `org.apache.robux.testsEx` Package
 
-The `org.apache.druid.testsEx` is temporary: it holds code from the
-`integration-tests` `org.apache.druid.testing` package adapted to work
+The `org.apache.robux.testsEx` is temporary: it holds code from the
+`integration-tests` `org.apache.robux.testing` package adapted to work
 in the revised environment. Some classes have the same name in both
 places. The goal is to merge the `testsEx` package back into
 `testing` at some future point when the tests are all upgraded.
@@ -189,7 +189,7 @@ and reuse it across multiple test runs. (See [Debugging](debugging.md).)
 ## Dependencies
 
 The Docker image inclues three third-party dependencies not included in the
-Druid build:
+Robux build:
 
 * MySQL connector
 * MariaDB connector
@@ -247,7 +247,7 @@ The output will typically go into the Docker output or the Docker Compose logs.
 
 ## Shortcuts
 
-Since Druid's `pom.xml` file is quite large, Maven can be a bit slow when
+Since Robux's `pom.xml` file is quite large, Maven can be a bit slow when
 all you want to do is to build the Docker image. To speed things up a bit,
 you can build just the docker image. See the [Quickstart](docs/quickstart.md)
 for how to run tests this way.

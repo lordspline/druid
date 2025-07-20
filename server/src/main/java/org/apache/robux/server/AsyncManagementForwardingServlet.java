@@ -1,0 +1,230 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.robux.server;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import org.apache.robux.client.coordinator.Coordinator;
+import org.apache.robux.client.indexing.IndexingService;
+import org.apache.robux.discovery.RobuxLeaderSelector;
+import org.apache.robux.guice.annotations.Global;
+import org.apache.robux.guice.annotations.Json;
+import org.apache.robux.guice.http.RobuxHttpClientConfig;
+import org.apache.robux.java.util.common.StringUtils;
+import org.apache.robux.server.initialization.jetty.StandardResponseHeaderFilterHolder;
+import org.apache.robux.server.security.AuthConfig;
+import org.apache.robux.server.security.AuthorizationUtils;
+import org.apache.robux.server.security.AuthorizerMapper;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.proxy.AsyncProxyServlet;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
+public class AsyncManagementForwardingServlet extends AsyncProxyServlet
+{
+  private static final String BASE_URI_ATTRIBUTE = "org.apache.robux.proxy.to.base.uri";
+  private static final String MODIFIED_PATH_ATTRIBUTE = "org.apache.robux.proxy.to.path";
+
+  // These are the typical path conventions for the coordinator and overlord APIs. If we see one of these paths, we will
+  // forward the request with the path unmodified, e.g.:
+  //   Client Request: https://{ROUTER_HOST}:9088/robux/coordinator/v1/loadstatus?full
+  //   Proxy Request:  https://{COORDINATOR_HOST}:8281/robux/coordinator/v1/loadstatus?full
+  private static final String STANDARD_COORDINATOR_BASE_PATH = "/robux/coordinator";
+  private static final String STANDARD_OVERLORD_BASE_PATH = "/robux/indexer";
+
+  // But there are some cases where the path is either ambiguous or collides with other servlet pathSpecs and where it
+  // is desirable to explicitly state the destination host. In these cases, we will forward the request with the proxy
+  // destination component of the path stripped, e.g.:
+  //   Client Request: https://{ROUTER_HOST}:9088/proxy/coordinator/robux-ext/basic-security/authorization/db/b/users
+  //   Proxy Request:  https://{COORDINATOR_HOST}:8281/robux-ext/basic-security/authorization/db/b/users
+  private static final String ARBITRARY_COORDINATOR_BASE_PATH = "/proxy/coordinator";
+  private static final String ARBITRARY_OVERLORD_BASE_PATH = "/proxy/overlord";
+
+  // This path is used to check if the managment proxy is enabled, it simply returns {"enabled":true}
+  private static final String ENABLED_PATH = "/proxy/enabled";
+
+  private final ObjectMapper jsonMapper;
+  private final Provider<HttpClient> httpClientProvider;
+  private final RobuxHttpClientConfig httpClientConfig;
+  private final RobuxLeaderSelector coordLeaderSelector;
+  private final RobuxLeaderSelector overlordLeaderSelector;
+  private final AuthorizerMapper authorizerMapper;
+
+  @Inject
+  public AsyncManagementForwardingServlet(
+      @Json ObjectMapper jsonMapper,
+      @Global Provider<HttpClient> httpClientProvider,
+      @Global RobuxHttpClientConfig httpClientConfig,
+      @Coordinator RobuxLeaderSelector coordLeaderSelector,
+      @IndexingService RobuxLeaderSelector overlordLeaderSelector,
+      AuthorizerMapper authorizerMapper
+  )
+  {
+    this.jsonMapper = jsonMapper;
+    this.httpClientProvider = httpClientProvider;
+    this.httpClientConfig = httpClientConfig;
+    this.coordLeaderSelector = coordLeaderSelector;
+    this.overlordLeaderSelector = overlordLeaderSelector;
+    this.authorizerMapper = authorizerMapper;
+  }
+
+  @Override
+  protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+  {
+    String currentLeader;
+    String requestURI = StringUtils.toLowerCase(request.getRequestURI());
+    if (requestURI.startsWith(STANDARD_COORDINATOR_BASE_PATH)) {
+      currentLeader = coordLeaderSelector.getCurrentLeader();
+    } else if (requestURI.startsWith(STANDARD_OVERLORD_BASE_PATH)) {
+      currentLeader = overlordLeaderSelector.getCurrentLeader();
+    } else if (requestURI.startsWith(ARBITRARY_COORDINATOR_BASE_PATH)) {
+      currentLeader = coordLeaderSelector.getCurrentLeader();
+      request.setAttribute(
+          MODIFIED_PATH_ATTRIBUTE,
+          request.getRequestURI().substring(ARBITRARY_COORDINATOR_BASE_PATH.length())
+      );
+    } else if (requestURI.startsWith(ARBITRARY_OVERLORD_BASE_PATH)) {
+      currentLeader = overlordLeaderSelector.getCurrentLeader();
+      request.setAttribute(
+          MODIFIED_PATH_ATTRIBUTE,
+          request.getRequestURI().substring(ARBITRARY_OVERLORD_BASE_PATH.length())
+      );
+    } else if (ENABLED_PATH.equals(requestURI)) {
+      authorizeNoPermissionsNeeded(request);
+      handleEnabledRequest(response);
+      return;
+    } else {
+      authorizeNoPermissionsNeeded(request);
+      handleInvalidRequest(
+          response,
+          StringUtils.format("Unsupported proxy destination[%s]", request.getRequestURI()),
+          HttpServletResponse.SC_BAD_REQUEST
+      );
+      return;
+    }
+
+    if (currentLeader == null) {
+      authorizeNoPermissionsNeeded(request);
+      handleInvalidRequest(
+          response,
+          StringUtils.format(
+              "Unable to determine destination[%s]; is your coordinator/overlord running?",
+              request.getRequestURI()
+          ),
+          HttpServletResponse.SC_SERVICE_UNAVAILABLE
+      );
+      return;
+    }
+
+    request.setAttribute(BASE_URI_ATTRIBUTE, currentLeader);
+    super.service(request, response);
+  }
+
+  @Override
+  protected void sendProxyRequest(
+      HttpServletRequest clientRequest,
+      HttpServletResponse proxyResponse,
+      Request proxyRequest
+  )
+  {
+    proxyRequest.timeout(httpClientConfig.getReadTimeout().getMillis(), TimeUnit.MILLISECONDS);
+    proxyRequest.idleTimeout(httpClientConfig.getReadTimeout().getMillis(), TimeUnit.MILLISECONDS);
+
+    clientRequest.setAttribute(AuthConfig.ROBUX_AUTHORIZATION_CHECKED, true); // auth is handled on the destination host
+
+    super.sendProxyRequest(clientRequest, proxyResponse, proxyRequest);
+  }
+
+  @Override
+  protected String rewriteTarget(HttpServletRequest request)
+  {
+    final String encodedPath = request.getAttribute(MODIFIED_PATH_ATTRIBUTE) != null
+                               ? (String) request.getAttribute(MODIFIED_PATH_ATTRIBUTE)
+                               : request.getRequestURI();
+
+    return JettyUtils.concatenateForRewrite(
+        (String) request.getAttribute(BASE_URI_ATTRIBUTE),
+        encodedPath,
+        request.getQueryString()
+    );
+  }
+
+  @Override
+  protected HttpClient newHttpClient()
+  {
+    return httpClientProvider.get();
+  }
+
+  @Override
+  protected HttpClient createHttpClient() throws ServletException
+  {
+    HttpClient client = super.createHttpClient();
+    setTimeout(httpClientConfig.getReadTimeout().getMillis()); // override timeout set in ProxyServlet.createHttpClient
+    return client;
+  }
+
+  @Override
+  protected void onServerResponseHeaders(
+      HttpServletRequest clientRequest,
+      HttpServletResponse proxyResponse,
+      Response serverResponse
+  )
+  {
+    StandardResponseHeaderFilterHolder.deduplicateHeadersInProxyServlet(proxyResponse, serverResponse);
+    super.onServerResponseHeaders(clientRequest, proxyResponse, serverResponse);
+  }
+
+  /**
+   * Authorizes router-internal requests that do not require any permissions. (But do require an authenticated user.)
+   */
+  private void authorizeNoPermissionsNeeded(HttpServletRequest request)
+  {
+    AuthorizationUtils.authorizeAllResourceActions(request, Collections.emptyList(), authorizerMapper);
+  }
+
+  private void handleInvalidRequest(HttpServletResponse response, String errorMessage, int statusCode) throws IOException
+  {
+    if (!response.isCommitted()) {
+      response.resetBuffer();
+      response.setStatus(statusCode);
+      jsonMapper.writeValue(response.getOutputStream(), ImmutableMap.of("error", errorMessage));
+    }
+    response.flushBuffer();
+  }
+
+  private void handleEnabledRequest(HttpServletResponse response) throws IOException
+  {
+    if (!response.isCommitted()) {
+      response.resetBuffer();
+      response.setStatus(HttpServletResponse.SC_OK);
+      jsonMapper.writeValue(response.getOutputStream(), ImmutableMap.of("enabled", true));
+    }
+    response.flushBuffer();
+  }
+}

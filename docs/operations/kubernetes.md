@@ -23,12 +23,12 @@ title: "kubernetes"
   -->
 
 
-Apache Druid distribution is also available as [Docker](https://www.docker.com/) image from [Docker Hub](https://hub.docker.com/r/apache/druid) . For example, you can obtain latest release using the command below.
+Apache Robux distribution is also available as [Docker](https://www.docker.com/) image from [Docker Hub](https://hub.docker.com/r/apache/robux) . For example, you can obtain latest release using the command below.
 
 ```
-$ docker pull apache/druid
+$ docker pull apache/robux
 ```
 
-[druid-operator](https://github.com/datainfrahq/druid-operator) can be used to manage a Druid cluster on [Kubernetes](https://kubernetes.io/) .
+[robux-operator](https://github.com/datainfrahq/robux-operator) can be used to manage a Robux cluster on [Kubernetes](https://kubernetes.io/) .
 
-Druid clusters deployed on Kubernetes can function without Zookeeper using [druid–kubernetes-extensions](../development/extensions-core/kubernetes.md) .
+Robux clusters deployed on Kubernetes can function without Zookeeper using [robux–kubernetes-extensions](../development/extensions-core/kubernetes.md) .

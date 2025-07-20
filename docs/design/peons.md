@@ -27,7 +27,7 @@ The Peon service is a task execution engine spawned by the Middle Manager. Each 
 
 ## Configuration
 
-For Apache Druid Peon configuration, see [Peon Query Configuration](../configuration/index.md#peon-query-configuration) and [Additional Peon Configuration](../configuration/index.md#additional-peon-configuration).
+For Apache Robux Peon configuration, see [Peon Query Configuration](../configuration/index.md#peon-query-configuration) and [Additional Peon Configuration](../configuration/index.md#additional-peon-configuration).
 
 For basic tuning guidance for Middle Manager tasks, see [Basic cluster tuning](../operations/basic-cluster-tuning.md#task-configurations).
 
@@ -41,7 +41,7 @@ Peons should rarely run on their own.
 The Peon should seldom run separately from the Middle Manager, except for development purposes.
 
 ```
-org.apache.druid.cli.Main internal peon <task_file> <status_file>
+org.apache.robux.cli.Main internal peon <task_file> <status_file>
 ```
 
 The task file contains the task JSON object.

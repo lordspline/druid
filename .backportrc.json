@@ -1,5 +1,5 @@
 {
-  "upstream": "apache/druid",
+  "upstream": "apache/robux",
   "branches": [
     { "name": "0.16.1-incubating", "checked": true },
     { "name": "0.17.0", "checked": true },

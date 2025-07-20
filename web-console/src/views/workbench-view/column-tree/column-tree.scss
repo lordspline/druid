@@ -19,12 +19,12 @@
 @import '../../../variables';
 @import '../../../blueprint-overrides/common/colors';
 
-@keyframes druid-glow {
+@keyframes robux-glow {
   0% {
-    text-shadow: 0 0 0 $druid-brand2;
+    text-shadow: 0 0 0 $robux-brand2;
   }
   100% {
-    text-shadow: 0 0 2px $druid-brand2;
+    text-shadow: 0 0 2px $robux-brand2;
   }
 }
 
@@ -56,7 +56,7 @@
     }
 
     .highlight {
-      animation: druid-glow 1s infinite alternate;
+      animation: robux-glow 1s infinite alternate;
     }
 
     .#{$bp-ns}-popover-target {

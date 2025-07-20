@@ -22,7 +22,7 @@ import type { RowRenderProps } from 'react-table';
 import ReactTable from 'react-table';
 
 import { TableCell } from '../../../components';
-import type { DimensionSpec, MetricSpec } from '../../../druid-models';
+import type { DimensionSpec, MetricSpec } from '../../../robux-models';
 import {
   getDimensionSpecClassType,
   getDimensionSpecName,
@@ -30,7 +30,7 @@ import {
   getMetricSpecName,
   inflateDimensionSpec,
   TIME_COLUMN,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import {
   DEFAULT_TABLE_CLASS_NAME,
   STANDARD_TABLE_PAGE_SIZE,

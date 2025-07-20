@@ -60,7 +60,7 @@ import { AlertDialog, AsyncActionDialog, DiffDialog } from '../../dialogs';
 import type {
   ArrayIngestMode,
   DimensionSpec,
-  DruidFilter,
+  RobuxFilter,
   FlattenField,
   IngestionComboTypeWithExtra,
   IngestionSpec,
@@ -71,7 +71,7 @@ import type {
   TimestampSpec,
   Transform,
   TuningConfig,
-} from '../../druid-models';
+} from '../../robux-models';
 import {
   addTimestampTransform,
   adjustForceGuaranteedRollup,
@@ -115,7 +115,7 @@ import {
   inputFormatCanProduceNestedData,
   invalidIoConfig,
   invalidPartitionConfig,
-  isDruidSource,
+  isRobuxSource,
   isEmptyIngestionSpec,
   isFixedFormatSource,
   isKafkaOrKinesis,
@@ -129,7 +129,7 @@ import {
   MAX_INLINE_DATA_LENGTH,
   METRIC_SPEC_FIELDS,
   normalizeSpec,
-  possibleDruidFormatForValues,
+  possibleRobuxFormatForValues,
   PRIMARY_PARTITION_RELATED_FORM_FIELDS,
   removeTimestampTransform,
   showArrayIngestModeToggle,
@@ -141,7 +141,7 @@ import {
   updateIngestionType,
   updateSchemaWithSample,
   upgradeSpec,
-} from '../../druid-models';
+} from '../../robux-models';
 import { getSpecDatasourceName } from '../../helpers';
 import { getLink } from '../../links';
 import { Api, AppToaster, UrlBaser } from '../../singletons';
@@ -158,7 +158,7 @@ import {
   EMPTY_OBJECT,
   filterMap,
   getApiArray,
-  getDruidErrorMessage,
+  getRobuxErrorMessage,
   localStorageGetJson,
   LocalStorageKeys,
   localStorageSetJson,
@@ -232,9 +232,9 @@ function showRawLine(line: SampleEntry): string {
   return raw;
 }
 
-function showDruidLine(line: SampleEntry): string {
-  if (!line.input) return 'Invalid druid row';
-  return `[Druid row: ${JSONBig.stringify(line.input)}]`;
+function showRobuxLine(line: SampleEntry): string {
+  if (!line.input) return 'Invalid robux row';
+  return `[Robux row: ${JSONBig.stringify(line.input)}]`;
 }
 
 function showKafkaLine(line: SampleEntry): string {
@@ -270,7 +270,7 @@ function showBlankLine(line: SampleEntry): string {
 
 function formatSampleEntries(
   sampleEntries: SampleEntry[],
-  specialSource: undefined | 'fixedFormat' | 'druid' | 'kafka' | 'kinesis',
+  specialSource: undefined | 'fixedFormat' | 'robux' | 'kafka' | 'kinesis',
 ): string[] {
   if (!sampleEntries.length) return ['No data returned from sampler'];
 
@@ -278,8 +278,8 @@ function formatSampleEntries(
     case 'fixedFormat':
       return sampleEntries.map(l => JSONBig.stringify(l.parsed));
 
-    case 'druid':
-      return sampleEntries.map(showDruidLine);
+    case 'robux':
+      return sampleEntries.map(showRobuxLine);
 
     case 'kafka':
       return sampleEntries.map(showKafkaLine);
@@ -300,7 +300,7 @@ function getTimestampSpec(sampleResponse: SampleResponse | null): TimestampSpec 
   const timestampSpecs = filterMap(
     getHeaderNamesFromSampleResponse(sampleResponse),
     sampleHeader => {
-      const possibleFormat = possibleDruidFormatForValues(
+      const possibleFormat = possibleRobuxFormatForValues(
         filterMap(sampleResponse.data, d => (d.parsed ? d.parsed[sampleHeader] : undefined)),
       );
       if (!possibleFormat) return;
@@ -444,7 +444,7 @@ export interface LoadDataViewState {
 
   // for filter
   filterQueryState: QueryState<SampleResponse>;
-  selectedFilter?: SelectedIndex<DruidFilter>;
+  selectedFilter?: SelectedIndex<RobuxFilter>;
 
   // for schema
   schemaQueryState: QueryState<{
@@ -568,7 +568,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
 
       case 'timestamp':
         return Boolean(
-          !isDruidSource(spec) && cacheRows && deepGet(spec, 'spec.dataSchema.timestampSpec'),
+          !isRobuxSource(spec) && cacheRows && deepGet(spec, 'spec.dataSchema.timestampSpec'),
         );
 
       case 'transform':
@@ -913,7 +913,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
                 {this.renderIngestionCard('index_parallel:google')}
                 {this.renderIngestionCard('index_parallel:delta')}
                 {this.renderIngestionCard('index_parallel:hdfs')}
-                {this.renderIngestionCard('index_parallel:druid')}
+                {this.renderIngestionCard('index_parallel:robux')}
                 {this.renderIngestionCard('index_parallel:http')}
                 {this.renderIngestionCard('index_parallel:local')}
                 {this.renderIngestionCard('index_parallel:inline')}
@@ -955,7 +955,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
             <p>Load data accessible through HTTP(s).</p>
             <p>
               Data must be in text, orc, or parquet format and the HTTP(s) endpoint must be
-              reachable by every Druid process in the cluster.
+              reachable by every Robux process in the cluster.
             </p>
           </>
         );
@@ -968,7 +968,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
             </p>
             <p>Load data directly from a local file.</p>
             <p>
-              Files must be in text, orc, or parquet format and must be accessible to all the Druid
+              Files must be in text, orc, or parquet format and must be accessible to all the Robux
               processes in the cluster.
             </p>
           </>
@@ -982,10 +982,10 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
           </>
         );
 
-      case 'index_parallel:druid':
+      case 'index_parallel:robux':
         return (
           <>
-            <p>Reindex data from existing Druid segments.</p>
+            <p>Reindex data from existing Robux segments.</p>
             <p>
               Reindexing data allows you to filter rows, add, transform, and delete columns, as well
               as change the partitioning of the data.
@@ -1019,7 +1019,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
           <>
             <p>Azure Event Hubs provides an Apache Kafka compatible API for consuming data.</p>
             <p>
-              Data from an Event Hub can be streamed into Druid by enabling the Kafka API on the
+              Data from an Event Hub can be streamed into Robux by enabling the Kafka API on the
               Namespace.
             </p>
             <p>
@@ -1061,7 +1061,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
     switch (selectedComboType) {
       case 'index_parallel:http':
       case 'index_parallel:local':
-      case 'index_parallel:druid':
+      case 'index_parallel:robux':
       case 'index_parallel:inline':
       case 'index_parallel:s3':
       case 'index_parallel:azureStorage':
@@ -1178,7 +1178,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
         <p>
           Please make sure that the
           <Code>&quot;{requiredModule}&quot;</Code> extension is included in the{' '}
-          <Code>druid.extensions.loadList</Code>.
+          <Code>robux.extensions.loadList</Code>.
         </p>
         <p>
           For more information please refer to the{' '}
@@ -1272,9 +1272,9 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
     const ioConfig: IoConfig = deepGet(spec, 'spec.ioConfig') || EMPTY_OBJECT;
     const inlineMode = deepGet(spec, 'spec.ioConfig.inputSource.type') === 'inline';
     const fixedFormatSource = isFixedFormatSource(spec);
-    const druidSource = isDruidSource(spec);
-    const specialSource = druidSource
-      ? 'druid'
+    const robuxSource = isRobuxSource(spec);
+    const specialSource = robuxSource
+      ? 'robux'
       : fixedFormatSource
       ? 'fixedFormat'
       : isKafkaOrKinesis(specType)
@@ -1361,7 +1361,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
           {deepGet(spec, 'spec.ioConfig.inputSource.type') === 'local' && (
             <FormGroup>
               <Callout intent={Intent.WARNING}>
-                This path must be available on the local filesystem of all Druid services.
+                This path must be available on the local filesystem of all Robux services.
               </Callout>
             </FormGroup>
           )}
@@ -1383,12 +1383,12 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
         </div>
         {this.renderNextBar({
           disabled: !inputQueryState.data,
-          nextStep: druidSource ? 'transform' : fixedFormatSource ? 'timestamp' : 'parser',
+          nextStep: robuxSource ? 'transform' : fixedFormatSource ? 'timestamp' : 'parser',
           onNextStep: () => {
             if (!inputQueryState.data) return false;
             const inputData = inputQueryState.data;
 
-            if (druidSource) {
+            if (robuxSource) {
               let newSpec = deepSet(spec, 'spec.dataSchema.timestampSpec', {
                 column: TIME_COLUMN,
                 format: 'millis',
@@ -1692,7 +1692,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
           disabled: !parserQueryState.data,
           onNextStep: () => {
             if (!parserQueryState.data) return false;
-            const possibleTimestampSpec = isDruidSource(spec)
+            const possibleTimestampSpec = isRobuxSource(spec)
               ? {
                   column: TIME_COLUMN,
                   format: 'auto',
@@ -2287,7 +2287,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
     );
   }
 
-  private readonly onFilterSelect = (filter: DruidFilter, index: number) => {
+  private readonly onFilterSelect = (filter: RobuxFilter, index: number) => {
     this.setState({
       selectedFilter: { value: filter, index },
     });
@@ -2481,7 +2481,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
                         metrics
                       </ExternalLink>
                       . Explicitly setting dimensions and metrics can lead to better compression and
-                      performance. If you disable this option, Druid will try to auto-detect fields
+                      performance. If you disable this option, Robux will try to auto-detect fields
                       in your data and treat them as individual columns.
                     </p>
                   </PopoverText>
@@ -2517,7 +2517,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
                       info: (
                         <>
                           Provide a comma separated list of columns (use the column name from the
-                          raw data) you do not want Druid to ingest.
+                          raw data) you do not want Robux to ingest.
                         </>
                       ),
                     },
@@ -2535,7 +2535,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
                       <ExternalLink href={`${getLink('DOCS')}/tutorials/tutorial-rollup`}>
                         roll-up
                       </ExternalLink>
-                      , Druid will try to pre-aggregate data before indexing it to conserve storage.
+                      , Robux will try to pre-aggregate data before indexing it to conserve storage.
                       The primary timestamp will be truncated to the specified query granularity,
                       and rows containing the same string field values will be aggregated together.
                     </p>
@@ -2828,7 +2828,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
       >
         <p>
           {autoDetect
-            ? `Are you sure you want Druid to auto detect the data schema?`
+            ? `Are you sure you want Robux to auto detect the data schema?`
             : `Are you sure you want to explicitly specify a schema?`}
         </p>
         <p>Making this change will reset all schema configuration done so far.</p>
@@ -3377,7 +3377,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
                 valueAdjustment: d => (typeof d === 'string' ? adjustId(d) : d),
                 info: (
                   <>
-                    <p>This is the name of the datasource (table) in Druid.</p>
+                    <p>This is the name of the datasource (table) in Robux.</p>
                     <p>
                       The datasource name can not start with a dot <Code>.</Code>, include slashes{' '}
                       <Code>/</Code>, or have whitespace other than space.
@@ -3495,7 +3495,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
                 info: (
                   <>
                     <p>
-                      When a parse exception occurs, Druid can keep track of the most recent parse
+                      When a parse exception occurs, Robux can keep track of the most recent parse
                       exceptions.
                     </p>
                     <p>
@@ -3526,14 +3526,14 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
 
     try {
       const resp = await Api.instance.get(
-        `/druid/indexer/v1/supervisor/${Api.encodePath(initSupervisorId)}`,
+        `/robux/indexer/v1/supervisor/${Api.encodePath(initSupervisorId)}`,
       );
       this.updateSpec(cleanSpec(resp.data));
       this.setState({ continueToSpec: true });
       this.updateStep('spec');
     } catch (e) {
       AppToaster.show({
-        message: `Failed to get supervisor spec: ${getDruidErrorMessage(e)}`,
+        message: `Failed to get supervisor spec: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
     }
@@ -3544,13 +3544,13 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
     if (!initTaskId) return;
 
     try {
-      const resp = await Api.instance.get(`/druid/indexer/v1/task/${Api.encodePath(initTaskId)}`);
+      const resp = await Api.instance.get(`/robux/indexer/v1/task/${Api.encodePath(initTaskId)}`);
       this.updateSpec(cleanSpec(resp.data.payload));
       this.setState({ continueToSpec: true });
       this.updateStep('spec');
     } catch (e) {
       AppToaster.show({
-        message: `Failed to get task spec: ${getDruidErrorMessage(e)}`,
+        message: `Failed to get task spec: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
     }
@@ -3561,7 +3561,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
 
     let existingDatasources: string[];
     try {
-      existingDatasources = await getApiArray<string>('/druid/coordinator/v1/datasources');
+      existingDatasources = await getApiArray<string>('/robux/coordinator/v1/datasources');
     } catch {
       return;
     }
@@ -3571,7 +3571,7 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
     if (isStreamingSpec(spec) && supervisorId) {
       try {
         currentSupervisorSpec = cleanSpec(
-          (await Api.instance.get(`/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}`))
+          (await Api.instance.get(`/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}`))
             .data,
         );
       } catch {}
@@ -3710,10 +3710,10 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
 
     this.setState({ submitting: true });
     try {
-      await Api.instance.post('/druid/indexer/v1/supervisor', spec);
+      await Api.instance.post('/robux/indexer/v1/supervisor', spec);
     } catch (e) {
       AppToaster.show({
-        message: `Failed to submit supervisor: ${getDruidErrorMessage(e)}`,
+        message: `Failed to submit supervisor: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
       this.setState({ submitting: false });
@@ -3741,10 +3741,10 @@ export class LoadDataView extends React.PureComponent<LoadDataViewProps, LoadDat
     this.setState({ submitting: true });
     let taskResp: any;
     try {
-      taskResp = await Api.instance.post('/druid/indexer/v1/task', spec);
+      taskResp = await Api.instance.post('/robux/indexer/v1/task', spec);
     } catch (e) {
       AppToaster.show({
-        message: `Failed to submit task: ${getDruidErrorMessage(e)}`,
+        message: `Failed to submit task: ${getRobuxErrorMessage(e)}`,
         intent: Intent.DANGER,
       });
       this.setState({ submitting: false });

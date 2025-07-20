@@ -15,67 +15,67 @@
 
 version: "2.2"
 services:
-  druid-zookeeper-kafka:
+  robux-zookeeper-kafka:
     extends:
       file: docker-compose.base.yml
-      service: druid-zookeeper-kafka
+      service: robux-zookeeper-kafka
 
-  druid-metadata-storage:
+  robux-metadata-storage:
     extends:
       file: docker-compose.base.yml
-      service: druid-metadata-storage
+      service: robux-metadata-storage
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
+      - robux-zookeeper-kafka
 
-  druid-overlord:
+  robux-overlord:
     extends:
       file: docker-compose.base.yml
-      service: druid-overlord
+      service: robux-overlord
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-coordinator:
+  robux-coordinator:
     extends:
       file: docker-compose.base.yml
-      service: druid-coordinator
+      service: robux-coordinator
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-overlord
-      - druid-metadata-storage
-      - druid-zookeeper-kafka
+      - robux-overlord
+      - robux-metadata-storage
+      - robux-zookeeper-kafka
 
-  druid-broker:
+  robux-broker:
     extends:
       file: docker-compose.base.yml
-      service: druid-broker
+      service: robux-broker
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-historical-for-query-retry-test
+      - robux-zookeeper-kafka
+      - robux-historical-for-query-retry-test
 
-  druid-router:
+  robux-router:
     extends:
       file: docker-compose.base.yml
-      service: druid-router
+      service: robux-router
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
-      - druid-coordinator
-      - druid-broker
+      - robux-zookeeper-kafka
+      - robux-coordinator
+      - robux-broker
 
-  druid-historical-for-query-retry-test:
-    image: druid/cluster
-    container_name: druid-historical-for-query-retry-test
+  robux-historical-for-query-retry-test:
+    image: robux/cluster
+    container_name: robux-historical-for-query-retry-test
     networks:
-      druid-it-net:
+      robux-it-net:
         ipv4_address: 172.172.172.14
     ports:
       - 8086:8083 #8084 is used by mono service on GHA runners
@@ -84,19 +84,19 @@ services:
     privileged: true
     volumes:
       - ${HOME}/shared:/shared
-      - ./service-supervisords/druid.conf:/usr/lib/druid/conf/druid.conf
+      - ./service-supervisords/robux.conf:/usr/lib/robux/conf/robux.conf
     env_file:
       - ./environment-configs/common
       - ./environment-configs/historical-for-query-error-test
       - ${OVERRIDE_ENV}
     environment:
-      - DRUID_INTEGRATION_TEST_GROUP=${DRUID_INTEGRATION_TEST_GROUP}
+      - ROBUX_INTEGRATION_TEST_GROUP=${ROBUX_INTEGRATION_TEST_GROUP}
     depends_on:
-      - druid-zookeeper-kafka
+      - robux-zookeeper-kafka
 
 networks:
-  druid-it-net:
-    name: druid-it-net
+  robux-it-net:
+    name: robux-it-net
     ipam:
       config:
         - subnet: 172.172.172.0/24

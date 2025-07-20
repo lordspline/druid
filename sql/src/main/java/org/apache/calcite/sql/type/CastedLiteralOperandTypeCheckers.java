@@ -28,7 +28,7 @@ import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.util.Static;
-import org.apache.druid.error.DruidException;
+import org.apache.robux.error.RobuxException;
 
 import java.math.BigDecimal;
 
@@ -117,7 +117,7 @@ public class CastedLiteralOperandTypeCheckers
   private static SqlLiteral fetchPrimitiveLiteralFromCasts(SqlNode node)
   {
     if (node == null) {
-      throw DruidException.defensive("'node' cannot be null");
+      throw RobuxException.defensive("'node' cannot be null");
     }
     if (node instanceof SqlLiteral) {
       return (SqlLiteral) node;
@@ -129,7 +129,7 @@ public class CastedLiteralOperandTypeCheckers
       case DEFAULT:
         return SqlLiteral.createNull(SqlParserPos.ZERO);
       default:
-        throw DruidException.defensive("Expected a literal or a cast on the literal. Found [%s] instead", node.getKind());
+        throw RobuxException.defensive("Expected a literal or a cast on the literal. Found [%s] instead", node.getKind());
     }
   }
 }

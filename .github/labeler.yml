@@ -54,8 +54,8 @@
 'Area - Metrics/Event Emitting':
   - changed-files:
     - any-glob-to-any-file:
-      - 'processing/src/main/java/org/apache/druid/java/util/metrics/**'
-      - 'processing/src/main/java/org/apache/druid/java/util/emitter/**'
+      - 'processing/src/main/java/org/apache/robux/java/util/metrics/**'
+      - 'processing/src/main/java/org/apache/robux/java/util/emitter/**'
       - 'extensions-contrib/*-emitter/**'
 
 'Area - MSQ':
@@ -67,12 +67,12 @@
   - changed-files:
     - any-glob-to-any-file:
       - 'sql/**'
-      - 'extensions-core/multi-stage-query/src/main/java/org/apache/druid/msq/sql/**'
+      - 'extensions-core/multi-stage-query/src/main/java/org/apache/robux/msq/sql/**'
 
 'Area - Segment Format and Ser/De':
   - changed-files:
     - any-glob-to-any-file:
-      - 'processing/src/main/java/org/apache/druid/segment/**'
+      - 'processing/src/main/java/org/apache/robux/segment/**'
 
 'Area - Streaming Ingestion':
   - changed-files:

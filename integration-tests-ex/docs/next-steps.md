@@ -22,7 +22,7 @@
 The present version establishes the new IT framework. Work completed to
 date includes:
 
-* Restructure the Docker images to use the Druid produced from the
+* Restructure the Docker images to use the Robux produced from the
   Maven build. Use "official" images for dependencies.
 * Restructure the Docker compose files.
 * Create the cluster configuration mechanisms.
@@ -68,7 +68,7 @@ which makes it harder to "test what we ship." Differences include:
 * Different ways to set up dependencies.
 * Different paths within the container.
 * Different launch scripts.
-* The test images place Druid in `/usr/local`, the public images in `/opt`.
+* The test images place Robux in `/usr/local`, the public images in `/opt`.
 
 The tests do want to do things beyond what the "public" image does. However, this should
 not require a fork of the builds. To address this issue:

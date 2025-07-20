@@ -23,8 +23,8 @@ import type { JSX } from 'react';
 import { useState } from 'react';
 
 import { NumericInputDialog } from '../../../dialogs';
-import type { QueryContext } from '../../../druid-models';
-import { getQueryContextKey } from '../../../druid-models';
+import type { QueryContext } from '../../../robux-models';
+import { getQueryContextKey } from '../../../robux-models';
 import { getLink } from '../../../links';
 import { capitalizeFirst, deleteKeys, formatInteger, tickIcon } from '../../../utils';
 

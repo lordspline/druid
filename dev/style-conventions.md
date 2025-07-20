@@ -1,7 +1,7 @@
 ---
 id: style-conventions
-title: "Druid Style Guide"
-sidebar_label: "Druid Style Guide"
+title: "Robux Style Guide"
+sidebar_label: "Robux Style Guide"
 ---
 
 <!--
@@ -23,14 +23,14 @@ sidebar_label: "Druid Style Guide"
   ~ under the License.
   -->
 
-This document attempts to describe the style that Druid code is expected to follow.
+This document attempts to describe the style that Robux code is expected to follow.
 
 A large amount of the style conventions are handled through IDE configuration and automated checkstyle rules.
  
-- For Intellij you can import our code style settings xml: [`druid_intellij_formatting.xml`](
-  https://github.com/apache/druid/raw/master/dev/druid_intellij_formatting.xml).
+- For Intellij you can import our code style settings xml: [`robux_intellij_formatting.xml`](
+  https://github.com/apache/robux/raw/master/dev/robux_intellij_formatting.xml).
 - For Eclipse you can import our code style settings xml: [`eclipse_formatting.xml`](
-  https://github.com/apache/druid/raw/master/dev/eclipse_formatting.xml).
+  https://github.com/apache/robux/raw/master/dev/eclipse_formatting.xml).
 
 While this page might discuss conventions that are also enforced via said mechanisms, the primary intent is to
 discuss style-related convention that cannot be (or are extremely difficult to be) enforced through such automated
@@ -64,4 +64,4 @@ This consistency applies to both log *and* exception messages.
 
 ## Documentation style
 
-For the majority of style considerations, the Apache Druid documentation follows the [Google Developer Documentation Style Guide](https://developers.google.com/style). For more details, see [Contribute to Druid docs](../docs/development/docs-contribute.md#style-guide).
+For the majority of style considerations, the Apache Robux documentation follows the [Google Developer Documentation Style Guide](https://developers.google.com/style). For more details, see [Contribute to Robux docs](../docs/development/docs-contribute.md#style-guide).

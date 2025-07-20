@@ -20,10 +20,10 @@
 Comments to various parts of IntelliJ's settings XML files. These comments cannot currently be placed close to the
 things that they are about, because IntelliJ keeps removing the comments from settings XML files: see
 https://youtrack.jetbrains.com/issue/IDEA-211087. Please vote for this issue to increase the chances that it's fixed
-faster. [This Druid's issue](https://github.com/apache/incubator-druid/issues/7549) records the fact that the comments
+faster. [This Robux's issue](https://github.com/apache/incubator-robux/issues/7549) records the fact that the comments
 should be moved when that IntelliJ's issue is fixed.
 
-1) [`inspectionProfiles/Druid.xml`](inspectionProfiles/Druid.xml), `StaticPseudoFunctionalStyleMethod` is turned off
+1) [`inspectionProfiles/Robux.xml`](inspectionProfiles/Robux.xml), `StaticPseudoFunctionalStyleMethod` is turned off
 because the current rate of false-positives produced by this inspection is very high, see
 https://youtrack.jetbrains.com/issue/IDEA-153047#focus=streamItem-27-3326648.0-0.
 

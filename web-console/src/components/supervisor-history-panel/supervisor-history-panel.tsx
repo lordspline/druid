@@ -21,8 +21,8 @@ import * as JSONBig from 'json-bigint-native';
 import React, { useState } from 'react';
 
 import { DiffDialog } from '../../dialogs';
-import type { IngestionSpec } from '../../druid-models';
-import { cleanSpec } from '../../druid-models';
+import type { IngestionSpec } from '../../robux-models';
+import { cleanSpec } from '../../robux-models';
 import { useQueryManager } from '../../hooks';
 import { Api } from '../../singletons';
 import { deepSet, getApiArray } from '../../utils';
@@ -51,7 +51,7 @@ export const SupervisorHistoryPanel = React.memo(function SupervisorHistoryPanel
     processQuery: async (supervisorId, cancelToken) => {
       return (
         await getApiArray<SupervisorHistoryEntry>(
-          `/druid/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/history`,
+          `/robux/indexer/v1/supervisor/${Api.encodePath(supervisorId)}/history`,
           cancelToken,
         )
       ).map(vs => deepSet(vs, 'spec', cleanSpec(vs.spec)));

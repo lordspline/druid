@@ -19,7 +19,7 @@
 import { sum } from 'd3-array';
 import React from 'react';
 
-import { getConsoleViewIcon } from '../../../druid-models';
+import { getConsoleViewIcon } from '../../../robux-models';
 import type { Capabilities } from '../../../helpers';
 import { useQueryManager } from '../../../hooks';
 import { Api } from '../../../singletons';
@@ -35,7 +35,7 @@ export const LookupsCard = React.memo(function LookupsCard(props: LookupsCardPro
     initQuery: props.capabilities,
     processQuery: async (capabilities, cancelToken) => {
       if (capabilities.hasCoordinatorAccess()) {
-        const resp = await Api.instance.get('/druid/coordinator/v1/lookups/status', {
+        const resp = await Api.instance.get('/robux/coordinator/v1/lookups/status', {
           cancelToken,
         });
         const data = resp.data;

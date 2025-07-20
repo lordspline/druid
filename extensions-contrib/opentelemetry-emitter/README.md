@@ -25,11 +25,11 @@ The [OpenTelemetry](https://opentelemetry.io/) emitter generates OpenTelemetry S
 
 The [OpenTelemetry](https://opentelemetry.io/) emitter processes `ServiceMetricEvent` events for the `query/time`
 metric. It extracts OpenTelemetry context from
-the [query context](https://druid.apache.org/docs/latest/querying/query-context.html). To link druid spans to parent
+the [query context](https://robux.apache.org/docs/latest/querying/query-context.html). To link robux spans to parent
 traces, the query context should contain at least `traceparent` key.
 See [context propagation](https://www.w3.org/TR/trace-context/) for more information. If no `traceparent` key is
 provided, then spans are created without `parentTraceId` and are not linked to the parent span. In addition, the emitter
-also adds other druid context entries to the span attributes.
+also adds other robux context entries to the span attributes.
 
 ## Configuration
 
@@ -40,7 +40,7 @@ To enable the OpenTelemetry emitter, add the extension and enable the emitter in
 Load the plugin:
 
 ```properties
-druid.extensions.loadList=[..., "opentelemetry-emitter"]
+robux.extensions.loadList=[..., "opentelemetry-emitter"]
 ```
 
 Then there are 2 options:
@@ -48,17 +48,17 @@ Then there are 2 options:
 * You want to use only `opentelemetry-emitter`
 
 ```properties
-druid.emitter=opentelemetry
+robux.emitter=opentelemetry
 ```
 
 * You want to use `opentelemetry-emitter` with other emitters
 
 ```properties
-druid.emitter=composing
-druid.emitter.composing.emitters=[..., "opentelemetry"]
+robux.emitter=composing
+robux.emitter.composing.emitters=[..., "opentelemetry"]
 ```
 
-_*More about Druid configuration [here](https://druid.apache.org/docs/latest/configuration/index.html)._
+_*More about Robux configuration [here](https://robux.apache.org/docs/latest/configuration/index.html)._
 
 ## Testing
 
@@ -120,29 +120,29 @@ Run otel-collector and zipkin.
 docker compose up
 ```
 
-### Part 2: Run Druid
+### Part 2: Run Robux
 
-Build Druid:
+Build Robux:
 
 ```bash
 mvn clean install -Pdist
-tar -C /tmp -xf distribution/target/apache-druid-0.21.0-bin.tar.gz
-cd /tmp/apache-druid-0.21.0
+tar -C /tmp -xf distribution/target/apache-robux-0.21.0-bin.tar.gz
+cd /tmp/apache-robux-0.21.0
 ```
 
-Edit `conf/druid/single-server/micro-quickstart/_common/common.runtime.properties` to enable the emitter (
+Edit `conf/robux/single-server/micro-quickstart/_common/common.runtime.properties` to enable the emitter (
 see `Configuration` section above).
 
 Start the quickstart with the apppropriate environment variables for opentelemetry autoconfiguration:
 
 ```
-OTEL_SERVICE_NAME="org.apache.druid" OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317" bin/start-micro-quickstart
+OTEL_SERVICE_NAME="org.apache.robux" OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317" bin/start-micro-quickstart
 ```
 
 *_More about opentelemetry
 autoconfiguration [here](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)_
 
-Load sample data - [example](https://druid.apache.org/docs/latest/tutorials/index.html#step-4-load-data).
+Load sample data - [example](https://robux.apache.org/docs/latest/tutorials/index.html#step-4-load-data).
 
 ### Part 3: Send queries
 
@@ -160,7 +160,7 @@ Create `query.json`:
 Send query:
 
 ```bash
-curl -XPOST -H'Content-Type: application/json' http://localhost:8888/druid/v2/sql/ -d @query.json
+curl -XPOST -H'Content-Type: application/json' http://localhost:8888/robux/v2/sql/ -d @query.json
 ```
 
 Then open `http://localhost:9411/zipkin/` and you can see there your spans.

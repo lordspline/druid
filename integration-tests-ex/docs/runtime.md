@@ -41,14 +41,14 @@ This module has a number of folders that are used by all tests:
 
 ## Container Runtime Structure
 
-The container itself is a bit of a hybrid. The Druid distribution, along
+The container itself is a bit of a hybrid. The Robux distribution, along
 with some test-specific extensions, is reused. The container also contains
 libraries for Kafka, MySQL and MariaDB.
 
-Druid configuration is passed into the container as environment variables,
+Robux configuration is passed into the container as environment variables,
 and then converted to a `runtime.properties` file by the container launch
 script. Though a bit of a [Rube Goldberg](https://en.wikipedia.org/wiki/Rube_Goldberg)
-mechanism, it does have one important advantage over the usual Druid configs:
+mechanism, it does have one important advantage over the usual Robux configs:
 we can support inheritance and overrides. The various `<service>.env` files
 provide the standard configurations. Test-specific Docker Compose files can
 modify any setting.
@@ -64,9 +64,9 @@ and so on.
 Each container exposes the Java debugger on port 8000, mapped to a different
 host port for each container.
 
-Each container exposes the usual Druid ports so you can work with the
-container as you would a local cluster. Two handy tools are the Druid
-console and the scriptable [Python client](https://github.com/paul-rogers/druid-client).
+Each container exposes the usual Robux ports so you can work with the
+container as you would a local cluster. Two handy tools are the Robux
+console and the scriptable [Python client](https://github.com/paul-rogers/robux-client).
 
 ## Test Execution
 
@@ -85,15 +85,15 @@ The basic process for running a test group (sub-module) is:
 
 * Cluser startup builds a `target/shared` directory with items to be mounted
   into the containers, such as the `log4j2.xml` file, sample data, etc.
-  The shared directory also holds log files, Druid persistent storage,
+  The shared directory also holds log files, Robux persistent storage,
   the metastore (MySQL) DB, etc. See `test-image/README.md` for details.
-* The test is configured via a `druid-cluster/compose.yaml` file.
+* The test is configured via a `robux-cluster/compose.yaml` file.
   This file defines the services to run and their configuration.
 * The `cluster.sh up` script builds the shared directory, loads the env vars
   defined when the image was created and starts the cluster.
 * Tests run on the local host within JUnit.
 * The `Initialization` class loads the cluster configuration (see below),
-  optionally populates the Druid metadata storage, and is used to
+  optionally populates the Robux metadata storage, and is used to
   inject instances into the test.
 * The individual tests run.
 * The `cluster.sh down` script shuts down the cluster.

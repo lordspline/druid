@@ -67,7 +67,7 @@ export const TaskTableActionDialog = React.memo(function TaskTableActionDialog(
     },
   ];
 
-  const taskEndpointBase = `/druid/indexer/v1/task/${Api.encodePath(taskId)}`;
+  const taskEndpointBase = `/robux/indexer/v1/task/${Api.encodePath(taskId)}`;
   return (
     <TableActionDialog
       sideButtonMetadata={taskTableSideButtonMetadata}

@@ -41,7 +41,7 @@ import {
   SqlExpression,
   SqlQuery,
   SqlType,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 import type { JSX } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
@@ -53,7 +53,7 @@ import {
   MenuBoolean,
 } from '../../../components';
 import { AsyncActionDialog } from '../../../dialogs';
-import type { Execution, ExternalConfig, IngestQueryPattern } from '../../../druid-models';
+import type { Execution, ExternalConfig, IngestQueryPattern } from '../../../robux-models';
 import {
   changeQueryPatternExpression,
   DETECTION_TIMESTAMP_SPEC,
@@ -62,10 +62,10 @@ import {
   getQueryPatternExpression,
   getQueryPatternExpressionType,
   ingestQueryPatternToQuery,
-  possibleDruidFormatForValues,
+  possibleRobuxFormatForValues,
   TIME_COLUMN,
   WorkbenchQuery,
-} from '../../../druid-models';
+} from '../../../robux-models';
 import {
   executionBackgroundResultStatusCheck,
   extractResult,
@@ -81,11 +81,11 @@ import {
   change,
   dataTypeToIcon,
   deepSet,
-  DruidError,
+  RobuxError,
   EXPERIMENTAL_ICON,
   filterMap,
   oneOf,
-  queryDruidSql,
+  queryRobuxSql,
   queryResultToValuesQuery,
   tickIcon,
   timeFormatToSql,
@@ -154,8 +154,8 @@ function getTimeSuggestions(queryResult: QueryResult, parsedQuery: SqlQuery): Ti
         if (!selectExpression) return [];
 
         const values = queryResult.rows.map(row => row[timeColumnIndex]);
-        const possibleDruidFormat = possibleDruidFormatForValues(values);
-        const formatSql = possibleDruidFormat ? timeFormatToSql(possibleDruidFormat) : undefined;
+        const possibleRobuxFormat = possibleRobuxFormatForValues(values);
+        const formatSql = possibleRobuxFormat ? timeFormatToSql(possibleRobuxFormat) : undefined;
         if (!formatSql) return [];
         const newSelectExpression = formatSql.fillPlaceholders([
           selectExpression.getUnderlyingExpression(),
@@ -163,7 +163,7 @@ function getTimeSuggestions(queryResult: QueryResult, parsedQuery: SqlQuery): Ti
 
         return [
           {
-            label: `Parse as '${possibleDruidFormat}'`,
+            label: `Parse as '${possibleRobuxFormat}'`,
             queryAction: q =>
               q.removeSelectIndex(timeColumnIndex).addSelect(newSelectExpression.as(TIME_COLUMN), {
                 insertIndex: 0,
@@ -204,8 +204,8 @@ function getTimeSuggestions(queryResult: QueryResult, parsedQuery: SqlQuery): Ti
       }
 
       const values = queryResult.rows.map(row => row[i]);
-      const possibleDruidFormat = possibleDruidFormatForValues(values);
-      const formatSql = possibleDruidFormat ? timeFormatToSql(possibleDruidFormat) : undefined;
+      const possibleRobuxFormat = possibleRobuxFormatForValues(values);
+      const formatSql = possibleRobuxFormat ? timeFormatToSql(possibleRobuxFormat) : undefined;
       if (!formatSql) return;
       const newSelectExpression = formatSql.fillPlaceholders([
         selectExpression.getUnderlyingExpression(),
@@ -216,7 +216,7 @@ function getTimeSuggestions(queryResult: QueryResult, parsedQuery: SqlQuery): Ti
           <>
             {`Use `}
             <strong>{c.name}</strong>
-            {` parsed as '${possibleDruidFormat}'`}
+            {` parsed as '${possibleRobuxFormat}'`}
           </>
         ),
         queryAction: q =>
@@ -403,9 +403,9 @@ export const SchemaStep = function SchemaStep(props: SchemaStepProps) {
     initQuery: '',
     processQuery: async (_, cancelToken) => {
       // Check if datasource already exists
-      const tables = await queryDruidSql(
+      const tables = await queryRobuxSql(
         {
-          query: `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'druid' ORDER BY TABLE_NAME ASC`,
+          query: `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'robux' ORDER BY TABLE_NAME ASC`,
           resultFormat: 'array',
         },
         cancelToken,
@@ -523,7 +523,7 @@ export const SchemaStep = function SchemaStep(props: SchemaStepProps) {
             cancelToken,
           });
         } catch (e) {
-          throw new DruidError(e);
+          throw new RobuxError(e);
         }
 
         return result.attachQuery({} as any, SqlQuery.maybeParse(previewQueryString));
@@ -913,7 +913,7 @@ export const SchemaStep = function SchemaStep(props: SchemaStepProps) {
               <FormGroup>
                 <Callout>
                   <p>
-                    Each column in Druid must have an assigned type (string, long, float, double,
+                    Each column in Robux must have an assigned type (string, long, float, double,
                     complex, etc).
                   </p>
                   <p>

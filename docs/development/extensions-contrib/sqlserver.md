@@ -23,34 +23,34 @@ title: "Microsoft SQLServer"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `sqlserver-metadata-storage` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `sqlserver-metadata-storage` in the extensions load list.
 
 ## Setting up SQLServer
 
 1. Install Microsoft SQLServer
 
-2. Create a druid database and user
+2. Create a robux database and user
 
-  Create the druid user
+  Create the robux user
   - Microsoft SQL Server Management Studio - Security - Logins - New Login...
-  - Create a druid user, enter `diurd` when prompted for the password.
+  - Create a robux user, enter `diurd` when prompted for the password.
 
-  Create a druid database owned by the user we just created
+  Create a robux database owned by the user we just created
   - Databases - New Database
-  - Database Name: druid, Owner: druid
+  - Database Name: robux, Owner: robux
 
-3. Add the Microsoft JDBC library to the Druid classpath
-  - To ensure the com.microsoft.sqlserver.jdbc.SQLServerDriver class is loaded you will have to add the appropriate Microsoft JDBC library (sqljdbc*.jar) to the Druid classpath.
-  - For instance, if all jar files in your "druid/lib" directory are automatically added to your Druid classpath, then manually download the Microsoft JDBC drivers from ( https://www.microsoft.com/en-ca/download/details.aspx?id=11774) and drop it into my druid/lib directory.
+3. Add the Microsoft JDBC library to the Robux classpath
+  - To ensure the com.microsoft.sqlserver.jdbc.SQLServerDriver class is loaded you will have to add the appropriate Microsoft JDBC library (sqljdbc*.jar) to the Robux classpath.
+  - For instance, if all jar files in your "robux/lib" directory are automatically added to your Robux classpath, then manually download the Microsoft JDBC drivers from ( https://www.microsoft.com/en-ca/download/details.aspx?id=11774) and drop it into my robux/lib directory.
 
-4. Configure your Druid metadata storage extension:
+4. Configure your Robux metadata storage extension:
 
-  Add the following parameters to your Druid configuration, replacing `<host>`
+  Add the following parameters to your Robux configuration, replacing `<host>`
   with the location (host name and port) of the database.
 
   ```properties
-  druid.metadata.storage.type=sqlserver
-  druid.metadata.storage.connector.connectURI=jdbc:sqlserver://<host>;databaseName=druid
-  druid.metadata.storage.connector.user=druid
-  druid.metadata.storage.connector.password=diurd
+  robux.metadata.storage.type=sqlserver
+  robux.metadata.storage.connector.connectURI=jdbc:sqlserver://<host>;databaseName=robux
+  robux.metadata.storage.connector.user=robux
+  robux.metadata.storage.connector.password=diurd
   ```

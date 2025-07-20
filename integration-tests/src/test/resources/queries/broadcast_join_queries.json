@@ -2,7 +2,7 @@
   {
     "description": "query broadcast join segment directly",
     "query": {
-      "query": "SELECT \"%%JOIN_DATASOURCE%%\".\"user\", SUM(\"%%JOIN_DATASOURCE%%\".\"added\") FROM druid.\"%%JOIN_DATASOURCE%%\" GROUP BY 1 ORDER BY 2",
+      "query": "SELECT \"%%JOIN_DATASOURCE%%\".\"user\", SUM(\"%%JOIN_DATASOURCE%%\".\"added\") FROM robux.\"%%JOIN_DATASOURCE%%\" GROUP BY 1 ORDER BY 2",
       "resultFormat": "OBJECT"
     },
     "expectedResults": [
@@ -16,7 +16,7 @@
   {
     "description": "regular datasource is lhs, broadcast join datasource is rhs",
     "query": {
-      "query": "SELECT \"%%JOIN_DATASOURCE%%\".\"language\" as l1, \"%%REGULAR_DATASOURCE%%\".\"language\" as l2, SUM(\"%%JOIN_DATASOURCE%%\".\"sum_added\"), SUM(\"%%REGULAR_DATASOURCE%%\".\"added\") FROM druid.\"%%REGULAR_DATASOURCE%%\" INNER JOIN druid.\"%%JOIN_DATASOURCE%%\" ON \"%%REGULAR_DATASOURCE%%\".\"language\" = \"%%JOIN_DATASOURCE%%\".\"language\" GROUP BY 1, 2 ORDER BY 3 DESC",
+      "query": "SELECT \"%%JOIN_DATASOURCE%%\".\"language\" as l1, \"%%REGULAR_DATASOURCE%%\".\"language\" as l2, SUM(\"%%JOIN_DATASOURCE%%\".\"sum_added\"), SUM(\"%%REGULAR_DATASOURCE%%\".\"added\") FROM robux.\"%%REGULAR_DATASOURCE%%\" INNER JOIN robux.\"%%JOIN_DATASOURCE%%\" ON \"%%REGULAR_DATASOURCE%%\".\"language\" = \"%%JOIN_DATASOURCE%%\".\"language\" GROUP BY 1, 2 ORDER BY 3 DESC",
       "resultFormat": "OBJECT"
     },
     "expectedResults": [

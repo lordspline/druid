@@ -21,21 +21,21 @@
 # Example of override config file to provide.
 # Please replace <OVERRIDE_THIS> with your cloud configs/credentials
 #
-druid_storage_type=hdfs
-druid_storage_storageDirectory=/druid/segments
+robux_storage_type=hdfs
+robux_storage_storageDirectory=/robux/segments
 
-druid_extensions_loadList=["druid-azure-extensions","druid-hdfs-storage"]
+robux_extensions_loadList=["robux-azure-extensions","robux-hdfs-storage"]
 
-# Not used since we have HDFS deep storage, but the Druid Azure extension requires these to be defined
-druid_azure_account=<OVERRIDE_THIS>
-druid_azure_key=<OVERRIDE_THIS>
-druid_azure_container=<OVERRIDE_THIS>
+# Not used since we have HDFS deep storage, but the Robux Azure extension requires these to be defined
+robux_azure_account=<OVERRIDE_THIS>
+robux_azure_key=<OVERRIDE_THIS>
+robux_azure_container=<OVERRIDE_THIS>
 
 #
 # Please replace <LIB_VERSIONS> with corresponding libs
 #
 # Sample hadoop 3 config
-# druid_indexer_task_defaultHadoopCoordinates=["org.apache.hadoop:hadoop-client-api:3.2.2", "org.apache.hadoop:hadoop-client-runtime:3.2.2", "org.apache.hadoop:hadoop-azure:3.2.2"]
+# robux_indexer_task_defaultHadoopCoordinates=["org.apache.hadoop:hadoop-client-api:3.2.2", "org.apache.hadoop:hadoop-client-runtime:3.2.2", "org.apache.hadoop:hadoop-azure:3.2.2"]
 #
 
-druid_indexer_task_defaultHadoopCoordinates=<LIB_VERSIONS>
+robux_indexer_task_defaultHadoopCoordinates=<LIB_VERSIONS>

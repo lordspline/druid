@@ -17,9 +17,9 @@
   ~ under the License.
   -->
 
-# Apache Druid web console
+# Apache Robux web console
 
-This is the Druid web console that serves as a data management interface for Druid.
+This is the Robux web console that serves as a data management interface for Robux.
 
 ## Developing the console
 
@@ -28,14 +28,14 @@ This is the Druid web console that serves as a data management interface for Dru
 1. You need to be within the `web-console` directory
 2. Install the modules with `npm install`
 3. Run `npm run compile` to compile the SCSS files (this usually needs to be done only once)
-4. Run `npm start` to start in development mode and proxy Druid requests to `localhost:8888`
+4. Run `npm start` to start in development mode and proxy Robux requests to `localhost:8888`
 
-**Note:** you can provide an environment variable to proxy to a different Druid host like so: `druid_host=1.2.3.4:8888 npm start`
+**Note:** you can provide an environment variable to proxy to a different Robux host like so: `robux_host=1.2.3.4:8888 npm start`
 **Note:** you can provide an environment variable to use webpack-bundle-analyzer as a plugin in the build script like so: `BUNDLE_ANALYZER_PLUGIN='TRUE' npm start`
 
 To try the console in (say) coordinator mode you could run it as such:
 
-`druid_host=localhost:8081 npm start`
+`robux_host=localhost:8081 npm start`
 
 ### Developing
 
@@ -92,12 +92,12 @@ Please be conscious of not introducing dependencies on packages with Apache inco
 
 From the web-console directory:
 
-1. Build druid distribution: `script/druid build`
-2. Start druid cluster: `script/druid start`
+1. Build robux distribution: `script/robux build`
+2. Start robux cluster: `script/robux start`
 3. Run end-to-end tests: `npm run test-e2e`
-4. Stop druid cluster: `script/druid stop`
+4. Stop robux cluster: `script/robux stop`
 
-If you already have a druid cluster running on the standard ports, the steps to build/start/stop a druid cluster can
+If you already have a robux cluster running on the standard ports, the steps to build/start/stop a robux cluster can
 be skipped.
 
 #### Screenshots for debugging
@@ -108,18 +108,18 @@ when the test fails. For example, if `e2e-tests/tutorial-batch.spec.ts` fails, i
 
 #### Disabling headless mode
 
-Disabling headless mode while running the tests can be helpful. This can be done via the `DRUID_E2E_TEST_HEADLESS`
+Disabling headless mode while running the tests can be helpful. This can be done via the `ROBUX_E2E_TEST_HEADLESS`
 environment variable, which defaults to `true`.
 
-Like so: `DRUID_E2E_TEST_HEADLESS=false npm run test-e2e`
+Like so: `ROBUX_E2E_TEST_HEADLESS=false npm run test-e2e`
 
 #### Running against alternate web console
 
-The environment variable `DRUID_E2E_TEST_UNIFIED_CONSOLE_PORT` can be used to target a web console running on a
+The environment variable `ROBUX_E2E_TEST_UNIFIED_CONSOLE_PORT` can be used to target a web console running on a
 non-default port (i.e., not port `8888`). For example, this environment variable can be used to target the
 development mode of the web console (started via `npm start`), which runs on port `18081`.
 
-Like so: `DRUID_E2E_TEST_UNIFIED_CONSOLE_PORT=18081 npm run test-e2e`
+Like so: `ROBUX_E2E_TEST_UNIFIED_CONSOLE_PORT=18081 npm run test-e2e`
 
 #### Running and debugging a single e2e test using Jest and Playwright
 
@@ -141,14 +141,14 @@ As part of this directory:
 
 ```
 GET /status
-GET /druid/indexer/v1/supervisor?full
-POST /druid/indexer/v1/worker
-GET /druid/indexer/v1/workers
-GET /druid/indexer/v1/tasks
-GET /druid/coordinator/v1/loadqueue?simple
-GET /druid/coordinator/v1/config
-GET /druid/coordinator/v1/metadata/datasources?includeUnused
-GET /druid/coordinator/v1/rules
-GET /druid/coordinator/v1/config/compaction
-GET /druid/coordinator/v1/tiers
+GET /robux/indexer/v1/supervisor?full
+POST /robux/indexer/v1/worker
+GET /robux/indexer/v1/workers
+GET /robux/indexer/v1/tasks
+GET /robux/coordinator/v1/loadqueue?simple
+GET /robux/coordinator/v1/config
+GET /robux/coordinator/v1/metadata/datasources?includeUnused
+GET /robux/coordinator/v1/rules
+GET /robux/coordinator/v1/config/compaction
+GET /robux/coordinator/v1/tiers
 ```

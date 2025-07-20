@@ -24,15 +24,15 @@ sidebar_label: "Key concepts"
   -->
 
 :::info
- This page describes SQL-based batch ingestion using the [`druid-multi-stage-query`](../multi-stage-query/index.md)
- extension, new in Druid 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
+ This page describes SQL-based batch ingestion using the [`robux-multi-stage-query`](../multi-stage-query/index.md)
+ extension, new in Robux 24.0. Refer to the [ingestion methods](../ingestion/index.md#batch) table to determine which
  ingestion method is right for you.
 :::
 
 ## Multi-stage query task engine
 
-The `druid-multi-stage-query` extension adds a multi-stage query (MSQ) task engine that executes SQL statements as batch
-tasks in the indexing service, which execute on [Middle Managers](../design/architecture.md#druid-services).
+The `robux-multi-stage-query` extension adds a multi-stage query (MSQ) task engine that executes SQL statements as batch
+tasks in the indexing service, which execute on [Middle Managers](../design/architecture.md#robux-services).
 [INSERT](reference.md#insert) and [REPLACE](reference.md#replace) tasks publish
 [segments](../design/storage.md) just like [all other forms of batch
 ingestion](../ingestion/index.md#batch). Each query occupies at least two task slots while running: one controller task,
@@ -40,7 +40,7 @@ and at least one worker task. As an experimental feature, the MSQ task engine al
 batch tasks. The behavior and result format of plain SELECT (without INSERT or REPLACE) is subject to change.
 
 You can execute SQL statements using the MSQ task engine through the **Query** view in the [web
-console](../operations/web-console.md) or through the [`/druid/v2/sql/task` API](../api-reference/sql-ingestion-api.md).
+console](../operations/web-console.md) or through the [`/robux/v2/sql/task` API](../api-reference/sql-ingestion-api.md).
 
 For more details on how SQL queries are executed using the MSQ task engine, see [multi-stage query
 tasks](#multi-stage-query-tasks).
@@ -69,8 +69,8 @@ than `EXTERN`.
 
 ### Load data with `INSERT`
 
-`INSERT` statements can create a new datasource or append to an existing datasource. In Druid SQL, unlike standard SQL,
-there is no syntactical difference between creating a table and appending data to a table. Druid does not include a
+`INSERT` statements can create a new datasource or append to an existing datasource. In Robux SQL, unlike standard SQL,
+there is no syntactical difference between creating a table and appending data to a table. Robux does not include a
 `CREATE TABLE` statement.
 
 Nearly all `SELECT` capabilities are available for `INSERT ... SELECT` queries. Certain exceptions are listed on the [Known
@@ -94,8 +94,8 @@ For more information about the syntax, see [INSERT](./reference.md#insert).
 
 ### Overwrite data with REPLACE
 
-`REPLACE` statements can create a new datasource or overwrite data in an existing datasource. In Druid SQL, unlike
-standard SQL, there is no syntactical difference between creating a table and overwriting data in a table. Druid does
+`REPLACE` statements can create a new datasource or overwrite data in an existing datasource. In Robux SQL, unlike
+standard SQL, there is no syntactical difference between creating a table and overwriting data in a table. Robux does
 not include a `CREATE TABLE` statement.
 
 `REPLACE` uses an [OVERWRITE clause](reference.md#replace-specific-time-ranges) to determine which data to overwrite. You
@@ -125,7 +125,7 @@ For more information about the syntax, see [`EXTERN`](./reference.md#extern-func
 
 ### Primary timestamp
 
-Druid tables always include a primary timestamp named `__time`.
+Robux tables always include a primary timestamp named `__time`.
 
 It is common to set a primary timestamp by using [date and time
 functions](../querying/sql-scalar.md#date-and-time-functions); for example: `TIME_FORMAT("timestamp", 'yyyy-MM-dd
@@ -133,7 +133,7 @@ HH:mm:ss') AS __time`.
 
 The `__time` column is used for [partitioning by time](#partitioning-by-time). If you use `PARTITIONED BY ALL` or
 `PARTITIONED BY ALL TIME`, partitioning by time is disabled. In these cases, you do not need to include a `__time`
-column in your `INSERT` statement. However, Druid still creates a `__time` column in your Druid table and sets all
+column in your `INSERT` statement. However, Robux still creates a `__time` column in your Robux table and sets all
 timestamps to 1970-01-01 00:00:00.
 
 For more information, see [Primary timestamp](../ingestion/schema-model.md#primary-timestamp).
@@ -143,7 +143,7 @@ For more information, see [Primary timestamp](../ingestion/schema-model.md#prima
 ### Partitioning by time
 
 `INSERT` and `REPLACE` statements require the `PARTITIONED BY` clause, which determines how time-based partitioning is done.
-In Druid, data is split into one or more segments per time chunk, defined by the PARTITIONED BY granularity.
+In Robux, data is split into one or more segments per time chunk, defined by the PARTITIONED BY granularity.
 
 Partitioning by time is important for three reasons:
 
@@ -180,7 +180,7 @@ To activate dimension-based pruning, these requirements must be met:
 - Segments were generated by a `REPLACE` statement, not an `INSERT` statement.
 - `CLUSTERED BY` begins with single-valued string columns. These single-valued string columns are used for pruning.
 
-If these requirements are _not_ met, Druid still clusters data during ingestion but will not be able to perform
+If these requirements are _not_ met, Robux still clusters data during ingestion but will not be able to perform
 dimension-based segment pruning at query time. You can tell if dimension-based segment pruning is possible by using the
 `sys.segments` table to inspect the `shard_spec` for the segments generated by an ingestion query. If they are of type
 `range` or `single`, then dimension-based segment pruning is possible. Otherwise, it is not. The shard spec type is also
@@ -207,7 +207,7 @@ To perform ingestion with rollup:
 3. See [ARRAY types](../querying/arrays.md#sql-based-ingestion) for information about ingesting `ARRAY` columns
 4. See [multi-value dimensions](../querying/multi-value-dimensions.md#sql-based-ingestion) for information to ingest multi-value VARCHAR columns
 
-When you do all of these things, Druid understands that you intend to do an ingestion with rollup, and it writes
+When you do all of these things, Robux understands that you intend to do an ingestion with rollup, and it writes
 rollup-related metadata into the generated segments. Other applications can then use [`segmentMetadata`
 queries](../querying/segmentmetadataquery.md) to retrieve rollup-related information.
 
@@ -224,7 +224,7 @@ For an example, see [INSERT with rollup example](examples.md#insert-with-rollup)
 
 ### Execution flow
 
-When you execute a SQL statement using the task endpoint [`/druid/v2/sql/task`](../api-reference/sql-ingestion-api.md#submit-a-query), the following
+When you execute a SQL statement using the task endpoint [`/robux/v2/sql/task`](../api-reference/sql-ingestion-api.md#submit-a-query), the following
 happens:
 
 1. The Broker plans your SQL query into a native query, as usual.
@@ -242,7 +242,7 @@ happens:
 6. If the query is a `SELECT` query, the worker tasks send the results
    back to the controller task, which writes them into its task report.
    If the query is an INSERT or REPLACE query, the worker tasks generate and
-   publish new Druid segments to the provided datasource.
+   publish new Robux segments to the provided datasource.
 
 ### Parallelism
 
@@ -256,7 +256,7 @@ When [reading external data](#read-external-data-with-extern), EXTERN can read m
 different worker tasks. However, EXTERN does not split individual files across multiple worker tasks. If you have a
 small number of very large input files, you can increase query parallelism by splitting up your input files.
 
-The `druid.worker.capacity` server property on each [Middle Manager](../design/architecture.md#druid-services)
+The `robux.worker.capacity` server property on each [Middle Manager](../design/architecture.md#robux-services)
 determines the maximum number of worker tasks that can run on each server at once. Worker tasks run single-threaded,
 which also determines the maximum number of processors on the server that can contribute towards multi-stage queries.
 
@@ -286,7 +286,7 @@ The worker memory bundle is used for sorting stage output data prior to shuffle.
 memory; in this case, they will switch to using disk.
 
 Worker tasks also use off-heap ("direct") memory. Set the amount of direct memory available (`-XX:MaxDirectMemorySize`)
-to at least `(druid.processing.numThreads + 1) * druid.processing.buffer.sizeBytes`. Increasing the amount of direct
+to at least `(robux.processing.numThreads + 1) * robux.processing.buffer.sizeBytes`. Increasing the amount of direct
 memory available beyond the minimum does not speed up processing.
 
 ### Disk usage
@@ -303,5 +303,5 @@ Worker tasks use local disk for four purposes:
   dataset for a task.
 
 Workers use the task working directory, given by
-[`druid.indexer.task.baseDir`](../configuration/index.md#additional-peon-configuration), for these items. It is
+[`robux.indexer.task.baseDir`](../configuration/index.md#additional-peon-configuration), for these items. It is
 important that this directory has enough space available for these purposes.

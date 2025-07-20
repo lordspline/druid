@@ -23,62 +23,62 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>druid-embedded-tests</artifactId>
-  <name>druid-embedded-tests</name>
-  <description>Unit tests that run an embedded Druid cluster</description>
+  <artifactId>robux-embedded-tests</artifactId>
+  <name>robux-embedded-tests</name>
+  <description>Unit tests that run an embedded Robux cluster</description>
 
   <parent>
-    <groupId>org.apache.druid</groupId>
-    <artifactId>druid</artifactId>
+    <groupId>org.apache.robux</groupId>
+    <artifactId>robux</artifactId>
     <version>35.0.0-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-services</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-services</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-indexing-service</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-indexing-service</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-kafka-indexing-service</artifactId>
+      <groupId>org.apache.robux.extensions</groupId>
+      <artifactId>robux-kafka-indexing-service</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-multi-stage-query</artifactId>
+      <groupId>org.apache.robux.extensions</groupId>
+      <artifactId>robux-multi-stage-query</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-sql</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-sql</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
+      <groupId>org.apache.robux.extensions</groupId>
       <artifactId>mysql-metadata-storage</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-s3-extensions</artifactId>
+      <groupId>org.apache.robux.extensions</groupId>
+      <artifactId>robux-s3-extensions</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
@@ -101,63 +101,63 @@
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-processing</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-processing</artifactId>
       <type>test-jar</type>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-server</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-server</artifactId>
       <type>test-jar</type>
       <version>${project.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-sql</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-sql</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-services</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-services</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-kafka-indexing-service</artifactId>
+      <groupId>org.apache.robux.extensions</groupId>
+      <artifactId>robux-kafka-indexing-service</artifactId>
       <version>${project.parent.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions.contrib</groupId>
+      <groupId>org.apache.robux.extensions.contrib</groupId>
       <artifactId>kafka-emitter</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid.extensions</groupId>
-      <artifactId>druid-lookups-cached-global</artifactId>
+      <groupId>org.apache.robux.extensions</groupId>
+      <artifactId>robux-lookups-cached-global</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.druid</groupId>
-      <artifactId>druid-aws-common</artifactId>
+      <groupId>org.apache.robux</groupId>
+      <artifactId>robux-aws-common</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
     <!-- Some embedded tests use the router and the web-console for debugging -->
     <dependency>
-      <groupId>org.apache.druid</groupId>
+      <groupId>org.apache.robux</groupId>
       <artifactId>web-console</artifactId>
       <version>${project.parent.version}</version>
       <scope>test</scope>
     </dependency>
 
-    <!-- Non-Druid test dependencies -->
+    <!-- Non-Robux test dependencies -->
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>

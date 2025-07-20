@@ -23,13 +23,13 @@ title: "pull-deps tool"
   -->
 
 
-`pull-deps` is an Apache Druid tool that can pull down dependencies to the local repository and lay dependencies out into the extension directory as needed.
+`pull-deps` is an Apache Robux tool that can pull down dependencies to the local repository and lay dependencies out into the extension directory as needed.
 
 `pull-deps` has several command line options, they are as follows:
 
 `-c` or `--coordinate` (Can be specified multiple times)
 
-Extension coordinate to pull down, followed by a maven coordinate, e.g. org.apache.druid.extensions:mysql-metadata-storage
+Extension coordinate to pull down, followed by a maven coordinate, e.g. org.apache.robux.extensions:mysql-metadata-storage
 
 `-h` or `--hadoop-coordinate` (Can be specified multiply times)
 
@@ -57,7 +57,7 @@ Don't use the default remote repository, https://repo1.maven.org/maven2/. Only u
 
 `-d` or `--defaultVersion`
 
-Version to use for extension coordinate that doesn't have a version information. For example, if extension coordinate is `org.apache.druid.extensions:mysql-metadata-storage`, and default version is `{{DRUIDVERSION}}`, then this coordinate will be treated as `org.apache.druid.extensions:mysql-metadata-storage:{{DRUIDVERSION}}`
+Version to use for extension coordinate that doesn't have a version information. For example, if extension coordinate is `org.apache.robux.extensions:mysql-metadata-storage`, and default version is `{{ROBUXVERSION}}`, then this coordinate will be treated as `org.apache.robux.extensions:mysql-metadata-storage:{{ROBUXVERSION}}`
 
 `--use-proxy`
 
@@ -85,25 +85,25 @@ Set a password to connect to the proxy, this option is only required if the prox
 
 To run `pull-deps`, you should
 
-1) Specify `druid.extensions.directory` and `druid.extensions.hadoopDependenciesDir`, these two properties tell `pull-deps` where to put extensions. If you don't specify them,  default values will be used, see [Configuration](../configuration/index.md).
+1) Specify `robux.extensions.directory` and `robux.extensions.hadoopDependenciesDir`, these two properties tell `pull-deps` where to put extensions. If you don't specify them,  default values will be used, see [Configuration](../configuration/index.md).
 
 2) Tell `pull-deps` what to download using `-c` or `-h` option, which are followed by a maven coordinate.
 
 Example:
 
-Suppose you want to download ```mysql-metadata-storage``` and ```hadoop-client```(both 2.3.0 and 2.4.0) with a specific version, you can run `pull-deps` command with `-c org.apache.druid.extensions:mysql-metadata-storage:{{DRUIDVERSION}}`, `-h org.apache.hadoop:hadoop-client:2.3.0` and `-h org.apache.hadoop:hadoop-client:2.4.0`, an example command would be:
+Suppose you want to download ```mysql-metadata-storage``` and ```hadoop-client```(both 2.3.0 and 2.4.0) with a specific version, you can run `pull-deps` command with `-c org.apache.robux.extensions:mysql-metadata-storage:{{ROBUXVERSION}}`, `-h org.apache.hadoop:hadoop-client:2.3.0` and `-h org.apache.hadoop:hadoop-client:2.4.0`, an example command would be:
 
 ```
-java -classpath "/my/druid/lib/*" org.apache.druid.cli.Main tools pull-deps --clean -c org.apache.druid.extensions:mysql-metadata-storage:{{DRUIDVERSION}} -h org.apache.hadoop:hadoop-client:2.3.0 -h org.apache.hadoop:hadoop-client:2.4.0
+java -classpath "/my/robux/lib/*" org.apache.robux.cli.Main tools pull-deps --clean -c org.apache.robux.extensions:mysql-metadata-storage:{{ROBUXVERSION}} -h org.apache.hadoop:hadoop-client:2.3.0 -h org.apache.hadoop:hadoop-client:2.4.0
 ```
 
-Because `--clean` is supplied, this command will first remove the directories specified at `druid.extensions.directory` and `druid.extensions.hadoopDependenciesDir`, then recreate them and start downloading the extensions there. After finishing downloading, if you go to the extension directories you specified, you will see
+Because `--clean` is supplied, this command will first remove the directories specified at `robux.extensions.directory` and `robux.extensions.hadoopDependenciesDir`, then recreate them and start downloading the extensions there. After finishing downloading, if you go to the extension directories you specified, you will see
 
 ```
 tree extensions
 extensions
 └── mysql-metadata-storage
-    └── mysql-metadata-storage-{{DRUIDVERSION}}.jar
+    └── mysql-metadata-storage-{{ROBUXVERSION}}.jar
 ```
 
 ```
@@ -128,14 +128,14 @@ hadoop-dependencies/
     ..... lots of jars
 ```
 
-Note that if you specify `--defaultVersion`, you don't have to put version information in the coordinate. For example, if you want `mysql-metadata-storage` to use version `{{DRUIDVERSION}}`,  you can change the command above to
+Note that if you specify `--defaultVersion`, you don't have to put version information in the coordinate. For example, if you want `mysql-metadata-storage` to use version `{{ROBUXVERSION}}`,  you can change the command above to
 
 ```
-java -classpath "/my/druid/lib/*" org.apache.druid.cli.Main tools pull-deps --defaultVersion {{DRUIDVERSION}} --clean -c org.apache.druid.extensions:mysql-metadata-storage -h org.apache.hadoop:hadoop-client:2.3.0 -h org.apache.hadoop:hadoop-client:2.4.0
+java -classpath "/my/robux/lib/*" org.apache.robux.cli.Main tools pull-deps --defaultVersion {{ROBUXVERSION}} --clean -c org.apache.robux.extensions:mysql-metadata-storage -h org.apache.hadoop:hadoop-client:2.3.0 -h org.apache.hadoop:hadoop-client:2.4.0
 ```
 
 :::info
  Please note to use the pull-deps tool you must know the Maven groupId, artifactId, and version of your extension.
 
- For Druid community extensions listed [here](../configuration/extensions.md), the groupId is "org.apache.druid.extensions.contrib" and the artifactId is the name of the extension.
+ For Robux community extensions listed [here](../configuration/extensions.md), the groupId is "org.apache.robux.extensions.contrib" and the artifactId is the name of the extension.
 :::

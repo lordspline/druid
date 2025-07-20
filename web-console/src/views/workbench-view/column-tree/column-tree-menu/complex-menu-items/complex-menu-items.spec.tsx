@@ -17,7 +17,7 @@
  */
 
 import { render } from '@testing-library/react';
-import { SqlQuery } from 'druid-query-toolkit';
+import { SqlQuery } from 'robux-query-toolkit';
 
 import { ComplexMenuItems } from './complex-menu-items';
 

@@ -22,11 +22,11 @@ title: "Dynamic Config Providers"
   ~ under the License.
   -->
 
-Druid relies on dynamic config providers to supply multiple related sets of credentials, secrets, and configurations within a Druid extension. Dynamic config providers are intended to eventually replace [PasswordProvider](./password-provider.md).
+Robux relies on dynamic config providers to supply multiple related sets of credentials, secrets, and configurations within a Robux extension. Dynamic config providers are intended to eventually replace [PasswordProvider](./password-provider.md).
 
-By default, Druid includes an environment variable dynamic config provider that supports Kafka consumer configuration in [Kafka ingestion](../ingestion/kafka-ingestion.md).
+By default, Robux includes an environment variable dynamic config provider that supports Kafka consumer configuration in [Kafka ingestion](../ingestion/kafka-ingestion.md).
 
-To develop a custom extension of the `DynamicConfigProvider` interface that is registered at Druid process startup, see [Adding a new DynamicConfigProvider implementation](../development/modules.md#adding-a-new-dynamicconfigprovider-implementation).
+To develop a custom extension of the `DynamicConfigProvider` interface that is registered at Robux process startup, see [Adding a new DynamicConfigProvider implementation](../development/modules.md#adding-a-new-dynamicconfigprovider-implementation).
 
 ## Environment variable dynamic config provider
 
@@ -35,7 +35,7 @@ You can use the environment variable dynamic config provider (`EnvironmentVariab
 The environment variable dynamic config provider uses the following syntax:
 
 ```json
-druid.dynamic.config.provider={"type": "environment","variables":{"secret1": "SECRET1_VAR","secret2": "SECRET2_VAR"}}
+robux.dynamic.config.provider={"type": "environment","variables":{"secret1": "SECRET1_VAR","secret2": "SECRET2_VAR"}}
 ```
 
 |Field|Type|Description|Required|
@@ -44,12 +44,12 @@ druid.dynamic.config.provider={"type": "environment","variables":{"secret1": "SE
 |`variables`|Map|environment variables that store the configuration information|Yes|
 
 When using the environment variable config provider, consider the following:
-- If you manually specify a configuration key-value pair and use the dynamic config provider for the same key, Druid uses the value from the dynamic config provider.
+- If you manually specify a configuration key-value pair and use the dynamic config provider for the same key, Robux uses the value from the dynamic config provider.
 - For use in a supervisor spec, environment variables must be available to the system user that runs the Overlord service and that runs the Peon service.
 
 The following example shows how to configure environment variables to store the SSL key and truststore passwords for Kafka.
 
-On the Overlord and Peon machines, set the following environment variables for the system user that runs the Druid services:
+On the Overlord and Peon machines, set the following environment variables for the system user that runs the Robux services:
 
 ```
 export SSL_KEY_PASSWORD=mysecretkeypassword
@@ -64,7 +64,7 @@ When you define the consumer properties in the supervisor spec, use the dynamic 
         "bootstrap.servers": "localhost:9092",
         "ssl.keystore.location": "/opt/kafka/config/kafka01.keystore.jks",
         "ssl.truststore.location": "/opt/kafka/config/kafka.truststore.jks",
-        "druid.dynamic.config.provider": {
+        "robux.dynamic.config.provider": {
           "type": "environment",
           "variables": {
             "ssl.key.password": "SSL_KEY_PASSWORD",
@@ -75,4 +75,4 @@ When you define the consumer properties in the supervisor spec, use the dynamic 
       },
 ...
 ```
-When connecting to Kafka, Druid replaces the environment variables with their corresponding values.
+When connecting to Kafka, Robux replaces the environment variables with their corresponding values.

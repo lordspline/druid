@@ -32,7 +32,7 @@ import React, { useState } from 'react';
 import AceEditor from 'react-ace';
 
 import { CenterMessage } from '../../../components';
-import type { WorkbenchQuery } from '../../../druid-models';
+import type { WorkbenchQuery } from '../../../robux-models';
 import type { WorkbenchQueryHistoryEntry } from '../../../singletons/workbench-history';
 import { WorkbenchHistory } from '../../../singletons/workbench-history';
 import { pluralIfNeeded } from '../../../utils';

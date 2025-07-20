@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { QueryResult, sane } from 'druid-query-toolkit';
+import { QueryResult, sane } from 'robux-query-toolkit';
 
 import { queryResultsToString, stringifyCsvValue, stringifyTsvValue } from './download';
 

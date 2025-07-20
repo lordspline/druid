@@ -23,14 +23,14 @@ title: "Logging"
   -->
 
 
-Apache Druid services emit logs that to help you debug. 
+Apache Robux services emit logs that to help you debug. 
 The same services also emit periodic [metrics](../configuration/index.md#metrics-monitors) about their state.
-To disable metric info logs set the following runtime property: `-Ddruid.emitter.logging.logLevel=debug`.
+To disable metric info logs set the following runtime property: `-Drobux.emitter.logging.logLevel=debug`.
 
-Druid uses [log4j2](http://logging.apache.org/log4j/2.x/) for logging.
-The default configuration file log4j2.xml ships with Druid at the following path: `conf/druid/{config}/_common/log4j2.xml`.
+Robux uses [log4j2](http://logging.apache.org/log4j/2.x/) for logging.
+The default configuration file log4j2.xml ships with Robux at the following path: `conf/robux/{config}/_common/log4j2.xml`.
 
-By default, Druid uses `RollingRandomAccessFile` for rollover daily, and keeps log files up to 7 days. 
+By default, Robux uses `RollingRandomAccessFile` for rollover daily, and keeps log files up to 7 days. 
 If that's not suitable in your case, modify the `log4j2.xml` accordingly.
 
 The following example log4j2.xml is based upon the micro quickstart:
@@ -39,8 +39,8 @@ The following example log4j2.xml is based upon the micro quickstart:
 <?xml version="1.0" encoding="UTF-8" ?>
 <Configuration status="WARN">
   <Properties>
-    <!-- to change log directory, set DRUID_LOG_DIR environment variable to your directory before launching Druid -->
-    <Property name="druid.log.path" value="log" />
+    <!-- to change log directory, set ROBUX_LOG_DIR environment variable to your directory before launching Robux -->
+    <Property name="robux.log.path" value="log" />
   </Properties>
 
   <Appenders>
@@ -50,14 +50,14 @@ The following example log4j2.xml is based upon the micro quickstart:
 
     <!-- Rolling Files-->
     <RollingRandomAccessFile name="FileAppender"
-                             fileName="${sys:druid.log.path}/${sys:druid.node.type}.log"
-                             filePattern="${sys:druid.log.path}/${sys:druid.node.type}.%d{yyyyMMdd}.log">
+                             fileName="${sys:robux.log.path}/${sys:robux.node.type}.log"
+                             filePattern="${sys:robux.log.path}/${sys:robux.node.type}.%d{yyyyMMdd}.log">
       <PatternLayout pattern="%d{ISO8601} %p [%t] %c -%notEmpty{ [%markerSimpleName]} %m%n"/>
       <Policies>
         <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
       </Policies>
       <DefaultRolloverStrategy>
-        <Delete basePath="${sys:druid.log.path}/" maxDepth="1">
+        <Delete basePath="${sys:robux.log.path}/" maxDepth="1">
           <IfFileName glob="*.log" />
           <IfLastModified age="7d" />
         </Delete>
@@ -72,25 +72,25 @@ The following example log4j2.xml is based upon the micro quickstart:
     </Root>
 
     <!-- Set level="debug" to see stack traces for query errors -->
-    <Logger name="org.apache.druid.server.QueryResource" level="info" additivity="false">
+    <Logger name="org.apache.robux.server.QueryResource" level="info" additivity="false">
       <Appender-ref ref="FileAppender"/>
     </Logger>
-    <Logger name="org.apache.druid.server.QueryLifecycle" level="info" additivity="false">
+    <Logger name="org.apache.robux.server.QueryLifecycle" level="info" additivity="false">
       <Appender-ref ref="FileAppender"/>
     </Logger>
 
     <!-- Set level="debug" or "trace" to see more Coordinator details (segment balancing, load/drop rules, etc) -->
-    <Logger name="org.apache.druid.server.coordinator" level="info" additivity="false">
+    <Logger name="org.apache.robux.server.coordinator" level="info" additivity="false">
       <Appender-ref ref="FileAppender"/>
     </Logger>
 
     <!-- Set level="debug" to see low-level details about segments and ingestion -->
-    <Logger name="org.apache.druid.segment" level="info" additivity="false">
+    <Logger name="org.apache.robux.segment" level="info" additivity="false">
       <Appender-ref ref="FileAppender"/>
     </Logger>
 
     <!-- Set level="debug" to see more information about extension initialization -->
-    <Logger name="org.apache.druid.initialization" level="info" additivity="false">
+    <Logger name="org.apache.robux.initialization" level="info" additivity="false">
       <Appender-ref ref="FileAppender"/>
     </Logger>
 
@@ -107,17 +107,17 @@ Peons always output logs to standard output. Middle Managers redirect task logs 
 
 :::info
 
- Druid shares the log4j configuration file among all services, including task peon processes.
+ Robux shares the log4j configuration file among all services, including task peon processes.
  However, you must define a console appender in the logger for your peon processes.
- If you don't define a console appender, Druid creates and configures a new console appender
+ If you don't define a console appender, Robux creates and configures a new console appender
  that retains the log level, such as `info` or `warn`, but does not retain any other appender
  configuration, including non-console ones.
 :::
 
 ## Log directory
-The included log4j2.xml configuration for Druid and ZooKeeper writes logs to the `log` directory at the root of the distribution.
+The included log4j2.xml configuration for Robux and ZooKeeper writes logs to the `log` directory at the root of the distribution.
 
-If you want to change the log directory, set the environment variable `DRUID_LOG_DIR` to the right directory before you start Druid.
+If you want to change the log directory, set the environment variable `ROBUX_LOG_DIR` to the right directory before you start Robux.
 
 ## All-in-one start commands
 
@@ -149,17 +149,17 @@ The following example shows a `log4j2.xml` that configures some of the more chat
   
 <Loggers>
     <!-- AsyncLogger instead of Logger -->
-    <AsyncLogger name="org.apache.druid.curator.inventory.CuratorInventoryManager" level="debug" additivity="false">
+    <AsyncLogger name="org.apache.robux.curator.inventory.CuratorInventoryManager" level="debug" additivity="false">
       <AppenderRef ref="Console"/>
     </AsyncLogger>
-    <AsyncLogger name="org.apache.druid.client.BatchServerInventoryView" level="debug" additivity="false">
+    <AsyncLogger name="org.apache.robux.client.BatchServerInventoryView" level="debug" additivity="false">
       <AppenderRef ref="Console"/>
     </AsyncLogger>
     <!-- Make extra sure nobody adds logs in a bad way that can hurt performance -->
-    <AsyncLogger name="org.apache.druid.client.ServerInventoryView" level="debug" additivity="false">
+    <AsyncLogger name="org.apache.robux.client.ServerInventoryView" level="debug" additivity="false">
       <AppenderRef ref="Console"/>
     </AsyncLogger>
-    <AsyncLogger name ="org.apache.druid.java.util.http.client.pool.ChannelResourceFactory" level="info" additivity="false">
+    <AsyncLogger name ="org.apache.robux.java.util.http.client.pool.ChannelResourceFactory" level="info" additivity="false">
       <AppenderRef ref="Console"/>
     </AsyncLogger>
     <Root level="info">

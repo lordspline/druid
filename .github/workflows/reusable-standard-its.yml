@@ -26,7 +26,7 @@ on:
         required: true
         type: string
       override_config_path:
-        description: 'Existing Druid configuration (using Docker) can be overridden or new config vars can be set e.g. when using cloud storage'
+        description: 'Existing Robux configuration (using Docker) can be overridden or new config vars can be set e.g. when using cloud storage'
         required: false
         type: string
       group:
@@ -116,7 +116,7 @@ jobs:
         run: |
           tar cvzf ./service-logs.tgz ~/shared/logs ~/shared/tasklogs
 
-      - name: Upload Druid service logs to GitHub
+      - name: Upload Robux service logs to GitHub
         if: ${{ failure() && steps.run-it.conclusion == 'failure' }}
         uses: actions/upload-artifact@master
         with:

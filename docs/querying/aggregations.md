@@ -23,14 +23,14 @@ title: "Aggregations"
   -->
 
 :::info
-Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
 This document describes the native
 language. For information about aggregators available in SQL, refer to the
 [SQL documentation](sql-aggregations.md).
 :::
 
 You can use aggregations:
--  in the ingestion spec during ingestion to summarize data before it enters Apache Druid.
+-  in the ingestion spec during ingestion to summarize data before it enters Apache Robux.
 -  at query time to summarize result data.
 
 The following sections list the available aggregate functions. Unless otherwise noted, aggregations are available at both ingestion and query time.
@@ -39,7 +39,7 @@ The following sections list the available aggregate functions. Unless otherwise 
 
 ### Count aggregator
 
-`count` computes the count of Druid rows that match the filters.
+`count` computes the count of Robux rows that match the filters.
 
 | Property | Description | Required |
 | --- | --- | --- |
@@ -51,8 +51,8 @@ Example:
 { "type" : "count", "name" : "count" }
 ```
 
-The `count` aggregator counts the number of Druid rows, which does not always reflect the number of raw events ingested.
-This is because Druid can be configured to roll up data at ingestion time. To
+The `count` aggregator counts the number of Robux rows, which does not always reflect the number of raw events ingested.
+This is because Robux can be configured to roll up data at ingestion time. To
 count the number of ingested rows of data, include a `count` aggregator at ingestion time and a `longSum` aggregator at
 query time.
 
@@ -403,12 +403,12 @@ Compared to the Theta sketch, the HLL sketch does not support set operations and
 
 :::info
 For new use cases, we recommend evaluating [DataSketches Theta Sketch](../development/extensions-core/datasketches-theta.md) or [DataSketches HLL Sketch](../development/extensions-core/datasketches-hll.md) instead.
-The DataSketches aggregators are generally able to offer more flexibility and better accuracy than the classic Druid `cardinality` and `hyperUnique` aggregators.
+The DataSketches aggregators are generally able to offer more flexibility and better accuracy than the classic Robux `cardinality` and `hyperUnique` aggregators.
 :::
 
-The [Cardinality and HyperUnique](../querying/hll-old.md) aggregators are older aggregator implementations available by default in Druid that also provide distinct count estimates using the HyperLogLog algorithm. The newer DataSketches Theta and HLL extension-provided aggregators described above have superior accuracy and performance and are recommended instead.
+The [Cardinality and HyperUnique](../querying/hll-old.md) aggregators are older aggregator implementations available by default in Robux that also provide distinct count estimates using the HyperLogLog algorithm. The newer DataSketches Theta and HLL extension-provided aggregators described above have superior accuracy and performance and are recommended instead.
 
-The DataSketches team has published a [comparison study](https://datasketches.apache.org/docs/HLL/HllSketchVsDruidHyperLogLogCollector.html) between Druid's original HLL algorithm and the DataSketches HLL algorithm. Based on the demonstrated advantages of the DataSketches implementation, we are recommending using them in preference to Druid's original HLL-based aggregators.
+The DataSketches team has published a [comparison study](https://datasketches.apache.org/docs/HLL/HllSketchVsRobuxHyperLogLogCollector.html) between Robux's original HLL algorithm and the DataSketches HLL algorithm. Based on the demonstrated advantages of the DataSketches implementation, we are recommending using them in preference to Robux's original HLL-based aggregators.
 However, to ensure backwards compatibility, we will continue to support the classic aggregators.
 
 Please note that `hyperUnique` aggregators are not mutually compatible with Datasketches HLL or Theta sketches.
@@ -438,7 +438,7 @@ As a general guideline for experimentation, the [Moments Sketch paper](https://a
 
 #### Fixed Buckets Histogram
 
-Druid also provides a [simple histogram implementation](../development/extensions-core/approximate-histograms.md#fixed-buckets-histogram) that uses a fixed range and fixed number of buckets with support for quantile estimation, backed by an array of bucket count values.
+Robux also provides a [simple histogram implementation](../development/extensions-core/approximate-histograms.md#fixed-buckets-histogram) that uses a fixed range and fixed number of buckets with support for quantile estimation, backed by an array of bucket count values.
 
 The fixed buckets histogram can perform well when the distribution of the input data allows a small number of buckets to be used.
 
@@ -456,7 +456,7 @@ The [Approximate Histogram](../development/extensions-core/approximate-histogram
 
 The algorithm used by this deprecated aggregator is highly distribution-dependent and its output is subject to serious distortions when the input does not fit within the algorithm's limitations.
 
-A [study published by the DataSketches team](https://datasketches.apache.org/docs/QuantilesStudies/DruidApproxHistogramStudy.html) demonstrates some of the known failure modes of this algorithm:
+A [study published by the DataSketches team](https://datasketches.apache.org/docs/QuantilesStudies/RobuxApproxHistogramStudy.html) demonstrates some of the known failure modes of this algorithm:
 
 - The algorithm's quantile calculations can fail to provide results for a large range of rank values (all ranks less than 0.89 in the example used in the study), returning all zeroes instead.
 - The algorithm can completely fail to record spikes in the tail ends of the distribution
@@ -471,7 +471,7 @@ For these reasons, we have deprecated this aggregator and recommend using the Da
 
 ### Expression aggregator
 
-Aggregator applicable only at query time. Aggregates results using [Druid expressions](./math-expr.md) functions to facilitate building custom functions.
+Aggregator applicable only at query time. Aggregates results using [Robux expressions](./math-expr.md) functions to facilitate building custom functions.
 
 | Property | Description | Required |
 | --- | --- | --- |
@@ -485,7 +485,7 @@ Aggregator applicable only at query time. Aggregates results using [Druid expres
 | `finalize` | The finalize expression which can only refer to a single input variable, `o`. This expression is used to perform any final transformation of the output of the `fold` or `combine` expressions. If not set, then the value is not transformed. | No |
 | `initialValue` | The initial value of the accumulator for the `fold` (and `combine`, if `InitialCombineValue` is null) expression. | Yes |
 | `initialCombineValue` | The initial value of the accumulator for the `combine` expression. | No. Default `initialValue`. |
-| `isNullUnlessAggregated` | If true, sets the default output value to `null` when the aggregator does not process any rows. If false, Druid computes the value as the result of running the expressions with initial values. | No. Defaults to `true`. |
+| `isNullUnlessAggregated` | If true, sets the default output value to `null` when the aggregator does not process any rows. If false, Robux computes the value as the result of running the expressions with initial values. | No. Defaults to `true`. |
 | `shouldAggregateNullInputs` | Indicates if the `fold` expression should operate on any `null` input values. | No. Defaults to `true`. |
 | `shouldCombineAggregateNullInputs` | Indicates if the `combine` expression should operate on any `null` input values. | No. Defaults to the value of `shouldAggregateNullInputs`. |
 | `maxSizeBytes` | Maximum size in bytes that variably sized aggregator output types such as strings and arrays are allowed to grow to before the aggregation fails. | No. Default is 8192 bytes. |
@@ -575,7 +575,7 @@ JavaScript functions are expected to return floating-point values.
 ```
 
 :::info
-JavaScript-based functionality is disabled by default. Refer to the Druid [JavaScript programming guide](../development/javascript.md) for guidelines about using Druid's JavaScript functionality, including instructions on how to enable it.
+JavaScript-based functionality is disabled by default. Refer to the Robux [JavaScript programming guide](../development/javascript.md) for guidelines about using Robux's JavaScript functionality, including instructions on how to enable it.
 :::
 
 
@@ -644,4 +644,4 @@ possible output of the aggregator is:
 | `[]`                     | 3      | (11)                  |  
 
 As the example illustrates, you can think of the output number as an unsigned _n_ bit number where _n_ is the number of dimensions passed to the aggregator. 
-Druid sets the bit at position X for the number to 0 if the sub-grouping includes a dimension at position X in the aggregator input. Otherwise, Druid sets this bit to 1.
+Robux sets the bit at position X for the number to 0 if the sub-grouping includes a dimension at position X in the aggregator input. Otherwise, Robux sets this bit to 1.

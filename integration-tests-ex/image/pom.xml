@@ -22,11 +22,11 @@
 Builds the Docker image used for integration testing.
 
 * Removes the image in the clean phase.
-* Uses the Druid build from the distribution project.
+* Uses the Robux build from the distribution project.
 * Assembles the set of needed files in the compile phase.
 * Builds the Docker image in the install phase.
 
-If you have already built Druid up to the distribution install phase,
+If you have already built Robux up to the distribution install phase,
 then this project can be run over and over if you need to debug
 changes to the image.
 
@@ -38,14 +38,14 @@ Reference: https://dzone.com/articles/build-docker-image-from-maven
 
     <packaging>pom</packaging>
 
-    <groupId>org.apache.druid.integration-tests</groupId>
-    <artifactId>druid-it-image</artifactId>
-    <name>druid-it-image</name>
+    <groupId>org.apache.robux.integration-tests</groupId>
+    <artifactId>robux-it-image</artifactId>
+    <name>robux-it-image</name>
     <description>Build the Docker image for integration tests.</description>
 
     <parent>
-        <artifactId>druid</artifactId>
-        <groupId>org.apache.druid</groupId>
+        <artifactId>robux</artifactId>
+        <groupId>org.apache.robux</groupId>
         <version>35.0.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -54,7 +54,7 @@ Reference: https://dzone.com/articles/build-docker-image-from-maven
         <!-- Default image name when run locally. When run as part of a build, the
              image name will typically be provided by the build enfironment, and will
              override this default name. -->
-        <druid.it.image-name>${project.groupId}/test:${project.version}</druid.it.image-name>
+        <robux.it.image-name>${project.groupId}/test:${project.version}</robux.it.image-name>
         <confluent-version>5.5.1</confluent-version>
         <mariadb.version>2.7.3</mariadb.version>
         <mysql.image.version>5.7-debian</mysql.image.version>
@@ -85,14 +85,14 @@ Reference: https://dzone.com/articles/build-docker-image-from-maven
             <dependencies>
                 <!-- Dependencies placed in the image. -->
                 <dependency>
-                    <groupId>org.apache.druid</groupId>
+                    <groupId>org.apache.robux</groupId>
                     <artifactId>distribution</artifactId>
                     <version>${project.parent.version}</version>
                     <type>pom</type>
                 </dependency>
                 <dependency>
-                    <groupId>org.apache.druid.integration-tests</groupId>
-                    <artifactId>druid-it-tools</artifactId>
+                    <groupId>org.apache.robux.integration-tests</groupId>
+                    <artifactId>robux-it-tools</artifactId>
                     <version>${project.parent.version}</version>
                 </dependency>
                 <dependency>
@@ -155,8 +155,8 @@ Reference: https://dzone.com/articles/build-docker-image-from-maven
                                             <outputDirectory>${project.build.directory}/docker</outputDirectory>
                                         </artifactItem>
                                         <artifactItem>
-                                            <groupId>org.apache.druid.integration-tests</groupId>
-                                            <artifactId>druid-it-tools</artifactId>
+                                            <groupId>org.apache.robux.integration-tests</groupId>
+                                            <artifactId>robux-it-tools</artifactId>
                                             <version>${project.version}</version>
                                             <type>jar</type>
                                             <overWrite>true</overWrite>
@@ -185,7 +185,7 @@ Reference: https://dzone.com/articles/build-docker-image-from-maven
                                     <arguments>
                                         <argument>rmi</argument>
                                         <argument>-f</argument> <!-- Prevent error if no image. -->
-                                        <argument>${druid.it.image-name}</argument>
+                                        <argument>${robux.it.image-name}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -208,8 +208,8 @@ Reference: https://dzone.com/articles/build-docker-image-from-maven
                                         <KAFKA_VERSION>4.0.0</KAFKA_VERSION>
                                         <ZK_VERSION>${zookeeper.version}</ZK_VERSION>
                                         <HADOOP_VERSION>${hadoop.compile.version}</HADOOP_VERSION>
-                                        <DRUID_VERSION>${project.version}</DRUID_VERSION>
-                                        <DRUID_IT_IMAGE_NAME>${druid.it.image-name}</DRUID_IT_IMAGE_NAME>
+                                        <ROBUX_VERSION>${project.version}</ROBUX_VERSION>
+                                        <ROBUX_IT_IMAGE_NAME>${robux.it.image-name}</ROBUX_IT_IMAGE_NAME>
                                         <TARGET_DIR>${project.build.directory}</TARGET_DIR>
                                         <!-- Maven has no good way to get the root directory, so
                                              this is as close as we can get. -->

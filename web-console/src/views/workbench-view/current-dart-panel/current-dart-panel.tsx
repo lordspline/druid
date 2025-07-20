@@ -24,7 +24,7 @@ import React, { useState } from 'react';
 import { useStore } from 'zustand';
 
 import { Loader } from '../../../components';
-import type { DartQueryEntry } from '../../../druid-models';
+import type { DartQueryEntry } from '../../../robux-models';
 import { useClock, useInterval, useQueryManager } from '../../../hooks';
 import { Api, AppToaster } from '../../../singletons';
 import { formatDuration, prettyFormatIsoDate } from '../../../utils';
@@ -63,7 +63,7 @@ export const CurrentDartPanel = React.memo(function CurrentViberPanel(
     query: useStore(WORK_STATE_STORE, getMsqDartVersion),
     processQuery: async (_, cancelToken) => {
       return (
-        (await Api.instance.get('/druid/v2/sql/queries', { cancelToken })).data
+        (await Api.instance.get('/robux/v2/sql/queries', { cancelToken })).data
           .queries as DartQueryEntry[]
       ).filter(q => q.engine === 'msq-dart');
     },
@@ -170,7 +170,7 @@ export const CurrentDartPanel = React.memo(function CurrentViberPanel(
           onCancel={async () => {
             if (!confirmCancelId) return;
             try {
-              await Api.instance.delete(`/druid/v2/sql/${Api.encodePath(confirmCancelId)}`);
+              await Api.instance.delete(`/robux/v2/sql/${Api.encodePath(confirmCancelId)}`);
 
               AppToaster.show({
                 message: 'Query canceled',

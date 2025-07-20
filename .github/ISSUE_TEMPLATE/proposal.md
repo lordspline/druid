@@ -1,6 +1,6 @@
 ---
 name: Proposal
-about: A template for major Druid change proposals
+about: A template for major Robux change proposals
 title: ""
 labels: Proposal, Design Review
 assignees: ''

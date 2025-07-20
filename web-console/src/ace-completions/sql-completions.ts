@@ -17,11 +17,11 @@
  */
 
 import type { Ace } from 'ace-builds';
-import { C, filterMap, N, T } from 'druid-query-toolkit';
+import { C, filterMap, N, T } from 'robux-query-toolkit';
 
 import { SQL_CONSTANTS, SQL_DYNAMICS, SQL_KEYWORDS } from '../../lib/keywords';
 import { SQL_DATA_TYPES, SQL_FUNCTIONS } from '../../lib/sql-docs';
-import { DEFAULT_SERVER_QUERY_CONTEXT } from '../druid-models';
+import { DEFAULT_SERVER_QUERY_CONTEXT } from '../robux-models';
 import type { AvailableFunctions } from '../helpers';
 import type { ColumnMetadata } from '../utils';
 import { lookupBy, uniq } from '../utils';
@@ -233,7 +233,7 @@ export function getSqlCompletions({
           docHTML: makeDocHtml({
             name,
             description,
-            syntax: `Druid runtime type: ${runtime}`,
+            syntax: `Robux runtime type: ${runtime}`,
           }),
           docText: description,
         };
@@ -309,7 +309,7 @@ export function getSqlCompletions({
         })),
         uniq(
           filterMap(columnMetadata, ({ TABLE_SCHEMA, TABLE_NAME }) =>
-            TABLE_SCHEMA === 'druid' || possibleReferencesLookup[TABLE_SCHEMA]
+            TABLE_SCHEMA === 'robux' || possibleReferencesLookup[TABLE_SCHEMA]
               ? TABLE_NAME
               : undefined,
           ),

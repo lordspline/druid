@@ -24,20 +24,20 @@ title: "Papers"
 
 ## Papers
 
-* [Druid: A Real-time Analytical Data Store](http://static.druid.io/docs/druid.pdf) - Discusses the Druid architecture in detail.
+* [Robux: A Real-time Analytical Data Store](http://static.robux.io/docs/robux.pdf) - Discusses the Robux architecture in detail.
 
-* [The RADStack: Open Source Lambda Architecture for Interactive Analytics](http://static.druid.io/docs/radstack.pdf) - Discusses how Druid supports real-time and batch workflows.
+* [The RADStack: Open Source Lambda Architecture for Interactive Analytics](http://static.robux.io/docs/radstack.pdf) - Discusses how Robux supports real-time and batch workflows.
 
 ## Presentations
 
-* [Introduction to Druid](https://www.youtube.com/watch?v=hgmxVPx4vVw) - Discusses the motivations behind Druid and the architecture of the system.
+* [Introduction to Robux](https://www.youtube.com/watch?v=hgmxVPx4vVw) - Discusses the motivations behind Robux and the architecture of the system.
 
-* [Druid: Interactive Queries Meet Real-Time Data](https://www.youtube.com/watch?v=Dlqj34l2upk) - Discusses how real-time ingestion in Druid works and use cases at Netflix.
+* [Robux: Interactive Queries Meet Real-Time Data](https://www.youtube.com/watch?v=Dlqj34l2upk) - Discusses how real-time ingestion in Robux works and use cases at Netflix.
 
-* [Not Exactly! Fast Queries via Approximation Algorithms](https://www.youtube.com/watch?v=Hpd3f_MLdXo) - Discusses how approximate algorithms work in Druid.
+* [Not Exactly! Fast Queries via Approximation Algorithms](https://www.youtube.com/watch?v=Hpd3f_MLdXo) - Discusses how approximate algorithms work in Robux.
 
-* [Real-time Analytics with Open Source Technologies](https://www.youtube.com/watch?v=3Qb_2GGRz24) - Discusses Lambda architectures with Druid.
+* [Real-time Analytics with Open Source Technologies](https://www.youtube.com/watch?v=3Qb_2GGRz24) - Discusses Lambda architectures with Robux.
 
-* [Stories from the Trenches - The Challenges of Building an Analytics Stack](https://www.youtube.com/watch?v=yuSLeIzG98w&t=55s) - Discusses features that were added to scale Druid.
+* [Stories from the Trenches - The Challenges of Building an Analytics Stack](https://www.youtube.com/watch?v=yuSLeIzG98w&t=55s) - Discusses features that were added to scale Robux.
 
-* [Building Interactive Applications at Scale](https://www.youtube.com/watch?v=bZ3LqG3iHbM) - Discusses building applications on top of Druid.
+* [Building Interactive Applications at Scale](https://www.youtube.com/watch?v=bZ3LqG3iHbM) - Discusses building applications on top of Robux.

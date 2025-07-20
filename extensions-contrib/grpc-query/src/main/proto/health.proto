@@ -15,9 +15,9 @@
 
 syntax = "proto3";
 
-option java_package = "org.apache.druid.grpc.proto";
+option java_package = "org.apache.robux.grpc.proto";
 
-package druidGrpc;
+package robuxGrpc;
 
 message HealthCheckRequest {
   string service = 1;

@@ -104,7 +104,7 @@ A sample task is shown below:
 |property|description|required?|
 |--------|-----------|---------|
 |type|The task type, this should always be `index`.|yes|
-|id|The task ID. If this is not explicitly specified, Druid generates the task ID using task type, data source name, interval, and date-time stamp. |no|
+|id|The task ID. If this is not explicitly specified, Robux generates the task ID using task type, data source name, interval, and date-time stamp. |no|
 |spec|The ingestion spec including the [data schema](#dataschema), [IO config](#ioconfig), and [tuning config](#tuningconfig).|yes|
 |context|Context to specify various task configuration parameters. See [Task context parameters](tasks.md#context-parameters) for more details.|no|
 
@@ -148,10 +148,10 @@ The tuningConfig is optional and default parameters will be used if no tuningCon
 |forceGuaranteedRollup|Forces guaranteeing the [perfect rollup](rollup.md). The perfect rollup optimizes the total size of generated segments and querying time while indexing time will be increased. If this is set to true, the index task will read the entire input data twice: one for finding the optimal number of partitions per time chunk and one for generating segments. Note that the result segments would be hash-partitioned. This flag cannot be used with `appendToExisting` of IOConfig. For more details, see the below __Segment pushing modes__ section.|false|no|
 |reportParseExceptions|DEPRECATED. If true, exceptions encountered during parsing will be thrown and will halt ingestion; if false, unparseable rows and fields will be skipped. Setting `reportParseExceptions` to true will override existing configurations for `maxParseExceptions` and `maxSavedParseExceptions`, setting `maxParseExceptions` to 0 and limiting `maxSavedParseExceptions` to no more than 1.|false|no|
 |pushTimeout|Milliseconds to wait for pushing segments. It must be >= 0, where 0 means to wait forever.|0|no|
-|segmentWriteOutMediumFactory|Segment write-out medium to use when creating segments. See [SegmentWriteOutMediumFactory](native-batch.md#segmentwriteoutmediumfactory).|Not specified, the value from `druid.peon.defaultSegmentWriteOutMediumFactory.type` is used|no|
+|segmentWriteOutMediumFactory|Segment write-out medium to use when creating segments. See [SegmentWriteOutMediumFactory](native-batch.md#segmentwriteoutmediumfactory).|Not specified, the value from `robux.peon.defaultSegmentWriteOutMediumFactory.type` is used|no|
 |logParseExceptions|If true, log an error message when a parsing exception occurs, containing information about the row where the error occurred.|false|no|
 |maxParseExceptions|The maximum number of parse exceptions that can occur before the task halts ingestion and fails. Overridden if `reportParseExceptions` is set.|unlimited|no|
-|maxSavedParseExceptions|When a parse exception occurs, Druid can keep track of the most recent parse exceptions. "maxSavedParseExceptions" limits how many exception instances will be saved. These saved exceptions will be made available after the task finishes in the [task completion report](tasks.md#task-reports). Overridden if `reportParseExceptions` is set.|0|no|
+|maxSavedParseExceptions|When a parse exception occurs, Robux can keep track of the most recent parse exceptions. "maxSavedParseExceptions" limits how many exception instances will be saved. These saved exceptions will be made available after the task finishes in the [task completion report](tasks.md#task-reports). Overridden if `reportParseExceptions` is set.|0|no|
 
 ### `partitionsSpec`
 
@@ -177,9 +177,9 @@ For best-effort rollup, you should use `dynamic`.
 
 ## Segment pushing modes
 
-While ingesting data using the simple task indexing, Druid creates segments from the input data and pushes them. For segment pushing,
+While ingesting data using the simple task indexing, Robux creates segments from the input data and pushes them. For segment pushing,
 the simple task index supports the following segment pushing modes based upon your type of [rollup](./rollup.md):
 
-- Bulk pushing mode: Used for perfect rollup. Druid pushes every segment at the very end of the index task. Until then, Druid stores created segments in memory and local storage of the service running the index task. This mode can cause problems if you have limited storage capacity, and is not recommended to use in production.
+- Bulk pushing mode: Used for perfect rollup. Robux pushes every segment at the very end of the index task. Until then, Robux stores created segments in memory and local storage of the service running the index task. This mode can cause problems if you have limited storage capacity, and is not recommended to use in production.
 To enable bulk pushing mode, set `forceGuaranteedRollup` in your TuningConfig. You can not use bulk pushing with `appendToExisting` in your IOConfig.
-- Incremental pushing mode: Used for best-effort rollup. Druid pushes segments are incrementally during the course of the indexing task. The index task collects data and stores created segments in the memory and disks of the services running the task until the total number of collected rows exceeds `maxTotalRows`. At that point the index task immediately pushes all segments created up until that moment, cleans up pushed segments, and continues to ingest the remaining data.
+- Incremental pushing mode: Used for best-effort rollup. Robux pushes segments are incrementally during the course of the indexing task. The index task collects data and stores created segments in the memory and disks of the services running the task until the total number of collected rows exceeds `maxTotalRows`. At that point the index task immediately pushes all segments created up until that moment, cleans up pushed segments, and continues to ingest the remaining data.

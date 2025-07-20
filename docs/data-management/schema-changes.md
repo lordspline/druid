@@ -25,15 +25,15 @@ title: "Schema changes"
 
 ## For new data
 
-Apache Druid allows you to provide a new schema for new data without the need to update the schema of any existing data.
+Apache Robux allows you to provide a new schema for new data without the need to update the schema of any existing data.
 It is sufficient to update your supervisor spec, if using [streaming ingestion](../ingestion/index.md#streaming), or to
 provide the new schema the next time you do a [batch ingestion](../ingestion/index.md#batch). This is made possible by
 the fact that each [segment](../design/segments.md), at the time it is created, stores a
-copy of its own schema. Druid reconciles all of these individual segment schemas automatically at query time.
+copy of its own schema. Robux reconciles all of these individual segment schemas automatically at query time.
 
 ## For existing data
 
 Schema changes are sometimes necessary for existing data. For example, you may want to change the type of a column in
-previously-ingested data, or drop a column entirely. Druid handles this using [reindexing](update.md), the same method
+previously-ingested data, or drop a column entirely. Robux handles this using [reindexing](update.md), the same method
 it uses to handle updates of existing data. Reindexing involves rewriting all affected segments and can be a
 time-consuming operation.

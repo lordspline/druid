@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-druid_kinesis_accessKey=<OVERRIDE_THIS>
-druid_kinesis_secretKey=<OVERRIDE_THIS>
+robux_kinesis_accessKey=<OVERRIDE_THIS>
+robux_kinesis_secretKey=<OVERRIDE_THIS>
 AWS_REGION=<OVERRIDE_THIS>
-druid_extensions_loadList=["druid-kinesis-indexing-service"]
+robux_extensions_loadList=["robux-kinesis-indexing-service"]

@@ -1,6 +1,6 @@
 ---
 id: redis-cache
-title: "Druid Redis Cache"
+title: "Robux Redis Cache"
 ---
 
 <!--
@@ -22,27 +22,27 @@ title: "Druid Redis Cache"
   ~ under the License.
   -->
 
-A cache implementation for Druid based on [Redis](https://github.com/redis/redis).
+A cache implementation for Robux based on [Redis](https://github.com/redis/redis).
 
 Below are guidance and configuration options known to this module.
 
 ## Installation
 
-Use [pull-deps](../../operations/pull-deps.md) tool shipped with Druid to install this [extension](../../configuration/extensions.md#community-extensions) on broker, historical and middle manager nodes.
+Use [pull-deps](../../operations/pull-deps.md) tool shipped with Robux to install this [extension](../../configuration/extensions.md#community-extensions) on broker, historical and middle manager nodes.
 
 ```bash
-java -classpath "druid_dir/lib/*" org.apache.druid.cli.Main tools pull-deps -c org.apache.druid.extensions.contrib:druid-redis-cache:{VERSION}
+java -classpath "robux_dir/lib/*" org.apache.robux.cli.Main tools pull-deps -c org.apache.robux.extensions.contrib:robux-redis-cache:{VERSION}
 ```
 
 ## Enabling
 
 To enable this extension after installation,
 
-1. [include](../../configuration/extensions.md#loading-extensions) this `druid-redis-cache` extension
+1. [include](../../configuration/extensions.md#loading-extensions) this `robux-redis-cache` extension
 2. to enable cache on broker nodes, follow [broker caching docs](../../configuration/index.md#broker-caching) to set related properties
 3. to enable cache on historical nodes, follow [historical caching docs](../../configuration/index.md#historical-caching) to set related properties
 4. to enable cache on middle manager nodes, follow [peon caching docs](../../configuration/index.md#peon-caching) to set related properties
-5. set `druid.cache.type` to `redis`
+5. set `robux.cache.type` to `redis`
 6. add the following properties
 
 ## Configuration
@@ -55,14 +55,14 @@ Note: some redis cloud service providers provide redis cluster service via a red
 
 | Properties |Description|Default|Required|
 |--------------------|-----------|-------|--------|
-|`druid.cache.cluster.nodes`| Redis nodes in a cluster, represented in comma separated string. See example below | None | yes |
-|`druid.cache.cluster.maxRedirection`| Max retry count | 5 | no |
+|`robux.cache.cluster.nodes`| Redis nodes in a cluster, represented in comma separated string. See example below | None | yes |
+|`robux.cache.cluster.maxRedirection`| Max retry count | 5 | no |
 
 #### Example 
 
 ```properties
 # a typical redis cluster with 6 nodes
-druid.cache.cluster.nodes=127.0.0.1:7001,127.0.0.1:7002,127.0.0.1:7003,127.0.0.1:7004,127.0.0.1:7005,127.0.0.1:7006
+robux.cache.cluster.nodes=127.0.0.1:7001,127.0.0.1:7002,127.0.0.1:7003,127.0.0.1:7004,127.0.0.1:7005,127.0.0.1:7006
 ```
 
 ### Standalone mode
@@ -71,11 +71,11 @@ To use a standalone redis, following properties must be set.
 
 | Properties |Description|Default|Required|
 |--------------------|-----------|-------|--------|
-|`druid.cache.host`|Redis server host|None|yes|
-|`druid.cache.port`|Redis server port|None|yes|
-|`druid.cache.database`|Redis database index|0|no|
+|`robux.cache.host`|Redis server host|None|yes|
+|`robux.cache.port`|Redis server port|None|yes|
+|`robux.cache.database`|Redis database index|0|no|
 
-Note: if both `druid.cache.cluster.nodes` and `druid.cache.host` are provided, cluster mode is preferred.
+Note: if both `robux.cache.cluster.nodes` and `robux.cache.host` are provided, cluster mode is preferred.
 
 ### Shared Properties
 
@@ -83,23 +83,23 @@ Except for the properties above, there are some extra properties which can be cu
 
 | Properties |Description|Default|Required|
 |--------------------|-----------|-------|--------|
-|`druid.cache.password`| Password to access redis server/cluster | None |no|
-|`druid.cache.expiration`|Expiration for cache entries | P1D |no|
-|`druid.cache.timeout`|Timeout for connecting to Redis and reading entries from Redis|PT2S|no|
-|`druid.cache.maxTotalConnections`|Max total connections to Redis|8|no|
-|`druid.cache.maxIdleConnections`|Max idle connections to Redis|8|no|
-|`druid.cache.minIdleConnections`|Min idle connections to Redis|0|no|
+|`robux.cache.password`| Password to access redis server/cluster | None |no|
+|`robux.cache.expiration`|Expiration for cache entries | P1D |no|
+|`robux.cache.timeout`|Timeout for connecting to Redis and reading entries from Redis|PT2S|no|
+|`robux.cache.maxTotalConnections`|Max total connections to Redis|8|no|
+|`robux.cache.maxIdleConnections`|Max idle connections to Redis|8|no|
+|`robux.cache.minIdleConnections`|Min idle connections to Redis|0|no|
 
-For `druid.cache.expiration` and `druid.cache.timeout` properties, values can be format of `Period` or a number in milliseconds.
+For `robux.cache.expiration` and `robux.cache.timeout` properties, values can be format of `Period` or a number in milliseconds.
 
 ```properties
 # Period format(recomended)
 # cache expires after 1 hour
-druid.cache.expiration=PT1H
+robux.cache.expiration=PT1H
 
 # or in number(milliseconds) format
 # 1 hour = 3_600_000 milliseconds
-druid.cache.expiration=3600000
+robux.cache.expiration=3600000
 ```
 
 ## Metrics

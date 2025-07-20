@@ -16,7 +16,7 @@
 
 set -e
 
-echo $DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH
+echo $ROBUX_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH
 
 export DIR=$(cd $(dirname $0) && pwd)
 export HADOOP_DOCKER_DIR=$DIR/../examples/quickstart/tutorial/hadoop/docker
@@ -27,16 +27,16 @@ export SHARED_DIR=${HOME}/shared
 # so docker IP addr will be known during docker build
 echo ${DOCKER_IP:=127.0.0.1} > $DOCKERDIR/docker_ip
 
-if !($DRUID_INTEGRATION_TEST_SKIP_BUILD_DOCKER); then
+if !($ROBUX_INTEGRATION_TEST_SKIP_BUILD_DOCKER); then
   bash ./gen-scripts/copy_resources.sh
   bash ./script/docker_build_containers.sh
 fi
 
-if !($DRUID_INTEGRATION_TEST_SKIP_RUN_DOCKER); then
+if !($ROBUX_INTEGRATION_TEST_SKIP_RUN_DOCKER); then
   bash ./stop_cluster.sh
   bash ./script/docker_run_cluster.sh
 fi
 
-if ($DRUID_INTEGRATION_TEST_START_HADOOP_DOCKER); then
+if ($ROBUX_INTEGRATION_TEST_START_HADOOP_DOCKER); then
   bash ./script/copy_hadoop_resources.sh
 fi

@@ -29,8 +29,8 @@ import {
 import { IconNames } from '@blueprintjs/icons';
 import type { Timezone } from 'chronoshift';
 import classNames from 'classnames';
-import type { Column, QueryResult, SqlExpression, SqlQuery } from 'druid-query-toolkit';
-import { SqlLiteral } from 'druid-query-toolkit';
+import type { Column, QueryResult, SqlExpression, SqlQuery } from 'robux-query-toolkit';
+import { SqlLiteral } from 'robux-query-toolkit';
 import React, { useState } from 'react';
 
 import { useMemoWithPrevious } from '../../../../hooks';

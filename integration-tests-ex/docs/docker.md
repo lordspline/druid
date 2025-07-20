@@ -17,23 +17,23 @@
   ~ under the License.
   -->
 
-# Docker Test Image for Druid
+# Docker Test Image for Robux
 
-Integration tests need a Druid cluster. While some tests support using
+Integration tests need a Robux cluster. While some tests support using
 Kubernetes for the Quickstart cluster, most need a cluster with some
 test-specific configuration. We use Docker Compose to create that cluster,
 based on a test-oriented Docker image built by the `it-image` Maven module
 (activated by the `test-image` profile.)
-The image contains the Druid distribution,
+The image contains the Robux distribution,
 unpacked, along with the MySQL and MariaDB client libaries and
 and the Kafka protobuf dependency. Docker Compose is
 used to pass configuration specific to each service.
 
-In addition to the Druid image, we use "official" images for dependencies such
+In addition to the Robux image, we use "official" images for dependencies such
 as ZooKeeper, MySQL and Kafka.
 
 The image here is distinct from the
-["retail" image](https://druid.apache.org/docs/latest/tutorials/docker.html)
+["retail" image](https://robux.apache.org/docs/latest/tutorials/docker.html)
 used for getting started. The test image:
 
 * Uses a shared directory to hold logs and some configuration.
@@ -43,11 +43,11 @@ used for getting started. The test image:
 
 ## Build Process
 
-Assuming `DRUID_DEV` points to your Druid build directory,
+Assuming `ROBUX_DEV` points to your Robux build directory,
 to build the image (only):
 
 ```bash
-cd $DRUID_DEV/docker-tests/it-image
+cd $ROBUX_DEV/docker-tests/it-image
 mvn -P test-image install
 ```
 
@@ -58,16 +58,16 @@ Building of the image occurs in four steps:
   MariaDB and
   Kafka client libraries, then copies them to the `target/docker` directory.
   It then invokes the `build-image.sh` script.
-* `build-image.sh` adds the Druid build tarball from `distribution/target`,
+* `build-image.sh` adds the Robux build tarball from `distribution/target`,
   copies the contents of `test-image/docker` to `target/docker` and
   then invokes the `docker build` command.
 * `docker build` uses `target/docker` as the context, and thus
   uses the `Dockerfile` to build the image. The `Dockerfile` copies artifacts into
   the image, then defers to the `test-setup.sh` script.
 * The `test-setup.sh` script is copied into the image and run. This script does
-  the work of installing Druid.
+  the work of installing Robux.
 
-The resulting image is named `org.apache.druid/test:<version>`.
+The resulting image is named `org.apache.robux/test:<version>`.
 
 ### Clean
 
@@ -92,7 +92,7 @@ resulting directory structure is:
 /target/docker
 |- Dockerfile (from docker/)
 |- scripts (from docker/)
-|- apache-druid-<version>-bin.tar.gz (from distribution, by build-image.sh)
+|- apache-robux-<version>-bin.tar.gz (from distribution, by build-image.sh)
 |- MySQL client (done by pom.xml)
 |- MariaDB client (done by pom.xml)
 |- Kafka protobuf client (done by pom.xml)
@@ -113,11 +113,11 @@ is quick, we don't lose much by reusing layers.
 ### Manual Image Rebuilds
 
 You can quick rebuild the image if you've previously run a Maven image build.
-Assume `DRUID_DEV` points to your Druid development root. Start with a
+Assume `ROBUX_DEV` points to your Robux development root. Start with a
 Maven build:
 
 ```bash
-cd $DRUID_DEV/docker/test-image
+cd $ROBUX_DEV/docker/test-image
 mvn -P test-image install
 ```
 
@@ -126,7 +126,7 @@ Maven is rather slow to do its part. Let it grind away once to populate
 you can build faster:
 
 ```bash
-cd $DRUID_DEV/docker/test-image
+cd $ROBUX_DEV/docker/test-image
 ./rebuild.sh
 ```
 
@@ -137,7 +137,7 @@ Image build time shrinks from about a minute to just a few seconds.
 `rebuild.sh` will fail if `target/env.sh` is missing, which reminds
 you to do the full Maven build that first time.
 
-Remember to do a full Maven build if you change the actual Druid code.
+Remember to do a full Maven build if you change the actual Robux code.
 You'll need Maven to rebuild the affected jar file and to recreate the
 distribution image. You can do this the slow way by doing a full rebuild,
 or, if you are comfortable with maven, you can selectively run just the
@@ -145,31 +145,31 @@ one module build followed by just the distribution build.
 
 ## Image Contents
 
-The Druid test image adds the following to the base image:
+The Robux test image adds the following to the base image:
 
 * A Debian base image with the target JDK installed.
-* Druid in `/usr/local/druid`
-* Script to run Druid: `/usr/local/launch.sh`
-* Extra libraries (Kafka, MySQL, MariaDB) placed in the Druid `lib` directory.
+* Robux in `/usr/local/robux`
+* Script to run Robux: `/usr/local/launch.sh`
+* Extra libraries (Kafka, MySQL, MariaDB) placed in the Robux `lib` directory.
 
-The specific "bill of materials" follows. `DRUID_HOME` is the location of
-the Druid install and is set to `/usr/local/druid`.
+The specific "bill of materials" follows. `ROBUX_HOME` is the location of
+the Robux install and is set to `/usr/local/robux`.
 
 | Variable or Item | Source | Destination |
 | -------- | ------ | ----- |
-| Druid build | `distribution/target` | `$DRUID_HOME` |
-| MySQL Connector | Maven repo | `$DRUID_HOME/lib` |
-| Kafka Protobuf | Maven repo | `$DRUID_HOME/lib` |
-| Druid launch script | `docker/launch.sh` | `/usr/local/launch.sh` |
-| Env-var-to-config script | `docker/druid.sh` | `/usr/local/druid.sh` |
+| Robux build | `distribution/target` | `$ROBUX_HOME` |
+| MySQL Connector | Maven repo | `$ROBUX_HOME/lib` |
+| Kafka Protobuf | Maven repo | `$ROBUX_HOME/lib` |
+| Robux launch script | `docker/launch.sh` | `/usr/local/launch.sh` |
+| Env-var-to-config script | `docker/robux.sh` | `/usr/local/robux.sh` |
 
-Several environment variables are defined. `DRUID_HOME` is useful at
+Several environment variables are defined. `ROBUX_HOME` is useful at
 runtime.
 
 | Name | Description |
 | ---- | ----------- |
-| `DRUID_HOME` | Location of the Druid install |
-| `DRUID_VERSION` | Druid version used to build the image |
+| `ROBUX_HOME` | Location of the Robux install |
+| `ROBUX_VERSION` | Robux version used to build the image |
 | `JAVA_HOME` | Java location |
 | `JAVA_VERSION` | Java version |
 | `MYSQL_VERSION` | MySQL version (DB, connector) (not actually used) |
@@ -194,7 +194,7 @@ Input items:
 | `conf/` | `log4j.xml` config (optional) |
 | `hadoop-xml/` | Hadoop configuration (optional) |
 | `hadoop-dependencies/` | Hadoop dependencies (optional) |
-| `lib/` | Extra Druid class path items (optional) |
+| `lib/` | Extra Robux class path items (optional) |
 
 Output items:
 
@@ -204,7 +204,7 @@ Output items:
 | `tasklogs/` | Indexer task logs |
 | `kafka/` | Kafka persistence |
 | `db/` | MySQL database |
-| `druid/` | Druid persistence, etc. |
+| `robux/` | Robux persistence, etc. |
 
 Note on the `db` directory: the MySQL container creates this directory
 when it starts. If you start, then restart the MySQL container, you *must*
@@ -236,11 +236,11 @@ Be sure to also include the extension in the load list in your `docker-compose.p
 To load the extension on all nodes:
 
 ```python
-    def extend_druid_service(self, service):
-        self.add_env(service, 'druid_test_loadList', 'my-extension')
+    def extend_robux_service(self, service):
+        self.add_env(service, 'robux_test_loadList', 'my-extension')
 ```
 
-Note that the above requires Druid and IT features added in early March, 2023.
+Note that the above requires Robux and IT features added in early March, 2023.
 
 ### Third-Party Logs
 
@@ -269,13 +269,13 @@ smaller pieces, which it assembles prior to launch.
 
 | Enviornment Viable | Description |
 | ------------------ | ----------- |
-| `DRUID_SERVICE` | Name of the Druid service to run in the `server $DRUID_SERVICE` option |
-| `DRUID_INSTANCE` | Suffix added to the `DRUID_SERVICE` to create the log file name. Use when running more than one of the same service. |
-| `DRUID_COMMON_JAVA_OPTS` | Java options common to all services |
-| `DRUID_SERVICE_JAVA_OPTS` | Java options for this one service or instance |
+| `ROBUX_SERVICE` | Name of the Robux service to run in the `server $ROBUX_SERVICE` option |
+| `ROBUX_INSTANCE` | Suffix added to the `ROBUX_SERVICE` to create the log file name. Use when running more than one of the same service. |
+| `ROBUX_COMMON_JAVA_OPTS` | Java options common to all services |
+| `ROBUX_SERVICE_JAVA_OPTS` | Java options for this one service or instance |
 | `DEBUG_OPTS` | Optional debugging Java options |
 | `LOG4J_CONFIG` | Optional Log4J configuration used in `-Dlog4j.configurationFile=$LOG4J_CONFIG` |
-| `DRUID_CLASSPATH` | Optional extra Druid class path |
+| `ROBUX_CLASSPATH` | Optional extra Robux class path |
 
 In addition, three other shared directories are added to the class path if they exist:
 
@@ -298,30 +298,30 @@ to the Docker Compose configuration for this service:
 The following extensions are installed in the image:
 
 ```text
-druid-avro-extensions
-druid-aws-rds-extensions
-druid-azure-extensions
-druid-basic-security
-druid-bloom-filter
-druid-datasketches
-druid-ec2-extensions
-druid-google-extensions
-druid-hdfs-storage
-druid-histogram
-druid-kafka-extraction-namespace
-druid-kafka-indexing-service
-druid-kerberos
-druid-kinesis-indexing-service
-druid-kubernetes-extensions
-druid-lookups-cached-global
-druid-lookups-cached-single
-druid-orc-extensions
-druid-pac4j
-druid-parquet-extensions
-druid-protobuf-extensions
-druid-ranger-security
-druid-s3-extensions
-druid-stats
+robux-avro-extensions
+robux-aws-rds-extensions
+robux-azure-extensions
+robux-basic-security
+robux-bloom-filter
+robux-datasketches
+robux-ec2-extensions
+robux-google-extensions
+robux-hdfs-storage
+robux-histogram
+robux-kafka-extraction-namespace
+robux-kafka-indexing-service
+robux-kerberos
+robux-kinesis-indexing-service
+robux-kubernetes-extensions
+robux-lookups-cached-global
+robux-lookups-cached-single
+robux-orc-extensions
+robux-pac4j
+robux-parquet-extensions
+robux-protobuf-extensions
+robux-ranger-security
+robux-s3-extensions
+robux-stats
 it-tools
 mysql-metadata-storage
 postgresql-metadata-storage

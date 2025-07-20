@@ -29,8 +29,8 @@ import {
 import { IconNames } from '@blueprintjs/icons';
 import React, { useState } from 'react';
 
-import type { Rule } from '../../druid-models';
-import { RuleUtil } from '../../druid-models';
+import type { Rule } from '../../robux-models';
+import { RuleUtil } from '../../robux-models';
 import { durationSanitizer } from '../../utils';
 import { SuggestibleInput } from '../suggestible-input/suggestible-input';
 

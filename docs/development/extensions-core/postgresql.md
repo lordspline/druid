@@ -23,7 +23,7 @@ title: "PostgreSQL metadata store"
   -->
 
 
-To use this Apache Druid extension, [include](../../configuration/extensions.md#loading-extensions) `postgresql-metadata-storage` in the extensions load list.
+To use this Apache Robux extension, [include](../../configuration/extensions.md#loading-extensions) `postgresql-metadata-storage` in the extensions load list.
 
 With the  PostgreSQL extension, you can use PostgreSQL as a metadata store or ingest from a PostgreSQL database.
 
@@ -37,38 +37,38 @@ To avoid issues with upgrades that require schema changes to a large metadata ta
   - on Ubuntu/Debian using apt `apt-get install postgresql`
   - on OS X, using [Homebrew](http://brew.sh/) `brew install postgresql`
 
-2. Create a druid database and user
+2. Create a robux database and user
 
   On the machine where PostgreSQL is installed, using an account with proper
   postgresql permissions:
 
-  Create a druid user, enter `diurd` when prompted for the password.
+  Create a robux user, enter `diurd` when prompted for the password.
 
   ```bash
-  createuser druid -P
+  createuser robux -P
   ```
 
-  Create a druid database owned by the user we just created
+  Create a robux database owned by the user we just created
 
   ```bash
-  createdb druid -O druid
+  createdb robux -O robux
   ```
 
   *Note:* On Ubuntu / Debian you may have to prefix the `createuser` and
   `createdb` commands with `sudo -u postgres` in order to gain proper
   permissions.
 
-3. Configure your Druid metadata storage extension:
+3. Configure your Robux metadata storage extension:
 
-  Add the following parameters to your Druid configuration, replacing `<host>`
+  Add the following parameters to your Robux configuration, replacing `<host>`
   with the location (host name and port) of the database.
 
   ```properties
-  druid.extensions.loadList=["postgresql-metadata-storage"]
-  druid.metadata.storage.type=postgresql
-  druid.metadata.storage.connector.connectURI=jdbc:postgresql://<host>/druid
-  druid.metadata.storage.connector.user=druid
-  druid.metadata.storage.connector.password=diurd
+  robux.extensions.loadList=["postgresql-metadata-storage"]
+  robux.metadata.storage.type=postgresql
+  robux.metadata.storage.connector.connectURI=jdbc:postgresql://<host>/robux
+  robux.metadata.storage.connector.user=robux
+  robux.metadata.storage.connector.password=diurd
   ```
 
 ## Configuration properties
@@ -77,21 +77,21 @@ In most cases, the configuration options map directly to the [postgres JDBC conn
 
 |Property|Description|Default|Required|
 |--------|-----------|-------|--------|
-| `druid.metadata.postgres.ssl.useSSL` | Enables SSL | `false` | no |
-| `druid.metadata.postgres.ssl.sslPassword` | The [Password Provider](../../operations/password-provider.md) or String password for the client's key. | none | no |
-| `druid.metadata.postgres.ssl.sslFactory` | The class name to use as the `SSLSocketFactory` | none | no |
-| `druid.metadata.postgres.ssl.sslFactoryArg` | An optional argument passed to the sslFactory's constructor | none | no |
-| `druid.metadata.postgres.ssl.sslMode` | The sslMode. Possible values are "disable", "require", "verify-ca", "verify-full", "allow" and "prefer"| none | no |
-| `druid.metadata.postgres.ssl.sslCert` | The full path to the certificate file. | none | no |
-| `druid.metadata.postgres.ssl.sslKey` | The full path to the key file. | none | no |
-| `druid.metadata.postgres.ssl.sslRootCert` | The full path to the root certificate. | none | no |
-| `druid.metadata.postgres.ssl.sslHostNameVerifier` | The classname of the hostname verifier. | none | no |
-| `druid.metadata.postgres.ssl.sslPasswordCallback` | The classname of the SSL password provider. | none | no |
-| `druid.metadata.postgres.dbTableSchema` | druid meta table schema | `public` | no |
+| `robux.metadata.postgres.ssl.useSSL` | Enables SSL | `false` | no |
+| `robux.metadata.postgres.ssl.sslPassword` | The [Password Provider](../../operations/password-provider.md) or String password for the client's key. | none | no |
+| `robux.metadata.postgres.ssl.sslFactory` | The class name to use as the `SSLSocketFactory` | none | no |
+| `robux.metadata.postgres.ssl.sslFactoryArg` | An optional argument passed to the sslFactory's constructor | none | no |
+| `robux.metadata.postgres.ssl.sslMode` | The sslMode. Possible values are "disable", "require", "verify-ca", "verify-full", "allow" and "prefer"| none | no |
+| `robux.metadata.postgres.ssl.sslCert` | The full path to the certificate file. | none | no |
+| `robux.metadata.postgres.ssl.sslKey` | The full path to the key file. | none | no |
+| `robux.metadata.postgres.ssl.sslRootCert` | The full path to the root certificate. | none | no |
+| `robux.metadata.postgres.ssl.sslHostNameVerifier` | The classname of the hostname verifier. | none | no |
+| `robux.metadata.postgres.ssl.sslPasswordCallback` | The classname of the SSL password provider. | none | no |
+| `robux.metadata.postgres.dbTableSchema` | robux meta table schema | `public` | no |
 
 ## PostgreSQL input source
 
-The PostgreSQL extension provides an implementation of an SQL input source to ingest data into Druid from a PostgreSQL database.
+The PostgreSQL extension provides an implementation of an SQL input source to ingest data into Robux from a PostgreSQL database.
 For more information on the input source parameters, see [SQL input source](../../ingestion/input-sources.md#sql-input-source).
 
 ```json
@@ -134,7 +134,7 @@ For more information on the input source parameters, see [SQL input source](../.
         "database": {
           "type": "postgresql",
           "connectorConfig": {
-            "connectURI": "jdbc:postgresql://some-rds-host.us-west-1.rds.amazonaws.com:5432/druid",
+            "connectURI": "jdbc:postgresql://some-rds-host.us-west-1.rds.amazonaws.com:5432/robux",
             "user": "admin",
             "password": "secret"
           }

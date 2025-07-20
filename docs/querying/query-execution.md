@@ -23,13 +23,13 @@ title: "Query execution"
   -->
 
 :::info
- This document describes how Druid executes [native queries](querying.md), but since [Druid SQL](sql.md) queries
+ This document describes how Robux executes [native queries](querying.md), but since [Robux SQL](sql.md) queries
  are translated to native queries, this document applies to the SQL runtime as well. Refer to the SQL
  [Query translation](sql-translation.md) page for information about how SQL queries are translated to native
  queries.
 :::
 
-Druid's approach to query execution varies depending on the kind of [datasource](datasource.md) you are querying.
+Robux's approach to query execution varies depending on the kind of [datasource](datasource.md) you are querying.
 
 ## Datasource type
 
@@ -87,15 +87,15 @@ their "base" (bottom-leftmost) datasource, as described in the [join](#join) sec
 the results are brought back to the Broker. Then, the Broker continues on with the rest of the query as if the subquery
 was replaced with an inline datasource.
 
-In most cases, Druid buffers subquery results in memory on the Broker before the rest of the query proceeds.
+In most cases, Robux buffers subquery results in memory on the Broker before the rest of the query proceeds.
 Therefore, subqueries execute sequentially. The total number of rows buffered across all subqueries of a given query 
-cannot exceed the [`druid.server.http.maxSubqueryRows`](../configuration/index.md) which defaults to 100000 rows, or the
-[`druid.server.http.maxSubqueryBytes`](../configuration/index.md) if set. Otherwise, Druid throws a resource limit exceeded 
+cannot exceed the [`robux.server.http.maxSubqueryRows`](../configuration/index.md) which defaults to 100000 rows, or the
+[`robux.server.http.maxSubqueryBytes`](../configuration/index.md) if set. Otherwise, Robux throws a resource limit exceeded 
 exception.
 
 There is one exception: if the outer query is of type [`groupBy`](groupbyquery.md), and has a `dataSource` of type
 `query` that is itself another `groupBy`, then subquery results can be processed in a streaming fashion. In this case
-the `druid.server.http.maxSubqueryRows` and `druid.server.http.maxSubqueryBytes` limits do not apply.
+the `robux.server.http.maxSubqueryRows` and `robux.server.http.maxSubqueryBytes` limits do not apply.
 
 ### `join`
 
@@ -119,5 +119,5 @@ non-base leaf datasources to determine if a new hash table needs to be built for
 lookups do not require new hash tables to be built (because they are preloaded), but inline datasources do.
 
 5. Query execution proceeds again using the same structure that the base datasource would use on its own, with one
-addition: while processing the base datasource, Druid servers will use the hash tables built from the other join inputs
+addition: while processing the base datasource, Robux servers will use the hash tables built from the other join inputs
 to produce the join result row-by-row, and query engines will operate on the joined rows rather than the base rows.

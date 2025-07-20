@@ -1,7 +1,7 @@
 ---
 id: sql-api
-title: Druid SQL API
-sidebar_label: Druid SQL
+title: Robux SQL API
+sidebar_label: Robux SQL
 ---
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -28,7 +28,7 @@ import TabItem from '@theme/TabItem';
   -->
 
 :::info
- Apache Druid supports two query languages: Druid SQL and [native queries](../querying/querying.md).
+ Apache Robux supports two query languages: Robux SQL and [native queries](../querying/querying.md).
  This document describes the SQL language.
 :::
 
@@ -41,11 +41,11 @@ In this topic, `http://ROUTER_IP:ROUTER_PORT` is a placeholder for your Router s
 Submits a SQL-based query in the JSON or text format request body. 
 Returns a JSON object with the query results and optional metadata for the results. You can also use this endpoint to query [metadata tables](../querying/sql-metadata-tables.md).
 
-Each query has an associated SQL query ID. You can set this ID manually using the SQL context parameter `sqlQueryId`. If not set, Druid automatically generates `sqlQueryId` and returns it in the response header for `X-Druid-SQL-Query-Id`. Note that you need the `sqlQueryId` to [cancel a query](#cancel-a-query).
+Each query has an associated SQL query ID. You can set this ID manually using the SQL context parameter `sqlQueryId`. If not set, Robux automatically generates `sqlQueryId` and returns it in the response header for `X-Robux-SQL-Query-Id`. Note that you need the `sqlQueryId` to [cancel a query](#cancel-a-query).
 
 #### URL
 
-`POST` `/druid/v2/sql`
+`POST` `/robux/v2/sql`
 
 #### JSON Format Request body
 
@@ -71,22 +71,22 @@ The request body takes the following properties:
      This format includes a single trailing newline character so you can detect a truncated response.
 
   * `csv`: Returns comma-separated values with one row per line. Sent with the HTTP response header `Content-Type: text/csv`.  
-     Druid uses double quotes to escape individual field values. For example, a value with a comma returns `"A,B"`.
-     If the field value contains a double quote character, Druid escapes it with a second double quote character.
+     Robux uses double quotes to escape individual field values. For example, a value with a comma returns `"A,B"`.
+     If the field value contains a double quote character, Robux escapes it with a second double quote character.
      For example, `foo"bar` becomes `foo""bar`.
       This format includes a single trailing newline character so you can detect a truncated response.
 
-* `header`: Boolean value that determines whether to return information on column names. When set to `true`, Druid returns the column names as the first row of the results. To also get information on the column types, set `typesHeader` or `sqlTypesHeader` to `true`. For a comparative overview of data formats and configurations for the header, see the [Query output format](#query-output-format) table.
+* `header`: Boolean value that determines whether to return information on column names. When set to `true`, Robux returns the column names as the first row of the results. To also get information on the column types, set `typesHeader` or `sqlTypesHeader` to `true`. For a comparative overview of data formats and configurations for the header, see the [Query output format](#query-output-format) table.
 
-* `typesHeader`: Adds Druid runtime type information in the header. Requires `header` to be set to `true`. Complex types, like sketches, will be reported as `COMPLEX<typeName>` if a particular complex type name is known for that field, or as `COMPLEX` if the particular type name is unknown or mixed.
+* `typesHeader`: Adds Robux runtime type information in the header. Requires `header` to be set to `true`. Complex types, like sketches, will be reported as `COMPLEX<typeName>` if a particular complex type name is known for that field, or as `COMPLEX` if the particular type name is unknown or mixed.
 
 * `sqlTypesHeader`: Adds SQL type information in the header. Requires `header` to be set to `true`.
 
-   For compatibility, Druid returns the HTTP header `X-Druid-SQL-Header-Included: yes` when all of the following conditions are met:
+   For compatibility, Robux returns the HTTP header `X-Robux-SQL-Header-Included: yes` when all of the following conditions are met:
    * The `header` property is set to true.
-   * The version of Druid supports `typesHeader` and `sqlTypesHeader`, regardless of whether either property is set.
+   * The version of Robux supports `typesHeader` and `sqlTypesHeader`, regardless of whether either property is set.
 
-* `context`: JSON object containing optional [SQL query context parameters](../querying/sql-query-context.md), such as to set the query ID, time zone, and whether to use an approximation algorithm for distinct count. You can also set the context through the SQL SET command. For more information, see [Druid SQL overview](../querying/sql.md#set).
+* `context`: JSON object containing optional [SQL query context parameters](../querying/sql-query-context.md), such as to set the query ID, time zone, and whether to use an approximation algorithm for distinct count. You can also set the context through the SQL SET command. For more information, see [Robux SQL overview](../querying/sql.md#set).
 
 * `parameters`: List of query parameters for parameterized queries. Each parameter in the array should be a JSON object containing the parameter's SQL data type and parameter value. For more information on using dynamic parameters, see [Dynamic parameters](../querying/sql.md#dynamic-parameters). For a list of supported SQL types, see [Data types](../querying/sql-data-types.md).
 
@@ -104,7 +104,7 @@ The request body takes the following properties:
 
 ##### Text Format Request body
 
-Druid also allows you to submit SQL queries in text format which is simpler than above JSON format. 
+Robux also allows you to submit SQL queries in text format which is simpler than above JSON format. 
 To do this, just set the `Content-Type` request header to `text/plain` or `application/x-www-form-urlencoded`, and pass SQL via the HTTP Body. 
 
 If `application/x-www-form-urlencoded` is used, make sure the SQL query is URL-encoded.
@@ -117,14 +117,14 @@ If you want more control over the query context or response format, use the abov
 The following example demonstrates how to submit a SQL query in text format:
 
 ```commandline
-echo 'SELECT 1' | curl -H 'Content-Type: text/plain' http://ROUTER_IP:ROUTER_PORT/druid/v2/sql --data @- 
+echo 'SELECT 1' | curl -H 'Content-Type: text/plain' http://ROUTER_IP:ROUTER_PORT/robux/v2/sql --data @- 
 ```
 
 We can also use `application/x-www-form-urlencoded` to submit URL-encoded SQL queries as shown by the following examples:
 
 ```commandline
-echo 'SELECT%20%31' | curl http://ROUTER_IP:ROUTER_PORT/druid/v2/sql --data @-
-echo 'SELECT 1' | curl http://ROUTER_IP:ROUTER_PORT/druid/v2/sql --data-urlencode @-
+echo 'SELECT%20%31' | curl http://ROUTER_IP:ROUTER_PORT/robux/v2/sql --data @-
+echo 'SELECT 1' | curl http://ROUTER_IP:ROUTER_PORT/robux/v2/sql --data-urlencode @-
 ```
 
 The `curl` tool uses `application/x-www-form-urlencoded` as Content-Type header if the header is not given.
@@ -175,12 +175,12 @@ While the second example passes the raw query `SELECT 1` to `curl` and the `curl
 
 #### Client-side error handling and truncated responses
 
-Druid reports errors that occur before the response body is sent as JSON with an HTTP 500 status code. The errors are reported using the same format as [native Druid query errors](../querying/querying.md#query-errors).
-If an error occurs while Druid is sending the response body, the server handling the request stops the response midstream and logs an error.
+Robux reports errors that occur before the response body is sent as JSON with an HTTP 500 status code. The errors are reported using the same format as [native Robux query errors](../querying/querying.md#query-errors).
+If an error occurs while Robux is sending the response body, the server handling the request stops the response midstream and logs an error.
 
 This means that when you call the SQL API, you must properly handle response truncation.
 For  `object` and `array` formats, truncated responses are invalid JSON.
-For line-oriented formats, Druid includes a newline character as the final character of every complete response. Absence of a final newline character indicates a truncated response.
+For line-oriented formats, Robux includes a newline character as the final character of every complete response. Absence of a final newline character indicates a truncated response.
 
 If you detect a truncated response, treat it as an error.
 
@@ -201,7 +201,7 @@ In the following example, this query demonstrates the following actions:
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql" \
 --header 'Content-Type: application/json' \
 --data '{
     "query": "SELECT * FROM wikipedia WHERE user='\''BlueMoon2662'\''",
@@ -217,7 +217,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql" \
 
 
 ```HTTP
-POST /druid/v2/sql HTTP/1.1
+POST /robux/v2/sql HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 201
@@ -365,15 +365,15 @@ The following request body is functionally equivalent to the previous example an
 
 ### Cancel a query
 
-Cancels a query on the Router or the Broker with the associated `sqlQueryId`. The `sqlQueryId` can be manually set when the query is submitted in the query context parameter, or if not set, Druid will generate one and return it in the response header when the query is successfully submitted. Note that Druid does not enforce a unique `sqlQueryId` in the query context. If you've set the same `sqlQueryId` for multiple queries, Druid cancels all requests with that query ID.
+Cancels a query on the Router or the Broker with the associated `sqlQueryId`. The `sqlQueryId` can be manually set when the query is submitted in the query context parameter, or if not set, Robux will generate one and return it in the response header when the query is successfully submitted. Note that Robux does not enforce a unique `sqlQueryId` in the query context. If you've set the same `sqlQueryId` for multiple queries, Robux cancels all requests with that query ID.
 
-When you cancel a query, Druid handles the cancellation in a best-effort manner. Druid immediately marks the query as canceled and aborts the query execution as soon as possible. However, the query may continue running for a short time after you make the cancellation request.
+When you cancel a query, Robux handles the cancellation in a best-effort manner. Robux immediately marks the query as canceled and aborts the query execution as soon as possible. However, the query may continue running for a short time after you make the cancellation request.
 
 Cancellation requests require READ permission on all resources used in the SQL query.
 
 #### URL
 
-`DELETE` `/druid/v2/sql/{sqlQueryId}`
+`DELETE` `/robux/v2/sql/{sqlQueryId}`
 
 #### Responses
 
@@ -411,7 +411,7 @@ The following example cancels a request with the set query ID `request01`.
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/request01"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/request01"
 ```
 
 </TabItem>
@@ -419,7 +419,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/request01"
 
 
 ```HTTP
-DELETE /druid/v2/sql/request01 HTTP/1.1
+DELETE /robux/v2/sql/request01 HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -432,7 +432,7 @@ A successful response results in an `HTTP 202` message code and an empty respons
 
 ### Query output format
 
-The following table shows examples of how Druid returns the column names and data types based on the result format and the type request.
+The following table shows examples of how Robux returns the column names and data types based on the result format and the type request.
 In all cases, `header` is true.
 The examples includes the first row of results, where the value of `user` is `BlueMoon2662`.
 
@@ -457,20 +457,20 @@ The examples includes the first row of results, where the value of `user` is `Bl
 
 You can use the `sql/statements` endpoint to query segments that exist only in deep storage and are not loaded onto your Historical processes as determined by your load rules.
 
-Note that at least one segment of a datasource must be available on a Historical process so that the Broker can plan your query. A quick way to check if this is true is whether or not a datasource is visible in the Druid console.
+Note that at least one segment of a datasource must be available on a Historical process so that the Broker can plan your query. A quick way to check if this is true is whether or not a datasource is visible in the Robux console.
 
 
 For more information, see [Query from deep storage](../querying/query-from-deep-storage.md).
 
 ### Submit a query
 
-Submit a query for data stored in deep storage. Any data ingested into Druid is placed into deep storage. The query is contained in the "query" field in the JSON object within the request payload.
+Submit a query for data stored in deep storage. Any data ingested into Robux is placed into deep storage. The query is contained in the "query" field in the JSON object within the request payload.
 
-Note that at least part of a datasource must be available on a Historical process so that Druid can plan your query and only the user who submits a query can see the results.
+Note that at least part of a datasource must be available on a Historical process so that Robux can plan your query and only the user who submits a query can see the results.
 
 #### URL
 
-`POST` `/druid/v2/sql/statements`
+`POST` `/robux/v2/sql/statements`
 
 #### Request body
 
@@ -480,8 +480,8 @@ Keep the following in mind when submitting queries to the `sql/statements` endpo
 
 - Apart from the context parameters mentioned [here](../multi-stage-query/reference.md#context-parameters) there are additional context parameters for `sql/statements` specifically:
 
-   - `executionMode`  determines how query results are fetched. Druid currently only supports `ASYNC`. You must manually retrieve your results after the query completes.
-   - `selectDestination` determines where final results get written. By default, results are written to task reports. Set this parameter to `durableStorage` to instruct Druid to write the results from SELECT queries to durable storage, which allows you to fetch larger result sets. For result sets with more than 3000 rows, it is highly recommended to use `durableStorage`. Note that this requires you to have [durable storage for MSQ](../operations/durable-storage.md) enabled.
+   - `executionMode`  determines how query results are fetched. Robux currently only supports `ASYNC`. You must manually retrieve your results after the query completes.
+   - `selectDestination` determines where final results get written. By default, results are written to task reports. Set this parameter to `durableStorage` to instruct Robux to write the results from SELECT queries to durable storage, which allows you to fetch larger result sets. For result sets with more than 3000 rows, it is highly recommended to use `durableStorage`. Note that this requires you to have [durable storage for MSQ](../operations/durable-storage.md) enabled.
 
 #### Responses
 
@@ -524,7 +524,7 @@ Keep the following in mind when submitting queries to the `sql/statements` endpo
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements" \
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/statements" \
 --header 'Content-Type: application/json' \
 --data '{
     "query": "SELECT * FROM wikipedia WHERE user='\''BlueMoon2662'\''",
@@ -539,7 +539,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements" \
 
 
 ```HTTP
-POST /druid/v2/sql/statements HTTP/1.1
+POST /robux/v2/sql/statements HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 Content-Type: application/json
 Content-Length: 134
@@ -689,7 +689,7 @@ If the optional query parameter `detail` is supplied, then the response also inc
 
 #### URL
 
-`GET` `/druid/v2/sql/statements/{queryId}`
+`GET` `/robux/v2/sql/statements/{queryId}`
 
 #### Query parameters
 * `detail` (optional)
@@ -736,7 +736,7 @@ The following example retrieves the status of a query with specified ID `query-9
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements/query-9b93f6f7-ab0e-48f5-986a-3520f84f0804?detail=true"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/statements/query-9b93f6f7-ab0e-48f5-986a-3520f84f0804?detail=true"
 ```
 
 </TabItem>
@@ -744,7 +744,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements/query-9b93f6f7-ab0e-4
 
 
 ```HTTP
-GET /druid/v2/sql/statements/query-9b93f6f7-ab0e-48f5-986a-3520f84f0804?detail=true HTTP/1.1
+GET /robux/v2/sql/statements/query-9b93f6f7-ab0e-48f5-986a-3520f84f0804?detail=true HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1321,15 +1321,15 @@ Host: http://ROUTER_IP:ROUTER_PORT
 
 ### Get query results
 
-Retrieves results for completed queries. Results are separated into pages, so you can use the optional `page` parameter to refine the results you get. Druid returns information about the composition of each page and its page number (`id`). For information about pages, see [Get query status](#get-query-status).
+Retrieves results for completed queries. Results are separated into pages, so you can use the optional `page` parameter to refine the results you get. Robux returns information about the composition of each page and its page number (`id`). For information about pages, see [Get query status](#get-query-status).
 
-If a page number isn't passed, all results are returned sequentially in the same response. If you have large result sets, you may encounter timeouts based on the value configured for `druid.router.http.readTimeout`.
+If a page number isn't passed, all results are returned sequentially in the same response. If you have large result sets, you may encounter timeouts based on the value configured for `robux.router.http.readTimeout`.
 
 Getting the query results for an ingestion query returns an empty response.
 
 #### URL
 
-`GET` `/druid/v2/sql/statements/{queryId}/results`
+`GET` `/robux/v2/sql/statements/{queryId}/results`
 
 #### Query parameters
 * `page` (optional)
@@ -1406,7 +1406,7 @@ The following example retrieves the status of a query with specified ID `query-f
 
 
 ```shell
-curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements/query-f3bca219-173d-44d4-bdc7-5002e910352f/results"
+curl "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/statements/query-f3bca219-173d-44d4-bdc7-5002e910352f/results"
 ```
 
 </TabItem>
@@ -1414,7 +1414,7 @@ curl "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements/query-f3bca219-173d-4
 
 
 ```HTTP
-GET /druid/v2/sql/statements/query-f3bca219-173d-44d4-bdc7-5002e910352f/results HTTP/1.1
+GET /robux/v2/sql/statements/query-f3bca219-173d-44d4-bdc7-5002e910352f/results HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 
@@ -1658,7 +1658,7 @@ Cancels a running or accepted query.
 
 #### URL
 
-`DELETE` `/druid/v2/sql/statements/{queryId}`
+`DELETE` `/robux/v2/sql/statements/{queryId}`
 
 #### Responses
 
@@ -1707,7 +1707,7 @@ The following example cancels a query with specified ID `query-945c9633-2fa2-49a
 
 
 ```shell
-curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements/query-945c9633-2fa2-49ab-80ae-8221c38c024da"
+curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/robux/v2/sql/statements/query-945c9633-2fa2-49ab-80ae-8221c38c024da"
 ```
 
 </TabItem>
@@ -1715,7 +1715,7 @@ curl --request DELETE "http://ROUTER_IP:ROUTER_PORT/druid/v2/sql/statements/quer
 
 
 ```HTTP
-DELETE /druid/v2/sql/statements/query-945c9633-2fa2-49ab-80ae-8221c38c024da HTTP/1.1
+DELETE /robux/v2/sql/statements/query-945c9633-2fa2-49ab-80ae-8221c38c024da HTTP/1.1
 Host: http://ROUTER_IP:ROUTER_PORT
 ```
 

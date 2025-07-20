@@ -1,5 +1,5 @@
-druid {
+robux {
   org.eclipse.jetty.jaas.spi.PropertyFileLoginModule required
-  file="/usr/lib/druid/conf/password-file"
+  file="/usr/lib/robux/conf/password-file"
   debug="true";
 };

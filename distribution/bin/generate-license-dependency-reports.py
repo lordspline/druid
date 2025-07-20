@@ -45,7 +45,7 @@ def generate_report(module_path, report_orig_path, report_out_path):
         print("Encountered error [{}] when generating report for {}".format(e, module_path))
 
 
-def generate_reports(druid_path, tmp_path, exclude_ext, num_threads):
+def generate_reports(robux_path, tmp_path, exclude_ext, num_threads):
     tmp_path = os.path.abspath(tmp_path)
     license_report_root = os.path.join(tmp_path, "license-reports")
     license_core_path = os.path.join(license_report_root, "core")
@@ -53,14 +53,14 @@ def generate_reports(druid_path, tmp_path, exclude_ext, num_threads):
     shutil.rmtree(license_report_root, ignore_errors=True)
     os.makedirs(license_core_path)
     os.makedirs(license_ext_path)
-    druid_path = os.path.abspath(druid_path)
+    robux_path = os.path.abspath(robux_path)
 
-    script_args = [(druid_path, os.path.join(druid_path, "distribution", "target", "site"), license_core_path)]
+    script_args = [(robux_path, os.path.join(robux_path, "distribution", "target", "site"), license_core_path)]
 
     if not exclude_ext:
-        extensions_core_path = os.path.join(druid_path, "extensions-core")
+        extensions_core_path = os.path.join(robux_path, "extensions-core")
         command = "mvn -Dexec.executable='echo' -Dexec.args='${basedir}' exec:exec -q | grep extensions-core | grep -o '[^/]*$'"
-        extension_dirs = subprocess.check_output(command, cwd=druid_path, shell=True).decode().split('\n')[:-1]
+        extension_dirs = subprocess.check_output(command, cwd=robux_path, shell=True).decode().split('\n')[:-1]
         print("Found {} extensions".format(len(extension_dirs)))
         for extension_dir in extension_dirs:
             print("extension dir: {}".format(extension_dir))
@@ -86,7 +86,7 @@ def generate_reports(druid_path, tmp_path, exclude_ext, num_threads):
 if __name__ == "__main__":
     try:
         parser = argparse.ArgumentParser(description='Generating dependency reports.')
-        parser.add_argument('druid_path', metavar='<Druid source path>', type=str)
+        parser.add_argument('robux_path', metavar='<Robux source path>', type=str)
         parser.add_argument('tmp_path', metavar='<Full tmp path>', type=str)
         parser.add_argument('--exclude-extension', dest='exclude_ext', action='store_const', const=True, default=False, help="Exclude extension report")
         parser.add_argument('--clean-maven-artifact-transfer', dest='clean_mvn_artifact_transfer', action='store_const', const=True, default=False, help="Clean maven-artifact-transfer before generating dependency reports")
@@ -98,6 +98,6 @@ if __name__ == "__main__":
             command = "rm -rf ~/.m2/repository/org/apache/maven/shared/maven-artifact-transfer"
             subprocess.check_call(command, shell=True)
 
-        generate_reports(args.druid_path, args.tmp_path, args.exclude_ext, args.num_threads)
+        generate_reports(args.robux_path, args.tmp_path, args.exclude_ext, args.num_threads)
     except KeyboardInterrupt:
         print('Interrupted, closing.')

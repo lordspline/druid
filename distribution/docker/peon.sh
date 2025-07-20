@@ -27,18 +27,18 @@
 # It accepts 'JAVA_OPTS' as an environment variable
 #
 # Additional env vars:
-# - DRUID_LOG4J -- set the entire log4j.xml verbatim
-# - DRUID_LOG_LEVEL -- override the default log level in default log4j
-# - DRUID_XMX -- set Java Xmx
-# - DRUID_XMS -- set Java Xms
-# - DRUID_MAXNEWSIZE -- set Java max new size
-# - DRUID_NEWSIZE -- set Java new size
-# - DRUID_MAXDIRECTMEMORYSIZE -- set Java max direct memory size
+# - ROBUX_LOG4J -- set the entire log4j.xml verbatim
+# - ROBUX_LOG_LEVEL -- override the default log level in default log4j
+# - ROBUX_XMX -- set Java Xmx
+# - ROBUX_XMS -- set Java Xms
+# - ROBUX_MAXNEWSIZE -- set Java max new size
+# - ROBUX_NEWSIZE -- set Java new size
+# - ROBUX_MAXDIRECTMEMORYSIZE -- set Java max direct memory size
 #
-# - DRUID_CONFIG_COMMON -- full path to a file for druid 'common' properties
-# - DRUID_CONFIG_${service} -- full path to a file for druid 'service' properties
+# - ROBUX_CONFIG_COMMON -- full path to a file for robux 'common' properties
+# - ROBUX_CONFIG_${service} -- full path to a file for robux 'service' properties
 
-# This script is very similar to druid.sh, used exclusively for the kubernetes-overlord-extension.
+# This script is very similar to robux.sh, used exclusively for the kubernetes-overlord-extension.
 
 set -e
 SERVICE="overlord"
@@ -48,11 +48,11 @@ echo "$(date -Is) startup service $SERVICE"
 # We put all the config in /tmp/conf to allow for a
 # read-only root filesystem
 mkdir -p /tmp/conf/
-test -d /tmp/conf/druid && rm -r /tmp/conf/druid
-cp -r /opt/druid/conf/druid /tmp/conf/druid
+test -d /tmp/conf/robux && rm -r /tmp/conf/robux
+cp -r /opt/robux/conf/robux /tmp/conf/robux
 
 getConfPath() {
-    cluster_conf_base=/tmp/conf/druid/cluster
+    cluster_conf_base=/tmp/conf/robux/cluster
     case "$1" in
     _common) echo $cluster_conf_base/_common ;;
     historical) echo $cluster_conf_base/data/historical ;;
@@ -94,24 +94,24 @@ setJavaKey() {
 ## Setup host names
 if [ -n "${ZOOKEEPER}" ];
 then
-    setKey _common druid.zk.service.host "${ZOOKEEPER}"
+    setKey _common robux.zk.service.host "${ZOOKEEPER}"
 fi
 
 if [ -z "${KUBERNETES_SERVICE_HOST}" ]
 then
   # Running outside kubernetes, use IP addresses
-  DRUID_SET_HOST_IP=${DRUID_SET_HOST_IP:-1}
+  ROBUX_SET_HOST_IP=${ROBUX_SET_HOST_IP:-1}
 else
   # Running in kubernetes, so use canonical names
-  DRUID_SET_HOST_IP=${DRUID_SET_HOST_IP:-0}
+  ROBUX_SET_HOST_IP=${ROBUX_SET_HOST_IP:-0}
 fi
 
-if [ "${DRUID_SET_HOST_IP}" = "1" ]
+if [ "${ROBUX_SET_HOST_IP}" = "1" ]
 then
-    setKey $SERVICE druid.host $(ip r get 1 | awk '{print $7;exit}')
+    setKey $SERVICE robux.host $(ip r get 1 | awk '{print $7;exit}')
 fi
 
-env | grep ^druid_ | while read evar;
+env | grep ^robux_ | while read evar;
 do
     # Can't use IFS='=' to parse since var might have = in it (e.g. password)
     val=$(echo "$evar" | sed -e 's?[^=]*=??')
@@ -127,13 +127,13 @@ do
 done
 
 # This is to allow configuration via a Kubernetes configMap without
-# e.g. using subPath (you can also mount the configMap on /tmp/conf/druid)
-if [ -n "$DRUID_CONFIG_COMMON" ]
+# e.g. using subPath (you can also mount the configMap on /tmp/conf/robux)
+if [ -n "$ROBUX_CONFIG_COMMON" ]
 then
-    cp -f "$DRUID_CONFIG_COMMON" $COMMON_CONF_DIR/common.runtime.properties
+    cp -f "$ROBUX_CONFIG_COMMON" $COMMON_CONF_DIR/common.runtime.properties
 fi
 
-SCONFIG=$(printf "%s_%s" DRUID_CONFIG ${SERVICE})
+SCONFIG=$(printf "%s_%s" ROBUX_CONFIG ${SERVICE})
 SCONFIG=$(eval echo \$$(echo $SCONFIG))
 
 if [ -n "${SCONFIG}" ]
@@ -141,20 +141,20 @@ then
     cp -f "${SCONFIG}" $SERVICE_CONF_DIR/runtime.properties
 fi
 
-if [ -n "$DRUID_LOG_LEVEL" ]
+if [ -n "$ROBUX_LOG_LEVEL" ]
 then
-    sed -ri 's/"info"/"'$DRUID_LOG_LEVEL'"/g' $COMMON_CONF_DIR/log4j2.xml
+    sed -ri 's/"info"/"'$ROBUX_LOG_LEVEL'"/g' $COMMON_CONF_DIR/log4j2.xml
 fi
 
-if [ -n "$DRUID_LOG4J" ]
+if [ -n "$ROBUX_LOG4J" ]
 then
-    echo "$DRUID_LOG4J" >$COMMON_CONF_DIR/log4j2.xml
+    echo "$ROBUX_LOG4J" >$COMMON_CONF_DIR/log4j2.xml
 fi
 
-DRUID_DIRS_TO_CREATE=${DRUID_DIRS_TO_CREATE-'var/tmp var/druid/segments var/druid/indexing-logs var/druid/task var/druid/hadoop-tmp var/druid/segment-cache'}
-if [ -n "${DRUID_DIRS_TO_CREATE}" ]
+ROBUX_DIRS_TO_CREATE=${ROBUX_DIRS_TO_CREATE-'var/tmp var/robux/segments var/robux/indexing-logs var/robux/task var/robux/hadoop-tmp var/robux/segment-cache'}
+if [ -n "${ROBUX_DIRS_TO_CREATE}" ]
 then
-    mkdir -p ${DRUID_DIRS_TO_CREATE}
+    mkdir -p ${ROBUX_DIRS_TO_CREATE}
 fi
 
 # take the ${TASK_JSON} environment variable and base64 decode, unzip and throw it in ${TASK_DIR}/task.json.
@@ -162,7 +162,7 @@ fi
 mkdir -p ${TASK_DIR}; [ -n "$TASK_JSON" ] && echo ${TASK_JSON} | base64 -d | gzip -d > ${TASK_DIR}/task.json;
 
 if [ -n "$TASK_ID" ]; then
-    exec bin/run-java ${JAVA_OPTS} -cp $COMMON_CONF_DIR:$SERVICE_CONF_DIR:lib/*: org.apache.druid.cli.Main internal peon --taskId "${TASK_ID}" "$@"
+    exec bin/run-java ${JAVA_OPTS} -cp $COMMON_CONF_DIR:$SERVICE_CONF_DIR:lib/*: org.apache.robux.cli.Main internal peon --taskId "${TASK_ID}" "$@"
 else
-    exec bin/run-java ${JAVA_OPTS} -cp $COMMON_CONF_DIR:$SERVICE_CONF_DIR:lib/*: org.apache.druid.cli.Main internal peon "$@"
+    exec bin/run-java ${JAVA_OPTS} -cp $COMMON_CONF_DIR:$SERVICE_CONF_DIR:lib/*: org.apache.robux.cli.Main internal peon "$@"
 fi

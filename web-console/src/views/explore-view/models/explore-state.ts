@@ -19,13 +19,13 @@
 import type { IconName } from '@blueprintjs/icons';
 import { IconNames } from '@blueprintjs/icons';
 import { Timezone } from 'chronoshift';
-import type { Column } from 'druid-query-toolkit';
+import type { Column } from 'robux-query-toolkit';
 import {
   filterPatternToExpression,
   SqlExpression,
   SqlLiteral,
   SqlQuery,
-} from 'druid-query-toolkit';
+} from 'robux-query-toolkit';
 
 import {
   changeByIndex,

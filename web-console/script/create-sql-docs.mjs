@@ -32,7 +32,7 @@ const initialFunctionDocs = {
   TYPE: [
     'nativeType',
     convertMarkdownToHtml(
-      'A purely type system modification function what wraps a Druid native type to make it into a SQL type.',
+      'A purely type system modification function what wraps a Robux native type to make it into a SQL type.',
     ),
   ],
   UNNEST: [

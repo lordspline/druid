@@ -24,13 +24,13 @@ sidebar_label: "GroupBy"
   -->
 
 :::info
- Apache Druid supports two query languages: [Druid SQL](sql.md) and [native queries](querying.md).
+ Apache Robux supports two query languages: [Robux SQL](sql.md) and [native queries](querying.md).
  This document describes a query
- type in the native language. For information about when Druid SQL will use this query type, refer to the
+ type in the native language. For information about when Robux SQL will use this query type, refer to the
  [SQL documentation](sql-translation.md#query-types).
 :::
 
-These types of Apache Druid queries take a groupBy query object and return an array of JSON objects where each object represents a
+These types of Apache Robux queries take a groupBy query object and return an array of JSON objects where each object represents a
 grouping asked for by the query.
 
 :::info
@@ -87,7 +87,7 @@ Following are main parts to a groupBy query:
 
 |property|description|required?|
 |--------|-----------|---------|
-|queryType|This String should always be "groupBy"; this is the first thing Druid looks at to figure out how to interpret the query|yes|
+|queryType|This String should always be "groupBy"; this is the first thing Robux looks at to figure out how to interpret the query|yes|
 |dataSource|A String or Object defining the data source to query, very similar to a table in a relational database. See [DataSource](../querying/datasource.md) for more information.|yes|
 |dimensions|A JSON list of dimensions to do the groupBy over; or see [DimensionSpec](../querying/dimensionspecs.md) for ways to extract dimensions. |yes|
 |virtualColumns|A JSON list of [virtual columns](./virtual-columns.md). You can reference the virtual columns in `dimensions`, `aggregations`, or `postAggregations`.| no (default none)|
@@ -232,7 +232,7 @@ The response for the query above would look something like:
 ```
 
 :::info
- Notice that dimensions that are not included in an individual subtotalsSpec grouping are returned with a `null` value. This response format represents a behavior change as of Apache Druid 0.18.0.
+ Notice that dimensions that are not included in an individual subtotalsSpec grouping are returned with a `null` value. This response format represents a behavior change as of Apache Robux 0.18.0.
  In release 0.17.0 and earlier, such dimensions were entirely excluded from the result. If you were relying on this old behavior to determine whether a particular dimension was not part of
  a subtotal grouping, you can now use [Grouping aggregator](aggregations.md#grouping-aggregator) instead.
 :::
@@ -244,17 +244,17 @@ The response for the query above would look something like:
 
 When using groupBy, four parameters control resource usage and limits:
 
-- `druid.processing.buffer.sizeBytes`: size of the off-heap hash table used for aggregation, per query, in bytes. At
-most `druid.processing.numMergeBuffers` of these will be created at once, which also serves as an upper limit on the
+- `robux.processing.buffer.sizeBytes`: size of the off-heap hash table used for aggregation, per query, in bytes. At
+most `robux.processing.numMergeBuffers` of these will be created at once, which also serves as an upper limit on the
 number of concurrently running groupBy queries.
-- `druid.query.groupBy.maxSelectorDictionarySize`: size of the on-heap segment-level dictionary used when grouping on
+- `robux.query.groupBy.maxSelectorDictionarySize`: size of the on-heap segment-level dictionary used when grouping on
 string or array-valued expressions that do not have pre-existing dictionaries. There is at most one dictionary per
-processing thread; therefore there are up to `druid.processing.numThreads` of these. Note that the size is based on a
+processing thread; therefore there are up to `robux.processing.numThreads` of these. Note that the size is based on a
 rough estimate of the dictionary footprint.
-- `druid.query.groupBy.maxMergingDictionarySize`: size of the on-heap query-level dictionary used when grouping on
+- `robux.query.groupBy.maxMergingDictionarySize`: size of the on-heap query-level dictionary used when grouping on
 any string expression. There is at most one dictionary per concurrently-running query; therefore there are up to
-`druid.server.http.numThreads` of these. Note that the size is based on a rough estimate of the dictionary footprint.
-- `druid.query.groupBy.maxOnDiskStorage`: amount of space on disk used for aggregation, per query, in bytes. By default,
+`robux.server.http.numThreads` of these. Note that the size is based on a rough estimate of the dictionary footprint.
+- `robux.query.groupBy.maxOnDiskStorage`: amount of space on disk used for aggregation, per query, in bytes. By default,
 this is 0, which means aggregation will not use disk.
 
 If `maxOnDiskStorage` is 0 (the default) then a query that exceeds either the on-heap dictionary limit, or the off-heap
@@ -268,8 +268,8 @@ disk space.
 
 With groupBy, cluster operators should make sure that the off-heap hash tables and on-heap merging dictionaries
 will not exceed available memory for the maximum possible concurrent query load (given by
-`druid.processing.numMergeBuffers`). See the [basic cluster tuning guide](../operations/basic-cluster-tuning.md) 
-for more details about direct memory usage, organized by Druid process type.
+`robux.processing.numMergeBuffers`). See the [basic cluster tuning guide](../operations/basic-cluster-tuning.md) 
+for more details about direct memory usage, organized by Robux process type.
 
 Brokers do not need merge buffers for basic groupBy queries. Queries with subqueries (using a `query` dataSource) require one merge buffer if there is a single subquery, or two merge buffers if there is more than one layer of nested subqueries. Queries with [subtotals](groupbyquery.md#more-on-subtotalsspec) need one merge buffer. These can stack on top of each other: a groupBy query with multiple layers of nested subqueries, and that also uses subtotals, will need three merge buffers.
 
@@ -279,7 +279,7 @@ Historicals and ingestion tasks need one merge buffer for each groupBy query, un
 
 #### Limit pushdown optimization
 
-Druid pushes down the `limit` spec in groupBy queries to the segments on Historicals wherever possible to early prune unnecessary intermediate results and minimize the amount of data transferred to Brokers. By default, this technique is applied only when all fields in the `orderBy` spec is a subset of the grouping keys. This is because the `limitPushDown` doesn't guarantee the exact results if the `orderBy` spec includes any fields that are not in the grouping keys. However, you can enable this technique even in such cases if you can sacrifice some accuracy for fast query processing like in topN queries. See `forceLimitPushDown` in [advanced configurations](#advanced-configurations).
+Robux pushes down the `limit` spec in groupBy queries to the segments on Historicals wherever possible to early prune unnecessary intermediate results and minimize the amount of data transferred to Brokers. By default, this technique is applied only when all fields in the `orderBy` spec is a subset of the grouping keys. This is because the `limitPushDown` doesn't guarantee the exact results if the `orderBy` spec includes any fields that are not in the grouping keys. However, you can enable this technique even in such cases if you can sacrifice some accuracy for fast query processing like in topN queries. See `forceLimitPushDown` in [advanced configurations](#advanced-configurations).
 
 
 #### Optimizing hash table
@@ -293,10 +293,10 @@ The default number of initial buckets is 1024 and the default max load factor of
 
 Once a Historical finishes aggregation using the hash table, it sorts the aggregated results and merges them before sending to the
 Broker for N-way merge aggregation in the broker. By default, Historicals use all their available processing threads
-(configured by `druid.processing.numThreads`) for aggregation, but use a single thread for sorting and merging
+(configured by `robux.processing.numThreads`) for aggregation, but use a single thread for sorting and merging
 aggregates which is an http thread to send data to Brokers.
 
-This is to prevent some heavy groupBy queries from blocking other queries. In Druid, the processing threads are shared
+This is to prevent some heavy groupBy queries from blocking other queries. In Robux, the processing threads are shared
 between all submitted queries and they are _not interruptible_. It means, if a heavy query takes all available
 processing threads, all other queries might be blocked until the heavy query is finished. GroupBy queries usually take
 longer time than timeseries or topN queries, they should release processing threads as soon as possible.
@@ -343,15 +343,15 @@ Supported runtime properties:
 
 |Property|Description|Default|
 |--------|-----------|-------|
-|`druid.query.groupBy.maxSelectorDictionarySize`|Maximum amount of heap space (approximately) to use for per-segment string dictionaries.  If set to `0` (automatic), each query's dictionary can use 10% of the Java heap divided by `druid.processing.numMergeBuffers`, or 1GB, whichever is smaller.<br /><br />See [Memory tuning and resource limits](#memory-tuning-and-resource-limits) for details on changing this property.|0 (automatic)|
-|`druid.query.groupBy.maxMergingDictionarySize`|Maximum amount of heap space (approximately) to use for per-query string dictionaries. When the dictionary exceeds this size, a spill to disk will be triggered. If set to `0` (automatic), each query's dictionary uses 30% of the Java heap divided by `druid.processing.numMergeBuffers`, or 1GB, whichever is smaller.<br /><br />See [Memory tuning and resource limits](#memory-tuning-and-resource-limits) for details on changing this property.|0 (automatic)|
-|`druid.query.groupBy.maxOnDiskStorage`|Maximum amount of disk space to use, per-query, for spilling result sets to disk when either the merging buffer or the dictionary fills up. Queries that exceed this limit will fail. Set to zero to disable disk spilling.|0 (disabled)|
+|`robux.query.groupBy.maxSelectorDictionarySize`|Maximum amount of heap space (approximately) to use for per-segment string dictionaries.  If set to `0` (automatic), each query's dictionary can use 10% of the Java heap divided by `robux.processing.numMergeBuffers`, or 1GB, whichever is smaller.<br /><br />See [Memory tuning and resource limits](#memory-tuning-and-resource-limits) for details on changing this property.|0 (automatic)|
+|`robux.query.groupBy.maxMergingDictionarySize`|Maximum amount of heap space (approximately) to use for per-query string dictionaries. When the dictionary exceeds this size, a spill to disk will be triggered. If set to `0` (automatic), each query's dictionary uses 30% of the Java heap divided by `robux.processing.numMergeBuffers`, or 1GB, whichever is smaller.<br /><br />See [Memory tuning and resource limits](#memory-tuning-and-resource-limits) for details on changing this property.|0 (automatic)|
+|`robux.query.groupBy.maxOnDiskStorage`|Maximum amount of disk space to use, per-query, for spilling result sets to disk when either the merging buffer or the dictionary fills up. Queries that exceed this limit will fail. Set to zero to disable disk spilling.|0 (disabled)|
 
 Supported query contexts:
 
 |Key|Description|
 |---|-----------|
-|`maxOnDiskStorage`|Can be used to lower the value of `druid.query.groupBy.maxOnDiskStorage` for this query.|
+|`maxOnDiskStorage`|Can be used to lower the value of `robux.query.groupBy.maxOnDiskStorage` for this query.|
 
 ### Advanced configurations
 
@@ -359,37 +359,37 @@ Supported runtime properties:
 
 |Property|Description|Default|
 |--------|-----------|-------|
-|`druid.query.groupBy.singleThreaded`|Merge results using a single thread.|false|
-|`druid.query.groupBy.intermediateResultAsMapCompat`|Whether Brokers are able to understand map-based result rows. Setting this to `true` adds some overhead to all groupBy queries. It is required for compatibility with data servers running versions older than 0.16.0, which introduced [array-based result rows](#array-based-result-rows).|false|
-|`druid.query.groupBy.bufferGrouperInitialBuckets`|Initial number of buckets in the off-heap hash table used for grouping results. Set to 0 to use a reasonable default (1024).|0|
-|`druid.query.groupBy.bufferGrouperMaxLoadFactor`|Maximum load factor of the off-heap hash table used for grouping results. When the load factor exceeds this size, the table will be grown or spilled to disk. Set to 0 to use a reasonable default (0.7).|0|
-|`druid.query.groupBy.forceHashAggregation`|Force to use hash-based aggregation.|false|
-|`druid.query.groupBy.intermediateCombineDegree`|Number of intermediate nodes combined together in the combining tree. Higher degrees will need less threads which might be helpful to improve the query performance by reducing the overhead of too many threads if the server has sufficiently powerful cpu cores.|8|
-|`druid.query.groupBy.numParallelCombineThreads`|Hint for the number of parallel combining threads. This should be larger than 1 to turn on the parallel combining feature. The actual number of threads used for parallel combining is min(`druid.query.groupBy.numParallelCombineThreads`, `druid.processing.numThreads`).|1 (disabled)|
-|`druid.query.groupBy.applyLimitPushDownToSegment`|If Broker pushes limit down to queryable data server (historicals, peons) then limit results during segment scan. If typically there are a large number of segments taking part in a query on a data server, this setting may counterintuitively reduce performance if enabled.|false (disabled)|
+|`robux.query.groupBy.singleThreaded`|Merge results using a single thread.|false|
+|`robux.query.groupBy.intermediateResultAsMapCompat`|Whether Brokers are able to understand map-based result rows. Setting this to `true` adds some overhead to all groupBy queries. It is required for compatibility with data servers running versions older than 0.16.0, which introduced [array-based result rows](#array-based-result-rows).|false|
+|`robux.query.groupBy.bufferGrouperInitialBuckets`|Initial number of buckets in the off-heap hash table used for grouping results. Set to 0 to use a reasonable default (1024).|0|
+|`robux.query.groupBy.bufferGrouperMaxLoadFactor`|Maximum load factor of the off-heap hash table used for grouping results. When the load factor exceeds this size, the table will be grown or spilled to disk. Set to 0 to use a reasonable default (0.7).|0|
+|`robux.query.groupBy.forceHashAggregation`|Force to use hash-based aggregation.|false|
+|`robux.query.groupBy.intermediateCombineDegree`|Number of intermediate nodes combined together in the combining tree. Higher degrees will need less threads which might be helpful to improve the query performance by reducing the overhead of too many threads if the server has sufficiently powerful cpu cores.|8|
+|`robux.query.groupBy.numParallelCombineThreads`|Hint for the number of parallel combining threads. This should be larger than 1 to turn on the parallel combining feature. The actual number of threads used for parallel combining is min(`robux.query.groupBy.numParallelCombineThreads`, `robux.processing.numThreads`).|1 (disabled)|
+|`robux.query.groupBy.applyLimitPushDownToSegment`|If Broker pushes limit down to queryable data server (historicals, peons) then limit results during segment scan. If typically there are a large number of segments taking part in a query on a data server, this setting may counterintuitively reduce performance if enabled.|false (disabled)|
 
 Supported query contexts:
 
 |Key|Description|Default|
 |---|-----------|-------|
-|`groupByIsSingleThreaded`|Overrides the value of `druid.query.groupBy.singleThreaded` for this query.|None|
-|`bufferGrouperInitialBuckets`|Overrides the value of `druid.query.groupBy.bufferGrouperInitialBuckets` for this query.|None|
-|`bufferGrouperMaxLoadFactor`|Overrides the value of `druid.query.groupBy.bufferGrouperMaxLoadFactor` for this query.|None|
-|`forceHashAggregation`|Overrides the value of `druid.query.groupBy.forceHashAggregation`|None|
-|`intermediateCombineDegree`|Overrides the value of `druid.query.groupBy.intermediateCombineDegree`|None|
-|`numParallelCombineThreads`|Overrides the value of `druid.query.groupBy.numParallelCombineThreads`|None|
-|`maxSelectorDictionarySize`|Overrides the value of `druid.query.groupBy.maxMergingDictionarySize`|None|
-|`maxMergingDictionarySize`|Overrides the value of `druid.query.groupBy.maxMergingDictionarySize`|None|
+|`groupByIsSingleThreaded`|Overrides the value of `robux.query.groupBy.singleThreaded` for this query.|None|
+|`bufferGrouperInitialBuckets`|Overrides the value of `robux.query.groupBy.bufferGrouperInitialBuckets` for this query.|None|
+|`bufferGrouperMaxLoadFactor`|Overrides the value of `robux.query.groupBy.bufferGrouperMaxLoadFactor` for this query.|None|
+|`forceHashAggregation`|Overrides the value of `robux.query.groupBy.forceHashAggregation`|None|
+|`intermediateCombineDegree`|Overrides the value of `robux.query.groupBy.intermediateCombineDegree`|None|
+|`numParallelCombineThreads`|Overrides the value of `robux.query.groupBy.numParallelCombineThreads`|None|
+|`maxSelectorDictionarySize`|Overrides the value of `robux.query.groupBy.maxMergingDictionarySize`|None|
+|`maxMergingDictionarySize`|Overrides the value of `robux.query.groupBy.maxMergingDictionarySize`|None|
 |`mergeThreadLocal`|Whether merge buffers should always be split into thread-local buffers. Setting this to `true` reduces thread contention, but uses memory less efficiently. This tradeoff is beneficial when memory is plentiful. |false|
 |`sortByDimsFirst`|Sort the results first by dimension values and then by timestamp.|false|
 |`forceLimitPushDown`|When all fields in the orderby are part of the grouping key, the Broker will push limit application down to the Historical processes. When the sorting order uses fields that are not in the grouping key, applying this optimization can result in approximate results with unknown accuracy, so this optimization is disabled by default in that case. Enabling this context flag turns on limit push down for limit/orderbys that contain non-grouping key columns.|false|
-|`applyLimitPushDownToSegment`|If Broker pushes limit down to queryable nodes (historicals, peons) then limit results during segment scan. This context value can be used to override `druid.query.groupBy.applyLimitPushDownToSegment`.|true|
+|`applyLimitPushDownToSegment`|If Broker pushes limit down to queryable nodes (historicals, peons) then limit results during segment scan. This context value can be used to override `robux.query.groupBy.applyLimitPushDownToSegment`.|true|
 |`groupByEnableMultiValueUnnesting`|Safety flag to enable/disable the implicit unnesting on multi value column's as part of the grouping key. 'true' indicates multi-value grouping keys are unnested. 'false' returns an error if a multi value column is found as part of the grouping key.|true|
 |`deferExpressionDimensions`|When an entry in `dimensions` references an `expression` virtual column, this property influences whether expression evaluation is deferred from cursor processing to the merge step. Options are:<ul><li>`fixedWidth`: Defer expressions with fixed-width inputs (numeric and dictionary-encoded string).</li><li>`fixedWidthNonNumeric`: Defer expressions with fixed-width inputs (numeric and dictionary-encoded string), unless the expression output and all inputs are numeric.</li><li>`singleString`: Defer string-typed expressions with a single dictionary-encoded string input.</li><li>`always`: Defer all expressions. May require building dictionaries for expression inputs.</li></ul><br />These properties only take effect when the `groupBy` query can be vectorized. Non-vectorized queries only defer string-typed expressions of single string inputs.|`fixedWidthNonNumeric`|
 
 #### Array based result rows
 
-Internally Druid always uses an array based representation of groupBy result rows, but by default this is translated
+Internally Robux always uses an array based representation of groupBy result rows, but by default this is translated
 into a map based result format at the Broker. To reduce the overhead of this translation, results may also be returned
 from the Broker directly in the array based format if `resultAsArray` is set to `true` on the query context.
 

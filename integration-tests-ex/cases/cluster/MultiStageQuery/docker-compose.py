@@ -19,10 +19,10 @@ class Template(BaseTemplate):
 
     def define_indexer(self):
         service = super().define_indexer()
-        self.add_property(service, 'druid.msq.intermediate.storage.enable', 'true')
-        self.add_property(service, 'druid.msq.intermediate.storage.type', 'local')
-        self.add_property(service, 'druid.msq.intermediate.storage.basePath', '/shared/durablestorage/')
-        self.add_property(service, 'druid.export.storage.baseDir', '/')
+        self.add_property(service, 'robux.msq.intermediate.storage.enable', 'true')
+        self.add_property(service, 'robux.msq.intermediate.storage.type', 'local')
+        self.add_property(service, 'robux.msq.intermediate.storage.basePath', '/shared/durablestorage/')
+        self.add_property(service, 'robux.export.storage.baseDir', '/')
 
     # No kafka dependency in this cluster
     def define_kafka(self):

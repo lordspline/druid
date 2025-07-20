@@ -22,7 +22,7 @@ The idea of this test group is to simulate issues that can arise during rolling 
 
 #### Implementation 
 In this test group, the docker compose cluster is launched with services on different versions. 
-The docker image for the previous version is built by downloading the previous version druid tar.
+The docker image for the previous version is built by downloading the previous version robux tar.
 Currently, the case where Coordinator and Overlord is on the previous version is tested. 
 
 #### Test coverage 
@@ -36,7 +36,7 @@ Pending
 - Compaction 
 
 #### Limitations 
-* `druid-testing-tools` jar is not published. The image for the previous version still uses the 
+* `robux-testing-tools` jar is not published. The image for the previous version still uses the 
 extension from the current build. 
 This could break in case of incompatible changes in this extension. 
 In such a scenario the test should be disabled. However, this extension is primarily used to

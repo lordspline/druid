@@ -17,9 +17,9 @@
  */
 
 // micro-cache
-import { sql, T } from 'druid-query-toolkit';
+import { sql, T } from 'robux-query-toolkit';
 
-import { deepGet, queryDruidSql } from '../../../utils';
+import { deepGet, queryRobuxSql } from '../../../utils';
 
 const MAX_TIME_TTL = 60000;
 let lastMaxTimeTable: string | undefined;
@@ -36,7 +36,7 @@ export async function getMaxTimeForTable(tableName: string): Promise<Date | unde
     return lastMaxTimeValue;
   }
 
-  const d = await queryDruidSql({
+  const d = await queryRobuxSql({
     query: sql`SELECT MAX(__time) AS "maxTime" FROM ${T(tableName)}`,
   });
 

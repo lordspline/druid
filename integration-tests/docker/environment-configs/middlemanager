@@ -17,25 +17,25 @@
 # under the License.
 #
 
-DRUID_SERVICE=middleManager
-DRUID_LOG_PATH=/shared/logs/middlemanager.log
+ROBUX_SERVICE=middleManager
+ROBUX_LOG_PATH=/shared/logs/middlemanager.log
 
 # JAVA OPTS
-SERVICE_DRUID_JAVA_OPTS=-server -Xmx128m -Xms64m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5008
+SERVICE_ROBUX_JAVA_OPTS=-server -Xmx128m -Xms64m -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5008
 
-# Druid configs
-druid_host=druid-middlemanager
-druid_server_http_numThreads=100
-druid_storage_storageDirectory=/shared/storage
-druid_indexer_runner_javaOptsArray=["-server", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0", "-Xmx256m", "-Xms256m", "-XX:NewSize=128m", "-XX:MaxNewSize=128m", "-XX:+UseG1GC", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8", "-Dlog4j.configurationFile=/shared/docker/lib/log4j2.xml"]
+# Robux configs
+robux_host=robux-middlemanager
+robux_server_http_numThreads=100
+robux_storage_storageDirectory=/shared/storage
+robux_indexer_runner_javaOptsArray=["-server", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0", "-Xmx256m", "-Xms256m", "-XX:NewSize=128m", "-XX:MaxNewSize=128m", "-XX:+UseG1GC", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8", "-Dlog4j.configurationFile=/shared/docker/lib/log4j2.xml"]
 
-druid_indexer_fork_property_druid_processing_buffer_sizeBytes=25000000
-druid_indexer_fork_property_druid_processing_numThreads=1
-druid_indexer_fork_server_http_numThreads=20
-druid_selectors_indexing_serviceName=druid/overlord
-druid_indexer_task_chathandler_type=announce
-druid_auth_basic_common_cacheDirectory=/tmp/authCache/middleManager
-druid_startup_logging_logProperties=true
-druid_server_https_crlPath=/tls/revocations.crl
-druid_worker_capacity=10
-druid_worker_intermediaryPartitionTimeout=PT60M
+robux_indexer_fork_property_robux_processing_buffer_sizeBytes=25000000
+robux_indexer_fork_property_robux_processing_numThreads=1
+robux_indexer_fork_server_http_numThreads=20
+robux_selectors_indexing_serviceName=robux/overlord
+robux_indexer_task_chathandler_type=announce
+robux_auth_basic_common_cacheDirectory=/tmp/authCache/middleManager
+robux_startup_logging_logProperties=true
+robux_server_https_crlPath=/tls/revocations.crl
+robux_worker_capacity=10
+robux_worker_intermediaryPartitionTimeout=PT60M

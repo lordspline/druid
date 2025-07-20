@@ -23,15 +23,15 @@ title: "DataSketches Tuple Sketch module"
   -->
 
 
-This module provides Apache Druid aggregators based on Tuple sketch from [Apache DataSketches](https://datasketches.apache.org/) library. ArrayOfDoublesSketch sketches extend the functionality of the count-distinct Theta sketches by adding arrays of double values associated with unique keys.
+This module provides Apache Robux aggregators based on Tuple sketch from [Apache DataSketches](https://datasketches.apache.org/) library. ArrayOfDoublesSketch sketches extend the functionality of the count-distinct Theta sketches by adding arrays of double values associated with unique keys.
 
 To use this aggregator, make sure you [include](../../configuration/extensions.md#loading-extensions) the extension in your config file:
 
 ```
-druid.extensions.loadList=["druid-datasketches"]
+robux.extensions.loadList=["robux-datasketches"]
 ```
 
-For additional sketch types supported in Druid, see [DataSketches extension](datasketches-extension.md).
+For additional sketch types supported in Robux, see [DataSketches extension](datasketches-extension.md).
 
 ## Aggregator
 

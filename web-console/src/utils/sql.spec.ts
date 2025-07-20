@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { sane } from 'druid-query-toolkit';
+import { sane } from 'robux-query-toolkit';
 
 import { findAllSqlQueriesInText, findSqlQueryPrefix } from './sql';
 
@@ -250,7 +250,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -293,7 +293,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -321,7 +321,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -347,7 +347,7 @@ describe('sql', () => {
             "sql": "SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)",
@@ -387,7 +387,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -418,7 +418,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -448,7 +448,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -477,7 +477,7 @@ describe('sql', () => {
           SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)
@@ -503,7 +503,7 @@ describe('sql', () => {
             "sql": "SELECT *
           FROM TABLE(
             EXTERN(
-              '{"type":"http","uris":["https://druid.apache.org/data/wikipedia.json.gz"]}',
+              '{"type":"http","uris":["https://robux.apache.org/data/wikipedia.json.gz"]}',
               '{"type":"json"}'
             )
           ) EXTEND ("isRobot" VARCHAR, "channel" VARCHAR, "timestamp" VARCHAR)",

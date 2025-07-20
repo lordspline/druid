@@ -22,19 +22,19 @@ title: "Automatic compaction"
   ~ under the License.
   -->
 
-In Apache Druid, compaction is a special type of ingestion task that reads data from a Druid datasource and writes it back into the same datasource. A common use case for this is to [optimally size segments](../operations/segment-optimization.md) after ingestion to improve query performance. Automatic compaction, or auto-compaction, refers to the system for automatic execution of compaction tasks issued by Druid itself. In addition to auto-compaction, you can perform [manual compaction](./manual-compaction.md) using the Overlord APIs.
+In Apache Robux, compaction is a special type of ingestion task that reads data from a Robux datasource and writes it back into the same datasource. A common use case for this is to [optimally size segments](../operations/segment-optimization.md) after ingestion to improve query performance. Automatic compaction, or auto-compaction, refers to the system for automatic execution of compaction tasks issued by Robux itself. In addition to auto-compaction, you can perform [manual compaction](./manual-compaction.md) using the Overlord APIs.
 
 :::info
  Auto-compaction skips datasources that have a segment granularity of `ALL`.
 :::
 
-As a best practice, you should set up auto-compaction for all Druid datasources. You can run compaction tasks manually for cases where you want to allocate more system resources. For example, you may choose to run multiple compaction tasks in parallel to compact an existing datasource for the first time. See [Compaction](compaction.md) for additional details and use cases.
+As a best practice, you should set up auto-compaction for all Robux datasources. You can run compaction tasks manually for cases where you want to allocate more system resources. For example, you may choose to run multiple compaction tasks in parallel to compact an existing datasource for the first time. See [Compaction](compaction.md) for additional details and use cases.
 
-This topic guides you through setting up automatic compaction for your Druid cluster. See the [examples](#examples) for common use cases for automatic compaction.
+This topic guides you through setting up automatic compaction for your Robux cluster. See the [examples](#examples) for common use cases for automatic compaction.
 
 ## Auto-compaction syntax
 
-You can configure automatic compaction dynamically without restarting Druid.
+You can configure automatic compaction dynamically without restarting Robux.
 The automatic compaction system uses the following syntax:
 
 ```json
@@ -60,14 +60,14 @@ The MSQ task engine is available as a compaction engine when you run automatic c
 
 For automatic compaction using Coordinator duties, you submit the spec to the [Compaction config UI](#manage-auto-compaction-using-the-web-console) or the [Compaction configuration API](#manage-auto-compaction-using-coordinator-apis).
 
-Most fields in the auto-compaction configuration correlate to a typical [Druid ingestion spec](../ingestion/ingestion-spec.md).
+Most fields in the auto-compaction configuration correlate to a typical [Robux ingestion spec](../ingestion/ingestion-spec.md).
 The following properties only apply to auto-compaction:
 * `skipOffsetFromLatest`
 * `taskPriority`
 * `taskContext`
 
 Since the automatic compaction system provides a management layer on top of manual compaction tasks,
-the auto-compaction configuration does not include task-specific properties found in a typical Druid ingestion spec.
+the auto-compaction configuration does not include task-specific properties found in a typical Robux ingestion spec.
 The following properties are automatically set by the Coordinator:
 * `type`: Set to `compact`.
 * `id`: Generated using the task type, datasource name, interval, and timestamp. The task ID is prefixed with `coordinator-issued`.
@@ -85,7 +85,7 @@ For more details on each of the specs in an auto-compaction configuration, see [
 
 ## Auto-compaction using Coordinator duties
 
-You can control how often the Coordinator checks to see if auto-compaction is needed. The Coordinator [indexing period](../configuration/index.md#data-management), `druid.coordinator.period.indexingPeriod`, controls the frequency of compaction tasks.
+You can control how often the Coordinator checks to see if auto-compaction is needed. The Coordinator [indexing period](../configuration/index.md#data-management), `robux.coordinator.period.indexingPeriod`, controls the frequency of compaction tasks.
 The default indexing period is 30 minutes, meaning that the Coordinator first checks for segments to compact at most 30 minutes from when auto-compaction is enabled.
 This time period also affects other Coordinator duties such as cleanup of unused segments and stale pending segments.
 To configure the auto-compaction time period without interfering with `indexingPeriod`, see [Set frequency of compaction runs](#change-compaction-frequency).
@@ -94,7 +94,7 @@ At every invocation of auto-compaction, the Coordinator initiates a [segment sea
 When there are eligible segments to compact, the Coordinator issues compaction tasks based on available worker capacity.
 If a compaction task takes longer than the indexing period, the Coordinator waits for it to finish before resuming the period for segment search.
 
-No additional configuration is needed to run automatic compaction tasks using the Coordinator and native engine. This is the default behavior for Druid.
+No additional configuration is needed to run automatic compaction tasks using the Coordinator and native engine. This is the default behavior for Robux.
 You can configure it for a datasource through the web console or programmatically via an API.
 This process differs for manual compaction tasks, which can be submitted from the [Tasks view of the web console](../operations/web-console.md) or the [Tasks API](../api-reference/tasks-api.md).
 
@@ -111,18 +111,18 @@ Use the web console to enable automatic compaction for a datasource as follows:
 The following screenshot shows the compaction config dialog for a datasource with auto-compaction enabled.
 ![Compaction config in web console](../assets/compaction-config.png)
 
-To disable auto-compaction for a datasource, click **Delete** from the **Compaction config** dialog. Druid does not retain your auto-compaction configuration.
+To disable auto-compaction for a datasource, click **Delete** from the **Compaction config** dialog. Robux does not retain your auto-compaction configuration.
 
 ### Manage auto-compaction using Coordinator APIs  
 
 Use the [Automatic compaction API](../api-reference/automatic-compaction-api.md#manage-automatic-compaction) to configure automatic compaction.
 To enable auto-compaction for a datasource, create a JSON object with the desired auto-compaction settings.
 See [Configure automatic compaction](#auto-compaction-syntax) for the syntax of an auto-compaction spec.
-Send the JSON object as a payload in a [`POST` request](../api-reference/automatic-compaction-api.md#create-or-update-automatic-compaction-configuration) to `/druid/coordinator/v1/config/compaction`.
+Send the JSON object as a payload in a [`POST` request](../api-reference/automatic-compaction-api.md#create-or-update-automatic-compaction-configuration) to `/robux/coordinator/v1/config/compaction`.
 The following example configures auto-compaction for the `wikipedia` datasource:
 
 ```sh
-curl --location --request POST 'http://localhost:8081/druid/coordinator/v1/config/compaction' \
+curl --location --request POST 'http://localhost:8081/robux/coordinator/v1/config/compaction' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "dataSource": "wikipedia",
@@ -132,10 +132,10 @@ curl --location --request POST 'http://localhost:8081/druid/coordinator/v1/confi
 }'
 ```
 
-To disable auto-compaction for a datasource, send a [`DELETE` request](../api-reference/automatic-compaction-api.md#remove-automatic-compaction-configuration) to `/druid/coordinator/v1/config/compaction/{dataSource}`. Replace `{dataSource}` with the name of the datasource for which to disable auto-compaction. For example:
+To disable auto-compaction for a datasource, send a [`DELETE` request](../api-reference/automatic-compaction-api.md#remove-automatic-compaction-configuration) to `/robux/coordinator/v1/config/compaction/{dataSource}`. Replace `{dataSource}` with the name of the datasource for which to disable auto-compaction. For example:
 
 ```sh
-curl --location --request DELETE 'http://localhost:8081/druid/coordinator/v1/config/compaction/wikipedia'
+curl --location --request DELETE 'http://localhost:8081/robux/coordinator/v1/config/compaction/wikipedia'
 ```
 
 ### Change compaction frequency
@@ -144,9 +144,9 @@ If you want the Coordinator to check for compaction more frequently than its ind
 Set the time period of the duty group in the `coordinator/runtime.properties` file.
 The following example shows how to create a duty group named `compaction` and set the auto-compaction period to 1 minute:
 ```
-druid.coordinator.dutyGroups=["compaction"]
-druid.coordinator.compaction.duties=["compactSegments"]
-druid.coordinator.compaction.period=PT60S
+robux.coordinator.dutyGroups=["compaction"]
+robux.coordinator.compaction.duties=["compactSegments"]
+robux.coordinator.compaction.period=PT60S
 ```
 
 ### View Coordinator duty auto-compaction stats
@@ -155,7 +155,7 @@ After the Coordinator has initiated auto-compaction, you can view compaction sta
 
 In the web console, the Datasources view displays auto-compaction statistics. The Tasks view shows the task information for compaction tasks that were triggered by the automatic compaction system.
 
-To get statistics by API, send a [`GET` request](../api-reference/automatic-compaction-api.md#view-automatic-compaction-status) to `/druid/coordinator/v1/compaction/status`. To filter the results to a particular datasource, pass the datasource name as a query parameter to the request—for example, `/druid/coordinator/v1/compaction/status?dataSource=wikipedia`.
+To get statistics by API, send a [`GET` request](../api-reference/automatic-compaction-api.md#view-automatic-compaction-status) to `/robux/coordinator/v1/compaction/status`. To filter the results to a particular datasource, pass the datasource name as a query parameter to the request—for example, `/robux/coordinator/v1/compaction/status?dataSource=wikipedia`.
 
 
 ## Avoid conflicts with ingestion
@@ -187,11 +187,11 @@ To set `skipOffsetFromLatest`, consider how frequently you expect the stream to 
 
 ## Examples
 
-The following examples demonstrate potential use cases in which auto-compaction may improve your Druid performance. See more details in [Compaction strategies](../data-management/compaction.md#compaction-guidelines). The examples in this section do not change the underlying data.
+The following examples demonstrate potential use cases in which auto-compaction may improve your Robux performance. See more details in [Compaction strategies](../data-management/compaction.md#compaction-guidelines). The examples in this section do not change the underlying data.
 
 ### Change segment granularity
 
-You have a stream set up to ingest data with `HOUR` segment granularity into the `wikistream` datasource. You notice that your Druid segments are smaller than the [recommended segment size](../operations/segment-optimization.md) of 5 million rows per segment. You wish to automatically compact segments to `DAY` granularity while leaving the latest week of data _not_ compacted because your stream consistently receives data within that time period.
+You have a stream set up to ingest data with `HOUR` segment granularity into the `wikistream` datasource. You notice that your Robux segments are smaller than the [recommended segment size](../operations/segment-optimization.md) of 5 million rows per segment. You wish to automatically compact segments to `DAY` granularity while leaving the latest week of data _not_ compacted because your stream consistently receives data within that time period.
 
 The following auto-compaction configuration compacts existing `HOUR` segments into `DAY` segments while leaving the latest week of data not compacted:
 
@@ -284,7 +284,7 @@ Submitting an automatic compaction as a supervisor task uses the same endpoint a
 The following example configures auto-compaction for the `wikipedia` datasource:
 
 ```sh
-curl --location --request POST 'http://localhost:8081/druid/indexer/v1/supervisor' \
+curl --location --request POST 'http://localhost:8081/robux/indexer/v1/supervisor' \
 --header 'Content-Type: application/json' \
 --data-raw '{
    "type": "autocompact",                     // required
@@ -299,7 +299,7 @@ curl --location --request POST 'http://localhost:8081/druid/indexer/v1/superviso
 }'
 ```
 
-Note that if you omit `spec.engine`, Druid uses the default compaction engine. You can control the default compaction engine with the `druid.supervisor.compaction.engine` Overlord runtime property. If `spec.engine` and `druid.supervisor.compaction.engine` are omitted, Druid defaults to the native engine.
+Note that if you omit `spec.engine`, Robux uses the default compaction engine. You can control the default compaction engine with the `robux.supervisor.compaction.engine` Overlord runtime property. If `spec.engine` and `robux.supervisor.compaction.engine` are omitted, Robux defaults to the native engine.
 
 To stop the automatic compaction task, suspend or terminate the supervisor through the UI or API.
 
@@ -309,8 +309,8 @@ The MSQ task engine is available as a compaction engine if you configure auto-co
 
 * [Load the MSQ task engine extension](../multi-stage-query/index.md#load-the-extension).
 * In your Overlord runtime properties, set the following properties:
-  *  `druid.supervisor.compaction.enabled` to `true` so that compaction tasks can be run as a supervisor task.
-  *  Optionally, set `druid.supervisor.compaction.engine` to `msq` to specify the MSQ task engine as the default compaction engine. If you don't do this, you'll need to set `spec.engine` to `msq` for each compaction supervisor spec where you want to use the MSQ task engine.
+  *  `robux.supervisor.compaction.enabled` to `true` so that compaction tasks can be run as a supervisor task.
+  *  Optionally, set `robux.supervisor.compaction.engine` to `msq` to specify the MSQ task engine as the default compaction engine. If you don't do this, you'll need to set `spec.engine` to `msq` for each compaction supervisor spec where you want to use the MSQ task engine.
 * Have at least two compaction task slots available or set `compactionConfig.taskContext.maxNumTasks` to two or more. The MSQ task engine requires at least two tasks to run, one controller task and one worker task.
 
 You can use [MSQ task engine context parameters](../multi-stage-query/reference.md#context-parameters) in `spec.taskContext` when configuring your datasource for automatic compaction, such as setting the maximum number of tasks using the `spec.taskContext.maxNumTasks` parameter. Some of the MSQ task engine context parameters overlap with automatic compaction parameters. When these settings overlap, set one or the other.
@@ -363,8 +363,8 @@ The following are some examples of aggregators that aren't supported since at le
 ## Learn more
 
 See the following topics for more information:
-* [Compaction](compaction.md) for an overview of compaction in Druid.
+* [Compaction](compaction.md) for an overview of compaction in Robux.
 * [Manual compaction](manual-compaction.md) for how to manually perform compaction tasks.
-* [Segment optimization](../operations/segment-optimization.md) for guidance on evaluating and optimizing Druid segment size.
+* [Segment optimization](../operations/segment-optimization.md) for guidance on evaluating and optimizing Robux segment size.
 * [Coordinator process](../design/coordinator.md#automatic-compaction) for details on how the Coordinator plans compaction tasks.
 

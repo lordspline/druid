@@ -23,7 +23,7 @@ title: "Bloom Filter"
   -->
 
 
-To use the Apache Druid&circledR; Bloom filter extension, include `druid-bloom-filter` in the extensions load list. See [Loading extensions](../../configuration/extensions.md#loading-extensions) for more information.
+To use the Apache Robux&circledR; Bloom filter extension, include `robux-bloom-filter` in the extensions load list. See [Loading extensions](../../configuration/extensions.md#loading-extensions) for more information.
 
 This extension adds the abilities to construct Bloom filters from query results and to filter query results by testing
 against a Bloom filter. A Bloom filter is a probabilistic data structure to check for set membership. A Bloom
@@ -53,7 +53,7 @@ BloomKFilter.serialize(byteArrayOutputStream, bloomFilter);
 String base64Serialized = Base64.encodeBase64String(byteArrayOutputStream.toByteArray());
 ```
 
-You can then use the Base64 encoded string in JSON-based or SQL-based queries in Druid.
+You can then use the Base64 encoded string in JSON-based or SQL-based queries in Robux.
 
 ## Filter queries with a Bloom filter
 
@@ -90,12 +90,12 @@ Serialized BloomKFilter format:
 You can use Bloom filters in SQL `WHERE` clauses with the `bloom_filter_test` operator:
 
 ```sql
-SELECT COUNT(*) FROM druid.foo WHERE bloom_filter_test(<expr>, '<serialized_bytes_for_BloomKFilter>')
+SELECT COUNT(*) FROM robux.foo WHERE bloom_filter_test(<expr>, '<serialized_bytes_for_BloomKFilter>')
 ```
 
 ### Expression and virtual column support
 
-The Bloom filter extension also adds a Bloom filter [Druid expression](../../querying/math-expr.md) which shares syntax
+The Bloom filter extension also adds a Bloom filter [Robux expression](../../querying/math-expr.md) which shares syntax
 with the SQL operator.
 
 ```sql
@@ -104,7 +104,7 @@ bloom_filter_test(<expr>, '<serialized_bytes_for_BloomKFilter>')
 
 ## Bloom filter query aggregator
 
-You can create an input for a `BloomKFilter` from a Druid query with the `bloom` aggregator. Make sure to set a reasonable value for the `maxNumEntries` parameter to specify the maximum number of distinct entries that the Bloom filter can represent without increasing the false positive rate. Try performing a query using
+You can create an input for a `BloomKFilter` from a Robux query with the `bloom` aggregator. Make sure to set a reasonable value for the `maxNumEntries` parameter to specify the maximum number of distinct entries that the Bloom filter can represent without increasing the false positive rate. Try performing a query using
 one of the unique count sketches to calculate the value for this parameter to build a Bloom filter appropriate for the query.
 
 ### JSON specification
@@ -162,14 +162,14 @@ Example response:
 ```
 
 We recommend ordering by an alternative aggregation method instead of ordering results by a Bloom filter aggregator.
-Ordering results by a Bloom filter aggregator can be resource-intensive because Druid performs an expensive linear scan of the filter to approximate the count of items added to the set by counting the number of set bits. 
+Ordering results by a Bloom filter aggregator can be resource-intensive because Robux performs an expensive linear scan of the filter to approximate the count of items added to the set by counting the number of set bits. 
 
 ### SQL Bloom filter aggregator
 
 You can compute Bloom filters in SQL expressions with the BLOOM_FILTER aggregator. For example:
 
 ```sql
-SELECT BLOOM_FILTER(<expression>, <max number of entries>) FROM druid.foo WHERE dim2 = 'abc'
+SELECT BLOOM_FILTER(<expression>, <max number of entries>) FROM robux.foo WHERE dim2 = 'abc'
 ```
 
-Druid serializes Bloom filter results in a SQL response into a Base64 string. You can use the resulting string in subsequent queries as a filter.
+Robux serializes Bloom filter results in a SQL response into a Base64 string. You can use the resulting string in subsequent queries as a filter.
